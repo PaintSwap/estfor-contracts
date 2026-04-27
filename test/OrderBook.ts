@@ -15,36 +15,15 @@ describe("OrderBook", function () {
 
     const mockItemNFT = await ethers.deployContract("MockItemNFT");
 
-    const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
-    const activityPoints = (await upgrades.deployProxy(
-      ActivityPoints,
-      [await mockItemNFT.getAddress(), ACTIVITY_TICKET, SONIC_GEM_TICKET],
-      {
-        kind: "uups"
-      }
-    )) as unknown as ActivityPoints;
-
     const maxOrdersPerPrice = 100n;
     const OrderBook = await ethers.getContractFactory("OrderBook");
     const orderBook = (await upgrades.deployProxy(
       OrderBook,
-      [
-        await erc1155.getAddress(),
-        await coins.getAddress(),
-        await dev.getAddress(),
-        30,
-        30,
-        maxOrdersPerPrice,
-        await activityPoints.getAddress()
-      ],
+      [await erc1155.getAddress(), await coins.getAddress(), await dev.getAddress(), 30, 30, maxOrdersPerPrice],
       {
-        kind: "uups"
+        kind: "uups",
       }
     )) as unknown as OrderBook;
-
-    // let the orderbook mint
-    await orderBook.setActivityPoints(await activityPoints.getAddress());
-    await activityPoints.addCallers([await orderBook.getAddress()]);
 
     const initialCoins = parseEther("100");
     await coins.mint(owner, initialCoins);
@@ -69,7 +48,6 @@ describe("OrderBook", function () {
       orderBook,
       erc1155,
       coins,
-      activityPoints,
       mockItemNFT,
       owner,
       alice,
@@ -84,12 +62,12 @@ describe("OrderBook", function () {
       initialQuantity,
       maxOrdersPerPrice,
       tick,
-      minQuantity
+      minQuantity,
     };
   }
 
   it("Initialize function constraints", async function () {
-    const {dev, coins, erc1155, activityPoints} = await loadFixture(deployContractsFixture);
+    const {dev, coins, erc1155} = await loadFixture(deployContractsFixture);
 
     const maxOrdersPerPrice = 100;
     const OrderBook = await ethers.getContractFactory("OrderBook");
@@ -105,10 +83,9 @@ describe("OrderBook", function () {
           devFee,
           burntFee,
           maxOrdersPerPrice,
-          await activityPoints.getAddress()
         ],
         {
-          kind: "uups"
+          kind: "uups",
         }
       )
     ).to.be.revertedWithCustomError(OrderBook, "DevFeeNotSet");
@@ -118,17 +95,9 @@ describe("OrderBook", function () {
     await expect(
       upgrades.deployProxy(
         OrderBook,
-        [
-          await erc1155.getAddress(),
-          await coins.getAddress(),
-          ethers.ZeroAddress,
-          devFee,
-          burntFee,
-          maxOrdersPerPrice,
-          await activityPoints.getAddress()
-        ],
+        [await erc1155.getAddress(), await coins.getAddress(), ethers.ZeroAddress, devFee, burntFee, maxOrdersPerPrice],
         {
-          kind: "uups"
+          kind: "uups",
         }
       )
     ).to.be.revertedWithCustomError(OrderBook, "ZeroAddress");
@@ -144,10 +113,9 @@ describe("OrderBook", function () {
           devFee,
           burntFee,
           maxOrdersPerPrice,
-          await activityPoints.getAddress()
         ],
         {
-          kind: "uups"
+          kind: "uups",
         }
       )
     ).to.be.revertedWithCustomError(OrderBook, "DevFeeTooHigh");
@@ -157,17 +125,9 @@ describe("OrderBook", function () {
     await expect(
       upgrades.deployProxy(
         OrderBook,
-        [
-          erc721.target,
-          await coins.getAddress(),
-          await dev.getAddress(),
-          devFee,
-          burntFee,
-          maxOrdersPerPrice,
-          await activityPoints.getAddress()
-        ],
+        [erc721.target, await coins.getAddress(), await dev.getAddress(), devFee, burntFee, maxOrdersPerPrice],
         {
-          kind: "uups"
+          kind: "uups",
         }
       )
     ).to.be.revertedWithCustomError(OrderBook, "NotERC1155");
@@ -176,17 +136,9 @@ describe("OrderBook", function () {
     devFee = 0;
     await upgrades.deployProxy(
       OrderBook,
-      [
-        await erc1155.getAddress(),
-        await coins.getAddress(),
-        ethers.ZeroAddress,
-        devFee,
-        burntFee,
-        maxOrdersPerPrice,
-        await activityPoints.getAddress()
-      ],
+      [await erc1155.getAddress(), await coins.getAddress(), ethers.ZeroAddress, devFee, burntFee, maxOrdersPerPrice],
       {
-        kind: "uups"
+        kind: "uups",
       }
     );
 
@@ -198,8 +150,7 @@ describe("OrderBook", function () {
         await dev.getAddress(),
         devFee,
         burntFee,
-        maxOrdersPerPrice,
-        await activityPoints.getAddress()
+        maxOrdersPerPrice
       )
     ).to.be.reverted;
   });
@@ -222,14 +173,14 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 1n,
-        quantity
-      }
+        quantity,
+      },
     ];
     let orderId = 1;
     await orderBook.limitOrders(limitOrders);
@@ -249,14 +200,14 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 1n,
-        quantity
-      }
+        quantity,
+      },
     ];
     let orderId = 1;
     await expect(orderBook.limitOrders(limitOrders))
@@ -295,8 +246,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
       // Take from it
       await expect(
@@ -304,7 +255,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           totalCost: price * 10n - 1n, // total cost is too low
-          quantity: 10
+          quantity: 10,
         })
       ).to.be.revertedWithCustomError(orderBook, "TotalCostConditionNotMet");
 
@@ -313,7 +264,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           totalCost: price * 10n, // total cost is exact
-          quantity: 10
+          quantity: 10,
         })
       ).to.not.be.reverted;
 
@@ -322,7 +273,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           totalCost: price * 11n, // total cost is higher
-          quantity: 10
+          quantity: 10,
         })
       ).to.not.be.reverted;
     });
@@ -338,15 +289,15 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
       await expect(
         orderBook.connect(alice).marketOrder({
           side: OrderSide.SELL,
           tokenId,
           totalCost: price * 10n + 1n, // total cost is too high
-          quantity: 10
+          quantity: 10,
         })
       ).to.be.revertedWithCustomError(orderBook, "TotalCostConditionNotMet");
 
@@ -355,7 +306,7 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           totalCost: price * 10n, // total cost is exact
-          quantity: 10
+          quantity: 10,
         })
       ).to.not.be.reverted;
 
@@ -364,7 +315,7 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           totalCost: 0, // total cost is too high
-          quantity: 10
+          quantity: 10,
         })
       ).to.not.be.reverted;
     });
@@ -380,14 +331,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       // Buy
@@ -398,7 +349,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           totalCost: (price + 1n) * numToBuy,
-          quantity: numToBuy
+          quantity: numToBuy,
         })
       )
         .to.emit(orderBook, "OrdersMatched")
@@ -409,7 +360,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         totalCost: (price + 1n) * (quantity - numToBuy),
-        quantity: quantity - numToBuy
+        quantity: quantity - numToBuy,
       }); // Buy the rest
       expect(await erc1155.balanceOf(alice, tokenId)).to.equal(initialQuantity + quantity);
 
@@ -419,7 +370,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           totalCost: price + 2n,
-          quantity: 1
+          quantity: 1,
         })
       ).to.be.revertedWithCustomError(orderBook, "FailedToTakeFromBook");
     });
@@ -435,20 +386,20 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       // Sell
@@ -458,7 +409,7 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           totalCost: price * quantity,
-          quantity
+          quantity,
         })
       )
         .to.emit(orderBook, "OrdersMatched")
@@ -476,14 +427,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       // Sell
@@ -494,7 +445,7 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           totalCost: price * numToSell,
-          quantity: numToSell
+          quantity: numToSell,
         })
       )
         .to.emit(orderBook, "OrdersMatched")
@@ -506,7 +457,7 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         totalCost: price * (quantity - numToSell),
-        quantity: quantity - numToSell
+        quantity: quantity - numToSell,
       }); // Buy the rest
       expect(await erc1155.balanceOf(alice, tokenId)).to.equal(initialQuantity - quantity);
 
@@ -516,7 +467,7 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           totalCost: price,
-          quantity: 1
+          quantity: 1,
         })
       ).to.be.revertedWithCustomError(orderBook, "FailedToTakeFromBook");
     });
@@ -533,7 +484,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       };
 
       const maxOrdersPriceAsNumber = Number(maxOrdersPerPrice);
@@ -542,27 +493,27 @@ describe("OrderBook", function () {
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 1n
+        price: limitOrder.price + 1n,
       });
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 2n
+        price: limitOrder.price + 2n,
       });
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 3n
+        price: limitOrder.price + 3n,
       });
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 4n
+        price: limitOrder.price + 4n,
       });
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 5n
+        price: limitOrder.price + 5n,
       });
       await orderBook.limitOrders(limitOrders);
 
@@ -570,7 +521,7 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         totalCost: price * maxOrdersPerPrice * 5n,
-        quantity: maxOrdersPerPrice * 5n
+        quantity: maxOrdersPerPrice * 5n,
       };
       await expect(orderBook.marketOrder(marketOrder)).to.be.revertedWithCustomError(orderBook, "TooManyOrdersHit");
     });
@@ -588,14 +539,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       // Buy
@@ -607,8 +558,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price: price + 1n,
-            quantity: numToBuy
-          }
+            quantity: numToBuy,
+          },
         ])
       )
         .to.emit(orderBook, "OrdersMatched")
@@ -620,8 +571,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price: price + 2n,
-          quantity: quantity - numToBuy
-        }
+          quantity: quantity - numToBuy,
+        },
       ]); // Buy the rest
       expect(await erc1155.balanceOf(alice, tokenId)).to.equal(initialQuantity + quantity);
 
@@ -631,8 +582,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price: price + 2n,
-          quantity: 1
-        }
+          quantity: 1,
+        },
       ]);
       expect(await orderBook.getHighestBid(tokenId)).to.equal(price + 2n);
     });
@@ -648,20 +599,20 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       // Sell
@@ -672,8 +623,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price: price,
-            quantity
-          }
+            quantity,
+          },
         ])
       )
         .to.emit(orderBook, "OrdersMatched")
@@ -691,20 +642,20 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       const balanceOfMockItem = await mockItemNFT.balanceOf(alice.address, ACTIVITY_TICKET);
@@ -717,8 +668,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price: price,
-            quantity
-          }
+            quantity,
+          },
         ])
       )
         .to.emit(orderBook, "OrdersMatched")
@@ -739,14 +690,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       // Sell
@@ -758,8 +709,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price: price,
-            quantity: numToSell
-          }
+            quantity: numToSell,
+          },
         ])
       )
         .to.emit(orderBook, "OrdersMatched")
@@ -772,8 +723,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price: price - 1n,
-          quantity: quantity - numToSell
-        }
+          quantity: quantity - numToSell,
+        },
       ]); // Buy the rest
       expect(await erc1155.balanceOf(alice, tokenId)).to.equal(initialQuantity - quantity);
 
@@ -783,8 +734,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price: price - 1n,
-          quantity: 1
-        }
+          quantity: 1,
+        },
       ]);
       expect(await orderBook.getLowestAsk(tokenId)).to.equal(price - 1n);
     });
@@ -801,7 +752,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       };
 
       const maxOrdersPriceAsNumber = Number(maxOrdersPerPrice);
@@ -810,27 +761,27 @@ describe("OrderBook", function () {
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 1n
+        price: limitOrder.price + 1n,
       });
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 2n
+        price: limitOrder.price + 2n,
       });
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 3n
+        price: limitOrder.price + 3n,
       });
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 4n
+        price: limitOrder.price + 4n,
       });
       await orderBook.limitOrders(limitOrders);
       limitOrders = new Array<IOrderBook.LimitOrderStruct>(maxOrdersPriceAsNumber).fill({
         ...limitOrder,
-        price: limitOrder.price + 5n
+        price: limitOrder.price + 5n,
       });
       await orderBook.limitOrders(limitOrders);
 
@@ -838,7 +789,7 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity: maxOrdersPerPrice * 5n
+        quantity: maxOrdersPerPrice * 5n,
       };
       await expect(orderBook.limitOrders([limitOrder])).to.be.revertedWithCustomError(orderBook, "TooManyOrdersHit");
     });
@@ -856,20 +807,20 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + tick,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 2n * tick,
-        quantity
-      }
+        quantity,
+      },
     ]);
 
     // Cancel buy
@@ -882,14 +833,14 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price: price - tick,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.BUY,
         tokenId,
         price: price - 3n * tick,
-        quantity
-      }
+        quantity,
+      },
     ]);
 
     // Remove a whole sell order and eat into the next
@@ -899,8 +850,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price: price + 2n * tick,
-          quantity: quantity + quantity / 2n
-        }
+          quantity: quantity + quantity / 2n,
+        },
       ])
     ).to.not.emit(orderBook, "FailedToAddToBook");
 
@@ -913,8 +864,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price: price - tick,
-        quantity: quantity - 3n
-      }
+        quantity: quantity - 3n,
+      },
     ]);
     await orderBook.setTokenIdInfos([tokenId], [{tick: 1, minQuantity: 20}]);
     await expect(
@@ -923,8 +874,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price: price - tick,
-          quantity: quantity
-        }
+          quantity: quantity,
+        },
       ])
     )
       .to.emit(orderBook, "FailedToAddToBook")
@@ -943,7 +894,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           totalCost,
-          quantity: 0
+          quantity: 0,
         })
       ).to.be.revertedWithCustomError(orderBook, "NoQuantity");
 
@@ -952,7 +903,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId: tokenId + 1,
           totalCost,
-          quantity
+          quantity,
         })
       )
         .to.be.revertedWithCustomError(orderBook, "TokenDoesntExist")
@@ -973,8 +924,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity: 0
-          }
+            quantity: 0,
+          },
         ])
       ).to.be.revertedWithCustomError(orderBook, "NoQuantity");
 
@@ -984,8 +935,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price: 0,
-            quantity
-          }
+            quantity,
+          },
         ])
       ).to.be.revertedWithCustomError(orderBook, "PriceZero");
 
@@ -995,8 +946,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId: tokenId + 1,
             price,
-            quantity
-          }
+            quantity,
+          },
         ])
       )
         .to.be.revertedWithCustomError(orderBook, "TokenDoesntExist")
@@ -1018,14 +969,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       // Try cancel non-existent order
@@ -1075,7 +1026,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       };
 
       const limitOrders = new Array<IOrderBook.LimitOrderStruct>(4).fill(limitOrder);
@@ -1113,7 +1064,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       });
       await orderBook.limitOrders(limitOrders);
 
@@ -1137,7 +1088,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       });
       await orderBook.limitOrders(limitOrders);
 
@@ -1146,7 +1097,7 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       });
       await orderBook.limitOrders(sellLimitOrders);
 
@@ -1196,7 +1147,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       });
       await orderBook.limitOrders(limitOrders);
 
@@ -1205,7 +1156,7 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       });
       await orderBook.limitOrders(sellLimitOrders);
 
@@ -1240,7 +1191,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       };
 
       // 4 segments
@@ -1291,14 +1242,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       // Cancel buy
@@ -1307,7 +1258,7 @@ describe("OrderBook", function () {
         [orderId, orderId + 1],
         [
           {side: OrderSide.BUY, tokenId, price},
-          {side: OrderSide.SELL, tokenId, price: price + 1n}
+          {side: OrderSide.SELL, tokenId, price: price + 1n},
         ]
       );
 
@@ -1336,8 +1287,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       const orderId = 2;
@@ -1356,8 +1307,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       const orderId = 1;
@@ -1376,14 +1327,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       const orderId = 2;
@@ -1403,14 +1354,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       await orderBook.limitOrders([
@@ -1418,8 +1369,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       const orderId = 1;
@@ -1439,14 +1390,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       await orderBook.limitOrders([
@@ -1454,8 +1405,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       const orderId = 2;
@@ -1475,26 +1426,26 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       await orderBook.limitOrders([
@@ -1502,8 +1453,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity: quantity * 3n
-        }
+          quantity: quantity * 3n,
+        },
       ]);
 
       const orderId = 4;
@@ -1523,32 +1474,32 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       await orderBook.limitOrders([
@@ -1556,8 +1507,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity: quantity * 3n
-        }
+          quantity: quantity * 3n,
+        },
       ]);
 
       const orderId = 4;
@@ -1579,14 +1530,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       await orderBook.limitOrders([
@@ -1594,8 +1545,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       const orderId = 1;
@@ -1610,57 +1561,58 @@ describe("OrderBook", function () {
       await expect(orderBook.cancelOrders([orderId], [])).to.be.revertedWithCustomError(orderBook, "LengthMismatch");
     });
 
-    it("Remove an item, check the order can still be cancelled just not fulfilled", async function () {
-      const {orderBook, tokenId, coins, owner} = await loadFixture(deployContractsFixture);
+    // Cannot cancel orders with price compression as the tick is needed to find the order
+    // it("Remove an item, check the order can still be cancelled just not fulfilled", async function () {
+    //   const {orderBook, tokenId, coins, owner} = await loadFixture(deployContractsFixture);
 
-      const price = 100n;
-      const quantity = 10n;
-      await orderBook.limitOrders([
-        {
-          side: OrderSide.BUY,
-          tokenId,
-          price,
-          quantity
-        },
-        {
-          side: OrderSide.BUY,
-          tokenId,
-          price,
-          quantity
-        }
-      ]);
-      // Selling should work
-      await orderBook.limitOrders([
-        {
-          side: OrderSide.SELL,
-          tokenId,
-          price,
-          quantity: 1
-        }
-      ]);
+    //   const price = 100n;
+    //   const quantity = 10n;
+    //   await orderBook.limitOrders([
+    //     {
+    //       side: OrderSide.BUY,
+    //       tokenId,
+    //       price,
+    //       quantity
+    //     },
+    //     {
+    //       side: OrderSide.BUY,
+    //       tokenId,
+    //       price,
+    //       quantity
+    //     }
+    //   ]);
+    //   // Selling should work
+    //   await orderBook.limitOrders([
+    //     {
+    //       side: OrderSide.SELL,
+    //       tokenId,
+    //       price,
+    //       quantity: 1
+    //     }
+    //   ]);
 
-      // Remove the tokenId
-      await orderBook.setTokenIdInfos([tokenId], [{tick: 0, minQuantity: 20}]);
-      // Cancel should work
-      const orderId = 1;
-      const preBalance = await coins.balanceOf(owner);
-      await orderBook.cancelOrders([orderId], [{side: OrderSide.BUY, tokenId, price}]);
+    //   // Remove the tokenId
+    //   await orderBook.setTokenIdInfos([tokenId], [{tick: 0, minQuantity: 20}]);
+    //   // Cancel should work
+    //   const orderId = 1;
+    //   const preBalance = await coins.balanceOf(owner);
+    //   await orderBook.cancelOrders([orderId], [{side: OrderSide.BUY, tokenId, price}]);
 
-      // Selling should no longer work
-      await expect(
-        orderBook.limitOrders([
-          {
-            side: OrderSide.SELL,
-            tokenId,
-            price,
-            quantity: 1
-          }
-        ])
-      )
-        .to.be.revertedWithCustomError(orderBook, "TokenDoesntExist")
-        .withArgs(tokenId);
-      expect(await coins.balanceOf(owner)).to.eq(preBalance + BigInt(price * (quantity - 1n)));
-    });
+    //   // Selling should no longer work
+    //   await expect(
+    //     orderBook.limitOrders([
+    //       {
+    //         side: OrderSide.SELL,
+    //         tokenId,
+    //         price,
+    //         quantity: 1
+    //       }
+    //     ])
+    //   )
+    //     .to.be.revertedWithCustomError(orderBook, "TokenDoesntExist")
+    //     .withArgs(tokenId);
+    //   expect(await coins.balanceOf(owner)).to.eq(preBalance + BigInt(price * (quantity - 1n)));
+    // });
 
     // Fixes: https://ftmscan.com/tx/0x69dd308e7a096ebd035bd3a3f18c2a9b116faee78ea4e0ccda06c3cfede0950b
     it("Check cancelling when the overall order amount exceed a uint72 (checks for overflow)", async function () {
@@ -1680,8 +1632,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       // Cancel buy, should not revert and return the coins
@@ -1708,8 +1660,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
       // Cancel buy, should not revert and return the brush
       const orderId = 1;
@@ -1731,7 +1683,7 @@ describe("OrderBook", function () {
       side: OrderSide.BUY,
       tokenId,
       price,
-      quantity
+      quantity,
     };
 
     // 2 segment
@@ -1748,8 +1700,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price: price,
-        quantity: quantity * 4n
-      }
+        quantity: quantity * 4n,
+      },
     ]);
     packedSlot = await ethers.provider.getStorage(orderBook, nextOrderIdSlot);
     nextOrderId = parseInt(packedSlot.slice(2, 12), 16);
@@ -1782,20 +1734,20 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
-      }
+        quantity,
+      },
     ]);
 
     // Buy
@@ -1805,8 +1757,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity: numToBuy
-      }
+        quantity: numToBuy,
+      },
     ]);
 
     let orders = await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price);
@@ -1825,8 +1777,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity: remainderQuantity + 1n
-      }
+        quantity: remainderQuantity + 1n,
+      },
     ]);
 
     orders = await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price);
@@ -1846,26 +1798,26 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
-      }
+        quantity,
+      },
     ]);
 
     // Buy
@@ -1875,8 +1827,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity: numToBuy
-      }
+        quantity: numToBuy,
+      },
     ]);
 
     let orders = await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price);
@@ -1909,32 +1861,32 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
-      }
+        quantity,
+      },
     ]);
 
     // Buy
@@ -1944,8 +1896,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity: numToBuy
-      }
+        quantity: numToBuy,
+      },
     ]);
 
     let orders = await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price);
@@ -1976,20 +1928,20 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
-      }
+        quantity,
+      },
     ]);
 
     // Sell
@@ -1999,8 +1951,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity: numToSell
-      }
+        quantity: numToSell,
+      },
     ]);
 
     let orders = await orderBook.allOrdersAtPrice(OrderSide.BUY, tokenId, price);
@@ -2019,8 +1971,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity: remainderQuantity + 1n
-      }
+        quantity: remainderQuantity + 1n,
+      },
     ]);
 
     orders = await orderBook.allOrdersAtPrice(OrderSide.BUY, tokenId, price);
@@ -2040,7 +1992,7 @@ describe("OrderBook", function () {
       side: OrderSide.SELL,
       tokenId,
       price,
-      quantity
+      quantity,
     };
 
     const maxOrdersPerPriceAsNumber = Number(maxOrdersPerPrice);
@@ -2069,7 +2021,7 @@ describe("OrderBook", function () {
       side: OrderSide.SELL,
       tokenId: tokenId,
       price,
-      quantity
+      quantity,
     };
 
     const limitOrders = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(limitOrder);
@@ -2081,8 +2033,8 @@ describe("OrderBook", function () {
       .withArgs(72, 4722366482869645213696n);
   });
 
-  // Similiar to other test, but makes it exceed more
-  it("Max number of orders for a price should increment it by the tick, sell orders, check extreme reverts", async function () {
+  // Similar to other test, but uses tick compression to keep very large effective prices within the stored uint72 range
+  it("Max number of orders for a price should increment it by the tick, sell orders, check extreme compressed price succeeds", async function () {
     const {orderBook, owner, alice, tokenId, erc1155, maxOrdersPerPrice} = await loadFixture(deployContractsFixture);
 
     const tick = ethers.parseEther("1");
@@ -2090,25 +2042,29 @@ describe("OrderBook", function () {
     await orderBook.setTokenIdInfos([tokenId + 1], [{tick, minQuantity}]);
 
     // Set up order book
-    const price = ethers.parseEther("4722"); // At the extreme end of uint72
+    const price = ethers.parseEther("4722333"); // At the extreme end of uint72
     const quantity = 1;
     await erc1155.mintSpecificId(owner, tokenId + 1, 100000);
-    await erc1155.connect(alice).mintSpecificId(owner, tokenId + 1, 1);
+    await erc1155.mintSpecificId(alice, tokenId + 1, 1);
 
     const limitOrder: IOrderBook.LimitOrderStruct = {
       side: OrderSide.SELL,
       tokenId: tokenId + 1,
       price,
-      quantity
+      quantity,
     };
 
     const limitOrders = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(limitOrder);
     await orderBook.limitOrders(limitOrders);
 
-    // Try to add one more and it will be reverted
-    await expect(orderBook.connect(alice).limitOrders([limitOrder]))
-      .to.be.revertedWithCustomError(orderBook, "SafeCastOverflowedUintDowncast")
-      .withArgs(72, price + tick);
+    // Try to add one more and it should be added to the next compressed tick price level
+    await orderBook.connect(alice).limitOrders([limitOrder]);
+
+    let orders = await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId + 1, price);
+    expect(orders.length).to.eq(maxOrdersPerPrice);
+
+    orders = await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId + 1, price + tick);
+    expect(orders.length).to.eq(1);
   });
 
   it("Max number of orders for a price should increment it by the tick, buy orders", async function () {
@@ -2122,7 +2078,7 @@ describe("OrderBook", function () {
       side: OrderSide.BUY,
       tokenId,
       price,
-      quantity
+      quantity,
     };
 
     const limitOrders = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(limitOrder);
@@ -2149,7 +2105,7 @@ describe("OrderBook", function () {
       side: OrderSide.BUY,
       tokenId,
       price,
-      quantity
+      quantity,
     };
 
     const limitOrders = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(limitOrder);
@@ -2173,7 +2129,7 @@ describe("OrderBook", function () {
       side: OrderSide.BUY,
       tokenId,
       price,
-      quantity
+      quantity,
     };
 
     const limitOrders = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(limitOrder);
@@ -2184,8 +2140,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price: price - tick,
-        quantity
-      }
+        quantity,
+      },
     ]);
 
     // Try to add one more and it will be added to the next tick price
@@ -2212,7 +2168,7 @@ describe("OrderBook", function () {
       side: OrderSide.SELL,
       tokenId,
       price,
-      quantity
+      quantity,
     };
 
     let limitOrders = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(limitOrder);
@@ -2222,7 +2178,7 @@ describe("OrderBook", function () {
       side: OrderSide.SELL,
       tokenId,
       price: price + tick,
-      quantity
+      quantity,
     };
 
     let limitOrdersNextTick = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(
@@ -2251,7 +2207,7 @@ describe("OrderBook", function () {
       side: OrderSide.SELL,
       tokenId,
       price,
-      quantity
+      quantity,
     };
 
     let limitOrders = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(limitOrder);
@@ -2261,7 +2217,7 @@ describe("OrderBook", function () {
       side: OrderSide.SELL,
       tokenId,
       price: price + tick,
-      quantity
+      quantity,
     };
 
     let limitOrdersNextTick = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(
@@ -2287,7 +2243,7 @@ describe("OrderBook", function () {
       erc1155,
       owner,
       tokenId: originalTokenId,
-      initialQuantity
+      initialQuantity,
     } = await loadFixture(deployContractsFixture);
 
     const tokenId = originalTokenId + 1;
@@ -2304,8 +2260,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ])
     )
       .to.be.revertedWithCustomError(orderBook, "PriceNotMultipleOfTick")
@@ -2319,8 +2275,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
-      }
+        quantity,
+      },
     ]);
     expect(await erc1155.balanceOf(orderBook, tokenId)).to.eq(0);
 
@@ -2331,8 +2287,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ])
     ).to.not.be.reverted;
     expect(await erc1155.balanceOf(orderBook, tokenId)).to.eq(20);
@@ -2345,7 +2301,7 @@ describe("OrderBook", function () {
       owner,
       tokenId: originalTokenId,
       erc1155,
-      initialQuantity
+      initialQuantity,
     } = await loadFixture(deployContractsFixture);
 
     const tokenId = originalTokenId + 1;
@@ -2362,8 +2318,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ])
     )
       .to.be.revertedWithCustomError(orderBook, "PriceNotMultipleOfTick")
@@ -2377,8 +2333,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
-      }
+        quantity,
+      },
     ]);
     expect(await coins.balanceOf(orderBook)).to.eq(0);
 
@@ -2389,8 +2345,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ])
     ).to.not.be.reverted;
     expect(await coins.balanceOf(orderBook)).to.eq(quantity * price);
@@ -2405,8 +2361,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity: minQuantity
-      }
+        quantity: minQuantity,
+      },
     ]);
 
     await orderBook.setTokenIdInfos([tokenId], [{tick, minQuantity: minQuantity + 1n}]);
@@ -2417,8 +2373,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity: minQuantity
-        }
+          quantity: minQuantity,
+        },
       ])
     ).to.emit(orderBook, "FailedToAddToBook");
 
@@ -2427,8 +2383,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity: minQuantity + 1n
-      }
+        quantity: minQuantity + 1n,
+      },
     ]);
 
     await orderBook.limitOrders([
@@ -2436,8 +2392,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity: 1
-      }
+        quantity: 1,
+      },
     ]);
   });
 
@@ -2468,7 +2424,7 @@ describe("OrderBook", function () {
     await expect(orderBook.setTokenIdInfos([tokenId], [{tick: 0, minQuantity}])).to.not.be.reverted;
 
     // And then can be changed from 0 (although not recommended unless it's back to the original one!)
-    await expect(orderBook.setTokenIdInfos([tokenId], [{tick: tick, minQuantity}])).to.not.be.reverted;
+    await expect(orderBook.setTokenIdInfos([tokenId], [{tick, minQuantity}])).to.not.be.reverted;
   });
 
   it("Set max orders per price can only be called by the owner", async function () {
@@ -2501,7 +2457,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity
+        quantity,
       };
 
       const limitOrders = new Array<IOrderBook.LimitOrderStruct>(Number(maxOrdersPerPrice)).fill(limitOrder);
@@ -2518,13 +2474,13 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity: quantity * maxOrdersPerPrice * BigInt(prices.length)
-      }
+        quantity: quantity * maxOrdersPerPrice * BigInt(prices.length),
+      },
     ]);
   });
 
   it("Update royalty fee for a non-erc2981 nft", async function () {
-    const {coins, activityPoints} = await loadFixture(deployContractsFixture);
+    const {coins} = await loadFixture(deployContractsFixture);
 
     const erc1155NoRoyalty = await ethers.deployContract("TestERC1155NoRoyalty");
 
@@ -2532,17 +2488,9 @@ describe("OrderBook", function () {
     const OrderBook = await ethers.getContractFactory("OrderBook");
     const orderBook = await upgrades.deployProxy(
       OrderBook,
-      [
-        erc1155NoRoyalty.target,
-        await coins.getAddress(),
-        ethers.ZeroAddress,
-        0,
-        0,
-        maxOrdersPerPrice,
-        await activityPoints.getAddress()
-      ],
+      [erc1155NoRoyalty.target, await coins.getAddress(), ethers.ZeroAddress, 0, 0, maxOrdersPerPrice],
       {
-        kind: "uups"
+        kind: "uups",
       }
     );
 
@@ -2566,8 +2514,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
       // Take from it
       const cost = price * 10n;
@@ -2575,7 +2523,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         totalCost: cost,
-        quantity: 10
+        quantity: 10,
       });
 
       // Check fees
@@ -2607,8 +2555,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
       const buyingCost = price * quantity;
       const cost = price * 10n;
@@ -2616,7 +2564,7 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         totalCost: 0,
-        quantity: 10
+        quantity: 10,
       });
 
       // Check fees
@@ -2651,14 +2599,14 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity: quantity / 2n
+          quantity: quantity / 2n,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity: quantity / 2n
-        }
+          quantity: quantity / 2n,
+        },
       ]);
       const cost = price * 10n;
       await orderBook.connect(alice).limitOrders([
@@ -2666,14 +2614,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity: 5
+          quantity: 5,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity: 5
-        }
+          quantity: 5,
+        },
       ]);
 
       // Check fees
@@ -2705,14 +2653,14 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity: quantity / 2n
+          quantity: quantity / 2n,
         },
         {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity: quantity / 2n
-        }
+          quantity: quantity / 2n,
+        },
       ]);
       const buyingCost = price * quantity;
       const quantitySelling = 10n;
@@ -2722,14 +2670,14 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity: quantitySelling / 2n
+          quantity: quantitySelling / 2n,
         },
         {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity: quantitySelling / 2n
-        }
+          quantity: quantitySelling / 2n,
+        },
       ]);
 
       // Check fees
@@ -2776,8 +2724,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
         const cost = price * 10n;
         await orderBook.connect(alice).limitOrders([
@@ -2785,8 +2733,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity: 10
-          }
+            quantity: 10,
+          },
         ]);
 
         // Check fees
@@ -2813,8 +2761,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity: 20
-          }
+            quantity: 20,
+          },
         ]);
         expect(await orderBook.tokensClaimable([orderId])).to.eq(cost * 2n - fees * 2n);
         await expect(orderBook.claimTokens([orderId]))
@@ -2838,38 +2786,38 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
+            quantity,
           },
           {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
+            quantity,
           },
           {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
+            quantity,
           },
           {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
+            quantity,
           },
           {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
+            quantity,
           },
           {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
         const numBought = quantity * 4n + 1n; // 4 orders and 1 from the 5th
         const cost = price * numBought;
@@ -2878,8 +2826,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity: numBought
-          }
+            quantity: numBought,
+          },
         ]);
 
         // Check fees
@@ -2929,8 +2877,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
 
         const orderId = 1;
@@ -2941,8 +2889,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
 
         await expect(orderBook.connect(alice).claimTokens([orderId])).to.be.revertedWithCustomError(
@@ -2964,8 +2912,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
 
         await orderBook.limitOrders([
@@ -2973,8 +2921,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
 
         const orderId = 1;
@@ -2992,8 +2940,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
 
         await orderBook.limitOrders([
@@ -3001,8 +2949,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
 
         await orderBook.setFees(await dev.getAddress(), 1000, 246); // 10% dev fee and 2.46% burn
@@ -3028,7 +2976,7 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity
+          quantity,
         });
         await orderBook.limitOrders(limitOrders);
 
@@ -3036,7 +2984,7 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
+          quantity,
         });
         await orderBook.limitOrders(limitOrders);
 
@@ -3044,7 +2992,7 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price: price + 2n,
-          quantity
+          quantity,
         });
         await orderBook.limitOrders(limitOrders);
         await orderBook.limitOrders([
@@ -3052,8 +3000,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price: price + 2n,
-            quantity: 201
-          }
+            quantity: 201,
+          },
         ]);
 
         const orders = Array.from({length: 201}, (_, i) => i + 1);
@@ -3081,16 +3029,16 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
         await orderBook.connect(alice).limitOrders([
           {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity: 10
-          }
+            quantity: 10,
+          },
         ]);
 
         const orderId = 1;
@@ -3120,32 +3068,32 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
+            quantity,
           },
           {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
+            quantity,
           },
           {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
+            quantity,
           },
           {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
+            quantity,
           },
           {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
         const nftsSold = quantity * 4n + 2n;
         await orderBook.connect(alice).limitOrders([
@@ -3153,8 +3101,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity: nftsSold
-          }
+            quantity: nftsSold,
+          },
         ]);
 
         const orderId = 1;
@@ -3182,8 +3130,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity: 3
-          }
+            quantity: 3,
+          },
         ]);
         expect(await orderBook.nftsClaimable([orderId + 4])).to.deep.eq([3]);
         await expect(orderBook.claimNFTs([orderId + 4]))
@@ -3205,7 +3153,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         });
         await orderBook.limitOrders(limitOrders);
 
@@ -3213,7 +3161,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price: price - 1n,
-          quantity
+          quantity,
         });
         await orderBook.limitOrders(limitOrders);
 
@@ -3221,7 +3169,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price: price - 2n,
-          quantity
+          quantity,
         });
         await orderBook.limitOrders(limitOrders);
 
@@ -3230,8 +3178,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price: price - 2n,
-            quantity: 201
-          }
+            quantity: 201,
+          },
         ]);
 
         const orders = Array.from({length: 201}, (_, i) => i + 1);
@@ -3252,8 +3200,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
 
         const orderId = 1;
@@ -3264,8 +3212,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity: 10
-          }
+            quantity: 10,
+          },
         ]);
 
         await expect(orderBook.connect(alice).claimNFTs([orderId])).to.be.revertedWithCustomError(
@@ -3296,24 +3244,24 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
         await orderBook.limitOrders([
           {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity: quantity + 1n
-          }
+            quantity: quantity + 1n,
+          },
         ]);
         await orderBook.limitOrders([
           {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity: 20
-          }
+            quantity: 20,
+          },
         ]);
 
         const orderId = 1;
@@ -3338,24 +3286,24 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity
-          }
+            quantity,
+          },
         ]);
         await orderBook.limitOrders([
           {
             side: OrderSide.BUY,
             tokenId,
             price,
-            quantity: quantity + 1n
-          }
+            quantity: quantity + 1n,
+          },
         ]);
         await orderBook.limitOrders([
           {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity: 20
-          }
+            quantity: 20,
+          },
         ]);
 
         const orderId = 1;
@@ -3384,7 +3332,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
+          quantity,
         });
         await orderBook.limitOrders(limitOrders);
 
@@ -3392,7 +3340,7 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price: price - 1n,
-          quantity
+          quantity,
         });
         await orderBook.limitOrders(limitOrders);
 
@@ -3401,8 +3349,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price: price - 1n,
-            quantity: maxOrdersPerPrice + 1n
-          }
+            quantity: maxOrdersPerPrice + 1n,
+          },
         ]);
 
         // Add to the book
@@ -3410,7 +3358,7 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price: price + 1n,
-          quantity
+          quantity,
         });
         await orderBook.limitOrders(limitOrders);
 
@@ -3419,8 +3367,8 @@ describe("OrderBook", function () {
             side: OrderSide.BUY,
             tokenId,
             price: price + 1n,
-            quantity: maxOrdersPerPrice
-          }
+            quantity: maxOrdersPerPrice,
+          },
         ]);
 
         const nftOrders = Array.from({length: Number(maxOrdersPerPrice + 1n)}, (_, i) => BigInt(i) + 1n);
@@ -3450,8 +3398,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       const newOrder = {side: OrderSide.BUY, tokenId, price: price + 1n * tick, quantity: quantity + 2n};
@@ -3468,7 +3416,7 @@ describe("OrderBook", function () {
       expect((await orderBook.allOrdersAtPrice(OrderSide.BUY, tokenId, price + 1n * tick))[0]).to.deep.eq([
         owner.address,
         quantity + 2n,
-        orderId
+        orderId,
       ]);
     });
 
@@ -3483,8 +3431,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price,
-          quantity
-        }
+          quantity,
+        },
       ]);
 
       const newOrder = {side: OrderSide.SELL, tokenId, price: price - tick, quantity: quantity + 2n};
@@ -3501,7 +3449,7 @@ describe("OrderBook", function () {
       expect((await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price - tick))[0]).to.deep.eq([
         owner.address,
         quantity + 2n,
-        orderId
+        orderId,
       ]);
     });
   });
@@ -3516,8 +3464,8 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price: ethers.parseEther("4800"),
-          quantity
-        }
+          quantity,
+        },
       ])
     ).to.be.revertedWithPanic;
 
@@ -3527,10 +3475,139 @@ describe("OrderBook", function () {
           side: OrderSide.SELL,
           tokenId,
           price: ethers.parseEther("4700"),
-          quantity
-        }
+          quantity,
+        },
       ])
     ).to.not.be.reverted;
+  });
+
+  it("Supports high prices when using tick compression", async function () {
+    const {orderBook, tokenId, owner, erc1155} = await loadFixture(deployContractsFixture);
+
+    const scaledTokenId = tokenId + 1;
+    const tick = ethers.parseEther("0.00001");
+    const minQuantity = 1n;
+    const price = ethers.parseEther("3333333");
+    const storedPrice = price / tick;
+    await orderBook.setTokenIdInfos([scaledTokenId], [{tick, minQuantity}]);
+    await erc1155.mintSpecificId(owner, scaledTokenId, 1);
+
+    await orderBook.limitOrders([
+      {
+        side: OrderSide.SELL,
+        tokenId: scaledTokenId,
+        price,
+        quantity: 1,
+      },
+    ]);
+
+    expect(await orderBook.getLowestAsk(scaledTokenId)).to.equal(storedPrice);
+    expect(await orderBook.nodeExists(OrderSide.SELL, scaledTokenId, price)).to.be.true;
+    expect((await orderBook.allOrdersAtPrice(OrderSide.SELL, scaledTokenId, price)).length).to.equal(1);
+
+    await orderBook.cancelOrders([1], [{side: OrderSide.SELL, tokenId: scaledTokenId, price}]);
+    expect(await orderBook.nodeExists(OrderSide.SELL, scaledTokenId, price)).to.be.false;
+  });
+
+  it("Market buying a tick-compressed token uses the effective price for balances and claims", async function () {
+    const {orderBook, tokenId, owner, alice, erc1155, coins} = await loadFixture(deployContractsFixture);
+
+    const scaledTokenId = tokenId + 1;
+    const tick = ethers.parseEther("0.001");
+    const minQuantity = 1n;
+    const quantity = 2n;
+    const price = ethers.parseEther("5000");
+    const totalCost = price * quantity;
+
+    await erc1155.setRoyaltyFee(0);
+    await orderBook.updateRoyaltyFee();
+    await orderBook.setFees(ethers.ZeroAddress, 0, 0);
+    await orderBook.setTokenIdInfos([scaledTokenId], [{tick, minQuantity}]);
+    await erc1155.mintSpecificId(owner, scaledTokenId, quantity);
+
+    await coins.connect(alice).mint(alice.address, totalCost);
+    await coins.connect(alice).approve(orderBook, totalCost);
+
+    const aliceCoinsBefore = await coins.balanceOf(alice.address);
+    const aliceNftsBefore = await erc1155.balanceOf(alice.address, scaledTokenId);
+
+    await orderBook.limitOrders([
+      {
+        side: OrderSide.SELL,
+        tokenId: scaledTokenId,
+        price,
+        quantity,
+      },
+    ]);
+
+    await orderBook.connect(alice).marketOrder({
+      side: OrderSide.BUY,
+      tokenId: scaledTokenId,
+      totalCost,
+      quantity,
+    });
+
+    expect(await coins.balanceOf(alice.address)).to.equal(aliceCoinsBefore - totalCost);
+    expect(await erc1155.balanceOf(alice.address, scaledTokenId)).to.equal(aliceNftsBefore + quantity);
+    expect(await coins.balanceOf(orderBook)).to.equal(totalCost);
+    expect(await orderBook.tokensClaimable([1])).to.equal(totalCost);
+
+    const ownerCoinsBeforeClaim = await coins.balanceOf(owner.address);
+    await orderBook.claimTokens([1]);
+
+    expect(await coins.balanceOf(owner.address)).to.equal(ownerCoinsBeforeClaim + totalCost);
+    expect(await coins.balanceOf(orderBook)).to.equal(0);
+  });
+
+  it("Market selling a tick-compressed token uses the effective price for balances and claims", async function () {
+    const {orderBook, tokenId, owner, alice, erc1155, coins} = await loadFixture(deployContractsFixture);
+
+    const scaledTokenId = tokenId + 1;
+    const tick = ethers.parseEther("0.001");
+    const minQuantity = 1n;
+    const quantity = 2n;
+    const price = ethers.parseEther("5000");
+    const totalCost = price * quantity;
+
+    await erc1155.setRoyaltyFee(0);
+    await orderBook.updateRoyaltyFee();
+    await orderBook.setFees(ethers.ZeroAddress, 0, 0);
+    await orderBook.setTokenIdInfos([scaledTokenId], [{tick, minQuantity}]);
+    await erc1155.mintSpecificId(owner, scaledTokenId, quantity);
+    await erc1155.safeTransferFrom(owner, alice.address, scaledTokenId, quantity, "0x");
+
+    await coins.mint(owner.address, totalCost);
+    await coins.approve(orderBook, totalCost);
+
+    const aliceCoinsBefore = await coins.balanceOf(alice.address);
+    const aliceNftsBefore = await erc1155.balanceOf(alice.address, scaledTokenId);
+    const ownerNftsBefore = await erc1155.balanceOf(owner.address, scaledTokenId);
+
+    await orderBook.limitOrders([
+      {
+        side: OrderSide.BUY,
+        tokenId: scaledTokenId,
+        price,
+        quantity,
+      },
+    ]);
+
+    await orderBook.connect(alice).marketOrder({
+      side: OrderSide.SELL,
+      tokenId: scaledTokenId,
+      totalCost,
+      quantity,
+    });
+
+    expect(await coins.balanceOf(alice.address)).to.equal(aliceCoinsBefore + totalCost);
+    expect(await erc1155.balanceOf(alice.address, scaledTokenId)).to.equal(aliceNftsBefore - quantity);
+    expect(await coins.balanceOf(orderBook)).to.equal(0);
+    expect(await orderBook.nftsClaimable([1])).to.deep.equal([quantity]);
+
+    await orderBook.claimNFTs([1]);
+
+    expect(await erc1155.balanceOf(owner.address, scaledTokenId)).to.equal(ownerNftsBefore + quantity);
+    expect(await orderBook.nftsClaimable([1])).to.deep.equal([0]);
   });
 
   it("Try to upgrade the contract with & without using the owner", async function () {
@@ -3539,20 +3616,20 @@ describe("OrderBook", function () {
     let OrderBook = (await ethers.getContractFactory("OrderBook")).connect(alice);
     await expect(
       upgrades.upgradeProxy(orderBook, OrderBook, {
-        kind: "uups"
+        kind: "uups",
       })
     ).to.be.revertedWithCustomError(orderBook, "OwnableUnauthorizedAccount");
 
     OrderBook = OrderBook.connect(owner);
     await expect(
       upgrades.upgradeProxy(orderBook, OrderBook, {
-        kind: "uups"
+        kind: "uups",
       })
     ).to.not.be.reverted;
   });
 
   it("Check re-entrancy is prevented in all functions", async function () {
-    const {owner, orderBook, activityPoints, alice, erc1155, initialQuantity, coins, tokenId, dev} = await loadFixture(
+    const {owner, orderBook, alice, erc1155, initialQuantity, coins, tokenId, dev} = await loadFixture(
       deployContractsFixture
     );
 
@@ -3580,8 +3657,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity
-      }
+        quantity,
+      },
     ]);
 
     // 1. Test limitOrders reentrancy
@@ -3591,8 +3668,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity: 1
-        }
+          quantity: 1,
+        },
       ])
     ).to.be.revertedWithCustomError(orderBook, "ReentrancyGuardReentrantCall");
 
@@ -3602,7 +3679,7 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         totalCost: price * quantity,
-        quantity: 1
+        quantity: 1,
       })
     ).to.be.revertedWithCustomError(orderBook, "ReentrancyGuardReentrantCall");
 
@@ -3612,8 +3689,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price,
-        quantity: 1
-      }
+        quantity: 1,
+      },
     ]);
 
     const maliciousReentrancyOrderId = 2;
@@ -3632,8 +3709,8 @@ describe("OrderBook", function () {
             side: OrderSide.SELL,
             tokenId,
             price,
-            quantity: 1
-          }
+            quantity: 1,
+          },
         ]
       )
     ).to.be.revertedWithCustomError(orderBook, "ReentrancyGuardReentrantCall");
@@ -3651,15 +3728,15 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price,
-        quantity: 2
-      }
+        quantity: 2,
+      },
     ]);
 
     await orderBook.connect(alice).marketOrder({
       side: OrderSide.SELL,
       tokenId,
       totalCost: price,
-      quantity: 1
+      quantity: 1,
     });
 
     await expect(maliciousReentrancy.claimNFTs([orderId])).to.be.revertedWithCustomError(
@@ -3679,17 +3756,9 @@ describe("OrderBook", function () {
     const OrderBook = await ethers.getContractFactory("OrderBook");
     const orderBookERC20Reentrancy = (await upgrades.deployProxy(
       OrderBook,
-      [
-        await erc1155.getAddress(),
-        await erc20Reentrancy.getAddress(),
-        dev.address,
-        30,
-        30,
-        maxOrdersPerPrice,
-        await activityPoints.getAddress()
-      ],
+      [await erc1155.getAddress(), await erc20Reentrancy.getAddress(), dev.address, 30, 30, maxOrdersPerPrice],
       {
-        kind: "uups"
+        kind: "uups",
       }
     )) as unknown as OrderBook;
 
@@ -3707,8 +3776,8 @@ describe("OrderBook", function () {
           side: OrderSide.BUY,
           tokenId,
           price,
-          quantity: 1
-        }
+          quantity: 1,
+        },
       ])
     ).to.be.revertedWithCustomError(orderBook, "ReentrancyGuardReentrantCall");
   });
@@ -3730,194 +3799,194 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price: price + 2n * tick,
-        quantity
+        quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 2n * tick,
-        quantity: quantity + 1n
+        quantity: quantity + 1n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity + 2n
+        quantity: quantity + 2n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 8n * tick,
-        quantity: quantity
+        quantity: quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 8n * tick,
-        quantity: quantity
+        quantity: quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 8n * tick,
-        quantity: quantity + 1n
+        quantity: quantity + 1n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 2n * tick,
-        quantity: quantity + 2n
+        quantity: quantity + 2n,
       },
       {
         // order id 8
         side: OrderSide.SELL,
         tokenId,
         price: price + 2n * tick,
-        quantity: quantity + 3n
+        quantity: quantity + 3n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 5n * tick,
-        quantity: quantity + 2n
+        quantity: quantity + 2n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity - 1n
+        quantity: quantity - 1n,
       },
       {
         // 11
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity
+        quantity: quantity,
       },
       {
         // 12
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity
+        quantity: quantity,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity + 4n
+        quantity: quantity + 4n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 8n * tick,
-        quantity: quantity - 1n
+        quantity: quantity - 1n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 8n * tick,
-        quantity: quantity + 4n
+        quantity: quantity + 4n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 8n * tick,
-        quantity: quantity + 4n
+        quantity: quantity + 4n,
       },
 
       {
         side: OrderSide.BUY,
         tokenId,
         price: price,
-        quantity: quantity
+        quantity: quantity,
       },
       {
         side: OrderSide.BUY,
         tokenId,
         price: price - 2n,
-        quantity: quantity + 2n
+        quantity: quantity + 2n,
       },
       {
         side: OrderSide.BUY,
         tokenId,
         price: price,
-        quantity: quantity + 1n
+        quantity: quantity + 1n,
       },
       {
         // 20
         side: OrderSide.BUY,
         tokenId,
         price: price - 1n,
-        quantity: quantity + 4n
+        quantity: quantity + 4n,
       },
 
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity + 4n
+        quantity: quantity + 4n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity + 4n
+        quantity: quantity + 4n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity
+        quantity: quantity,
       },
 
       {
         side: OrderSide.BUY,
         tokenId,
         price: price,
-        quantity: quantity + 2n
+        quantity: quantity + 2n,
       },
       {
         // 25
         side: OrderSide.BUY,
         tokenId,
         price: price,
-        quantity: quantity + 3n
+        quantity: quantity + 3n,
       },
 
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 8n * tick,
-        quantity: quantity + 4n
+        quantity: quantity + 4n,
       },
       {
         side: OrderSide.SELL,
         tokenId,
         price: price + 8n * tick,
-        quantity: quantity
+        quantity: quantity,
       },
 
       {
         side: OrderSide.BUY,
         tokenId,
         price: price,
-        quantity: quantity + 4n
+        quantity: quantity + 4n,
       },
       {
         // 29
         side: OrderSide.SELL,
         tokenId,
         price: price + 8n * tick,
-        quantity: quantity
+        quantity: quantity,
       },
       {
         // 30
         side: OrderSide.SELL,
         tokenId,
         price: price + 2n * tick,
-        quantity: quantity + 4n
-      }
+        quantity: quantity + 4n,
+      },
     ]);
 
     // Use this to output all orders
@@ -3964,8 +4033,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price: price + 3n * tick,
-        quantity: quantity + quantity + 1n + quantity + 2n + quantity + 3n + quantity + 4n + quantity
-      }
+        quantity: quantity + quantity + 1n + quantity + 2n + quantity + 3n + quantity + 4n + quantity,
+      },
     ]);
     const nextOrderIdSlot = 2;
     const packedSlot = await ethers.provider.getStorage(orderBook, nextOrderIdSlot);
@@ -3991,8 +4060,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price: price,
-        quantity: quantity + quantity + 1n + 2n
-      }
+        quantity: quantity + quantity + 1n + 2n,
+      },
     ]);
 
     // (Consume 103 level, 2 orders at 100 and eat into another)
@@ -4014,8 +4083,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price: price,
-        quantity: quantity + quantity + quantity + 3n
-      }
+        quantity: quantity + quantity + quantity + 3n,
+      },
     ]);
 
     let node = await orderBook.getNode(OrderSide.BUY, tokenId, price);
@@ -4039,8 +4108,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price: price + 3n * tick,
-        quantity: quantity - 6n
-      }
+        quantity: quantity - 6n,
+      },
     ]);
 
     // Sell
@@ -4062,8 +4131,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price: price - 1n,
-        quantity: quantity + 4n + quantity - 6n + 3n
-      }
+        quantity: quantity + 4n + quantity - 6n + 3n,
+      },
     ]);
 
     // Sell
@@ -4083,8 +4152,8 @@ describe("OrderBook", function () {
         side: OrderSide.BUY,
         tokenId,
         price: price,
-        quantity: quantity
-      }
+        quantity: quantity,
+      },
     ]);
 
     expect(await orderBook.getHighestBid(tokenId)).to.eq(price);
@@ -4094,7 +4163,7 @@ describe("OrderBook", function () {
     expect((await orderBook.allOrdersAtPrice(OrderSide.BUY, tokenId, price))[0]).to.deep.eq([
       owner.address,
       quantity,
-      33n
+      33n,
     ]);
 
     // Sell
@@ -4140,8 +4209,8 @@ describe("OrderBook", function () {
           4n +
           quantity +
           4n +
-          quantity
-      }
+          quantity,
+      },
     ]);
 
     expect((await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price + 8n * tick)).length).to.eq(3);
@@ -4163,8 +4232,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity
-      }
+        quantity: quantity,
+      },
     ]);
 
     node = await orderBook.getNode(OrderSide.SELL, tokenId, price + 4n * tick);
@@ -4203,8 +4272,8 @@ describe("OrderBook", function () {
         side: OrderSide.SELL,
         tokenId,
         price: price + 4n * tick,
-        quantity: quantity + 1n
-      }
+        quantity: quantity + 1n,
+      },
     ]);
 
     node = await orderBook.getNode(OrderSide.SELL, tokenId, price + 4n * tick);
@@ -4213,7 +4282,7 @@ describe("OrderBook", function () {
     expect((await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price + 4n * tick))[0]).to.deep.eq([
       owner.address,
       quantity + 1n,
-      35n
+      35n,
     ]);
 
     // Sell

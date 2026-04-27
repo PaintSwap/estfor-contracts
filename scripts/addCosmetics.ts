@@ -14,7 +14,11 @@ async function main() {
 
   const cosmetics = await ethers.getContractAt("Cosmetics", COSMETICS_ADDRESS);
 
-  const cosmeticIdsSet = new Set([EstforConstants.BORDER_002_RIFT]);
+  const cosmeticIdsSet = new Set([
+    EstforConstants.TITLE_WQ1_TOP5,
+    EstforConstants.TITLE_WQ1_TOP50,
+    EstforConstants.TITLE_WQ1_ALL,
+  ]);
 
   const cosmeticItems = cosmeticTokenIds.filter((id) => cosmeticIdsSet.has(id));
   if (cosmeticItems.length !== cosmeticIdsSet.size) {

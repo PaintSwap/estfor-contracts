@@ -56,7 +56,7 @@ Treasury [0x50b64112cc5af4ff4f8e079143c5b19decddaf03](https://sonicscan.org/addr
 Shop [0x80b78e431b6e52027debe297cd8ba614820a2f1b](https://sonicscan.org/address/0x80b78e431b6e52027debe297cd8ba614820a2f1b)  
 RoyaltyReceiver [0x6c01e51d7254e5d3a3d844d2d56c35dd8abfa753](https://sonicscan.org/address/0x6c01e51d7254e5d3a3d844d2d56c35dd8abfa753)  
 AdminAccess [0x3977a0e1a9f7564ce20cd88a22ae76d13386087a](https://sonicscan.org/address/0x3977a0e1a9f7564ce20cd88a22ae76d13386087a)  
-ItemNFTLibrary [0xe5440a37964fdfb7456c292d31471d80d7f6046b](https://sonicscan.org/address/0xe5440a37964fdfb7456c292d31471d80d7f6046b)  
+ItemNFTLibrary [0xefba3016f46b06b98fae8a8b8f9df17567a824d3](https://sonicscan.org/address/0xefba3016f46b06b98fae8a8b8f9df17567a824d3)  
 ItemNFT [0x8970c63da309d5359a579c2f53bfd64f72b7b706](https://sonicscan.org/address/0x8970c63da309d5359a579c2f53bfd64f72b7b706)  
 Bazaar [0x0d6d3794c858b512716e77e05588d4f1fc264319](https://sonicscan.org/address/0x0d6d3794c858b512716e77e05588d4f1fc264319)  
 EstforLibrary [0xe3223eaf0e260b54a8ce777ac9f4a972310370c0](https://sonicscan.org/address/0xe3223eaf0e260b54a8ce777ac9f4a972310370c0)  
@@ -68,11 +68,11 @@ Bank [0x144884e1b42ccc9c648adee9b5dc1479ce1c8fe3](https://sonicscan.org/address/
 PetNFTLibrary [0x30B11Fa95AeE89bA8B700343600E0B7DdF7d48f2](https://sonicscan.org/address/0x30B11Fa95AeE89bA8B700343600E0B7DdF7d48f2)  
 PetNFT [0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed](https://sonicscan.org/address/0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed)  
 PlayersLibrary [0x8548737b2579C2dA6458C5B0360DBb3a749BFdf2](https://sonicscan.org/address/0x8548737b2579C2dA6458C5B0360DBb3a749BFdf2)  
-PlayersImplQueueActions [0xc57cdf889520344f7d73c6ae3ef29dfd533d7239](https://sonicscan.org/address/0xc57cdf889520344f7d73c6ae3ef29dfd533d7239)  
-PlayersImplProcessActions [0x719e000bd66e61aed40079bebab0efebbd33d947](https://sonicscan.org/address/0x719e000bd66e61aed40079bebab0efebbd33d947)  
-PlayersImplRewards [0x2df7f3a3d625f0b1ea04ceb8fdf66218616853a9](https://sonicscan.org/address/0x2df7f3a3d625f0b1ea04ceb8fdf66218616853a9)  
-PlayersImplMisc [0xf9d36e92eafc49f4fc39fe768c4388385adddd36](https://sonicscan.org/address/0xf9d36e92eafc49f4fc39fe768c4388385adddd36)  
-PlayersImplMisc1 [0x99a738b795c5e85192fe1733cd9d30ab25fd3f93](https://sonicscan.org/address/0x99a738b795c5e85192fe1733cd9d30ab25fd3f93)  
+PlayersImplQueueActions [0x609a8ebad0f8837b6209b98e71ebe35c53c75fa2](https://sonicscan.org/address/0x609a8ebad0f8837b6209b98e71ebe35c53c75fa2)  
+PlayersImplProcessActions [0x0a2f19d4729f0060fd9b113bfe7ff830fc0cc27c](https://sonicscan.org/address/0x0a2f19d4729f0060fd9b113bfe7ff830fc0cc27c)  
+PlayersImplRewards [0x086e4e3dd7e30232d5c3cedae83fec8ee0f9ddb6](https://sonicscan.org/address/0x086e4e3dd7e30232d5c3cedae83fec8ee0f9ddb6)  
+PlayersImplMisc [0x692ff62bf6434240b0107ab131e45c49c7a59c3f](https://sonicscan.org/address/0x692ff62bf6434240b0107ab131e45c49c7a59c3f)  
+PlayersImplMisc1 [0x3b14d1e2407e0723a3c45b11ec654e0862cc53b9](https://sonicscan.org/address/0x3b14d1e2407e0723a3c45b11ec654e0862cc53b9)  
 Players [0xefa670aad6d5921236e9655f346ca13a5c56481b](https://sonicscan.org/address/0xefa670aad6d5921236e9655f346ca13a5c56481b)  
 PromotionsLibrary [0x201ffa5be3886d19ef2f18da877ff3b9e34d10c9](https://sonicscan.org/address/0x201ffa5be3886d19ef2f18da877ff3b9e34d10c9)  
 Promotions [0xaf48a8a12f29e30b3831392aa2ee6344d07d188b](https://sonicscan.org/address/0xaf48a8a12f29e30b3831392aa2ee6344d07d188b)  
@@ -98,7 +98,9 @@ Cosmetics [0xb30b177b6c8c21370a72d7cada5f627519c91432](https://sonicscan.org/add
 Global Events [0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2](https://sonicscan.org/address/0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2)  
 Black Market Trader [0x4f9911214d811b5acdc4d1911067f614e81c808e](https://sonicscan.org/address/0x4f9911214d811b5acdc4d1911067f614e81c808e)  
 Game Subsidisation Registry [0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30](https://sonicscan.org/address/0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30)  
-Usage Based Session Module [0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7](https://sonicscan.org/address/0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7)
+Usage Based Session Module [0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7](https://sonicscan.org/address/0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7)  
+PetNFTReroll [0x85b9e4e41998910d398553ba5690938094a56463](https://sonicscan.org/address/0x85b9e4e41998910d398553ba5690938094a56463)  
+OrderbookV2 [0xf114eff305cdac968ff276494ec69379170ed570](https://sonicscan.org/address/0xf114eff305cdac968ff276494ec69379170ed570)
 
 ### Sonic mainnet beta deployed contract addresses:
 
@@ -152,7 +154,9 @@ Cosmetics [0x9ac94b923333406d1c8b390ab606f90d6526c187](https://sonicscan.org/add
 Global Events [0x8d61f3135a9f39b685b9765976e6a0f0572aeca5](https://sonicscan.org/address/0x8d61f3135a9f39b685b9765976e6a0f0572aeca5)  
 Black Market Trader [0xac619719cdcf1fc03438c7b9aff737993feae851](https://sonicscan.org/address/0xac619719cdcf1fc03438c7b9aff737993feae851)  
 Game Subsidisation Registry [0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0](https://sonicscan.org/address/0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0)  
-Usage Based Session Module [0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e41](https://sonicscan.org/address/0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e41)
+Usage Based Session Module [0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e41](https://sonicscan.org/address/0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e41)  
+PetNFTReroll [0x2885167EA2386c272C22977456c3d4d8f7a12ff7](https://sonicscan.org/address/0x2885167EA2386c272C22977456c3d4d8f7a12ff7)  
+OrderbookV2 [0xe2fbd6923dccec4f212e0a040806d099f744f07b](https://sonicscan.org/address/0xe2fbd6923dccec4f212e0a040806d099f744f07b)
 
 ### Other addresses:
 

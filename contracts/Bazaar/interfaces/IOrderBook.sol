@@ -18,7 +18,7 @@ interface IOrderBook is IERC1155Receiver {
   struct LimitOrder {
     OrderSide side;
     uint256 tokenId;
-    uint72 price;
+    uint256 price;
     uint24 quantity;
   }
 
@@ -32,7 +32,7 @@ interface IOrderBook is IERC1155Receiver {
   struct CancelOrder {
     OrderSide side;
     uint256 tokenId;
-    uint72 price;
+    uint256 price;
   }
 
   struct ClaimableTokenInfo {
@@ -75,6 +75,7 @@ interface IOrderBook is IERC1155Receiver {
   error MaxOrdersNotMultipleOfOrdersInSegment();
   error TickCannotBeChanged();
   error ClaimingTooManyOrders();
+  error ClaimableAmountTooHigh();
   error FailedToTakeFromBook(address taker, OrderSide side, uint256 tokenId, uint256 quantityRemaining);
   error TotalCostConditionNotMet();
 
@@ -107,10 +108,10 @@ interface IOrderBook is IERC1155Receiver {
   function getNode(
     OrderSide side,
     uint256 tokenId,
-    uint72 price
+    uint256 price
   ) external view returns (BokkyPooBahsRedBlackTreeLibrary.Node memory);
 
-  function nodeExists(OrderSide side, uint256 tokenId, uint72 price) external view returns (bool);
+  function nodeExists(OrderSide side, uint256 tokenId, uint256 price) external view returns (bool);
 
   function getTokenIdInfo(uint256 tokenId) external view returns (TokenIdInfo memory);
 
@@ -119,6 +120,6 @@ interface IOrderBook is IERC1155Receiver {
   function allOrdersAtPrice(
     OrderSide side,
     uint256 tokenId,
-    uint72 price
+    uint256 price
   ) external view returns (Order[] memory orderBookEntries);
 }

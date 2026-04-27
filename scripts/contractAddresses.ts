@@ -57,6 +57,8 @@ let globalEvent;
 let blackMarketTrader;
 let usageBasedSessionModule;
 let gameSubsidisationRegistry;
+let petNFTReroll;
+let orderbookV2;
 let subsidySigners: string[] = [];
 
 // Third party stuff chain specific addresses
@@ -87,7 +89,7 @@ if (!isBeta) {
   shop = "0x80b78e431b6e52027debe297cd8ba614820a2f1b";
   royaltyReceiver = "0x6c01e51d7254e5d3a3d844d2d56c35dd8abfa753";
   adminAccess = "0x3977a0e1a9f7564ce20cd88a22ae76d13386087a";
-  itemNFTLibrary = "0xe5440a37964fdfb7456c292d31471d80d7f6046b";
+  itemNFTLibrary = "0xefba3016f46b06b98fae8a8b8f9df17567a824d3";
   itemNFT = "0x8970c63da309d5359a579c2f53bfd64f72b7b706";
   bazaar = "0x0d6d3794c858b512716e77e05588d4f1fc264319";
   estforLibrary = "0xe3223eaf0e260b54a8ce777ac9f4a972310370c0";
@@ -99,11 +101,11 @@ if (!isBeta) {
   petNFTLibrary = "0x30B11Fa95AeE89bA8B700343600E0B7DdF7d48f2";
   petNFT = "0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed";
   playersLibrary = "0x8548737b2579C2dA6458C5B0360DBb3a749BFdf2";
-  playersImplQueueActions = "0xc57cdf889520344f7d73c6ae3ef29dfd533d7239";
-  playersImplProcessActions = "0x719e000bd66e61aed40079bebab0efebbd33d947";
-  playersImplRewards = "0x2df7f3a3d625f0b1ea04ceb8fdf66218616853a9";
-  playersImplMisc = "0xf9d36e92eafc49f4fc39fe768c4388385adddd36";
-  playersImplMisc1 = "0x99a738b795c5e85192fe1733cd9d30ab25fd3f93";
+  playersImplQueueActions = "0x609a8ebad0f8837b6209b98e71ebe35c53c75fa2";
+  playersImplProcessActions = "0x0a2f19d4729f0060fd9b113bfe7ff830fc0cc27c";
+  playersImplRewards = "0x086e4e3dd7e30232d5c3cedae83fec8ee0f9ddb6";
+  playersImplMisc = "0x692ff62bf6434240b0107ab131e45c49c7a59c3f";
+  playersImplMisc1 = "0x3b14d1e2407e0723a3c45b11ec654e0862cc53b9";
   players = "0xefa670aad6d5921236e9655f346ca13a5c56481b";
   promotionsLibrary = "0x201ffa5be3886d19ef2f18da877ff3b9e34d10c9";
   promotions = "0xaf48a8a12f29e30b3831392aa2ee6344d07d188b";
@@ -130,6 +132,8 @@ if (!isBeta) {
   blackMarketTrader = "0x4f9911214d811b5acdc4d1911067f614e81c808e";
   usageBasedSessionModule = "0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7";
   gameSubsidisationRegistry = "0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30";
+  petNFTReroll = "0x85b9e4e41998910d398553ba5690938094a56463";
+  orderbookV2 = "0xf114eff305cdac968ff276494ec69379170ed570";
   subsidySigners = [
     "0x6c980c2F2113a99EDC2625503fBEE96d38441f01",
     "0x26a30b8Cc05A6773C5251A8A5Aa4E1f4965CDE5A",
@@ -146,7 +150,7 @@ if (!isBeta) {
   shop = "0xb3778f2c24d94e3c7cfe608388bd35bba9401caa";
   royaltyReceiver = "0x5fce65360e0acdfcec0153bda8c412a7631d47a2";
   adminAccess = "0xc06b7bb82b6312c1c2c2de3e375f04d97e80de57";
-  itemNFTLibrary = "0x593f115a4d07b86cf507C01678220b9136fAfa13";
+  itemNFTLibrary = "0x324aaf9d7c8d6914615ed6eef05b8bed69a2aba2";
   itemNFT = "0x8ee7d355f76fb5621ee89bca431ba0cd39fe14c5";
   bazaar = "0xae4bd229721ff40c07162c1720e060a2a5c89ff6";
   estforLibrary = "0x96977118842d6f209f9442e76d7de04d393480d8";
@@ -158,11 +162,11 @@ if (!isBeta) {
   petNFTLibrary = "0x2FFe92B4b38e9bc8b236ab610ac6073DCF2464a7";
   petNFT = "0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082";
   playersLibrary = "0xfa7B7e2167BDd85Faf02B2d5E42b0601374E9edc";
-  playersImplQueueActions = "0x2d6be4704aedff55280a1102129f4737cfa79be8";
-  playersImplProcessActions = "0x6b734d59932e69b29f27fe51d1377098b54dbaf7";
-  playersImplRewards = "0x9f37122f03fd24b089d597f330c874638e29ff5b";
-  playersImplMisc = "0x77cfa3f90d1b183e8e67350428d721313cbbc822";
-  playersImplMisc1 = "0x4d85d84a0d1ceabb592a4b8a4dbdbd96b77233ee";
+  playersImplQueueActions = "0xd844ae181bdf6e692f4471fb8ac1b662991da437";
+  playersImplProcessActions = "0xb477e10c218449938ce71f534acbe3844d48e3e2";
+  playersImplRewards = "0x64bb6d65b5e504b8850a504810d17097b44bbdbc";
+  playersImplMisc = "0xc2c39b301256279912586edda82adf793124b70a";
+  playersImplMisc1 = "0x0c5d8a7fb1df73f4a3fd4769f581dbe632b3c02f";
   players = "0x4f60948bea953693b4dcd7ea414a2198c3646c97";
   promotionsLibrary = "0xaf79ca769a02381daca6f7736c51e3ad01ac571c";
   promotions = "0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab";
@@ -189,6 +193,8 @@ if (!isBeta) {
   blackMarketTrader = "0xac619719cdcf1fc03438c7b9aff737993feae851";
   usageBasedSessionModule = "0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e4";
   gameSubsidisationRegistry = "0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0";
+  petNFTReroll = "0x2885167EA2386c272C22977456c3d4d8f7a12ff7";
+  orderbookV2 = "0xe2fbd6923dccec4f212e0a040806d099f744f07b";
   subsidySigners = [
     "0xd774bf717A0AfC12F511728Abe06a37e437923D2",
     "0x2047f1aaEb79CbDC51c730D3dc121EE76E5e1F14",
@@ -260,6 +266,8 @@ export const GLOBAL_EVENT_ADDRESS = globalEvent;
 export const BLACK_MARKET_TRADER_ADDRESS = blackMarketTrader;
 export const USAGE_BASED_SESSION_MODULE_ADDRESS = usageBasedSessionModule;
 export const GAME_SUBSIDISATION_REGISTRY_ADDRESS = gameSubsidisationRegistry;
+export const PET_NFT_REROLL_ADDRESS = petNFTReroll;
+export const ORDERBOOK_V2_ADDRESS = orderbookV2;
 export const SUBSIDY_SIGNERS = subsidySigners;
 
 // VRF

@@ -15,8 +15,6 @@ import {BokkyPooBahsRedBlackTreeLibrary} from "./BokkyPooBahsRedBlackTreeLibrary
 import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IOrderBook} from "./interfaces/IOrderBook.sol";
 
-import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
-
 /// @notice This efficient ERC1155 order book is an upgradeable UUPS proxy contract. It has functions for bulk placing
 ///         limit orders, cancelling limit orders, and claiming NFTs and tokens from filled or partially filled orders.
 ///         It suppports ERC2981 royalties, and optional dev & burn fees on successful trades.
@@ -25,7 +23,6 @@ contract OrderBook is
   OwnableUpgradeable,
   ERC1155Holder,
   IOrderBook,
-  IActivityPointsCaller,
   ReentrancyGuardTransientUpgradeable
 {
   using BokkyPooBahsRedBlackTreeLibrary for BokkyPooBahsRedBlackTreeLibrary.Tree;
@@ -67,8 +64,6 @@ contract OrderBook is
   mapping(uint256 tokenId => mapping(uint256 price => bytes32[] segments)) private _bidsAtPrice;
   ClaimableTokenInfo[MAX_ORDER_ID] private _tokenClaimables;
 
-  IActivityPoints private _activityPoints;
-
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -87,8 +82,7 @@ contract OrderBook is
     address devAddr,
     uint16 devFee,
     uint8 burntFee,
-    uint16 maxOrdersPerPrice,
-    IActivityPoints activityPoints
+    uint16 maxOrdersPerPrice
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
@@ -98,7 +92,6 @@ contract OrderBook is
     // nft must be an ERC1155 via ERC165
     require(nft.supportsInterface(type(IERC1155).interfaceId), NotERC1155());
 
-    _activityPoints = activityPoints;
     _nft = nft;
     _coin = IBrushToken(token);
     updateRoyaltyFee();
@@ -106,11 +99,6 @@ contract OrderBook is
     // The max orders spans segments, so num segments = maxOrdersPrice / NUM_ORDERS_PER_SEGMENT
     setMaxOrdersPerPrice(maxOrdersPerPrice);
     _nextOrderId = 1;
-  }
-
-  // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external override onlyOwner {
-    _activityPoints = IActivityPoints(activityPoints);
   }
 
   /// @notice Place market order
@@ -279,12 +267,14 @@ contract OrderBook is
   function getNode(
     OrderSide side,
     uint256 tokenId,
-    uint72 price
+    uint256 price
   ) external view override returns (BokkyPooBahsRedBlackTreeLibrary.Node memory) {
+    uint128 tick = _tokenIdInfos[tokenId].tick;
+    uint72 storedPrice = SafeCast.toUint72(price / tick);
     if (side == OrderSide.Buy) {
-      return _bids[tokenId].getNode(price);
+      return _bids[tokenId].getNode(storedPrice);
     } else {
-      return _asks[tokenId].getNode(price);
+      return _asks[tokenId].getNode(storedPrice);
     }
   }
 
@@ -292,11 +282,13 @@ contract OrderBook is
   /// @param side The side of the order book to get the order from
   /// @param tokenId The token ID to get the order for
   /// @param price The price level to get the order for
-  function nodeExists(OrderSide side, uint256 tokenId, uint72 price) external view override returns (bool) {
+  function nodeExists(OrderSide side, uint256 tokenId, uint256 price) external view override returns (bool) {
+    uint128 tick = _tokenIdInfos[tokenId].tick;
+    uint72 storedPrice = SafeCast.toUint72(price / tick);
     if (side == OrderSide.Buy) {
-      return _bids[tokenId].exists(price);
+      return _bids[tokenId].exists(storedPrice);
     } else {
-      return _asks[tokenId].exists(price);
+      return _asks[tokenId].exists(storedPrice);
     }
   }
 
@@ -307,12 +299,14 @@ contract OrderBook is
   function allOrdersAtPrice(
     OrderSide side,
     uint256 tokenId,
-    uint72 price
+    uint256 price
   ) external view override returns (Order[] memory) {
+    uint128 tick = _tokenIdInfos[tokenId].tick;
+    uint72 storedPrice = SafeCast.toUint72(price / tick);
     if (side == OrderSide.Buy) {
-      return _allOrdersAtPriceSide(_bidsAtPrice[tokenId][price], _bids[tokenId], price);
+      return _allOrdersAtPriceSide(_bidsAtPrice[tokenId][storedPrice], _bids[tokenId], storedPrice);
     } else {
-      return _allOrdersAtPriceSide(_asksAtPrice[tokenId][price], _asks[tokenId], price);
+      return _allOrdersAtPriceSide(_asksAtPrice[tokenId][storedPrice], _asks[tokenId], storedPrice);
     }
   }
 
@@ -338,8 +332,10 @@ contract OrderBook is
     uint40 currentOrderId = _nextOrderId;
     for (uint256 i = 0; i < orders.length; ++i) {
       LimitOrder calldata limitOrder = orders[i];
+      TokenIdInfo storage tokenIdInfo = _tokenIdInfos[limitOrder.tokenId];
       (uint24 quantityAddedToBook, uint24 failedQuantity, uint256 cost) = _makeLimitOrder(
         currentOrderId,
+        tokenIdInfo,
         limitOrder,
         orderIdsPool,
         quantitiesPool
@@ -358,7 +354,7 @@ contract OrderBook is
       }
 
       if (limitOrder.side == OrderSide.Buy) {
-        coinsToUs += cost + uint256(limitOrder.price) * quantityAddedToBook;
+        coinsToUs += cost + limitOrder.price * quantityAddedToBook;
         if (cost != 0) {
           // Transfer the NFTs taken from the order book straight to the taker
           nftIdsFromUs[lengthFromUs] = limitOrder.tokenId;
@@ -423,14 +419,19 @@ contract OrderBook is
     uint256[] memory nftAmountsFromUs = new uint256[](numberOfOrders);
     for (uint256 i = 0; i < numberOfOrders; ++i) {
       CancelOrder calldata cancelOrder = orders[i];
-      (OrderSide side, uint256 tokenId, uint72 price) = (cancelOrder.side, cancelOrder.tokenId, cancelOrder.price);
+      (OrderSide side, uint256 tokenId, uint256 price) = (cancelOrder.side, cancelOrder.tokenId, cancelOrder.price);
+      uint128 tick = _tokenIdInfos[tokenId].tick;
+      if (tick != 0) {
+        require(price % tick == 0, PriceNotMultipleOfTick(tick));
+      }
+      uint72 storedPrice = _toStoredPrice(price, tick);
 
       if (side == OrderSide.Buy) {
-        uint256 quantity = _cancelOrdersSide(orderIds[i], price, _bidsAtPrice[tokenId][price], _bids[tokenId]);
+        uint256 quantity = _cancelOrdersSide(orderIds[i], storedPrice, _bidsAtPrice[tokenId][storedPrice], _bids[tokenId]);
         // Send the remaining token back to them
         coinsFromUs += quantity * price;
       } else {
-        uint256 quantity = _cancelOrdersSide(orderIds[i], price, _asksAtPrice[tokenId][price], _asks[tokenId]);
+        uint256 quantity = _cancelOrdersSide(orderIds[i], storedPrice, _asksAtPrice[tokenId][storedPrice], _asks[tokenId]);
         // Send the remaining NFTs back to them
         nftIdsFromUs[nftsFromUs] = tokenId;
         nftAmountsFromUs[nftsFromUs] = quantity;
@@ -517,6 +518,7 @@ contract OrderBook is
     }
 
     bool isTakingFromBuy = side == OrderSide.Buy;
+    uint128 tick = _tokenIdInfos[tokenId].tick;
     uint256 numberOfOrders;
     while (quantityRemaining != 0) {
       uint72 bestPrice = isTakingFromBuy ? getHighestBid(tokenId) : getLowestAsk(tokenId);
@@ -571,15 +573,16 @@ contract OrderBook is
             quantityRemaining = 0;
             eatIntoLastOrder = true;
           }
-          uint256 tradeCost = quantityNFTClaimable * bestPrice;
+          uint256 effectiveBestPrice = uint256(bestPrice) * tick;
+          uint256 tradeCost = quantityNFTClaimable * effectiveBestPrice;
           cost += tradeCost;
 
           ClaimableTokenInfo storage claimableTokenInfo = _tokenClaimables[orderId];
           if (isTakingFromBuy) {
-            claimableTokenInfo.amount += uint80(quantityNFTClaimable);
+            _increaseClaimableAmount(claimableTokenInfo, quantityNFTClaimable);
           } else {
             uint256 fees = _calcFee(tradeCost);
-            claimableTokenInfo.amount += uint80(tradeCost - fees);
+            _increaseClaimableAmount(claimableTokenInfo, tradeCost - fees);
           }
 
           orderIdsPool[numberOfOrders] = orderId;
@@ -636,7 +639,6 @@ contract OrderBook is
       }
 
       address msgSender = _msgSender();
-      _activityPoints.rewardBlueTickets(ActivityType.orderbook_evt_ordersmatched, msgSender, true, cost / 1 ether);
 
       emit OrdersMatched(msgSender, orderIdsPool, quantitiesPool);
     }
@@ -768,6 +770,7 @@ contract OrderBook is
 
   function _makeLimitOrder(
     uint40 newOrderId,
+    TokenIdInfo storage tokenIdInfo,
     LimitOrder calldata limitOrder,
     uint256[] memory orderIdsPool,
     uint256[] memory quantitiesPool
@@ -775,25 +778,33 @@ contract OrderBook is
     require(limitOrder.quantity != 0, NoQuantity());
     require(limitOrder.price != 0, PriceZero());
 
-    uint128 tick = _tokenIdInfos[limitOrder.tokenId].tick;
-
+    uint128 tick = tokenIdInfo.tick;
     require(tick != 0, TokenDoesntExist(limitOrder.tokenId));
     require(limitOrder.price % tick == 0, PriceNotMultipleOfTick(tick));
+
+    uint72 storedPrice = _toStoredPrice(limitOrder.price, tick);
 
     uint24 quantityRemaining;
     (quantityRemaining, cost) = _takeFromOrderBook(
       limitOrder.side,
       limitOrder.tokenId,
-      limitOrder.price,
+      storedPrice,
       limitOrder.quantity,
       orderIdsPool,
       quantitiesPool
     );
 
     // Add the rest to the order book if has the minimum required, in order to keep order books healthy
-    if (quantityRemaining >= _tokenIdInfos[limitOrder.tokenId].minQuantity) {
+    if (quantityRemaining >= tokenIdInfo.minQuantity) {
       quantityAddedToBook = quantityRemaining;
-      _addToBook(newOrderId, tick, limitOrder.side, limitOrder.tokenId, limitOrder.price, quantityAddedToBook);
+      _addToBook(
+        newOrderId,
+        tick,
+        limitOrder.side,
+        limitOrder.tokenId,
+        storedPrice,
+        quantityAddedToBook
+      );
     } else if (quantityRemaining != 0) {
       failedQuantity = quantityRemaining;
       emit FailedToAddToBook(_msgSender(), limitOrder.side, limitOrder.tokenId, limitOrder.price, failedQuantity);
@@ -885,13 +896,24 @@ contract OrderBook is
       amount: 0
     });
 
-    // Price can update if the price level is at capacity
+     // Price can update if the price level is at capacity. Stored prices are compressed by tick,
+    // so moving one price level means stepping by +/- 1 in stored-price space.
     if (side == OrderSide.Buy) {
-      price = _addToBookSide(_bidsAtPrice[tokenId], _bids[tokenId], price, newOrderId, quantity, -int128(tick));
+      price = _addToBookSide(_bidsAtPrice[tokenId], _bids[tokenId], price, newOrderId, quantity, -1);
     } else {
-      price = _addToBookSide(_asksAtPrice[tokenId], _asks[tokenId], price, newOrderId, quantity, int128(tick));
+      price = _addToBookSide(_asksAtPrice[tokenId], _asks[tokenId], price, newOrderId, quantity, 1);
     }
-    emit AddedToBook(_msgSender(), side, newOrderId, tokenId, price, quantity);
+    emit AddedToBook(_msgSender(), side, newOrderId, tokenId, uint256(price) * tick, quantity);
+  }
+
+  function _toStoredPrice(uint256 effectivePrice, uint128 tick) private pure returns (uint72) {
+    return SafeCast.toUint72(effectivePrice / tick);
+  }
+
+  function _increaseClaimableAmount(ClaimableTokenInfo storage claimableTokenInfo, uint256 amount) private {
+    uint256 newAmount = claimableTokenInfo.amount + amount;
+    require(newAmount <= type(uint80).max, ClaimableAmountTooHigh());
+    claimableTokenInfo.amount = uint80(newAmount);
   }
 
   function _calcFee(uint256 cost) private view returns (uint256 fees) {
@@ -931,17 +953,17 @@ contract OrderBook is
       offset = 0;
 
       for (uint256 i = 0; i < NUM_ORDERS_PER_SEGMENT; ++i) {
-        uint40 id = uint40(segment >> (offset * 8));
+        uint40 id = uint40(segment >> (offset * 64));
         if (id == value) {
           return (mid, i); // Return the index where the ID is found
         } else if (id < value) {
-          offset = offset + 8; // Move to the next segment
+          ++offset;
         } else {
           break; // Break if the searched value is smaller, as it's a binary search
         }
       }
 
-      if (offset == NUM_ORDERS_PER_SEGMENT * 8) {
+      if (offset == NUM_ORDERS_PER_SEGMENT) {
         begin = mid + 1;
       } else {
         end = mid;

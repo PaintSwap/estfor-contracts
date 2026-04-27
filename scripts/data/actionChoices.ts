@@ -5803,7 +5803,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     successPercent: 100,
     skills: [Skill.ALCHEMY],
     skillMinXPs: [1021],
-    isAvailable: true,
+    isAvailable: false,
     questPrerequisiteId: EstforConstants.QUEST_WORLD_I_I,
   },
 ];
@@ -8225,7 +8225,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     successPercent: 100,
     skills: [Skill.FORGING],
     skillMinXPs: [1021],
-    isAvailable: true,
+    isAvailable: false,
     questPrerequisiteId: EstforConstants.QUEST_WORLD_I_I,
   },
 ];

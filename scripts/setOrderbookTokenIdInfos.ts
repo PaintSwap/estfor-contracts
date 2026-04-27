@@ -18,14 +18,13 @@ async function main() {
   const chunkSize = 100;
 
   const newTokenIds = new Set([
-    EstforConstants.AVATAR_001_CHIMP,
-    EstforConstants.BORDER_001_ARCANE_PORTAL,
-    EstforConstants.SUPPORT_001_TROPHY,
-    EstforConstants.WQ1_LORE_PAGE_1,
-    EstforConstants.WQ1_LORE_PAGE_2,
-    EstforConstants.WQ1_LORE_PAGE_3,
-    EstforConstants.WQ1_LORE_PAGE_4,
-    EstforConstants.WQ1_LORE_PAGE_5,
+    EstforConstants.TITLE_WQ1_TOP5,
+    EstforConstants.TITLE_WQ1_TOP50,
+    EstforConstants.TITLE_WQ1_ALL,
+    EstforConstants.MOUNTAIN_ROOT_SHIELD,
+    EstforConstants.PET_SHARD,
+    EstforConstants.BOOST_STABLILIZER_10,
+    EstforConstants.COSMETIC_RIFT_HAT,
   ]);
 
   const orderBookTokenIdInfos = allOrderBookTokenIdInfos.filter((tokenIdInfo) => newTokenIds.has(tokenIdInfo.tokenId));

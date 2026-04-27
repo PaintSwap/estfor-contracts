@@ -42,6 +42,7 @@ import {
   GameSubsidisationRegistry,
   UsageBasedSessionModule,
   BlackMarketTrader,
+  PetNFTReroll,
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
@@ -297,6 +298,15 @@ export const playersFixture = async function () {
       unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as PetNFT;
+
+  const PetNFTReroll = await ethers.getContractFactory("PetNFTReroll");
+  const petNFTReroll = (await upgrades.deployProxy(
+    PetNFTReroll,
+    [owner.address, await itemNFT.getAddress(), await petNFT.getAddress(), await mockVRF.getAddress()],
+    {
+      kind: "uups",
+    }
+  )) as unknown as PetNFTReroll;
 
   // This contains all the player data
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
@@ -730,6 +740,9 @@ export const playersFixture = async function () {
     ],
     true
   );
+  await itemNFT.setApprovedBurners([petNFTReroll], true);
+  await petNFT.setApprovedMinters([petNFTReroll], true);
+  await petNFT.setApprovedBurners([petNFTReroll], true);
 
   await territories.setCombatantsHelper(combatantsHelper);
   await raids.initializeAddresses(combatantsHelper, bankFactory);
@@ -881,5 +894,6 @@ export const playersFixture = async function () {
     gameSubsidisationRegistry,
     usageBasedSessionModule,
     blackMarketTrader,
+    petNFTReroll,
   };
 };

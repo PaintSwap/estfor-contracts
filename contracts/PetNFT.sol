@@ -45,6 +45,8 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   event EditBasePets(BasePetInput[] basePetInputs);
   event EditNameCost(uint256 newCost);
   event Train(uint256 playerId, uint256 petId, uint256 xpGained);
+  event SetApprovedMinters(address[] accounts, bool isApproved);
+  event SetApprovedBurners(address[] accounts, bool isApproved);
 
   // Legacy, Needed for bridging
   event BridgePets(uint256[] tokenIds, Pet[] pets, string[] names, address from);
@@ -136,6 +138,8 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   BloomFilter.Filter private __unused2; // TODO: old filter 2
   BloomFilter.Filter private _reservedPetNames; // TODO: unused
   address private _marketplaceAddress;
+  mapping(address account => bool isApprovedMinter) private _minterApprovals;
+  mapping(address account => bool isApprovedBurner) private _burnerApprovals;
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
@@ -145,12 +149,14 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   }
 
   modifier onlyMinters() {
-    require(_msgSender() == _instantVRFActions || (_adminAccess.isAdmin(_msgSender()) && _isBeta), NotMinter());
+    address sender = _msgSender();
+    require(sender == _instantVRFActions || _minterApprovals[sender] || (_adminAccess.isAdmin(sender) && _isBeta), NotMinter());
     _;
   }
 
   modifier onlyBurners(address from) {
-    require(_msgSender() == from || isApprovedForAll(from, _msgSender()), NotBurner());
+    address sender = _msgSender();
+    require(sender == from || isApprovedForAll(from, sender) || _burnerApprovals[sender], NotBurner());
     _;
   }
 
@@ -775,6 +781,22 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     _instantVRFActions = instantVRFActions;
     _players = players;
     _territories = territories;
+  }
+
+  function setApprovedMinters(address[] calldata accounts, bool isApproved) external onlyOwner {
+    for (uint256 i = 0; i < accounts.length; ++i) {
+      _minterApprovals[accounts[i]] = isApproved;
+    }
+
+    emit SetApprovedMinters(accounts, isApproved);
+  }
+
+  function setApprovedBurners(address[] calldata accounts, bool isApproved) external onlyOwner {
+    for (uint256 i = 0; i < accounts.length; ++i) {
+      _burnerApprovals[accounts[i]] = isApproved;
+    }
+
+    emit SetApprovedBurners(accounts, isApproved);
   }
 
   function addBasePets(BasePetInput[] calldata basePetInputs) external onlyOwner {
