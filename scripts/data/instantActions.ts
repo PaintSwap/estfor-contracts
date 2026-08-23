@@ -12,7 +12,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_HELMET,
@@ -25,7 +25,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_HELMET,
@@ -38,7 +38,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_HELMET,
@@ -51,7 +51,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_HELMET,
@@ -64,7 +64,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_HELMET,
@@ -77,7 +77,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET,
@@ -90,7 +90,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_ARMOR,
@@ -103,7 +103,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_ARMOR,
@@ -116,7 +116,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_ARMOR,
@@ -129,7 +129,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_ARMOR,
@@ -142,7 +142,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_ARMOR,
@@ -155,7 +155,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_ARMOR,
@@ -168,7 +168,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR,
@@ -181,7 +181,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_TASSETS,
@@ -194,7 +194,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_TASSETS,
@@ -207,7 +207,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_TASSETS,
@@ -220,7 +220,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_TASSETS,
@@ -233,7 +233,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_TASSETS,
@@ -246,7 +246,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_TASSETS,
@@ -259,7 +259,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS,
@@ -272,7 +272,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_GAUNTLETS,
@@ -285,7 +285,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_GAUNTLETS,
@@ -298,7 +298,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_GAUNTLETS,
@@ -311,7 +311,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_GAUNTLETS,
@@ -324,7 +324,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_GAUNTLETS,
@@ -337,7 +337,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_GAUNTLETS,
@@ -350,7 +350,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS,
@@ -363,7 +363,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_BOOTS,
@@ -376,7 +376,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_BOOTS,
@@ -389,7 +389,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_BOOTS,
@@ -402,7 +402,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_BOOTS,
@@ -415,7 +415,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_BOOTS,
@@ -428,7 +428,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_BOOTS,
@@ -441,7 +441,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS,
@@ -454,7 +454,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_SHIELD,
@@ -467,7 +467,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_SHIELD,
@@ -480,7 +480,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_SHIELD,
@@ -493,7 +493,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_SHIELD,
@@ -506,7 +506,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_SHIELD,
@@ -519,7 +519,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_SHIELD,
@@ -532,7 +532,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD,
@@ -545,7 +545,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_SWORD,
@@ -558,7 +558,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_SWORD,
@@ -571,7 +571,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_SWORD,
@@ -584,7 +584,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_SWORD,
@@ -597,7 +597,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_SWORD,
@@ -610,7 +610,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD,
@@ -623,7 +623,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SAPPHIRE_AMULET,
@@ -636,7 +636,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EMERALD_AMULET,
@@ -649,7 +649,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUBY_AMULET,
@@ -662,7 +662,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AMETHYST_AMULET,
@@ -675,7 +675,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DIAMOND_AMULET,
@@ -688,7 +688,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET,
@@ -701,7 +701,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_HAT,
@@ -714,7 +714,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_HOOD,
@@ -727,7 +727,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_HAT,
@@ -740,7 +740,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_HOOD,
@@ -753,7 +753,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_HOOD,
@@ -766,7 +766,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT,
@@ -779,7 +779,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_BODY,
@@ -792,7 +792,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_BODY,
@@ -805,7 +805,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_BODY,
@@ -818,7 +818,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_BODY,
@@ -831,7 +831,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_BODY,
@@ -844,7 +844,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY,
@@ -857,7 +857,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_TROUSERS,
@@ -870,7 +870,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_TROUSERS,
@@ -883,7 +883,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_TROUSERS,
@@ -896,7 +896,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_TROUSERS,
@@ -909,7 +909,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_TROUSERS,
@@ -922,7 +922,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS,
@@ -935,7 +935,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_GAUNTLETS,
@@ -948,7 +948,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_BRACERS,
@@ -961,7 +961,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_GAUNTLETS,
@@ -974,7 +974,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_BRACERS,
@@ -987,7 +987,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_GAUNTLETS,
@@ -1000,7 +1000,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS,
@@ -1013,7 +1013,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_BOOTS,
@@ -1026,7 +1026,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_BOOTS,
@@ -1039,7 +1039,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_BOOTS,
@@ -1052,7 +1052,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_BOOTS,
@@ -1065,7 +1065,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_BOOTS,
@@ -1078,7 +1078,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS,
@@ -1091,7 +1091,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SAPPHIRE_STAFF,
@@ -1104,7 +1104,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EMERALD_STAFF,
@@ -1117,7 +1117,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUBY_STAFF,
@@ -1130,7 +1130,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AMETHYST_STAFF,
@@ -1143,7 +1143,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DIAMOND_STAFF,
@@ -1156,7 +1156,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF,
@@ -1169,7 +1169,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_PICKAXE,
@@ -1182,7 +1182,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_PICKAXE,
@@ -1195,7 +1195,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_PICKAXE,
@@ -1208,7 +1208,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_PICKAXE,
@@ -1221,7 +1221,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_PICKAXE,
@@ -1234,7 +1234,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_PICKAXE,
@@ -1247,7 +1247,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_HOOD,
@@ -1260,7 +1260,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_BODY,
@@ -1273,7 +1273,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_TASSETS,
@@ -1286,7 +1286,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_BOOTS,
@@ -1299,7 +1299,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_BRACERS,
@@ -1312,7 +1312,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_HAT,
@@ -1325,7 +1325,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_BODY,
@@ -1338,7 +1338,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_TROUSERS,
@@ -1351,7 +1351,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_BOOTS,
@@ -1364,7 +1364,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_BRACERS,
@@ -1377,7 +1377,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_MASK,
@@ -1390,7 +1390,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_BODY,
@@ -1403,7 +1403,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_TROUSERS,
@@ -1416,7 +1416,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_BOOTS,
@@ -1429,7 +1429,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_BRACERS,
@@ -1442,7 +1442,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_AXE,
@@ -1455,7 +1455,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_AXE,
@@ -1468,7 +1468,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_AXE,
@@ -1481,7 +1481,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_AXE,
@@ -1494,7 +1494,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_AXE,
@@ -1507,7 +1507,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_AXE,
@@ -1520,7 +1520,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_LEATHER,
@@ -1533,7 +1533,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ROPE,
@@ -1546,7 +1546,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHADOW_SCROLL,
@@ -1559,7 +1559,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_SCROLL,
@@ -1572,7 +1572,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AQUA_SCROLL,
@@ -1585,7 +1585,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HELL_SCROLL,
@@ -1598,7 +1598,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AIR_SCROLL,
@@ -1611,7 +1611,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BARRAGE_SCROLL,
@@ -1624,7 +1624,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_FREEZE_SCROLL,
@@ -1637,7 +1637,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANCIENT_SCROLL,
@@ -1650,7 +1650,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ACORN_PATCH,
@@ -1663,7 +1663,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_ARROW,
@@ -1676,7 +1676,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_ARROW,
@@ -1689,7 +1689,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_ARROW,
@@ -1702,7 +1702,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_ARROW,
@@ -1715,7 +1715,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_ARROW,
@@ -1728,7 +1728,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_ARROW,
@@ -1741,7 +1741,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARROW,
@@ -1754,7 +1754,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BONE_BOW,
@@ -1767,7 +1767,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EXPERT_BOW,
@@ -1780,7 +1780,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SPECTRAL_BOW,
@@ -1793,7 +1793,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ICY_BOW,
@@ -1806,7 +1806,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GLITTERING_BOW,
@@ -1819,7 +1819,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW,
@@ -1832,7 +1832,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_COWL,
@@ -1845,7 +1845,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_BODY,
@@ -1858,7 +1858,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_CHAPS,
@@ -1871,7 +1871,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_BRACERS,
@@ -1884,7 +1884,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_BOOTS,
@@ -1897,7 +1897,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_COWL,
@@ -1910,7 +1910,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_BODY,
@@ -1923,7 +1923,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_CHAPS,
@@ -1936,7 +1936,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_BRACERS,
@@ -1949,7 +1949,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_BOOTS,
@@ -1962,7 +1962,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_COWL,
@@ -1975,7 +1975,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_BODY,
@@ -1988,7 +1988,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_CHAPS,
@@ -2001,7 +2001,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_BRACERS,
@@ -2014,7 +2014,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_BOOTS,
@@ -2027,7 +2027,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_COWL,
@@ -2040,7 +2040,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_BODY,
@@ -2053,7 +2053,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_CHAPS,
@@ -2066,7 +2066,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_BRACERS,
@@ -2079,7 +2079,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_BOOTS,
@@ -2092,7 +2092,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_COWL,
@@ -2105,7 +2105,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_BODY,
@@ -2118,7 +2118,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_CHAPS,
@@ -2131,7 +2131,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_BRACERS,
@@ -2144,7 +2144,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_BOOTS,
@@ -2157,7 +2157,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL,
@@ -2170,7 +2170,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY,
@@ -2183,7 +2183,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS,
@@ -2196,7 +2196,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS,
@@ -2209,7 +2209,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS,
@@ -2222,7 +2222,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_ARROW_HEAD,
@@ -2235,7 +2235,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_ARROW_HEAD,
@@ -2248,7 +2248,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_ARROW_HEAD,
@@ -2261,7 +2261,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_ARROW_HEAD,
@@ -2274,7 +2274,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_ARROW_HEAD,
@@ -2287,7 +2287,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_ARROW_HEAD,
@@ -2300,7 +2300,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARROW_HEAD,
@@ -2313,7 +2313,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BATWING_PATCH,
@@ -2326,7 +2326,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_1,
@@ -2339,7 +2339,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_1,
@@ -2352,7 +2352,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_1,
@@ -2365,7 +2365,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_1,
@@ -2378,7 +2378,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_1,
@@ -2391,7 +2391,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_1,
@@ -2404,7 +2404,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_1,
@@ -2417,7 +2417,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_1,
@@ -2430,7 +2430,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_1,
@@ -2443,7 +2443,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_1,
@@ -2456,7 +2456,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_1,
@@ -2469,7 +2469,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_1,
@@ -2482,7 +2482,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_1,
@@ -2495,7 +2495,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_1,
@@ -2508,7 +2508,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_1,
@@ -2521,7 +2521,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_1,
@@ -2534,7 +2534,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_1,
@@ -2547,7 +2547,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_1,
@@ -2560,7 +2560,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_1,
@@ -2573,7 +2573,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_1,
@@ -2586,7 +2586,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_2,
@@ -2599,7 +2599,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_2,
@@ -2612,7 +2612,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_2,
@@ -2625,7 +2625,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_2,
@@ -2638,7 +2638,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_2,
@@ -2651,7 +2651,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_2,
@@ -2664,7 +2664,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_2,
@@ -2677,7 +2677,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_2,
@@ -2690,7 +2690,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_2,
@@ -2703,7 +2703,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_2,
@@ -2716,7 +2716,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_2,
@@ -2729,7 +2729,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_2,
@@ -2742,7 +2742,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_2,
@@ -2755,7 +2755,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_2,
@@ -2768,7 +2768,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_2,
@@ -2781,7 +2781,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_2,
@@ -2794,7 +2794,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_2,
@@ -2807,7 +2807,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_2,
@@ -2820,7 +2820,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_2,
@@ -2833,7 +2833,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_2,
@@ -2846,7 +2846,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_3,
@@ -2859,7 +2859,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_3,
@@ -2872,7 +2872,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_3,
@@ -2885,7 +2885,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_3,
@@ -2898,7 +2898,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_3,
@@ -2911,7 +2911,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_3,
@@ -2924,7 +2924,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_3,
@@ -2937,7 +2937,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_3,
@@ -2950,7 +2950,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_3,
@@ -2963,7 +2963,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_3,
@@ -2976,7 +2976,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_3,
@@ -2989,7 +2989,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_3,
@@ -3002,7 +3002,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_3,
@@ -3015,7 +3015,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_3,
@@ -3028,7 +3028,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_3,
@@ -3041,7 +3041,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_3,
@@ -3054,7 +3054,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_3,
@@ -3067,7 +3067,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_3,
@@ -3080,7 +3080,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_3,
@@ -3093,7 +3093,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_3,
@@ -3106,7 +3106,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_4,
@@ -3119,7 +3119,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_4,
@@ -3132,7 +3132,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_4,
@@ -3145,7 +3145,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_4,
@@ -3158,7 +3158,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_4,
@@ -3171,7 +3171,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_4,
@@ -3184,7 +3184,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_4,
@@ -3197,7 +3197,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_4,
@@ -3210,7 +3210,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_4,
@@ -3223,7 +3223,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_4,
@@ -3236,7 +3236,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_4,
@@ -3249,7 +3249,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_4,
@@ -3262,7 +3262,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_4,
@@ -3275,7 +3275,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_4,
@@ -3288,7 +3288,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_4,
@@ -3301,7 +3301,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_4,
@@ -3314,7 +3314,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_4,
@@ -3327,7 +3327,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_4,
@@ -3340,7 +3340,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_4,
@@ -3353,7 +3353,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_4,
@@ -3366,7 +3366,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_5,
@@ -3379,7 +3379,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_5,
@@ -3392,7 +3392,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_5,
@@ -3405,7 +3405,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_5,
@@ -3418,7 +3418,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_5,
@@ -3431,7 +3431,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_5,
@@ -3444,7 +3444,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_5,
@@ -3457,7 +3457,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_5,
@@ -3470,7 +3470,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_5,
@@ -3483,7 +3483,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_5,
@@ -3496,7 +3496,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_5,
@@ -3509,7 +3509,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_5,
@@ -3522,7 +3522,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_5,
@@ -3535,7 +3535,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_5,
@@ -3548,7 +3548,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_5,
@@ -3561,7 +3561,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_5,
@@ -3574,7 +3574,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_5,
@@ -3587,7 +3587,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_5,
@@ -3600,7 +3600,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_5,
@@ -3613,7 +3613,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_5,
@@ -3626,7 +3626,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_PANGSTEN_RING,
@@ -3639,7 +3639,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_CANVITE_RING,
@@ -3652,7 +3652,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETCHED_RING,
@@ -3665,7 +3665,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_PRIMDIAT_RING,
@@ -3678,7 +3678,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_OCULITE_RING,
@@ -3691,7 +3691,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NOVIAN_RING,
@@ -3704,7 +3704,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_HELMET,
@@ -3717,7 +3717,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_ARMOR,
@@ -3730,7 +3730,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_TASSETS,
@@ -3743,7 +3743,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_GAUNTLETS,
@@ -3756,7 +3756,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_BOOTS,
@@ -3769,7 +3769,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_SHIELD,
@@ -3782,7 +3782,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_SWORD,
@@ -3795,7 +3795,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_DRAGONSTONE_AMULET,
@@ -3808,7 +3808,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_HAT,
@@ -3821,7 +3821,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_BODY,
@@ -3834,7 +3834,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_BRACERS,
@@ -3847,7 +3847,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_TROUSERS,
@@ -3860,7 +3860,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_BOOTS,
@@ -3873,7 +3873,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_DRAGONSTONE_STAFF,
@@ -3886,7 +3886,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_COWL,
@@ -3899,7 +3899,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_BODY,
@@ -3912,7 +3912,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_BRACERS,
@@ -3925,7 +3925,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_CHAPS,
@@ -3938,7 +3938,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_BOOTS,
@@ -3951,7 +3951,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FLETCHING_GODLY_BOW,
@@ -3964,7 +3964,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_CHEST,
@@ -3977,7 +3977,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_KEY,
@@ -3990,7 +3990,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_RING,
@@ -4003,7 +4003,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_EGG_TIER1,
@@ -4016,7 +4016,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_LIFFYN,
@@ -4029,7 +4029,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_VANAGLOT,
@@ -4042,7 +4042,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_FANGENSTORM,
@@ -4055,7 +4055,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RING,
@@ -4068,7 +4068,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AMULET,
@@ -4081,7 +4081,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TRICK_CHEST,
@@ -4094,7 +4094,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TREAT_CHEST,
@@ -4107,7 +4107,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TRICK_OR_TREAT_KEY,
@@ -4120,7 +4120,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_EFFYD_CLEDYR,
@@ -4133,7 +4133,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_HAEARN_CLEDYR,
@@ -4146,7 +4146,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ITHRITH_CLEDYR,
@@ -4159,7 +4159,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ADAMA_CLEDYR,
@@ -4172,7 +4172,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_RHUN_CLEDYR,
@@ -4185,7 +4185,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ITANUS_CLEDYR,
@@ -4198,7 +4198,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORCALITH_CLEDYR,
@@ -4211,7 +4211,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_GYNDERS_YEFIR,
@@ -4224,7 +4224,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_RISGOLRONS_YEFIR,
@@ -4237,7 +4237,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_ERUDIS_YFROL,
@@ -4250,7 +4250,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_STREGARIONS_YFROL,
@@ -4263,7 +4263,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SINLORIONS_WYSGRIF,
@@ -4276,7 +4276,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_HUDOLWYRS_WYSGRIF,
@@ -4289,7 +4289,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_ORLARIONS_WYSGRIF,
@@ -4302,7 +4302,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FLETCHING_EFFYD_KIEL,
@@ -4315,7 +4315,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FLETCHING_HAEARN_KIEL,
@@ -4328,7 +4328,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FLETCHING_ITHRITH_KIEL,
@@ -4341,7 +4341,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FLETCHING_ADAMA_KIEL,
@@ -4354,7 +4354,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FLETCHING_RHUN_KIEL,
@@ -4367,7 +4367,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FLETCHING_VINGET_KIEL,
@@ -4380,7 +4380,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FLETCHING_DEUION_KIEL,
@@ -4393,7 +4393,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR,
@@ -4406,7 +4406,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAEARN_CLEDYR,
@@ -4419,7 +4419,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ITHRITH_CLEDYR,
@@ -4432,7 +4432,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMA_CLEDYR,
@@ -4445,7 +4445,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RHUN_CLEDYR,
@@ -4458,7 +4458,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ITANUS_CLEDYR,
@@ -4471,7 +4471,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORCALITH_CLEDYR,
@@ -4484,7 +4484,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_KIEL,
@@ -4497,7 +4497,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAEARN_KIEL,
@@ -4510,7 +4510,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ITHRITH_KIEL,
@@ -4523,7 +4523,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMA_KIEL,
@@ -4536,7 +4536,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RHUN_KIEL,
@@ -4549,7 +4549,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_VINGET_KIEL,
@@ -4562,7 +4562,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL,
@@ -4575,7 +4575,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GYNDERS_YEFIR,
@@ -4588,7 +4588,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RISGOLRONS_YEFIR,
@@ -4601,7 +4601,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ERUDIS_YFROL,
@@ -4614,7 +4614,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_STREGARIONS_YFROL,
@@ -4627,7 +4627,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SINLORIONS_WYSGRIF,
@@ -4640,7 +4640,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HUDOLWYRS_WYSGRIF,
@@ -4653,7 +4653,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF,
@@ -4666,7 +4666,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_1,
@@ -4679,7 +4679,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_2,
@@ -4692,7 +4692,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_3,
@@ -4705,7 +4705,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_4,
@@ -4718,7 +4718,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_5,
@@ -4731,7 +4731,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_1,
@@ -4744,7 +4744,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_2,
@@ -4757,7 +4757,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_3,
@@ -4770,7 +4770,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_4,
@@ -4783,7 +4783,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_5,
@@ -4796,7 +4796,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_1,
@@ -4809,7 +4809,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_2,
@@ -4822,7 +4822,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_3,
@@ -4835,7 +4835,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_4,
@@ -4848,7 +4848,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_5,
@@ -4861,7 +4861,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_POUCH,
@@ -4874,7 +4874,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_RING,
@@ -4887,7 +4887,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_AMULET,
@@ -4900,7 +4900,7 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_EGG_TIER1,
@@ -4913,6 +4913,97 @@ export const allInstantActions: InstantActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV3_POUCH,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [150],
+    outputTokenId: EstforConstants.ANNIV3_POUCH,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV3_RING,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [600],
+    outputTokenId: EstforConstants.ANNIV3_RING,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV3_AMULET,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [600],
+    outputTokenId: EstforConstants.ANNIV3_AMULET,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV3_EGG_TIER1,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [1500],
+    outputTokenId: EstforConstants.ANNIV3_EGG_TIER1,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV3_ANCIENT_SCROLL,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [75],
+    outputTokenId: EstforConstants.ANCIENT_SCROLL,
+    outputAmount: 1500,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV3_ORICHALCUM_ARROW,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [75],
+    outputTokenId: EstforConstants.ORICHALCUM_ARROW,
+    outputAmount: 1500,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV3_COOKED_ROSEFIN,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [75],
+    outputTokenId: EstforConstants.COOKED_ROSEFIN,
+    outputAmount: 300,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+  },
 ];

@@ -13,7 +13,8 @@ enum PetSkin {
   ANNIV1,
   KRAGSTYR,
   ANNIV2,
-  RIFT
+  RIFT,
+  ANNIV3
 }
 
 enum PetEnhancementType {
@@ -51,7 +52,7 @@ struct Pet {
   uint8 skillPercentageEnhancementMax2;
   uint64 xp;
   // uint96 padding;
-  
+
   /* SLOT 2 */
 }
 
