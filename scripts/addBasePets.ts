@@ -66,7 +66,9 @@ async function main() {
       const iface = PetNFT__factory.createInterface();
 
       const timeout = 60 * 1000; // 1 minute
-      const petNFTLibrary = await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS);
+      const petNFTLibrary = await ethers.deployContract("PetNFTLibrary", proposer);
+      await petNFTLibrary.waitForDeployment();
+      console.log(`petNFTLibrary = "${await petNFTLibrary.getAddress()}"`);
       const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
       const PetNFT = await ethers.getContractFactory("PetNFT", {
         libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},

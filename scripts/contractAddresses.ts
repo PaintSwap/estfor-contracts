@@ -159,7 +159,7 @@ if (!isBeta) {
   clans = "0x84d9d334c5b64fcbcb17d6b853a0434818d052bb";
   wishingWell = "0xb2570777de043adbc7bfcc4bfed747e2e44fbeea";
   bank = "0x72598e7d7a6652ebb29026f83512bce1455999f6";
-  petNFTLibrary = "0x2FFe92B4b38e9bc8b236ab610ac6073DCF2464a7";
+  petNFTLibrary = "0xbF954C371371e9Ed098D47a3b97f6C5F3b39C867";
   petNFT = "0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082";
   playersLibrary = "0xfa7B7e2167BDd85Faf02B2d5E42b0601374E9edc";
   playersImplQueueActions = "0xd844ae181bdf6e692f4471fb8ac1b662991da437";
