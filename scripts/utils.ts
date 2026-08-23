@@ -42,8 +42,7 @@ export const sendTransactionSetToSafe = async (
   const safeTransaction = await protocolKit.createTransaction({
     transactions: transactionSet,
     options: {
-      // nonce: Number(await apiKit.getNextNonce(process.env.SAFE_ADDRESS as string)),
-      nonce: 212,
+      nonce: Number(await apiKit.getNextNonce(process.env.SAFE_ADDRESS as string)),
     },
   });
 

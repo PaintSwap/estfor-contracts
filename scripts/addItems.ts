@@ -8,8 +8,6 @@ import {ItemNFT__factory} from "../typechain-types";
 
 async function main() {
   const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
-  console.log(owner);
-  console.log(proposer);
   const network = await ethers.provider.getNetwork();
   const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
   console.log(`Add items using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`);

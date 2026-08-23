@@ -22,6 +22,7 @@ async function main() {
     EstforConstants.INSTANT_VRF_ACTION_ANNIV3_EGG_TIER3,
     EstforConstants.INSTANT_VRF_ACTION_ANNIV3_EGG_TIER4,
     EstforConstants.INSTANT_VRF_ACTION_ANNIV3_EGG_TIER5,
+    EstforConstants.INSTANT_VRF_ACTION_FORGING_ANNIV3_POUCH,
   ]);
 
   const actions = allInstantVRFActions.filter((action) => actionsToUpdate.has(action.actionId));
