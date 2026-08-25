@@ -153,6 +153,9 @@ library PetNFTLibrary {
     if (skin == PetSkin.RIFT) {
       return "Rift";
     }
+    if (skin == PetSkin.ANNIV3) {
+      return "Anniv3";
+    }
     revert InvalidSkin(skin);
   }
 

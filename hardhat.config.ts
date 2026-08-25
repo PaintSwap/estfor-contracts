@@ -135,10 +135,6 @@ const config: HardhatUserConfig = {
         process.env.PROPOSER_PRIVATE_KEY as string,
       ],
     },
-    "sonic-blaze": {
-      url: process.env.SONIC_BLAZE_RPC,
-      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-    },
     fantom: {
       url: process.env.FANTOM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],

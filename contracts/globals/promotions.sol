@@ -7,7 +7,7 @@ enum Promotion {
   HALLOWEEN_2023,
   XMAS_2023,
   HALLOWEEN_2024,
-  HOLIDAY4, // Just have placeholders for now
+  ANNIV3_2026,
   HOLIDAY5,
   HOLIDAY6,
   HOLIDAY7,

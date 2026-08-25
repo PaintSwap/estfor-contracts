@@ -21,6 +21,8 @@ import {
   SHOP_ADDRESS,
   TERRITORIES_ADDRESS,
   TERRITORY_TREASURY_ADDRESS,
+  PET_NFT_REROLL_ADDRESS,
+  ORDERBOOK_V2_ADDRESS,
 } from "../contractAddresses";
 import {
   BankRelay__factory,
@@ -44,6 +46,7 @@ import {
   Shop__factory,
   Territories__factory,
   TerritoryTreasury__factory,
+  PetNFTReroll__factory,
 } from "../../typechain-types";
 import {ethers} from "hardhat";
 
@@ -68,6 +71,7 @@ const randomnessBeaconIface = RandomnessBeacon__factory.createInterface();
 const orderbookIface = OrderBook__factory.createInterface();
 const combatantsHelperIface = CombatantsHelper__factory.createInterface();
 const promotionsIface = Promotions__factory.createInterface();
+const petNftRerollIface = PetNFTReroll__factory.createInterface();
 const brushMinimalAbi = [
   "function approve(address spender, uint256 amount) external returns (bool)",
   "function transfer(address to, uint256 amount) external",
@@ -481,6 +485,11 @@ export const groups = [
         contract: PET_NFT_ADDRESS,
         selector: petNFTIface.getFunction("safeBatchTransferFrom").selector,
       },
+      {
+        groupId: 11,
+        contract: PET_NFT_REROLL_ADDRESS,
+        selector: petNftRerollIface.getFunction("rerollPet").selector,
+      },
     ],
   },
   {
@@ -583,6 +592,41 @@ export const groups = [
       {
         groupId: 15,
         contract: BAZAAR_ADDRESS,
+        selector: orderbookIface.getFunction("marketOrder").selector,
+      },
+      {
+        groupId: 15,
+        contract: ORDERBOOK_V2_ADDRESS,
+        selector: orderbookIface.getFunction("cancelAndMakeLimitOrders").selector,
+      },
+      {
+        groupId: 15,
+        contract: ORDERBOOK_V2_ADDRESS,
+        selector: orderbookIface.getFunction("cancelOrders").selector,
+      },
+      {
+        groupId: 15,
+        contract: ORDERBOOK_V2_ADDRESS,
+        selector: orderbookIface.getFunction("claimAll").selector,
+      },
+      {
+        groupId: 15,
+        contract: ORDERBOOK_V2_ADDRESS,
+        selector: orderbookIface.getFunction("claimNFTs").selector,
+      },
+      {
+        groupId: 15,
+        contract: ORDERBOOK_V2_ADDRESS,
+        selector: orderbookIface.getFunction("claimTokens").selector,
+      },
+      {
+        groupId: 15,
+        contract: ORDERBOOK_V2_ADDRESS,
+        selector: orderbookIface.getFunction("limitOrders").selector,
+      },
+      {
+        groupId: 15,
+        contract: ORDERBOOK_V2_ADDRESS,
         selector: orderbookIface.getFunction("marketOrder").selector,
       },
     ],

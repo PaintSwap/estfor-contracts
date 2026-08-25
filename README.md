@@ -65,7 +65,7 @@ Quests [0x193ecbc093f3bcf6ae6155c9f1bd7c963af6b8d2](https://sonicscan.org/addres
 Clans [0xbc6ed9e6cb54661ed9682c5055a6631d92e9e1d0](https://sonicscan.org/address/0xbc6ed9e6cb54661ed9682c5055a6631d92e9e1d0)  
 WishingWell [0x1207d2f1dc47a9228f20e9d0ce5094ff08bcb00b](https://sonicscan.org/address/0x1207d2f1dc47a9228f20e9d0ce5094ff08bcb00b)  
 Bank [0x144884e1b42ccc9c648adee9b5dc1479ce1c8fe3](https://sonicscan.org/address/0x144884e1b42ccc9c648adee9b5dc1479ce1c8fe3)  
-PetNFTLibrary [0x30B11Fa95AeE89bA8B700343600E0B7DdF7d48f2](https://sonicscan.org/address/0x30B11Fa95AeE89bA8B700343600E0B7DdF7d48f2)  
+PetNFTLibrary [0xbF954C371371e9Ed098D47a3b97f6C5F3b39C867](https://sonicscan.org/address/0xbF954C371371e9Ed098D47a3b97f6C5F3b39C867)  
 PetNFT [0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed](https://sonicscan.org/address/0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed)  
 PlayersLibrary [0x8548737b2579C2dA6458C5B0360DBb3a749BFdf2](https://sonicscan.org/address/0x8548737b2579C2dA6458C5B0360DBb3a749BFdf2)  
 PlayersImplQueueActions [0x609a8ebad0f8837b6209b98e71ebe35c53c75fa2](https://sonicscan.org/address/0x609a8ebad0f8837b6209b98e71ebe35c53c75fa2)  

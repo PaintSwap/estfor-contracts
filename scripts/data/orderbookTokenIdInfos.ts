@@ -3498,8 +3498,23 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     minQuantity: "1",
   },
   {
+    tokenId: EstforConstants.TITLE_WQ1_TOP5,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.TITLE_WQ1_TOP50,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.TITLE_WQ1_ALL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
     tokenId: EstforConstants.MOUNTAIN_ROOT_SHIELD,
-    tick: ethers.parseEther("0.0001").toString(),
+    tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1",
   },
   {
@@ -3509,7 +3524,7 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
   },
   {
     tokenId: EstforConstants.BOOST_STABLILIZER_10,
-    tick: ethers.parseEther("0.0001").toString(),
+    tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1",
   },
   {
@@ -3518,18 +3533,43 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     minQuantity: "1",
   },
   {
-    tokenId: EstforConstants.TITLE_WQ1_TOP5,
-    tick: ethers.parseEther("0.0001").toString(),
+    tokenId: EstforConstants.ANNIV3_EGG_TIER1,
+    tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1",
   },
   {
-    tokenId: EstforConstants.TITLE_WQ1_TOP50,
-    tick: ethers.parseEther("0.0001").toString(),
+    tokenId: EstforConstants.ANNIV3_EGG_TIER2,
+    tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1",
   },
   {
-    tokenId: EstforConstants.TITLE_WQ1_ALL,
-    tick: ethers.parseEther("0.0001").toString(),
+    tokenId: EstforConstants.ANNIV3_EGG_TIER3,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ANNIV3_EGG_TIER4,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ANNIV3_EGG_TIER5,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ANNIV3_RING,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ANNIV3_AMULET,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ANNIV3_POUCH,
+    tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1",
   },
 ];

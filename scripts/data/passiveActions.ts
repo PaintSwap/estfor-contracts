@@ -837,4 +837,92 @@ export const allPassiveActions: PassiveActionInput[] = [
     ],
     randomRewards: [],
   },
+  {
+    actionId: EstforConstants.PASSIVE_ACTION_ANNIV3_EGG_TIER2,
+    info: {
+      durationDays: 8,
+      inputTokenIds: [EstforConstants.ANNIV3_EGG_TIER1],
+      inputAmounts: [1],
+      minSkills: [Skill.ALCHEMY, Skill.FISHING, Skill.COOKING],
+      minLevels: [40, 60, 60],
+      skipSuccessPercent: 0,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      isAvailable: true,
+      questPrerequisiteId: 0,
+    },
+    guaranteedRewards: [
+      {
+        itemTokenId: EstforConstants.ANNIV3_EGG_TIER2,
+        rate: 1,
+      },
+    ],
+    randomRewards: [],
+  },
+  {
+    actionId: EstforConstants.PASSIVE_ACTION_ANNIV3_EGG_TIER3,
+    info: {
+      durationDays: 13,
+      inputTokenIds: [EstforConstants.ANNIV3_EGG_TIER2],
+      inputAmounts: [1],
+      minSkills: [Skill.ALCHEMY, Skill.MINING, Skill.WOODCUTTING],
+      minLevels: [60, 70, 70],
+      skipSuccessPercent: 0,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      isAvailable: true,
+      questPrerequisiteId: 0,
+    },
+    guaranteedRewards: [
+      {
+        itemTokenId: EstforConstants.ANNIV3_EGG_TIER3,
+        rate: 1,
+      },
+    ],
+    randomRewards: [],
+  },
+  {
+    actionId: EstforConstants.PASSIVE_ACTION_ANNIV3_EGG_TIER4,
+    info: {
+      durationDays: 21,
+      inputTokenIds: [EstforConstants.ANNIV3_EGG_TIER3],
+      inputAmounts: [1],
+      minSkills: [Skill.ALCHEMY, Skill.SMITHING, Skill.FIREMAKING],
+      minLevels: [70, 70, 70],
+      skipSuccessPercent: 0,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      isAvailable: true,
+      questPrerequisiteId: 0,
+    },
+    guaranteedRewards: [
+      {
+        itemTokenId: EstforConstants.ANNIV3_EGG_TIER4,
+        rate: 1,
+      },
+    ],
+    randomRewards: [],
+  },
+  {
+    actionId: EstforConstants.PASSIVE_ACTION_ANNIV3_EGG_TIER5,
+    info: {
+      durationDays: 34,
+      inputTokenIds: [EstforConstants.ANNIV3_EGG_TIER4],
+      inputAmounts: [1],
+      minSkills: [Skill.ALCHEMY, Skill.FLETCHING, Skill.FORGING],
+      minLevels: [80, 70, 70],
+      skipSuccessPercent: 0,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      isAvailable: true,
+      questPrerequisiteId: 0,
+    },
+    guaranteedRewards: [
+      {
+        itemTokenId: EstforConstants.ANNIV3_EGG_TIER5,
+        rate: 1,
+      },
+    ],
+    randomRewards: [],
+  },
 ];

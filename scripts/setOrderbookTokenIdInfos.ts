@@ -1,7 +1,7 @@
 import {ethers} from "hardhat";
 import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {BAZAAR_ADDRESS} from "./contractAddresses";
+import {ORDERBOOK_V2_ADDRESS} from "./contractAddresses";
 import {getSafeUpgradeTransaction, initialiseSafe, sendTransactionSetToSafe} from "./utils";
 import {OperationType, MetaTransactionData} from "@safe-global/types-kit";
 import {OrderBook__factory} from "../typechain-types";
@@ -14,17 +14,18 @@ async function main() {
     `Setting token id infos with the account: ${owner.address} on chain id: ${network.chainId}, useSafe: ${useSafe}`
   );
 
-  const orderBook = await ethers.getContractAt("OrderBook", BAZAAR_ADDRESS);
+  const orderBook = await ethers.getContractAt("OrderBook", ORDERBOOK_V2_ADDRESS);
   const chunkSize = 100;
 
   const newTokenIds = new Set([
-    EstforConstants.TITLE_WQ1_TOP5,
-    EstforConstants.TITLE_WQ1_TOP50,
-    EstforConstants.TITLE_WQ1_ALL,
-    EstforConstants.MOUNTAIN_ROOT_SHIELD,
-    EstforConstants.PET_SHARD,
-    EstforConstants.BOOST_STABLILIZER_10,
-    EstforConstants.COSMETIC_RIFT_HAT,
+    EstforConstants.ANNIV3_EGG_TIER1,
+    EstforConstants.ANNIV3_EGG_TIER2,
+    EstforConstants.ANNIV3_EGG_TIER3,
+    EstforConstants.ANNIV3_EGG_TIER4,
+    EstforConstants.ANNIV3_EGG_TIER5,
+    EstforConstants.ANNIV3_RING,
+    EstforConstants.ANNIV3_AMULET,
+    EstforConstants.ANNIV3_POUCH,
   ]);
 
   const orderBookTokenIdInfos = allOrderBookTokenIdInfos.filter((tokenIdInfo) => newTokenIds.has(tokenIdInfo.tokenId));
@@ -42,7 +43,7 @@ async function main() {
       const iface = OrderBook__factory.createInterface();
 
       transactionSet.push({
-        to: ethers.getAddress(BAZAAR_ADDRESS),
+        to: ethers.getAddress(ORDERBOOK_V2_ADDRESS),
         value: "0",
         data: iface.encodeFunctionData("setTokenIdInfos", [tokenIds, tokenIdInfos]),
         operation: OperationType.Call,
