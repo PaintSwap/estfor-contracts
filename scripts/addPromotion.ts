@@ -15,7 +15,7 @@ async function main() {
   const promotions = await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS);
 
   // live value = const startTime = 1787616000;
-  const startTime = 1787443200;
+  const startTime = 1787616000;
   const numDays = 21;
   const promos = [
     {
@@ -44,7 +44,7 @@ async function main() {
       guaranteedStreakBonusItemTokenIds: [],
       guaranteedStreakBonusAmounts: [],
       guaranteedItemTokenIds: [EstforConstants.COIN],
-      guaranteedAmounts: [5],
+      guaranteedAmounts: [200],
       randomItemTokenIds: [],
       randomAmounts: [],
       questPrerequisiteId: 0,

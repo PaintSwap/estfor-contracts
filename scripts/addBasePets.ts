@@ -59,29 +59,11 @@ async function main() {
   const basePets = allBasePets.filter((basePet) => basePetIds.has(basePet.baseId));
   const chunkSize = 20;
   for (let i = 0; i < basePets.length; i += chunkSize) {
-    if (i > 0) continue;
     const chunk = basePets.slice(i, i + chunkSize);
     if (useSafe) {
       const transactionSet: MetaTransactionData[] = [];
       const iface = PetNFT__factory.createInterface();
 
-      const timeout = 60 * 1000; // 1 minute
-      const petNFTLibrary = await ethers.deployContract("PetNFTLibrary", proposer);
-      await petNFTLibrary.waitForDeployment();
-      console.log(`petNFTLibrary = "${await petNFTLibrary.getAddress()}"`);
-      const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
-      const PetNFT = await ethers.getContractFactory("PetNFT", {
-        libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
-        signer: proposer,
-      });
-      const petNFT = (await upgrades.prepareUpgrade(PET_NFT_ADDRESS, PetNFT, {
-        kind: "uups",
-        unsafeAllow: ["external-library-linking"],
-        timeout,
-      })) as string;
-      console.log(`petNFT = "${petNFT.toLowerCase()}"`);
-
-      transactionSet.push(getSafeUpgradeTransaction(PET_NFT_ADDRESS, petNFT));
       transactionSet.push({
         to: ethers.getAddress(PET_NFT_ADDRESS),
         value: "0",
