@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This repository has no local services or per-user authentication to restore.
+exit 0

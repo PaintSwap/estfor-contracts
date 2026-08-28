@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+step() {
+  printf '\n==> %s\n' "$1"
+}
+
+step "Checking Node.js version"
+node -e 'const [major, minor, patch] = process.versions.node.split(".").map(Number); process.exit(major > 24 || (major === 24 && (minor > 14 || (minor === 14 && patch >= 1))) ? 0 : 1)' \
+  || {
+    echo "Node.js 24.14.1 or newer is required; found $(node --version)." >&2
+    exit 1
+  }
+
+step "Initializing Git submodules"
+git submodule update --init --recursive
+
+foundry_bin="$HOME/.foundry/bin"
+case ":$PATH:" in
+  *":$foundry_bin:"*) ;;
+  *) export PATH="$foundry_bin:$PATH" ;;
+esac
+
+if [[ ! -x "$foundry_bin/forge" || ! -x "$foundry_bin/cast" || ! -x "$foundry_bin/anvil" ]]; then
+  step "Installing Foundry"
+  curl -L https://foundry.paradigm.xyz | bash
+  "$foundry_bin/foundryup"
+fi
+
+foundry_profile_marker="# estfor-contracts Foundry"
+if ! grep -Fqx "$foundry_profile_marker" "$HOME/.bash_profile" 2>/dev/null; then
+  cat >> "$HOME/.bash_profile" <<'EOF'
+
+# estfor-contracts Foundry
+case ":$PATH:" in
+  *":$HOME/.foundry/bin:"*) ;;
+  *) export PATH="$HOME/.foundry/bin:$PATH" ;;
+esac
+EOF
+fi
+
+step "Checking Foundry"
+forge --version
+cast --version
+anvil --version
+
+step "Installing pnpm dependencies"
+pnpm install --frozen-lockfile
+
+step "Orb setup complete"

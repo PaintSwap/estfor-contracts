@@ -1,4 +1,5 @@
 node_modules
+.amp/portals/
 .env
 *.log
 unknown-*.json
