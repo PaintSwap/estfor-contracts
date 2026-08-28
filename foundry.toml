@@ -1,0 +1,46 @@
+[profile.default]
+# Compile only contracts reached by Foundry tests. Eagerly treating every contract as a source root
+# makes Foundry reject this repository's cross-importing per-contract optimizer restrictions.
+src = "test-foundry/src"
+test = "test-foundry"
+out = "out"
+cache_path = "cache-foundry"
+libs = ["node_modules", "lib/openzeppelin-contracts/lib"]
+solc = "0.8.28"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 9_999_999
+via_ir = true
+sparse_mode = true
+
+additional_compiler_profiles = [
+  { name = "medium-runs", optimizer_runs = 5_000 },
+  { name = "low-runs", optimizer_runs = 1_000 },
+  { name = "lowest-runs", optimizer_runs = 320 },
+]
+
+compilation_restrictions = [
+  { paths = "contracts/PassiveActions.sol", optimizer_runs = 5_000 },
+  { paths = "contracts/Promotions.sol", optimizer_runs = 5_000 },
+  { paths = "contracts/ItemNFT.sol", optimizer_runs = 5_000 },
+  { paths = "contracts/PlayerNFT.sol", optimizer_runs = 5_000 },
+  { paths = "contracts/Clans/LockedBankVaults.sol", optimizer_runs = 1_000 },
+  { paths = "contracts/Clans/Territories.sol", optimizer_runs = 1_000 },
+  { paths = "contracts/Players/PlayersImplMisc.sol", optimizer_runs = 1_000 },
+  { paths = "contracts/Players/PlayersImplProcessActions.sol", optimizer_runs = 1_000 },
+  { paths = "contracts/RandomnessBeacon.sol", optimizer_runs = 1_000 },
+  { paths = "contracts/Clans/Clans.sol", optimizer_runs = 320 },
+  { paths = "contracts/Clans/Raids.sol", optimizer_runs = 320 },
+  { paths = "contracts/Players/Players.sol", optimizer_runs = 320 },
+  { paths = "contracts/Players/PlayersImplQueueActions.sol", optimizer_runs = 320 },
+  { paths = "contracts/Players/PlayersImplRewards.sol", optimizer_runs = 320 },
+  { paths = "contracts/PetNFT.sol", optimizer_runs = 320 },
+  { paths = "contracts/Bazaar/OrderBook.sol", optimizer_runs = 320 },
+]
+
+remappings = [
+  "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+  "@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/",
+  "@paintswap/=node_modules/@paintswap/",
+  "forge-std/=lib/openzeppelin-contracts/lib/forge-std/src/",
+]

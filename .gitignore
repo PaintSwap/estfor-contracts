@@ -16,6 +16,10 @@ typechain-types
 cache
 artifacts
 
+# Foundry files
+cache-foundry
+out
+
 # sol2uml
 DebugStorageSlots.svg
 
