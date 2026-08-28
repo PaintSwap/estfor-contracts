@@ -1,6 +1,6 @@
 [profile.default]
 # Per-contract optimizer overrides were removed ahead of Sonic's Brio hardfork, which raises the
-# contract size limit (~90kb). All contracts now compile under the single default profile.
+# contract size limit (~48kb). All contracts now compile under the single default profile.
 src = "contracts"
 test = "test-foundry"
 out = "out"

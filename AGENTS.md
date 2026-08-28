@@ -1,6 +1,6 @@
 Hardhat dependencies are legacy packages.
 
-Foundry toolchain is the new standard for testing, deploying, and interacting with Ethereum smart contracts for this project. 
+Foundry toolchain is the new standard for testing, deploying, and interacting with Ethereum smart contracts for this project. Contracts should be Brio hardfork compatible on the Sonic chain (48kb contract size with 96kb init).
 
 When upgrading a contract firstly copy the existing contract code to contracts/old/, update the archived contract name to a new version, and then update the contract code with an annotation reference to the old contract:
 
