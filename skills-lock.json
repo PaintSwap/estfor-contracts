@@ -4,7 +4,8 @@
     "solidity-security": {
       "source": "wshobson/agents",
       "sourceType": "github",
-      "computedHash": "080c10be84baecfb396906abb085f16ec3e70b027a9355becb4a394c47da0b80"
+      "skillPath": "plugins/blockchain-web3/skills/solidity-security/SKILL.md",
+      "computedHash": "14ce11370490def3e2249ca01891d1b2ce7cecb4450a7ec2a10181ff0ad23d06"
     }
   }
 }

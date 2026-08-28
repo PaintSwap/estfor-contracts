@@ -1,4 +1,10 @@
 {
+  "lib/forge-std": {
+    "tag": {
+      "name": "v1.16.2",
+      "rev": "bf647bd6046f2f7da30d0c2bf435e5c76a780c1b"
+    }
+  },
   "lib/openzeppelin-contracts": {
     "branch": {
       "name": "v5.1-memory-safe",
@@ -9,6 +15,12 @@
     "branch": {
       "name": "v5.1-memory-safe",
       "rev": "776d4a96cbf01e4cbcc3f18e9915043371639a45"
+    }
+  },
+  "lib/openzeppelin-foundry-upgrades": {
+    "tag": {
+      "name": "v0.4.2",
+      "rev": "8ddceb0c0d94f7f9420fee1ee30fffbdacadf08f"
     }
   }
 }

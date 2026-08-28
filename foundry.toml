@@ -12,6 +12,18 @@ optimizer = true
 optimizer_runs = 9_999_999
 via_ir = true
 
+# Required by openzeppelin-foundry-upgrades to run upgrade safety validations (the Foundry
+# equivalent of @openzeppelin/hardhat-upgrades' checks, which rely on Hardhat's outputSelection
+# storageLayout setting). build_info + storageLayout let the library read storage layouts from
+# build info JSONs; ast is needed for @custom:oz-upgrades-from annotations; ffi lets the library
+# invoke the OZ Upgrades CLI (Node.js) to run the actual validation.
+# Run `forge clean` (or forge test/script with --force) after changing these, and before runs
+# that validate upgrades, so build info is always freshly generated.
+ffi = true
+ast = true
+build_info = true
+extra_output = ["storageLayout"]
+
 # Promotions owns a game function named testClearPlayerPromotions (an admin op to clear test
 # promotions), which Foundry's collector mistakes for a fuzz test. Keep it out of test runs.
 no_match_contract = "Promotions"
@@ -20,5 +32,8 @@ remappings = [
   "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
   "@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/",
   "@paintswap/=node_modules/@paintswap/",
-  "forge-std/=lib/openzeppelin-contracts/lib/forge-std/src/",
+  # forge-std must be >= 1.9.5 for openzeppelin-foundry-upgrades (the nested copy in the OZ
+  # submodule is older), so it is installed directly in lib/forge-std.
+  "forge-std/=lib/forge-std/src/",
+  "openzeppelin-foundry-upgrades/=lib/openzeppelin-foundry-upgrades/src/",
 ]
