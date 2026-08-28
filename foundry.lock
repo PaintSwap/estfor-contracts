@@ -1,0 +1,14 @@
+{
+  "lib/openzeppelin-contracts": {
+    "branch": {
+      "name": "v5.1-memory-safe",
+      "rev": "e23fa55f40495eab8d11ea0a283ebe8dce0e8338"
+    }
+  },
+  "lib/openzeppelin-contracts-upgradeable": {
+    "branch": {
+      "name": "v5.1-memory-safe",
+      "rev": "776d4a96cbf01e4cbcc3f18e9915043371639a45"
+    }
+  }
+}

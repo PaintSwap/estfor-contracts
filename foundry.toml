@@ -1,42 +1,20 @@
 [profile.default]
-# Compile only contracts reached by Foundry tests. Eagerly treating every contract as a source root
-# makes Foundry reject this repository's cross-importing per-contract optimizer restrictions.
-src = "test-foundry/src"
+# Per-contract optimizer overrides were removed ahead of Sonic's Brio hardfork, which raises the
+# contract size limit (~90kb). All contracts now compile under the single default profile.
+src = "contracts"
 test = "test-foundry"
 out = "out"
 cache_path = "cache-foundry"
-libs = ["node_modules", "lib/openzeppelin-contracts/lib"]
+libs = ["node_modules", "lib"]
 solc = "0.8.28"
 evm_version = "cancun"
 optimizer = true
 optimizer_runs = 9_999_999
 via_ir = true
-sparse_mode = true
 
-additional_compiler_profiles = [
-  { name = "medium-runs", optimizer_runs = 5_000 },
-  { name = "low-runs", optimizer_runs = 1_000 },
-  { name = "lowest-runs", optimizer_runs = 320 },
-]
-
-compilation_restrictions = [
-  { paths = "contracts/PassiveActions.sol", optimizer_runs = 5_000 },
-  { paths = "contracts/Promotions.sol", optimizer_runs = 5_000 },
-  { paths = "contracts/ItemNFT.sol", optimizer_runs = 5_000 },
-  { paths = "contracts/PlayerNFT.sol", optimizer_runs = 5_000 },
-  { paths = "contracts/Clans/LockedBankVaults.sol", optimizer_runs = 1_000 },
-  { paths = "contracts/Clans/Territories.sol", optimizer_runs = 1_000 },
-  { paths = "contracts/Players/PlayersImplMisc.sol", optimizer_runs = 1_000 },
-  { paths = "contracts/Players/PlayersImplProcessActions.sol", optimizer_runs = 1_000 },
-  { paths = "contracts/RandomnessBeacon.sol", optimizer_runs = 1_000 },
-  { paths = "contracts/Clans/Clans.sol", optimizer_runs = 320 },
-  { paths = "contracts/Clans/Raids.sol", optimizer_runs = 320 },
-  { paths = "contracts/Players/Players.sol", optimizer_runs = 320 },
-  { paths = "contracts/Players/PlayersImplQueueActions.sol", optimizer_runs = 320 },
-  { paths = "contracts/Players/PlayersImplRewards.sol", optimizer_runs = 320 },
-  { paths = "contracts/PetNFT.sol", optimizer_runs = 320 },
-  { paths = "contracts/Bazaar/OrderBook.sol", optimizer_runs = 320 },
-]
+# Promotions owns a game function named testClearPlayerPromotions (an admin op to clear test
+# promotions), which Foundry's collector mistakes for a fuzz test. Keep it out of test runs.
+no_match_contract = "Promotions"
 
 remappings = [
   "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
