@@ -12,10 +12,13 @@ importers:
         version: 3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
       "@layerzerolabs/oapp-evm":
         specifier: ^0.1.0
-        version: 0.1.0(b4b98f43f086825a65f975a676eb35ba)
+        version: 0.1.0(a76defcabfd4579e15f35075e61cfd7f)
       "@layerzerolabs/oapp-evm-upgradeable":
         specifier: ^0.1.0
-        version: 0.1.2(b4b98f43f086825a65f975a676eb35ba)
+        version: 0.1.2(a76defcabfd4579e15f35075e61cfd7f)
+      "@layerzerolabs/test-devtools-evm-foundry":
+        specifier: ^8.0.1
+        version: 8.0.1(045e83f918b09ce0ef99be031ab0233d)
       "@layerzerolabs/test-devtools-evm-hardhat":
         specifier: ^0.5.0
         version: 0.5.2(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(solidity-bytes-utils@0.8.4)
@@ -30,19 +33,19 @@ importers:
         version: 0.15.15(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1)
       "@nomicfoundation/hardhat-ignition-ethers":
         specifier: ^0.15.7
-        version: 0.15.16(@nomicfoundation/hardhat-ethers@3.1.2(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/hardhat-ignition@0.15.15(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/ignition-core@0.15.14)(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
+        version: 0.15.16(@nomicfoundation/hardhat-ethers@3.1.2(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/hardhat-ignition@0.15.15(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/ignition-core@0.15.14(supports-color@8.1.1))(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
       "@nomicfoundation/hardhat-network-helpers":
         specifier: ^1.0.12
         version: 1.1.2(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
       "@nomicfoundation/hardhat-toolbox":
         specifier: ^6.1.1
-        version: 6.1.1(a43268fefe1086749046cc49bcec1b71)
+        version: 6.1.1(0e46022ce994d56789c1aaabfca339d2)
       "@nomicfoundation/hardhat-verify":
         specifier: ^2.1.3
         version: 2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1)
       "@nomicfoundation/ignition-core":
         specifier: ^0.15.7
-        version: 0.15.14
+        version: 0.15.14(supports-color@8.1.1)
       "@nomiclabs/hardhat-solhint":
         specifier: ^4.0.1
         version: 4.1.0(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(typescript@5.9.3)
@@ -117,7 +120,7 @@ importers:
         version: 0.3.19(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
       hardhat-gas-reporter:
         specifier: ^2.2.1
-        version: 2.3.0(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(typescript@5.9.3)(zod@3.25.76)
+        version: 2.3.0(debug@4.4.3(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(typescript@5.9.3)(zod@3.25.76)
       hardhat-storage-layout:
         specifier: ^0.1.7
         version: 0.1.7(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
@@ -639,16 +642,16 @@ packages:
     resolution:
       {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  "@layerzerolabs/lz-evm-messagelib-v2@3.0.147":
+  "@layerzerolabs/lz-evm-messagelib-v2@3.0.168":
     resolution:
-      {integrity: sha512-ktQ0s6Isr/vXz7Xli/iq5W81pjoGY//rhqkWscGyE4fx7FJVJPjazTYyb6SzOaSz/aNGLRepEm5PupSP0LOt1A==}
+      {integrity: sha512-tNrpfDu9nhB+/onG3Qzby0PFqi21HpW9dI9oa4HulW5/VfiMQllj2gKOX+BEemokdq2JQhAHvj8dTkp0euXPPg==}
     peerDependencies:
       "@arbitrum/nitro-contracts": ^1.1.0
       "@axelar-network/axelar-gmp-sdk-solidity": ^5.6.4
       "@chainlink/contracts-ccip": ^0.7.6
       "@eth-optimism/contracts": ^0.6.0
-      "@layerzerolabs/lz-evm-protocol-v2": ^3.0.147
-      "@layerzerolabs/lz-evm-v1-0.7": ^3.0.147
+      "@layerzerolabs/lz-evm-protocol-v2": ^3.0.168
+      "@layerzerolabs/lz-evm-v1-0.7": ^3.0.168
       "@openzeppelin/contracts": ^4.8.1 || ^5.0.0
       "@openzeppelin/contracts-upgradeable": ^4.8.1 || ^5.0.0
       hardhat-deploy: ^0.12.4
@@ -666,9 +669,9 @@ packages:
       hardhat-deploy: ^0.12.4
       solidity-bytes-utils: ^0.8.0
 
-  "@layerzerolabs/lz-evm-v1-0.7@3.0.147":
+  "@layerzerolabs/lz-evm-v1-0.7@3.0.168":
     resolution:
-      {integrity: sha512-mqbqnWXYQXpTS41N2hJ0TX0ypuUuQXfaZ/2iQWtrOFmh3VtYjGNVzgC/wbYMq65dXjnNp3CGuGpMd28ib4ZcRA==}
+      {integrity: sha512-JE2Ogs7oKFihIcFhsN4MQ9Q9BSjIXzpYd1hztmeW2khKQOtKI8hqClwB6D252NGW1SB8Rr78RTVCcCSceY8ErA==}
     peerDependencies:
       "@openzeppelin/contracts": 3.4.2-solc-0.7 || ^3.4.2 || ^4.0.0 || ^5.0.0
       "@openzeppelin/contracts-upgradeable": 3.4.2-solc-0.7 || ^3.4.2 || ^4.0.0 || ^5.0.0
@@ -693,6 +696,29 @@ packages:
       "@layerzerolabs/lz-evm-v1-0.7": ^3.0.12
       "@openzeppelin/contracts": ^4.8.1 || ^5.0.0
       "@openzeppelin/contracts-upgradeable": ^4.8.1 || ^5.0.0
+
+  "@layerzerolabs/oft-evm@4.0.1":
+    resolution:
+      {integrity: sha512-GjjfnUbx77TnFFKALVRXJYb1bt1jvarcyyx/AQo6sZfJng5DIqzI9wDxEGlUz03tEnsS6ZOOLBsH+e/hYsruiA==}
+    peerDependencies:
+      "@layerzerolabs/lz-evm-messagelib-v2": ^3.0.148
+      "@layerzerolabs/lz-evm-protocol-v2": ^3.0.148
+      "@layerzerolabs/lz-evm-v1-0.7": ^3.0.148
+      "@layerzerolabs/oapp-evm": ^0.4.1
+      "@openzeppelin/contracts": ^4.8.1 || ^5.0.0
+      "@openzeppelin/contracts-upgradeable": ^4.8.1 || ^5.0.0
+
+  "@layerzerolabs/test-devtools-evm-foundry@8.0.1":
+    resolution:
+      {integrity: sha512-oih2mReJJsSjjxFyovcOefgMmHo22f9LocHPuHNV82aGI5Sw+RR+eP6bIOuKPt/8I5cMJfusMJzQJtuvDYQhDg==}
+    peerDependencies:
+      "@layerzerolabs/lz-evm-messagelib-v2": ^3.0.148
+      "@layerzerolabs/lz-evm-protocol-v2": ^3.0.148
+      "@layerzerolabs/lz-evm-v1-0.7": ^3.0.148
+      "@layerzerolabs/oapp-evm": ^0.4.1
+      "@layerzerolabs/oft-evm": ^4.0.1
+      "@openzeppelin/contracts": ^4.9.5 || ^5.0.0
+      "@openzeppelin/contracts-upgradeable": ^4.9.5 || ^5.0.0
 
   "@layerzerolabs/test-devtools-evm-hardhat@0.5.2":
     resolution:
@@ -5523,13 +5549,13 @@ snapshots:
       "@jridgewell/resolve-uri": 3.1.2
       "@jridgewell/sourcemap-codec": 1.5.5
 
-  "@layerzerolabs/lz-evm-messagelib-v2@3.0.147(@axelar-network/axelar-gmp-sdk-solidity@5.10.0)(@chainlink/contracts-ccip@0.7.6(ethers@6.15.0))(@eth-optimism/contracts@0.6.0(ethers@6.15.0))(@layerzerolabs/lz-evm-protocol-v2@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4))(@layerzerolabs/lz-evm-v1-0.7@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1)))(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)":
+  "@layerzerolabs/lz-evm-messagelib-v2@3.0.168(@axelar-network/axelar-gmp-sdk-solidity@5.10.0)(@chainlink/contracts-ccip@0.7.6(ethers@6.15.0))(@eth-optimism/contracts@0.6.0(ethers@6.15.0))(@layerzerolabs/lz-evm-protocol-v2@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4))(@layerzerolabs/lz-evm-v1-0.7@3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1)))(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)":
     dependencies:
       "@axelar-network/axelar-gmp-sdk-solidity": 5.10.0
       "@chainlink/contracts-ccip": 0.7.6(ethers@6.15.0)
       "@eth-optimism/contracts": 0.6.0(ethers@6.15.0)
       "@layerzerolabs/lz-evm-protocol-v2": 3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
-      "@layerzerolabs/lz-evm-v1-0.7": 3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))
+      "@layerzerolabs/lz-evm-v1-0.7": 3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))
       "@openzeppelin/contracts": link:lib/openzeppelin-contracts/contracts
       "@openzeppelin/contracts-upgradeable": link:lib/openzeppelin-contracts-upgradeable/contracts
       hardhat-deploy: 0.14.1(supports-color@8.1.1)
@@ -5542,17 +5568,17 @@ snapshots:
       hardhat-deploy: 0.14.1(supports-color@8.1.1)
       solidity-bytes-utils: 0.8.4
 
-  "@layerzerolabs/lz-evm-v1-0.7@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))":
+  "@layerzerolabs/lz-evm-v1-0.7@3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))":
     dependencies:
       "@openzeppelin/contracts": link:lib/openzeppelin-contracts/contracts
       "@openzeppelin/contracts-upgradeable": link:lib/openzeppelin-contracts-upgradeable/contracts
       hardhat-deploy: 0.14.1(supports-color@8.1.1)
 
-  "@layerzerolabs/oapp-evm-upgradeable@0.1.2(b4b98f43f086825a65f975a676eb35ba)":
+  "@layerzerolabs/oapp-evm-upgradeable@0.1.2(a76defcabfd4579e15f35075e61cfd7f)":
     dependencies:
-      "@layerzerolabs/lz-evm-messagelib-v2": 3.0.147(@axelar-network/axelar-gmp-sdk-solidity@5.10.0)(@chainlink/contracts-ccip@0.7.6(ethers@6.15.0))(@eth-optimism/contracts@0.6.0(ethers@6.15.0))(@layerzerolabs/lz-evm-protocol-v2@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4))(@layerzerolabs/lz-evm-v1-0.7@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1)))(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
+      "@layerzerolabs/lz-evm-messagelib-v2": 3.0.168(@axelar-network/axelar-gmp-sdk-solidity@5.10.0)(@chainlink/contracts-ccip@0.7.6(ethers@6.15.0))(@eth-optimism/contracts@0.6.0(ethers@6.15.0))(@layerzerolabs/lz-evm-protocol-v2@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4))(@layerzerolabs/lz-evm-v1-0.7@3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1)))(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
       "@layerzerolabs/lz-evm-protocol-v2": 3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
-      "@layerzerolabs/lz-evm-v1-0.7": 3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))
+      "@layerzerolabs/lz-evm-v1-0.7": 3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))
       "@openzeppelin/contracts": link:lib/openzeppelin-contracts/contracts
       "@openzeppelin/contracts-upgradeable": link:lib/openzeppelin-contracts-upgradeable/contracts
       ethers: 5.8.0
@@ -5560,17 +5586,36 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  "@layerzerolabs/oapp-evm@0.1.0(b4b98f43f086825a65f975a676eb35ba)":
+  "@layerzerolabs/oapp-evm@0.1.0(a76defcabfd4579e15f35075e61cfd7f)":
     dependencies:
-      "@layerzerolabs/lz-evm-messagelib-v2": 3.0.147(@axelar-network/axelar-gmp-sdk-solidity@5.10.0)(@chainlink/contracts-ccip@0.7.6(ethers@6.15.0))(@eth-optimism/contracts@0.6.0(ethers@6.15.0))(@layerzerolabs/lz-evm-protocol-v2@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4))(@layerzerolabs/lz-evm-v1-0.7@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1)))(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
+      "@layerzerolabs/lz-evm-messagelib-v2": 3.0.168(@axelar-network/axelar-gmp-sdk-solidity@5.10.0)(@chainlink/contracts-ccip@0.7.6(ethers@6.15.0))(@eth-optimism/contracts@0.6.0(ethers@6.15.0))(@layerzerolabs/lz-evm-protocol-v2@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4))(@layerzerolabs/lz-evm-v1-0.7@3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1)))(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
       "@layerzerolabs/lz-evm-protocol-v2": 3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
-      "@layerzerolabs/lz-evm-v1-0.7": 3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))
+      "@layerzerolabs/lz-evm-v1-0.7": 3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))
       "@openzeppelin/contracts": link:lib/openzeppelin-contracts/contracts
       "@openzeppelin/contracts-upgradeable": link:lib/openzeppelin-contracts-upgradeable/contracts
       ethers: 5.8.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+
+  "@layerzerolabs/oft-evm@4.0.1(4f565df082440f6f3a218e71bcf63182)":
+    dependencies:
+      "@layerzerolabs/lz-evm-messagelib-v2": 3.0.168(@axelar-network/axelar-gmp-sdk-solidity@5.10.0)(@chainlink/contracts-ccip@0.7.6(ethers@6.15.0))(@eth-optimism/contracts@0.6.0(ethers@6.15.0))(@layerzerolabs/lz-evm-protocol-v2@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4))(@layerzerolabs/lz-evm-v1-0.7@3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1)))(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
+      "@layerzerolabs/lz-evm-protocol-v2": 3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
+      "@layerzerolabs/lz-evm-v1-0.7": 3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))
+      "@layerzerolabs/oapp-evm": 0.1.0(a76defcabfd4579e15f35075e61cfd7f)
+      "@openzeppelin/contracts": link:lib/openzeppelin-contracts/contracts
+      "@openzeppelin/contracts-upgradeable": link:lib/openzeppelin-contracts-upgradeable/contracts
+
+  "@layerzerolabs/test-devtools-evm-foundry@8.0.1(045e83f918b09ce0ef99be031ab0233d)":
+    dependencies:
+      "@layerzerolabs/lz-evm-messagelib-v2": 3.0.168(@axelar-network/axelar-gmp-sdk-solidity@5.10.0)(@chainlink/contracts-ccip@0.7.6(ethers@6.15.0))(@eth-optimism/contracts@0.6.0(ethers@6.15.0))(@layerzerolabs/lz-evm-protocol-v2@3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4))(@layerzerolabs/lz-evm-v1-0.7@3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1)))(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
+      "@layerzerolabs/lz-evm-protocol-v2": 3.0.147(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))(solidity-bytes-utils@0.8.4)
+      "@layerzerolabs/lz-evm-v1-0.7": 3.0.168(@openzeppelin/contracts-upgradeable@lib+openzeppelin-contracts-upgradeable+contracts)(@openzeppelin/contracts@lib+openzeppelin-contracts+contracts)(hardhat-deploy@0.14.1(supports-color@8.1.1))
+      "@layerzerolabs/oapp-evm": 0.1.0(a76defcabfd4579e15f35075e61cfd7f)
+      "@layerzerolabs/oft-evm": 4.0.1(4f565df082440f6f3a218e71bcf63182)
+      "@openzeppelin/contracts": link:lib/openzeppelin-contracts/contracts
+      "@openzeppelin/contracts-upgradeable": link:lib/openzeppelin-contracts-upgradeable/contracts
 
   "@layerzerolabs/test-devtools-evm-hardhat@0.5.2(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(solidity-bytes-utils@0.8.4)":
     dependencies:
@@ -5663,18 +5708,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  "@nomicfoundation/hardhat-ignition-ethers@0.15.16(@nomicfoundation/hardhat-ethers@3.1.2(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/hardhat-ignition@0.15.15(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/ignition-core@0.15.14)(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))":
+  "@nomicfoundation/hardhat-ignition-ethers@0.15.16(@nomicfoundation/hardhat-ethers@3.1.2(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/hardhat-ignition@0.15.15(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/ignition-core@0.15.14(supports-color@8.1.1))(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))":
     dependencies:
       "@nomicfoundation/hardhat-ethers": 3.1.2(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1)
       "@nomicfoundation/hardhat-ignition": 0.15.15(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1)
-      "@nomicfoundation/ignition-core": 0.15.14
+      "@nomicfoundation/ignition-core": 0.15.14(supports-color@8.1.1)
       ethers: 6.15.0
       hardhat: 2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3)
 
   "@nomicfoundation/hardhat-ignition@0.15.15(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1)":
     dependencies:
       "@nomicfoundation/hardhat-verify": 2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1)
-      "@nomicfoundation/ignition-core": 0.15.14
+      "@nomicfoundation/ignition-core": 0.15.14(supports-color@8.1.1)
       "@nomicfoundation/ignition-ui": 0.15.13
       chalk: 4.1.2
       debug: 4.4.3(supports-color@8.1.1)
@@ -5692,11 +5737,11 @@ snapshots:
       ethereumjs-util: 7.1.5
       hardhat: 2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3)
 
-  "@nomicfoundation/hardhat-toolbox@6.1.1(a43268fefe1086749046cc49bcec1b71)":
+  "@nomicfoundation/hardhat-toolbox@6.1.1(0e46022ce994d56789c1aaabfca339d2)":
     dependencies:
       "@nomicfoundation/hardhat-chai-matchers": 2.1.0(@nomicfoundation/hardhat-ethers@3.1.2(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(chai@4.5.0)(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
       "@nomicfoundation/hardhat-ethers": 3.1.2(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1)
-      "@nomicfoundation/hardhat-ignition-ethers": 0.15.16(@nomicfoundation/hardhat-ethers@3.1.2(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/hardhat-ignition@0.15.15(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/ignition-core@0.15.14)(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
+      "@nomicfoundation/hardhat-ignition-ethers": 0.15.16(@nomicfoundation/hardhat-ethers@3.1.2(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/hardhat-ignition@0.15.15(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1))(@nomicfoundation/ignition-core@0.15.14(supports-color@8.1.1))(ethers@6.15.0)(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
       "@nomicfoundation/hardhat-network-helpers": 1.1.2(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
       "@nomicfoundation/hardhat-verify": 2.1.3(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(supports-color@8.1.1)
       "@typechain/ethers-v6": 0.5.1(ethers@6.15.0)(typechain@8.3.2(supports-color@8.1.1)(typescript@5.9.3))(typescript@5.9.3)
@@ -5707,7 +5752,7 @@ snapshots:
       chai: 4.5.0
       ethers: 6.15.0
       hardhat: 2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3)
-      hardhat-gas-reporter: 2.3.0(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(typescript@5.9.3)(zod@3.25.76)
+      hardhat-gas-reporter: 2.3.0(debug@4.4.3(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(typescript@5.9.3)(zod@3.25.76)
       solidity-coverage: 0.8.16(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
       ts-node: 10.9.2(@types/node@22.19.1)(typescript@5.9.3)
       typechain: 8.3.2(supports-color@8.1.1)(typescript@5.9.3)
@@ -5728,7 +5773,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  "@nomicfoundation/ignition-core@0.15.14":
+  "@nomicfoundation/ignition-core@0.15.14(supports-color@8.1.1)":
     dependencies:
       "@ethersproject/address": 5.6.1
       "@nomicfoundation/solidity-analyzer": 0.1.2
@@ -6576,7 +6621,7 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios-debug-log@1.0.0(axios@1.13.2)(supports-color@8.1.1):
+  axios-debug-log@1.0.0(axios@1.13.2(debug@4.4.3(supports-color@8.1.1)))(supports-color@8.1.1):
     dependencies:
       "@types/debug": 4.1.12
       axios: 1.13.2(debug@4.4.3(supports-color@8.1.1))
@@ -7009,9 +7054,11 @@ snapshots:
 
   death@1.1.0: {}
 
-  debug@4.3.4:
+  debug@4.3.4(supports-color@8.1.1):
     dependencies:
       ms: 2.1.2
+    optionalDependencies:
+      supports-color: 8.1.1
 
   debug@4.4.3(supports-color@8.1.1):
     dependencies:
@@ -7720,7 +7767,7 @@ snapshots:
       micromatch: 4.0.8
       solidity-ast: 0.4.61
 
-  hardhat-gas-reporter@2.3.0(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(typescript@5.9.3)(zod@3.25.76):
+  hardhat-gas-reporter@2.3.0(debug@4.4.3(supports-color@8.1.1))(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       "@ethersproject/abi": 5.8.0
       "@ethersproject/bytes": 5.8.0
@@ -8485,7 +8532,7 @@ snapshots:
   puppeteer@13.7.0(supports-color@8.1.1):
     dependencies:
       cross-fetch: 3.1.5
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       devtools-protocol: 0.0.981744
       extract-zip: 2.0.1(supports-color@8.1.1)
       https-proxy-agent: 5.0.1(supports-color@8.1.1)
@@ -8755,7 +8802,7 @@ snapshots:
       "@aduh95/viz.js": 3.7.0
       "@solidity-parser/parser": 0.20.2
       axios: 1.13.2(debug@4.4.3(supports-color@8.1.1))
-      axios-debug-log: 1.0.0(axios@1.13.2)(supports-color@8.1.1)
+      axios-debug-log: 1.0.0(axios@1.13.2(debug@4.4.3(supports-color@8.1.1)))(supports-color@8.1.1)
       cli-color: 2.0.4
       commander: 12.1.0
       convert-svg-to-png: 0.6.4(supports-color@8.1.1)

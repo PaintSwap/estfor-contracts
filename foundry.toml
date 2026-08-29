@@ -36,4 +36,6 @@ remappings = [
   # submodule is older), so it is installed directly in lib/forge-std.
   "forge-std/=lib/forge-std/src/",
   "openzeppelin-foundry-upgrades/=lib/openzeppelin-foundry-upgrades/src/",
+  "@layerzerolabs/test-devtools-evm-foundry/=node_modules/@layerzerolabs/test-devtools-evm-foundry/",
+  "@layerzerolabs/lz-evm-protocol-v2/=node_modules/@layerzerolabs/lz-evm-protocol-v2/",
 ]

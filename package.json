@@ -5,12 +5,15 @@
   "repository": "https://github.com/PaintSwap/estfor-contracts",
   "license": "MIT",
   "engines": {
-    "node": ">=24.14.1"
+    "node": ">=24.14.1",
+    "pnpm": ">=11"
   },
+  "packageManager": "pnpm@11.24.0",
   "devDependencies": {
     "@layerzerolabs/lz-evm-protocol-v2": "^3.0.12",
     "@layerzerolabs/oapp-evm": "^0.1.0",
     "@layerzerolabs/oapp-evm-upgradeable": "^0.1.0",
+    "@layerzerolabs/test-devtools-evm-foundry": "^8.0.1",
     "@layerzerolabs/test-devtools-evm-hardhat": "^0.5.0",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.8",
     "@nomicfoundation/hardhat-ethers": "^3.1.2",
