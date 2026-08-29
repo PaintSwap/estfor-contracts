@@ -11,8 +11,6 @@ import {MockBrushToken} from "../contracts/test/external/MockBrushToken.sol";
 contract RoyaltyReceiverTest is EstforTest {
     address private constant TREASURY = address(0x7EA5);
 
-    RoyaltyReceiver private royaltyReceiver;
-
     function setUp() public {
         brush = new MockBrushToken();
         MockRouter router = new MockRouter();

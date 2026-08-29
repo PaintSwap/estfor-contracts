@@ -5,8 +5,6 @@ import {EstforTest} from "./utils/EstforTest.sol";
 import {AdminAccess} from "../contracts/AdminAccess.sol";
 
 contract AdminAccessTest is EstforTest {
-    AdminAccess private adminAccess;
-
     function setUp() public {
         adminAccess = _deploy(new address[](0), new address[](0));
     }

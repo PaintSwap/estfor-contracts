@@ -3,13 +3,12 @@ pragma solidity ^0.8.28;
 
 import {EstforTest} from "./utils/EstforTest.sol";
 import {IERC1155Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
-import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import {SamWitchERC1155UpgradeableSinglePerToken} from "../contracts/SamWitchERC1155UpgradeableSinglePerToken.sol";
 import {
     TestSamWitchERC1155UpgradeableSinglePerToken
 } from "../contracts/test/external/TestSamWitchERC1155UpgradeableSinglePerToken.sol";
 
-contract SamWitchERC1155UpgradeableSinglePerTokenTest is EstforTest, ERC1155Holder {
+contract SamWitchERC1155UpgradeableSinglePerTokenTest is EstforTest {
     uint256 private constant FIRST_TOKEN_ID = 1;
     uint256 private constant SECOND_TOKEN_ID = 2;
     uint256 private constant UNKNOWN_TOKEN_ID = 3;
