@@ -30,3 +30,5 @@ contract UpgradeSafetyTest is Test {
 ```
 
 If the test already exists then just update the reference contract path to point to the old contract.
+
+A custom Paintswap OZ fork is used specifically to add "memory-safe" assembly markers to v5.1 contracts. This works around a stack-too-deep compilation issue in Arrays.sol. Upstream OZ contracts have not yet marked their assembly blocks as memory-safe so this fork is needed to work around the issue.
