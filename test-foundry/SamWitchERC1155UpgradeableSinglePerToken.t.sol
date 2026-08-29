@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {IERC1155Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import {SamWitchERC1155UpgradeableSinglePerToken} from "../contracts/SamWitchERC1155UpgradeableSinglePerToken.sol";
@@ -10,11 +9,10 @@ import {
     TestSamWitchERC1155UpgradeableSinglePerToken
 } from "../contracts/test/external/TestSamWitchERC1155UpgradeableSinglePerToken.sol";
 
-contract SamWitchERC1155UpgradeableSinglePerTokenTest is Test, ERC1155Holder {
+contract SamWitchERC1155UpgradeableSinglePerTokenTest is EstforTest, ERC1155Holder {
     uint256 private constant FIRST_TOKEN_ID = 1;
     uint256 private constant SECOND_TOKEN_ID = 2;
     uint256 private constant UNKNOWN_TOKEN_ID = 3;
-    address private constant ALICE = address(0xA11CE);
     address private constant DEAD = address(0xdead);
 
     TestSamWitchERC1155UpgradeableSinglePerToken private token;
@@ -22,7 +20,7 @@ contract SamWitchERC1155UpgradeableSinglePerTokenTest is Test, ERC1155Holder {
     function setUp() public {
         TestSamWitchERC1155UpgradeableSinglePerToken implementation = new TestSamWitchERC1155UpgradeableSinglePerToken();
         token = TestSamWitchERC1155UpgradeableSinglePerToken(
-            address(new ERC1967Proxy(address(implementation), abi.encodeCall(implementation.initialize, ())))
+            _deployUUPS(address(implementation), abi.encodeCall(implementation.initialize, ()))
         );
     }
 
@@ -228,30 +226,5 @@ contract SamWitchERC1155UpgradeableSinglePerTokenTest is Test, ERC1155Holder {
         assertEq(token.balanceOf(other, FIRST_TOKEN_ID), otherBalance);
         assertEq(token.balanceOf(owner, SECOND_TOKEN_ID), ownerBalance);
         assertEq(token.balanceOf(other, SECOND_TOKEN_ID), otherBalance);
-    }
-
-    function _addresses(address a, address b, address c) private pure returns (address[] memory values) {
-        values = new address[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
-    }
-
-    function _uints(uint256 a) private pure returns (uint256[] memory values) {
-        values = new uint256[](1);
-        values[0] = a;
-    }
-
-    function _uints(uint256 a, uint256 b) private pure returns (uint256[] memory values) {
-        values = new uint256[](2);
-        values[0] = a;
-        values[1] = b;
-    }
-
-    function _uints(uint256 a, uint256 b, uint256 c) private pure returns (uint256[] memory values) {
-        values = new uint256[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
     }
 }

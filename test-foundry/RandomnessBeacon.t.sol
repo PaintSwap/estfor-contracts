@@ -1,36 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {stdError} from "forge-std/StdError.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {RandomnessBeacon} from "../contracts/RandomnessBeacon.sol";
 import {IOracleCB} from "../contracts/interfaces/IOracleCB.sol";
 import {MockOracleCB} from "../contracts/test/MockOracleCB.sol";
-import {MockVRF} from "../contracts/test/MockVRF.sol";
 
-contract RandomnessBeaconTest is Test {
-    RandomnessBeacon private randomnessBeacon;
-    MockVRF private mockVRF;
-
+contract RandomnessBeaconTest is EstforTest {
     function setUp() public {
-        vm.warp(20 weeks);
+        _deployBeaconStack();
         vm.roll(6);
 
-        mockVRF = new MockVRF();
-        RandomnessBeacon implementation = new RandomnessBeacon();
-        randomnessBeacon = RandomnessBeacon(
-            payable(address(
-                    new ERC1967Proxy(
-                        address(implementation), abi.encodeCall(implementation.initialize, (address(mockVRF)))
-                    )
-                ))
-        );
-        vm.deal(address(randomnessBeacon), 1 ether);
-
         MockOracleCB oracle = new MockOracleCB();
-        randomnessBeacon.initializeAddresses(IOracleCB(address(oracle)), IOracleCB(address(oracle)));
-        randomnessBeacon.initializeRandomWords();
+        _initializeBeaconRandomWords(oracle, IOracleCB(address(oracle)));
     }
 
     function testRequestingRandomWords() public {

@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {GameSubsidisationRegistry} from "../contracts/Session/GameSubsidisationRegistry.sol";
 
-contract GameSubsidisationRegistryTest is Test {
-    address private constant ALICE = address(0xA11CE);
+contract GameSubsidisationRegistryTest is EstforTest {
     bytes4 private constant DO_THING_SELECTOR = bytes4(keccak256("doThing()"));
 
     GameSubsidisationRegistry private registry;
@@ -14,9 +12,7 @@ contract GameSubsidisationRegistryTest is Test {
     function setUp() public {
         GameSubsidisationRegistry implementation = new GameSubsidisationRegistry();
         registry = GameSubsidisationRegistry(
-            address(
-                new ERC1967Proxy(address(implementation), abi.encodeCall(implementation.initialize, (address(this))))
-            )
+            _deployUUPS(address(implementation), abi.encodeCall(implementation.initialize, (address(this))))
         );
     }
 

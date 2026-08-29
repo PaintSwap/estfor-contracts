@@ -1,33 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {Treasury} from "../contracts/Treasury.sol";
-import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
-import {MockBrushToken} from "../contracts/test/external/MockBrushToken.sol";
 
-contract TreasuryTest is Test {
+contract TreasuryTest is EstforTest {
     event SetFundAllocationPercentages(address[] accounts, uint256[] percentages);
 
-    address private constant ALICE = address(0xA11CE);
-    address private constant BOB = address(0xB0B);
     address private constant TERRITORY_TREASURY = address(0x7EA5);
-    address private constant SHOP = address(0x5A0F);
-
-    MockBrushToken private brush;
-    Treasury private treasury;
 
     function setUp() public {
-        brush = new MockBrushToken();
-        Treasury implementation = new Treasury();
-        treasury = Treasury(
-            address(
-                new ERC1967Proxy(
-                    address(implementation), abi.encodeCall(implementation.initialize, (IBrushToken(address(brush))))
-                )
-            )
-        );
+        _deployTreasuryStack();
         treasury.setSpenders(_addresses(TERRITORY_TREASURY, SHOP), true);
         brush.mint(address(treasury), 1_000 ether);
     }
@@ -75,36 +58,5 @@ contract TreasuryTest is Test {
         vm.expectRevert(Treasury.OnlySpenders.selector);
         vm.prank(ALICE);
         treasury.spend(BOB, 100 ether);
-    }
-
-    function _addresses(address a, address b) private pure returns (address[] memory values) {
-        values = new address[](2);
-        values[0] = a;
-        values[1] = b;
-    }
-
-    function _addresses(address a, address b, address c) private pure returns (address[] memory values) {
-        values = new address[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
-    }
-
-    function _uints(uint256 a) private pure returns (uint256[] memory values) {
-        values = new uint256[](1);
-        values[0] = a;
-    }
-
-    function _uints(uint256 a, uint256 b) private pure returns (uint256[] memory values) {
-        values = new uint256[](2);
-        values[0] = a;
-        values[1] = b;
-    }
-
-    function _uints(uint256 a, uint256 b, uint256 c) private pure returns (uint256[] memory values) {
-        values = new uint256[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
     }
 }

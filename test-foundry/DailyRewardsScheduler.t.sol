@@ -1,49 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {DailyRewardsScheduler} from "../contracts/DailyRewardsScheduler.sol";
 import {RandomnessBeacon} from "../contracts/RandomnessBeacon.sol";
 import {Equipment} from "../contracts/globals/misc.sol";
 import {IOracleCB} from "../contracts/interfaces/IOracleCB.sol";
 import {MockOracleCB} from "../contracts/test/MockOracleCB.sol";
-import {MockVRF} from "../contracts/test/MockVRF.sol";
 
-contract DailyRewardsSchedulerTest is Test {
+contract DailyRewardsSchedulerTest is EstforTest {
     uint256 private constant TIER = 1;
-    RandomnessBeacon private randomnessBeacon;
     DailyRewardsScheduler private scheduler;
-    MockVRF private mockVRF;
 
     function setUp() public {
-        vm.warp(20 weeks);
-        mockVRF = new MockVRF();
-
-        RandomnessBeacon beaconImplementation = new RandomnessBeacon();
-        randomnessBeacon = RandomnessBeacon(
-            payable(address(
-                    new ERC1967Proxy(
-                        address(beaconImplementation),
-                        abi.encodeCall(beaconImplementation.initialize, (address(mockVRF)))
-                    )
-                ))
-        );
-        vm.deal(address(randomnessBeacon), 1 ether);
+        _deployBeaconStack();
 
         DailyRewardsScheduler schedulerImplementation = new DailyRewardsScheduler();
         scheduler = DailyRewardsScheduler(
-            address(
-                new ERC1967Proxy(
-                    address(schedulerImplementation),
-                    abi.encodeCall(schedulerImplementation.initialize, (address(randomnessBeacon)))
-                )
+            _deployUUPS(
+                address(schedulerImplementation),
+                abi.encodeCall(schedulerImplementation.initialize, (address(randomnessBeacon)))
             )
         );
 
-        MockOracleCB oracle = new MockOracleCB();
-        randomnessBeacon.initializeAddresses(IOracleCB(address(oracle)), IOracleCB(address(scheduler)));
-        randomnessBeacon.initializeRandomWords();
+        _initializeBeaconRandomWords(new MockOracleCB(), IOracleCB(address(scheduler)));
         _setRewardPools();
     }
 

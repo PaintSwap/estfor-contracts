@@ -1,20 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {RoyaltyReceiver} from "../contracts/RoyaltyReceiver.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
 import {ISolidlyRouter} from "../contracts/interfaces/external/ISolidlyRouter.sol";
-import {MockBrushToken} from "../contracts/test/external/MockBrushToken.sol";
 import {MockRouter} from "../contracts/test/external/MockRouter.sol";
+import {MockBrushToken} from "../contracts/test/external/MockBrushToken.sol";
 
-contract RoyaltyReceiverTest is Test {
-    address private constant ALICE = address(0xA11CE);
+contract RoyaltyReceiverTest is EstforTest {
     address private constant TREASURY = address(0x7EA5);
-    address private constant DEV = address(0xDE7);
 
-    MockBrushToken private brush;
     RoyaltyReceiver private royaltyReceiver;
 
     function setUp() public {
@@ -22,15 +18,15 @@ contract RoyaltyReceiverTest is Test {
         MockRouter router = new MockRouter();
         RoyaltyReceiver implementation = new RoyaltyReceiver();
         royaltyReceiver = RoyaltyReceiver(
-            payable(address(
-                    new ERC1967Proxy(
-                        address(implementation),
-                        abi.encodeCall(
-                            implementation.initialize,
-                            (ISolidlyRouter(address(router)), TREASURY, DEV, IBrushToken(address(brush)), address(this))
-                        )
+            payable(
+                _deployUUPS(
+                    address(implementation),
+                    abi.encodeCall(
+                        implementation.initialize,
+                        (ISolidlyRouter(address(router)), TREASURY, DEV, IBrushToken(address(brush)), address(this))
                     )
-                ))
+                )
+            )
         );
     }
 

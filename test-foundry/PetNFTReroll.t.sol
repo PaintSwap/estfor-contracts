@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 
 import {ItemNFT} from "../contracts/ItemNFT.sol";
 import {PetNFT} from "../contracts/PetNFT.sol";
@@ -11,30 +10,25 @@ import {Pet} from "../contracts/globals/pets.sol";
 import {PET_SHARD} from "../contracts/globals/items.sol";
 import {MockVRF} from "../contracts/test/MockVRF.sol";
 
-contract PetNFTRerollTest is Test {
+contract PetNFTRerollTest is EstforTest {
     event CompletePetReroll(
         address indexed user, uint256 indexed originalPetTokenId, uint256 indexed newPetTokenId, uint256 requestId
     );
 
-    address private constant ALICE = address(0xA11CE);
-    address private constant BOB = address(0xB0B);
     ItemNFT private constant ITEM_NFT = ItemNFT(address(0x1111));
     PetNFT private constant PET_NFT = PetNFT(address(0x2222));
     uint256 private constant ORIGINAL_PET_TOKEN_ID = 100;
     uint24 private constant BASE_PET_ID = 1;
 
     PetNFTReroll private reroll;
-    MockVRF private mockVRF;
 
     function setUp() public {
         mockVRF = new MockVRF();
         PetNFTReroll implementation = new PetNFTReroll();
         reroll = PetNFTReroll(
-            address(
-                new ERC1967Proxy(
-                    address(implementation),
-                    abi.encodeCall(implementation.initialize, (address(this), ITEM_NFT, PET_NFT, address(mockVRF)))
-                )
+            _deployUUPS(
+                address(implementation),
+                abi.encodeCall(implementation.initialize, (address(this), ITEM_NFT, PET_NFT, address(mockVRF)))
             )
         );
 

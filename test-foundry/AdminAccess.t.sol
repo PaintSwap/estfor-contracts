@@ -1,14 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {AdminAccess} from "../contracts/AdminAccess.sol";
 
-contract AdminAccessTest is Test {
-    address private constant ALICE = address(0xA11CE);
-    address private constant BOB = address(0xB0B);
-
+contract AdminAccessTest is EstforTest {
     AdminAccess private adminAccess;
 
     function setUp() public {
@@ -111,29 +107,7 @@ contract AdminAccessTest is Test {
     function _deploy(address[] memory admins, address[] memory promotionalAdmins) private returns (AdminAccess) {
         AdminAccess implementation = new AdminAccess();
         return AdminAccess(
-            address(
-                new ERC1967Proxy(
-                    address(implementation), abi.encodeCall(implementation.initialize, (admins, promotionalAdmins))
-                )
-            )
+            _deployUUPS(address(implementation), abi.encodeCall(implementation.initialize, (admins, promotionalAdmins)))
         );
-    }
-
-    function _addresses(address a) private pure returns (address[] memory values) {
-        values = new address[](1);
-        values[0] = a;
-    }
-
-    function _addresses(address a, address b) private pure returns (address[] memory values) {
-        values = new address[](2);
-        values[0] = a;
-        values[1] = b;
-    }
-
-    function _addresses(address a, address b, address c) private pure returns (address[] memory values) {
-        values = new address[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
     }
 }

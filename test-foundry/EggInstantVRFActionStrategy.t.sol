@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {EggInstantVRFActionStrategy} from "../contracts/InstantVRFActionStrategies/EggInstantVRFActionStrategy.sol";
 import {InstantVRFActionInput, InstantVRFActionType} from "../contracts/globals/rewards.sol";
 import {SECRET_EGG_1_TIER1} from "../contracts/globals/items.sol";
 
-contract EggInstantVRFActionStrategyTest is Test {
+contract EggInstantVRFActionStrategyTest is EstforTest {
     uint16 private constant REWARD_BASE_PET_ID_MIN = 2;
     uint16 private constant REWARD_BASE_PET_ID_MAX = 10;
     address private constant INSTANT_VRF_ACTIONS = address(0x1A);
@@ -17,11 +16,7 @@ contract EggInstantVRFActionStrategyTest is Test {
     function setUp() public {
         EggInstantVRFActionStrategy implementation = new EggInstantVRFActionStrategy();
         strategy = EggInstantVRFActionStrategy(
-            address(
-                new ERC1967Proxy(
-                    address(implementation), abi.encodeCall(implementation.initialize, (INSTANT_VRF_ACTIONS))
-                )
-            )
+            _deployUUPS(address(implementation), abi.encodeCall(implementation.initialize, (INSTANT_VRF_ACTIONS)))
         );
     }
 
