@@ -28,12 +28,10 @@ jobs:
         with:
           submodules: recursive
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - name: Install packages
         uses: actions/setup-node@v4
         with:
-          node-version: "22.x"
+          node-version-file: package.json
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
         shell: bash
