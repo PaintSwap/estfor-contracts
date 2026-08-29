@@ -104,6 +104,15 @@ abstract contract EstforTest is Test, ERC1155Holder {
         );
     }
 
+    function _deployAdminAccess(address[] memory admins, address[] memory promotionalAdmins)
+        internal
+        returns (AdminAccess deployed)
+    {
+        deployed = AdminAccess(
+            _deployUUPS(address(new AdminAccess()), abi.encodeCall(AdminAccess.initialize, (admins, promotionalAdmins)))
+        );
+    }
+
     function _deployShopStack(address bankFactory) internal {
         _deployBeaconStack();
         MockOracleCB oracle = new MockOracleCB();

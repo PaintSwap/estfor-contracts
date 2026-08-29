@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-
-import {AdminAccess} from "../contracts/AdminAccess.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {CombatantsHelper} from "../contracts/Clans/CombatantsHelper.sol";
 import {IClans} from "../contracts/interfaces/IClans.sol";
 import {ICombatants} from "../contracts/interfaces/ICombatants.sol";
@@ -60,11 +57,10 @@ contract CombatantsStub {
   }
 }
 
-contract CombatantsHelperTest is Test {
+contract CombatantsHelperTest is EstforTest {
   uint256 private constant CLAN_ID = 1;
   uint64 private constant PLAYER_ID = 1;
   uint64 private constant OTHER_PLAYER_ID = 2;
-  address private constant ALICE = address(0xA11CE);
 
   CombatantsHelper private combatantsHelper;
   CombatantsPlayersStub private players;
@@ -83,35 +79,20 @@ contract CombatantsHelperTest is Test {
     clans.setRank(CLAN_ID, PLAYER_ID, ClanRank.OWNER);
     clans.setRank(CLAN_ID, OTHER_PLAYER_ID, ClanRank.COMMONER);
 
-    address[] memory admins = new address[](1);
-    admins[0] = address(this);
-    address[] memory promotionalAdmins = new address[](0);
-    AdminAccess adminImplementation = new AdminAccess();
-    AdminAccess adminAccess = AdminAccess(
-      address(
-        new ERC1967Proxy(
-          address(adminImplementation),
-          abi.encodeCall(adminImplementation.initialize, (admins, promotionalAdmins))
-        )
-      )
-    );
-
     CombatantsHelper implementation = new CombatantsHelper();
     combatantsHelper = CombatantsHelper(
-      address(
-        new ERC1967Proxy(
-          address(implementation),
-          abi.encodeCall(
-            implementation.initialize,
-            (
-              IPlayers(address(players)),
-              IClans(address(clans)),
-              ICombatants(address(territories)),
-              ICombatants(address(lockedVaults)),
-              ICombatants(address(raids)),
-              adminAccess,
-              true
-            )
+      _deployUUPS(
+        address(implementation),
+        abi.encodeCall(
+          implementation.initialize,
+          (
+            IPlayers(address(players)),
+            IClans(address(clans)),
+            ICombatants(address(territories)),
+            ICombatants(address(lockedVaults)),
+            ICombatants(address(raids)),
+            _deployAdminAccess(_addresses(address(this)), new address[](0)),
+            true
           )
         )
       )

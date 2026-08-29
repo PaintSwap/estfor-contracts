@@ -6,11 +6,11 @@ import {AdminAccess} from "../contracts/AdminAccess.sol";
 
 contract AdminAccessTest is EstforTest {
     function setUp() public {
-        adminAccess = _deploy(new address[](0), new address[](0));
+        adminAccess = _deployAdminAccess(new address[](0), new address[](0));
     }
 
     function testInitializeAdminsOnConstruction() public {
-        AdminAccess initialized = _deploy(_addresses(address(this), ALICE), _addresses(ALICE));
+        AdminAccess initialized = _deployAdminAccess(_addresses(address(this), ALICE), _addresses(ALICE));
 
         assertTrue(initialized.isAdmin(address(this)));
         assertTrue(initialized.isAdmin(ALICE));
@@ -100,12 +100,5 @@ contract AdminAccessTest is EstforTest {
     function testIsAdminReturnsFalseForANonAdmin() public {
         adminAccess.addAdmins(_addresses(address(this)));
         assertFalse(adminAccess.isAdmin(ALICE));
-    }
-
-    function _deploy(address[] memory admins, address[] memory promotionalAdmins) private returns (AdminAccess) {
-        AdminAccess implementation = new AdminAccess();
-        return AdminAccess(
-            _deployUUPS(address(implementation), abi.encodeCall(implementation.initialize, (admins, promotionalAdmins)))
-        );
     }
 }

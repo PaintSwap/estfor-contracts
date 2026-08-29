@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
@@ -44,7 +43,7 @@ contract MarketplaceNFTMock is ERC1155, IERC2981 {
   }
 }
 
-contract MarketplaceTest is Test {
+contract MarketplaceTest is EstforTest {
   event Listed(
     uint256 indexed listingId,
     address indexed seller,
@@ -56,26 +55,21 @@ contract MarketplaceTest is Test {
   event Sold(uint256 indexed listingId, address indexed buyer, address indexed seller, uint96 price, uint96 amount);
   event Cancelled(uint256 indexed listingId);
 
-  address private constant ALICE = address(0xA11CE);
-  address private constant BOB = address(0xB0B);
   address private constant CHARLIE = address(0xCA11E);
   address private constant ROYALTY_RECEIVER = address(0xBEEF);
   uint256 private constant TOKEN_ID = 1;
   uint96 private constant PRICE = 1 ether;
 
   Marketplace private marketplace;
-  MockBrushToken private brush;
   MarketplaceNFTMock private nft;
 
   function setUp() public {
     brush = new MockBrushToken();
     Marketplace implementation = new Marketplace();
     marketplace = Marketplace(
-      address(
-        new ERC1967Proxy(
-          address(implementation),
-          abi.encodeCall(implementation.initialize, (IBrushToken(address(brush)), address(this)))
-        )
+      _deployUUPS(
+        address(implementation),
+        abi.encodeCall(implementation.initialize, (IBrushToken(address(brush)), address(this)))
       )
     );
     nft = new MarketplaceNFTMock(ROYALTY_RECEIVER, marketplace);
