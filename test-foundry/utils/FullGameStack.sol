@@ -88,6 +88,8 @@ abstract contract FullGameStack is EstforTest {
     address internal constant KIKI = address(0x4141);
     address internal constant LUCY = address(0x1C2);
 
+    string internal constant ORIG_NAME = "0xSamWitch";
+
     address internal lzEndpoint;
     Bridge internal bridge;
     WorldActions internal worldActions;
@@ -731,7 +733,7 @@ abstract contract FullGameStack is EstforTest {
         });
         cosmetics.setCosmetics(_uint16s(AVATAR_001_CHIMP), cosmeticInfos);
 
-        playerId = _createPlayer(ALICE, 1, "0xSamWitch", true);
+        playerId = _createPlayer(ALICE, 1, ORIG_NAME, true);
     }
 
     function _createPlayer(address account, uint256 avatarId, string memory heroName, bool makeActive)
@@ -751,7 +753,7 @@ abstract contract FullGameStack is EstforTest {
         require(createdPlayerId != 0, "NewPlayer event not found");
     }
 
-    function _battleSkills() private pure returns (Skill[] memory skills) {
+    function _battleSkills() internal pure returns (Skill[] memory skills) {
         skills = new Skill[](17);
         skills[0] = Skill.MELEE;
         skills[1] = Skill.RANGED;

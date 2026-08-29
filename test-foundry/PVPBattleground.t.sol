@@ -12,6 +12,9 @@ import {XP_BYTES} from "../contracts/globals/players.sol";
 
 contract PVPBattlegroundTest is FullGameStack {
     uint256 private constant ATTACK_COOLDOWN = 3600;
+    uint256 private constant UPGRADE_PLAYER_BRUSH_PRICE = 1 ether;
+    bytes32 private constant BATTLE_RESULT_TOPIC =
+        keccak256("BattleResult(uint256,uint256,uint256,uint256[],uint256[],uint8[],uint8[],bool,uint256[])");
 
     uint256 private defendingPlayerId;
 
@@ -23,6 +26,8 @@ contract PVPBattlegroundTest is FullGameStack {
 
     function testBasicComparisonOfSkillLevel() public {
         Skill[] memory skills = _skills(Skill.FISHING);
+        // randomWords[0] is the random word deciding dice rolls for the attacker,
+        // randomWords[1] is the random word deciding dice rolls for the defender
         uint256[] memory randomWords = _words(1, 1);
 
         players.modifyXP(ALICE, playerId, skills[0], 1000, true);
@@ -55,10 +60,10 @@ contract PVPBattlegroundTest is FullGameStack {
         );
         assertFalse(didAttackerWin);
 
-        brush.mint(ALICE, 1 ether);
+        brush.mint(ALICE, UPGRADE_PLAYER_BRUSH_PRICE);
         vm.startPrank(ALICE);
-        brush.approve(address(playerNFT), 1 ether);
-        playerNFT.editPlayer(playerId, "0xSamWitch", "", "", "", true);
+        brush.approve(address(playerNFT), UPGRADE_PLAYER_BRUSH_PRICE);
+        playerNFT.editPlayer(playerId, ORIG_NAME, "", "", "", true);
         vm.stopPrank();
 
         (,,, didAttackerWin) = pvpBattleground.determineBattleOutcome(
@@ -234,7 +239,7 @@ contract PVPBattlegroundTest is FullGameStack {
             vm.warp(pvpBattleground.getPlayerInfo(playerId).attackingCooldownTimestamp);
         }
 
-        Skill[] memory expectedSkills = _expectedBattleSkills();
+        Skill[] memory expectedSkills = _battleSkills();
         for (uint256 i; i < expectedSkills.length; ++i) {
             assertTrue(seenSkills[uint256(expectedSkills[i])]);
         }
@@ -265,7 +270,7 @@ contract PVPBattlegroundTest is FullGameStack {
         Vm.Log[] memory logs = vm.getRecordedLogs();
 
         for (uint256 i; i < logs.length; ++i) {
-            if (logs[i].emitter == address(pvpBattleground)) {
+            if (logs[i].emitter == address(pvpBattleground) && logs[i].topics[0] == BATTLE_RESULT_TOPIC) {
                 (
                     uint256 loggedRequestId,
                     uint256 attackingPlayerId,
@@ -314,27 +319,6 @@ contract PVPBattlegroundTest is FullGameStack {
         skills = new Skill[](2);
         skills[0] = a;
         skills[1] = b;
-    }
-
-    function _expectedBattleSkills() private pure returns (Skill[] memory skills) {
-        skills = new Skill[](17);
-        skills[0] = Skill.MELEE;
-        skills[1] = Skill.RANGED;
-        skills[2] = Skill.MAGIC;
-        skills[3] = Skill.DEFENCE;
-        skills[4] = Skill.HEALTH;
-        skills[5] = Skill.MINING;
-        skills[6] = Skill.WOODCUTTING;
-        skills[7] = Skill.FISHING;
-        skills[8] = Skill.SMITHING;
-        skills[9] = Skill.THIEVING;
-        skills[10] = Skill.CRAFTING;
-        skills[11] = Skill.COOKING;
-        skills[12] = Skill.FIREMAKING;
-        skills[13] = Skill.ALCHEMY;
-        skills[14] = Skill.FLETCHING;
-        skills[15] = Skill.FORGING;
-        skills[16] = Skill.FARMING;
     }
 
     function _words(uint256 a, uint256 b) private pure returns (uint256[] memory words) {
