@@ -9,26 +9,18 @@ import {ActivityPoints} from "../contracts/ActivityPoints/ActivityPoints.sol";
 import {MockBankFactory} from "../contracts/test/MockBankFactory.sol";
 import {MockUSDCToken} from "../contracts/test/external/MockUSDCToken.sol";
 import {EquipPosition, ItemInput} from "../contracts/globals/players.sol";
+import {BRONZE_SWORD, COMBAT_BASE, MISC_BASE, SCROLL_BASE} from "../contracts/globals/items.sol";
 
 contract ShopTest is EstforTest {
-    uint16 private constant BRONZE_SHIELD = 2198;
-    uint16 private constant BRONZE_SWORD = 2048;
-    uint16 private constant RAW_MINNUS = 10752;
+    uint16 private constant SHIELD_BASE = COMBAT_BASE + 150;
+    uint16 private constant BRONZE_SHIELD = SHIELD_BASE;
+    uint16 private constant RAW_MINNUS = 10_752;
     uint16 private constant SAPPHIRE_AMULET = 257;
     uint16 private constant TITANIUM_ARMOR = 518;
     uint16 private constant ORICHALCUM_ARMOR = 519;
-    uint16 private constant BARRAGE_SCROLL = 12037;
-    uint16 private constant ACTIVITY_TICKET = 65465;
-    uint16 private constant SONIC_GEM_TICKET = 65466;
-
-    event Buy(address buyer, address to, uint256 tokenId, uint256 quantity, uint256 price);
-    event BuyBatch(address buyer, address to, uint256[] tokenIds, uint256[] quantities, uint256[] prices);
-    event Sell(address seller, uint256 tokenId, uint256 quantity, uint256 price);
-    event SellBatch(address seller, uint256[] tokenIds, uint256[] quantities, uint256[] prices);
-    event NewAllocation(uint16 tokenId, uint256 allocation);
-    event SetBrushDistributionPercentages(uint256 burnt, uint256 treasuryPercentage, uint256 devPercentage);
-    event BuySupporterPack(address buyer, address to, uint24 packId, uint256 totalPrice, uint16 amount);
-    event SetSupporterPacks(uint24[] packIds, Shop.SupporterPack[] packs);
+    uint16 private constant BARRAGE_SCROLL = SCROLL_BASE + 5;
+    uint16 private constant ACTIVITY_TICKET = MISC_BASE - 70;
+    uint16 private constant SONIC_GEM_TICKET = MISC_BASE - 69;
 
     MockUSDCToken private usdc;
     ActivityPoints private activityPoints;
@@ -57,7 +49,7 @@ contract ShopTest is EstforTest {
         treasury.setSpenders(_addresses(address(shop)), true);
         treasury.setFundAllocationPercentages(_addresses(address(shop)), _uints(100));
         vm.expectEmit(false, false, false, true, address(shop));
-        emit SetBrushDistributionPercentages(25, 50, 25);
+        emit Shop.SetBrushDistributionPercentages(25, 50, 25);
         shop.setBrushDistributionPercentages(25, 50, 25);
 
         usdc = new MockUSDCToken();
@@ -191,7 +183,7 @@ contract ShopTest is EstforTest {
         vm.startPrank(ALICE);
         brush.approve(address(shop), 1000);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit Buy(ALICE, ALICE, BRONZE_SHIELD, 2, 500);
+        emit Shop.Buy(ALICE, ALICE, BRONZE_SHIELD, 2, 500);
         shop.buy(ALICE, BRONZE_SHIELD, 2);
         vm.stopPrank();
         assertEq(itemNFT.balanceOf(ALICE, BRONZE_SHIELD), 2);
@@ -205,7 +197,7 @@ contract ShopTest is EstforTest {
         vm.startPrank(ALICE);
         brush.approve(address(shop), 800);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit Buy(ALICE, ALICE, BRONZE_SHIELD, 2, 400);
+        emit Shop.Buy(ALICE, ALICE, BRONZE_SHIELD, 2, 400);
         shop.buy(ALICE, BRONZE_SHIELD, 2);
         vm.stopPrank();
         assertEq(itemNFT.balanceOf(ALICE, BRONZE_SHIELD), 2);
@@ -220,7 +212,7 @@ contract ShopTest is EstforTest {
         vm.startPrank(ALICE);
         brush.approve(address(shop), 1000);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit Buy(ALICE, ALICE, BRONZE_SHIELD, 2, 500);
+        emit Shop.Buy(ALICE, ALICE, BRONZE_SHIELD, 2, 500);
         shop.buy(ALICE, BRONZE_SHIELD, 2);
         vm.stopPrank();
         assertEq(itemNFT.balanceOf(ALICE, BRONZE_SHIELD), 2);
@@ -249,7 +241,7 @@ contract ShopTest is EstforTest {
         vm.startPrank(ALICE);
         brush.approve(address(shop), funds);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit BuyBatch(ALICE, ALICE, _uints(BRONZE_SHIELD, SAPPHIRE_AMULET), _uints(1, 2), prices);
+        emit Shop.BuyBatch(ALICE, ALICE, _uints(BRONZE_SHIELD, SAPPHIRE_AMULET), _uints(1, 2), prices);
         shop.buyBatch(ALICE, _uints(BRONZE_SHIELD, SAPPHIRE_AMULET), _uints(1, 2));
         vm.stopPrank();
         assertEq(itemNFT.balanceOf(ALICE, BRONZE_SHIELD), 1);
@@ -262,7 +254,7 @@ contract ShopTest is EstforTest {
         vm.startPrank(ALICE);
         brush.approve(address(shop), 1000);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit Buy(ALICE, BOB, BRONZE_SHIELD, 2, 500);
+        emit Shop.Buy(ALICE, BOB, BRONZE_SHIELD, 2, 500);
         shop.buy(BOB, BRONZE_SHIELD, 2);
         vm.stopPrank();
         assertEq(itemNFT.balanceOf(BOB, BRONZE_SHIELD), 2);
@@ -275,7 +267,7 @@ contract ShopTest is EstforTest {
         vm.startPrank(ALICE);
         brush.approve(address(shop), 900);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit BuyBatch(ALICE, BOB, _uints(BRONZE_SHIELD, SAPPHIRE_AMULET), _uints(1, 2), _uints(500, 200));
+        emit Shop.BuyBatch(ALICE, BOB, _uints(BRONZE_SHIELD, SAPPHIRE_AMULET), _uints(1, 2), _uints(500, 200));
         shop.buyBatch(BOB, _uints(BRONZE_SHIELD, SAPPHIRE_AMULET), _uints(1, 2));
         vm.stopPrank();
         assertEq(itemNFT.balanceOf(BOB, BRONZE_SHIELD), 1);
@@ -293,7 +285,7 @@ contract ShopTest is EstforTest {
         vm.warp(block.timestamp + SELLING_CUTOFF_DURATION);
         vm.prank(ALICE);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit Sell(ALICE, BRONZE_SHIELD, 1, 5);
+        emit Shop.Sell(ALICE, BRONZE_SHIELD, 1, 5);
         shop.sell(BRONZE_SHIELD, 1, 5);
         assertEq(itemNFT.totalSupply(BRONZE_SHIELD), 999);
         assertEq(brush.balanceOf(ALICE), 5);
@@ -305,7 +297,7 @@ contract ShopTest is EstforTest {
         vm.warp(block.timestamp + SELLING_CUTOFF_DURATION);
         vm.prank(ALICE);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit SellBatch(ALICE, _uints(BRONZE_SHIELD, SAPPHIRE_AMULET), _uints(1, 2), _uints(5, 10));
+        emit Shop.SellBatch(ALICE, _uints(BRONZE_SHIELD, SAPPHIRE_AMULET), _uints(1, 2), _uints(5, 10));
         shop.sellBatch(_uints(BRONZE_SHIELD, SAPPHIRE_AMULET), _uints(1, 2), 25);
         assertEq(itemNFT.totalSupply(BRONZE_SHIELD), 999);
         assertEq(itemNFT.totalSupply(SAPPHIRE_AMULET), 498);
@@ -357,7 +349,7 @@ contract ShopTest is EstforTest {
         assertEq(shop.tokenInfos(BRONZE_SHIELD).allocationRemaining, 0);
         vm.prank(ALICE);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit NewAllocation(BRONZE_SHIELD, 0.5 ether);
+        emit Shop.NewAllocation(BRONZE_SHIELD, 0.5 ether);
         shop.sell(BRONZE_SHIELD, 1, 0);
         assertEq(shop.tokenInfos(BRONZE_SHIELD).allocationRemaining, 0.5 ether - 0.5 ether / 1000);
         assertEq(shop.tokenInfos(BARRAGE_SCROLL).allocationRemaining, 0);
@@ -475,7 +467,7 @@ contract ShopTest is EstforTest {
         shop.addUnsellableItems(_uint16s(SAPPHIRE_AMULET));
         vm.prank(ALICE);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit NewAllocation(BRONZE_SHIELD, 1 ether);
+        emit Shop.NewAllocation(BRONZE_SHIELD, 1 ether);
         shop.sell(BRONZE_SHIELD, 1, 0);
         assertEq(shop.tokenInfos(BRONZE_SHIELD).allocationRemaining, 1 ether - 1 ether / 1000);
     }
@@ -491,9 +483,9 @@ contract ShopTest is EstforTest {
         assertEq(shop.liquidatePrice(BRONZE_SHIELD), price);
         vm.prank(ALICE);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit NewAllocation(BRONZE_SHIELD, 0.5 ether);
+        emit Shop.NewAllocation(BRONZE_SHIELD, 0.5 ether);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit Sell(ALICE, BRONZE_SHIELD, 1, price);
+        emit Shop.Sell(ALICE, BRONZE_SHIELD, 1, price);
         shop.sell(BRONZE_SHIELD, 1, price);
     }
 
@@ -527,7 +519,7 @@ contract ShopTest is EstforTest {
         Shop.SupporterPack[] memory packs = new Shop.SupporterPack[](1);
         packs[0] = _pack(10, uint32(block.timestamp));
         vm.expectEmit(false, false, false, true, address(shop));
-        emit SetSupporterPacks(ids, packs);
+        emit Shop.SetSupporterPacks(ids, packs);
         shop.setSupporterPacks(ids, packs);
     }
 
@@ -536,7 +528,7 @@ contract ShopTest is EstforTest {
         vm.startPrank(BOB);
         usdc.approve(address(shop), 10);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit BuySupporterPack(BOB, BOB, 1, 3, 1);
+        emit Shop.BuySupporterPack(BOB, BOB, 1, 3, 1);
         shop.buySupporterPack(1, BOB, 1);
         vm.stopPrank();
         assertEq(itemNFT.balanceOf(BOB, BRONZE_SHIELD), 1);
@@ -550,7 +542,7 @@ contract ShopTest is EstforTest {
         vm.startPrank(BOB);
         usdc.approve(address(shop), 10);
         vm.expectEmit(false, false, false, true, address(shop));
-        emit BuySupporterPack(BOB, BOB, 1, 9, 3);
+        emit Shop.BuySupporterPack(BOB, BOB, 1, 9, 3);
         shop.buySupporterPack(1, BOB, 3);
         vm.stopPrank();
         assertEq(itemNFT.balanceOf(BOB, BRONZE_SHIELD), 3);

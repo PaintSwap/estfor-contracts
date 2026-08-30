@@ -8,14 +8,16 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {FullGameStack} from "./utils/FullGameStack.sol";
 import {BlackMarketTrader} from "../contracts/Events/BlackMarketTrader.sol";
 import {ItemInput} from "../contracts/globals/players.sol";
+import {WOODCUTTING_BASE} from "../contracts/globals/items.sol";
 
 contract BlackMarketTraderTest is FullGameStack {
     uint256 private constant EVENT_ID = 1;
-    uint16 private constant BRONZE_AXE = 2816;
-    uint16 private constant IRON_AXE = 2817;
-    uint16 private constant MITHRIL_AXE = 2818;
-    uint16 private constant BRONZE_BAR = 10240;
-    uint16 private constant IRON_BAR = 10241;
+    uint16 private constant BRONZE_AXE = WOODCUTTING_BASE;
+    uint16 private constant IRON_AXE = WOODCUTTING_BASE + 1;
+    uint16 private constant MITHRIL_AXE = WOODCUTTING_BASE + 2;
+    uint16 private constant BAR_BASE = 10_240;
+    uint16 private constant BRONZE_BAR = BAR_BASE;
+    uint16 private constant IRON_BAR = BAR_BASE + 1;
 
     function setUp() public {
         deployFullGame();

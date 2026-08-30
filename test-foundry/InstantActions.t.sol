@@ -10,15 +10,17 @@ import {Skill} from "../contracts/globals/misc.sol";
 import {QuestInput, QUEST_PURSE_STRINGS} from "../contracts/globals/quests.sol";
 
 contract InstantActionsTest is FullGameStack {
-    uint16 private constant BRONZE_ARROW = 11_776;
-    uint16 private constant IRON_ARROW = 11_777;
-    uint16 private constant ADAMANTINE_ARROW = 11_779;
-    uint16 private constant RUNITE_ARROW = 11_780;
-    uint16 private constant ORICHALCUM_ARROW = 11_782;
-    uint16 private constant BRONZE_BAR = 10_240;
-    uint16 private constant IRON_BAR = 10_241;
-    uint16 private constant ADAMANTINE_BAR = 10_243;
-    uint16 private constant RUNITE_BAR = 10_244;
+    uint16 private constant ARROW_BASE = 11_776;
+    uint16 private constant BRONZE_ARROW = ARROW_BASE;
+    uint16 private constant IRON_ARROW = ARROW_BASE + 1;
+    uint16 private constant ADAMANTINE_ARROW = ARROW_BASE + 3;
+    uint16 private constant RUNITE_ARROW = ARROW_BASE + 4;
+    uint16 private constant ORICHALCUM_ARROW = ARROW_BASE + 6;
+    uint16 private constant BAR_BASE = 10_240;
+    uint16 private constant BRONZE_BAR = BAR_BASE;
+    uint16 private constant IRON_BAR = BAR_BASE + 1;
+    uint16 private constant ADAMANTINE_BAR = BAR_BASE + 3;
+    uint16 private constant RUNITE_BAR = BAR_BASE + 4;
 
     function setUp() public {
         deployFullGame();
