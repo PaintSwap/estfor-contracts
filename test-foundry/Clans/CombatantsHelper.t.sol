@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {EstforTest} from "./utils/EstforTest.sol";
-import {CombatantsHelper} from "../contracts/Clans/CombatantsHelper.sol";
-import {IClans} from "../contracts/interfaces/IClans.sol";
-import {ICombatants} from "../contracts/interfaces/ICombatants.sol";
-import {IPlayers} from "../contracts/interfaces/IPlayers.sol";
-import {ClanRank} from "../contracts/globals/clans.sol";
+import {EstforTest} from "../utils/EstforTest.sol";
+import {CombatantsHelper} from "../../contracts/Clans/CombatantsHelper.sol";
+import {IClans} from "../../contracts/interfaces/IClans.sol";
+import {ICombatants} from "../../contracts/interfaces/ICombatants.sol";
+import {IPlayers} from "../../contracts/interfaces/IPlayers.sol";
+import {ClanRank} from "../../contracts/globals/clans.sol";
 
 contract CombatantsPlayersStub {
   mapping(uint256 playerId => bool evolved) public evolved;

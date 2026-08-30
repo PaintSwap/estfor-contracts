@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {EstforTest} from "./utils/EstforTest.sol";
+import {EstforTest} from "../utils/EstforTest.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import {TerritoryTreasury} from "../contracts/Clans/TerritoryTreasury.sol";
-import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
-import {MockTerritories} from "../contracts/test/MockTerritories.sol";
+import {TerritoryTreasury} from "../../contracts/Clans/TerritoryTreasury.sol";
+import {IBrushToken} from "../../contracts/interfaces/external/IBrushToken.sol";
+import {MockTerritories} from "../../contracts/test/MockTerritories.sol";
 
 contract PlayerBalanceStub {
     mapping(address account => mapping(uint256 playerId => uint256 balance)) private _balances;

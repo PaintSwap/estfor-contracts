@@ -2,8 +2,8 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
-import {PlayersLibrary} from "../contracts/Players/PlayersLibrary.sol";
-import {MAX_LEVEL} from "../contracts/globals/players.sol";
+import {PlayersLibrary} from "../../contracts/Players/PlayersLibrary.sol";
+import {MAX_LEVEL} from "../../contracts/globals/players.sol";
 
 contract PlayersLibraryTest is Test {
     function testGetLevel() public pure {

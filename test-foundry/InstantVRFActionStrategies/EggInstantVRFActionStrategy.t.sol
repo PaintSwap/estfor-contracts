@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {EstforTest} from "./utils/EstforTest.sol";
-import {EggInstantVRFActionStrategy} from "../contracts/InstantVRFActionStrategies/EggInstantVRFActionStrategy.sol";
-import {InstantVRFActionInput, InstantVRFActionType} from "../contracts/globals/rewards.sol";
-import {SECRET_EGG_1_TIER1} from "../contracts/globals/items.sol";
+import {EstforTest} from "../utils/EstforTest.sol";
+import {EggInstantVRFActionStrategy} from "../../contracts/InstantVRFActionStrategies/EggInstantVRFActionStrategy.sol";
+import {InstantVRFActionInput, InstantVRFActionType} from "../../contracts/globals/rewards.sol";
+import {SECRET_EGG_1_TIER1} from "../../contracts/globals/items.sol";
 
 contract EggInstantVRFActionStrategyTest is EstforTest {
     uint16 private constant REWARD_BASE_PET_ID_MIN = 2;

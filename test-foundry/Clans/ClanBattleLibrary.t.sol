@@ -2,9 +2,9 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
-import {ClanBattleLibrary} from "../contracts/Clans/ClanBattleLibrary.sol";
-import {Skill} from "../contracts/globals/misc.sol";
-import {BattleResultEnum} from "../contracts/globals/clans.sol";
+import {ClanBattleLibrary} from "../../contracts/Clans/ClanBattleLibrary.sol";
+import {Skill} from "../../contracts/globals/misc.sol";
+import {BattleResultEnum} from "../../contracts/globals/clans.sol";
 
 contract ClanBattlePlayersStub {
   mapping(uint256 playerId => mapping(Skill skill => uint256 xp)) private _xp;

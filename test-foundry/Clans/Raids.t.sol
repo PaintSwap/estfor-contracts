@@ -5,14 +5,14 @@ import {Vm} from "forge-std/Vm.sol";
 import {stdError} from "forge-std/StdError.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Raids} from "../contracts/Clans/Raids.sol";
-import {Clans} from "../contracts/Clans/Clans.sol";
-import {Skill, CombatStats} from "../contracts/globals/misc.sol";
-import {ClanRank} from "../contracts/globals/clans.sol";
-import {ActionInput, ActionInfo, ACTIONCHOICE_MELEE_BASIC_SWORD} from "../contracts/globals/actions.sol";
-import {ActionChoiceInput, EquipPosition, ItemInput} from "../contracts/globals/players.sol";
-import {RAID_PASS, COMBAT_BASE} from "../contracts/globals/items.sol";
+import {FullGameStack} from "../utils/FullGameStack.sol";
+import {Raids} from "../../contracts/Clans/Raids.sol";
+import {Clans} from "../../contracts/Clans/Clans.sol";
+import {Skill, CombatStats} from "../../contracts/globals/misc.sol";
+import {ClanRank} from "../../contracts/globals/clans.sol";
+import {ActionInput, ActionInfo, ACTIONCHOICE_MELEE_BASIC_SWORD} from "../../contracts/globals/actions.sol";
+import {ActionChoiceInput, EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
+import {RAID_PASS, COMBAT_BASE} from "../../contracts/globals/items.sol";
 
 contract RaidsTest is FullGameStack {
     uint256 private constant CLAN_ID = 1;

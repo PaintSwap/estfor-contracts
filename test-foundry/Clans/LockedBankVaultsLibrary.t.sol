@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
-import {LockedBankVaultsLibrary} from "../contracts/Clans/LockedBankVaultsLibrary.sol";
+import {LockedBankVaultsLibrary} from "../../contracts/Clans/LockedBankVaultsLibrary.sol";
 
 contract LockedBankVaultsLibraryTest is Test {
   function testGetNewMMRsSimple() public pure {

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {EstforTest} from "./utils/EstforTest.sol";
-import {GameSubsidisationRegistry} from "../contracts/Session/GameSubsidisationRegistry.sol";
+import {EstforTest} from "../utils/EstforTest.sol";
+import {GameSubsidisationRegistry} from "../../contracts/Session/GameSubsidisationRegistry.sol";
 
 contract GameSubsidisationRegistryTest is EstforTest {
     bytes4 private constant DO_THING_SELECTOR = bytes4(keccak256("doThing()"));
