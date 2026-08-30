@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {FullGameStack} from "./utils/FullGameStack.sol";
-import {PetNFT} from "../contracts/PetNFT.sol";
-import {PlayersBase} from "../contracts/Players/PlayersBase.sol";
-import {PlayersLibrary} from "../contracts/Players/PlayersLibrary.sol";
-import {Skill, Attire, CombatStyle, CombatStats} from "../contracts/globals/misc.sol";
-import {PetSkin, PetEnhancementType, Pet} from "../contracts/globals/pets.sol";
+import {FullGameStack} from "../utils/FullGameStack.sol";
+import {PetNFT} from "../../contracts/PetNFT.sol";
+import {PlayersBase} from "../../contracts/Players/PlayersBase.sol";
+import {PlayersLibrary} from "../../contracts/Players/PlayersLibrary.sol";
+import {Skill, Attire, CombatStyle, CombatStats} from "../../contracts/globals/misc.sol";
+import {PetSkin, PetEnhancementType, Pet} from "../../contracts/globals/pets.sol";
 import {
     ActionInput,
     ActionInfo,
     ActionQueueStrategy,
     QueuedActionInput,
     SPAWN_MUL
-} from "../contracts/globals/actions.sol";
-import {ActionChoiceInput, EquipPosition, ItemInput} from "../contracts/globals/players.sol";
-import {GuaranteedReward, RandomReward} from "../contracts/globals/rewards.sol";
+} from "../../contracts/globals/actions.sol";
+import {ActionChoiceInput, EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
+import {GuaranteedReward, RandomReward} from "../../contracts/globals/rewards.sol";
 
 contract PlayersPetsTest is FullGameStack {
     uint16 private constant ACTION_ID = 1;

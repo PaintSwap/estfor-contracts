@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Equipment, Skill, Attire, CombatStats} from "../contracts/globals/misc.sol";
-import {EquipPosition, ItemInput, PendingQueuedActionState} from "../contracts/globals/players.sol";
-import {ActionInput, ActionInfo, ActionQueueStrategy, QueuedActionInput} from "../contracts/globals/actions.sol";
-import {GuaranteedReward, RandomReward} from "../contracts/globals/rewards.sol";
-import {BRONZE_AXE} from "../contracts/globals/items.sol";
+import {FullGameStack} from "../utils/FullGameStack.sol";
+import {Equipment, Skill, Attire, CombatStats} from "../../contracts/globals/misc.sol";
+import {EquipPosition, ItemInput, PendingQueuedActionState} from "../../contracts/globals/players.sol";
+import {ActionInput, ActionInfo, ActionQueueStrategy, QueuedActionInput} from "../../contracts/globals/actions.sol";
+import {GuaranteedReward, RandomReward} from "../../contracts/globals/rewards.sol";
+import {BRONZE_AXE} from "../../contracts/globals/items.sol";
 
 contract PlayersDailyRewardsTest is FullGameStack {
     uint16 private constant ACTION_ID = 1;

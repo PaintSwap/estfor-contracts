@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Bank} from "../contracts/Clans/Bank.sol";
-import {BankRelay} from "../contracts/Clans/BankRelay.sol";
-import {Clans} from "../contracts/Clans/Clans.sol";
-import {ClanRank} from "../contracts/globals/clans.sol";
-import {BulkTransferInfo} from "../contracts/globals/items.sol";
-import {EquipPosition, ItemInput} from "../contracts/globals/players.sol";
-import {ItemNFT} from "../contracts/ItemNFT.sol";
-import {TestERC1155NoRoyalty} from "../contracts/test/TestERC1155NoRoyalty.sol";
-import {TestERC721} from "../contracts/test/TestERC721.sol";
+import {FullGameStack} from "../utils/FullGameStack.sol";
+import {Bank} from "../../contracts/Clans/Bank.sol";
+import {BankRelay} from "../../contracts/Clans/BankRelay.sol";
+import {Clans} from "../../contracts/Clans/Clans.sol";
+import {ClanRank} from "../../contracts/globals/clans.sol";
+import {BulkTransferInfo} from "../../contracts/globals/items.sol";
+import {EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
+import {ItemNFT} from "../../contracts/ItemNFT.sol";
+import {TestERC1155NoRoyalty} from "../../contracts/test/TestERC1155NoRoyalty.sol";
+import {TestERC721} from "../../contracts/test/TestERC721.sol";
 
 contract BankTest is FullGameStack {
     uint256 private constant CLAN_ID = 1;

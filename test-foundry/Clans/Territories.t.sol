@@ -3,13 +3,13 @@ pragma solidity ^0.8.28;
 
 import {Vm} from "forge-std/Vm.sol";
 
-import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Territories} from "../contracts/Clans/Territories.sol";
-import {Clans} from "../contracts/Clans/Clans.sol";
-import {CombatantsHelper} from "../contracts/Clans/CombatantsHelper.sol";
-import {ClanRank, VaultClanInfo} from "../contracts/globals/clans.sol";
-import {BoostType, Skill, CombatStats} from "../contracts/globals/misc.sol";
-import {EquipPosition, ItemInput} from "../contracts/globals/players.sol";
+import {FullGameStack} from "../utils/FullGameStack.sol";
+import {Territories} from "../../contracts/Clans/Territories.sol";
+import {Clans} from "../../contracts/Clans/Clans.sol";
+import {CombatantsHelper} from "../../contracts/Clans/CombatantsHelper.sol";
+import {ClanRank, VaultClanInfo} from "../../contracts/globals/clans.sol";
+import {BoostType, Skill, CombatStats} from "../../contracts/globals/misc.sol";
+import {EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
 
 contract TerritoriesTest is FullGameStack {
     uint256 private constant CLAN_ID = 1;

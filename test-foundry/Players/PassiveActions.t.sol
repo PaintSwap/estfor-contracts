@@ -3,11 +3,11 @@ pragma solidity ^0.8.28;
 
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import {FullGameStack} from "./utils/FullGameStack.sol";
-import {PassiveActions} from "../contracts/PassiveActions.sol";
-import {Skill, BoostType} from "../contracts/globals/misc.sol";
-import {EquipPosition, ItemInput} from "../contracts/globals/players.sol";
-import {GuaranteedReward, RandomReward} from "../contracts/globals/rewards.sol";
+import {FullGameStack} from "../utils/FullGameStack.sol";
+import {PassiveActions} from "../../contracts/PassiveActions.sol";
+import {Skill, BoostType} from "../../contracts/globals/misc.sol";
+import {EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
+import {GuaranteedReward, RandomReward} from "../../contracts/globals/rewards.sol";
 
 contract PassiveActionsTest is FullGameStack {
     uint16 private constant POISON = 13_694;
