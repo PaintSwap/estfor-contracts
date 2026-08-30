@@ -340,11 +340,11 @@ abstract contract EstforTest is Test, ERC1155Holder {
         values[3] = uint8(d);
     }
 
-    function _uint32s(uint32 a, uint32 b, uint32 c) internal pure returns (uint32[] memory values) {
+    function _uint32s(uint256 a, uint256 b, uint256 c) internal pure returns (uint32[] memory values) {
         values = new uint32[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
+        values[0] = uint32(a);
+        values[1] = uint32(b);
+        values[2] = uint32(c);
     }
 
     function _int16s(int16 a, int16 b, int16 c) internal pure returns (int16[] memory values) {
