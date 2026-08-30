@@ -11,7 +11,7 @@ import {Clans} from "../contracts/Clans/Clans.sol";
 import {Skill, CombatStats} from "../contracts/globals/misc.sol";
 import {ClanRank} from "../contracts/globals/clans.sol";
 import {ActionInput, ActionInfo, ACTIONCHOICE_MELEE_BASIC_SWORD} from "../contracts/globals/actions.sol";
-import {ActionChoiceInput, EquipPosition, ItemInput, XP_BYTES} from "../contracts/globals/players.sol";
+import {ActionChoiceInput, EquipPosition, ItemInput} from "../contracts/globals/players.sol";
 import {RAID_PASS, COMBAT_BASE} from "../contracts/globals/items.sol";
 
 contract RaidsTest is FullGameStack {
@@ -21,10 +21,6 @@ contract RaidsTest is FullGameStack {
     bytes32 private constant OUTCOME_TOPIC = keccak256(
         "RaidBattleOutcome(uint256,uint256,uint256,uint256,uint256,uint16[],uint256,bool,uint256[],uint256[])"
     );
-
-    event RequestSpawnRaid(uint256 playerId, uint256 requestId);
-    event RequestFightRaid(uint256 playerId, uint56 clanId, uint256 raidId, uint256 requestId);
-    event RemoveCombatant(uint256 playerId, uint256 clanId);
 
     function setUp() public {
         deployFullGame();
@@ -57,7 +53,7 @@ contract RaidsTest is FullGameStack {
 
     function testCanSpawnARaid() public {
         vm.expectEmit(false, false, false, true, address(raids));
-        emit RequestSpawnRaid(playerId, 1);
+        emit Raids.RequestSpawnRaid(playerId, 1);
         vm.prank(ALICE);
         raids.requestSpawnRaid(uint64(playerId));
     }
@@ -129,7 +125,7 @@ contract RaidsTest is FullGameStack {
         _mintBank(RAID_PASS, 1);
         _spawn();
         vm.expectEmit(false, false, false, true, address(raids));
-        emit RequestFightRaid(playerId, uint56(CLAN_ID), 1, 2);
+        emit Raids.RequestFightRaid(playerId, uint56(CLAN_ID), 1, 2);
         uint256 attackCost = raids.getAttackCost();
         vm.prank(ALICE);
         raids.requestFightRaid{value: attackCost}(uint64(playerId), uint40(CLAN_ID), 1, 0);
@@ -152,7 +148,7 @@ contract RaidsTest is FullGameStack {
     function testDefeatMonstersAndRaidBoss() public {
         _winningFightSetup(1);
         vm.expectEmit(false, false, false, true, address(raids));
-        emit RequestFightRaid(playerId, uint56(CLAN_ID), 1, 2);
+        emit Raids.RequestFightRaid(playerId, uint56(CLAN_ID), 1, 2);
         _requestFight();
         Outcome memory out = _fulfillOutcome(2, 100_000, true);
         assertGe(out.raidId, 1);
@@ -209,7 +205,7 @@ contract RaidsTest is FullGameStack {
     function testRemovesCombatantWhenLeavingClan() public {
         _assign();
         vm.expectEmit(false, false, false, true, address(raids));
-        emit RemoveCombatant(playerId, CLAN_ID);
+        emit Raids.RemoveCombatant(playerId, CLAN_ID);
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.NONE, playerId);
     }
@@ -221,13 +217,41 @@ contract RaidsTest is FullGameStack {
     }
 
     function testEnforcesMaxClanCombatants() public {
-        uint64[] memory ids = new uint64[](21);
-        for (uint256 i; i < ids.length; ++i) {
-            ids[i] = uint64(i + 1);
+        uint256 maxCombatants = 20; // Matches the value passed to Raids.initialize in FullGameStack
+        uint256 startPlayerId = playerId + 1;
+        uint256[] memory memberIds = new uint256[](maxCombatants + 1);
+        uint64[] memory tooManyIds = new uint64[](maxCombatants + 1);
+        for (uint256 i; i < tooManyIds.length; ++i) {
+            memberIds[i] = startPlayerId + i;
+            tooManyIds[i] = uint64(startPlayerId + i);
         }
+
+        // Tier 2 (added in setUp) has enough capacity for all the invitees
+        vm.prank(ALICE);
+        clans.upgradeClan(CLAN_ID, playerId, 2);
+        vm.prank(ALICE);
+        clans.inviteMembers(CLAN_ID, memberIds, playerId);
+
+        uint256 upgradeCost = 1 ether * tooManyIds.length;
+        brush.mint(BOB, upgradeCost);
+        vm.startPrank(BOB);
+        brush.approve(address(playerNFT), upgradeCost);
+        vm.stopPrank();
+        for (uint256 i; i < tooManyIds.length; ++i) {
+            uint256 nextPlayerId = startPlayerId + i;
+            string memory playerName = string.concat("name", vm.toString(nextPlayerId));
+            _createPlayer(BOB, 1, playerName, true);
+            vm.startPrank(BOB);
+            playerNFT.editPlayer(nextPlayerId, playerName, "", "", "", true);
+            clans.acceptInvite(CLAN_ID, nextPlayerId, 0);
+            vm.stopPrank();
+        }
+
         vm.expectRevert(Raids.TooManyCombatants.selector);
-        vm.prank(address(combatantsHelper));
-        raids.assignCombatants(CLAN_ID, ids, 0, playerId);
+        vm.prank(ALICE);
+        combatantsHelper.assignCombatants(
+            CLAN_ID, false, new uint64[](0), false, new uint64[](0), true, tooManyIds, playerId
+        );
     }
 
     function testOnlyOwnerCanAddBaseRaids() public {
@@ -393,16 +417,6 @@ contract RaidsTest is FullGameStack {
     function _playerIds(uint256 id) private pure returns (uint64[] memory ids) {
         ids = new uint64[](1);
         ids[0] = uint64(id);
-    }
-
-    function _xpAtLevel(uint256 level) private pure returns (uint56) {
-        uint256 key = (level - 1) * 4;
-        return uint56(
-            uint32(
-                XP_BYTES[key] | (bytes4(XP_BYTES[key + 1]) >> 8) | (bytes4(XP_BYTES[key + 2]) >> 16)
-                    | (bytes4(XP_BYTES[key + 3]) >> 24)
-            )
-        );
     }
 
     function _addCombatData() private {

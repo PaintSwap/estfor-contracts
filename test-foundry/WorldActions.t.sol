@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 import {WorldActions} from "../contracts/WorldActions.sol";
@@ -10,8 +9,9 @@ import {ActionInput, ActionInfo, SPAWN_MUL, RATE_MUL} from "../contracts/globals
 import {ActionChoiceInput} from "../contracts/globals/players.sol";
 import {Skill, CombatStats} from "../contracts/globals/misc.sol";
 import {GuaranteedReward, RandomReward, ActionRewards} from "../contracts/globals/rewards.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 
-contract WorldActionsTest is Test {
+contract WorldActionsTest is EstforTest {
     uint16 private constant NONE = 0;
     uint16 private constant COMBAT_BASE = 2048;
     uint16 private constant COMBAT_MAX = 2559;
@@ -308,78 +308,5 @@ contract WorldActionsTest is Test {
     {
         rewards = new RandomReward[](1);
         rewards[0] = RandomReward({itemTokenId: itemTokenId, chance: chance, amount: amount});
-    }
-
-    function _uint16s(uint16 a) private pure returns (uint16[] memory values) {
-        values = new uint16[](1);
-        values[0] = a;
-    }
-
-    function _uint16s(uint16 a, uint16 b) private pure returns (uint16[] memory values) {
-        values = new uint16[](2);
-        values[0] = a;
-        values[1] = b;
-    }
-
-    function _uint16s(uint16 a, uint16 b, uint16 c) private pure returns (uint16[] memory values) {
-        values = new uint16[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
-    }
-
-    function _uint16s(uint16 a, uint16 b, uint16 c, uint16 d) private pure returns (uint16[] memory values) {
-        values = new uint16[](4);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
-        values[3] = d;
-    }
-
-    function _uint24s(uint24 a) private pure returns (uint24[] memory values) {
-        values = new uint24[](1);
-        values[0] = a;
-    }
-
-    function _uint24s(uint24 a, uint24 b, uint24 c) private pure returns (uint24[] memory values) {
-        values = new uint24[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
-    }
-
-    function _uint8s(Skill a, Skill b) private pure returns (uint8[] memory values) {
-        values = new uint8[](2);
-        values[0] = uint8(a);
-        values[1] = uint8(b);
-    }
-
-    function _uint8s(Skill a, Skill b, Skill c) private pure returns (uint8[] memory values) {
-        values = new uint8[](3);
-        values[0] = uint8(a);
-        values[1] = uint8(b);
-        values[2] = uint8(c);
-    }
-
-    function _uint8s(Skill a, Skill b, Skill c, Skill d) private pure returns (uint8[] memory values) {
-        values = new uint8[](4);
-        values[0] = uint8(a);
-        values[1] = uint8(b);
-        values[2] = uint8(c);
-        values[3] = uint8(d);
-    }
-
-    function _uint32s(uint32 a, uint32 b, uint32 c) private pure returns (uint32[] memory values) {
-        values = new uint32[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
-    }
-
-    function _int16s(int16 a, int16 b, int16 c) private pure returns (int16[] memory values) {
-        values = new int16[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
     }
 }

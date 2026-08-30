@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {Vm} from "forge-std/Vm.sol";
@@ -27,12 +26,6 @@ contract CosmeticsTest is FullGameStack {
     uint16 private constant LOG = 10_496;
     uint16 private constant WOODCUTTING_MAX = 3_071;
     uint24 private constant ACTION_TIMESPAN = 3_600;
-
-    event SetCosmetics(uint16[] itemTokenIds, CosmeticInfo[] cosmeticInfos);
-    event RemoveCosmetics(uint16[] itemTokenIds);
-    event CosmeticApplied(uint256 indexed playerId, uint16 indexed itemTokenId, EquipPosition slot);
-    event CosmeticRemoved(uint256 indexed playerId, EquipPosition slot);
-    event EditAvatar(uint256 playerId, uint256 newAvatarId);
 
     function setUp() public {
         deployFullGame();
@@ -63,7 +56,7 @@ contract CosmeticsTest is FullGameStack {
         uint16[] memory tokenIds = _tokenIds(1);
         CosmeticInfo[] memory infos = _cosmeticInfos(1, EquipPosition.AVATAR, 9);
         vm.expectEmit(address(cosmetics));
-        emit SetCosmetics(tokenIds, infos);
+        emit Cosmetics.SetCosmetics(tokenIds, infos);
         cosmetics.setCosmetics(tokenIds, infos);
     }
 
@@ -71,10 +64,10 @@ contract CosmeticsTest is FullGameStack {
         uint16[] memory tokenIds = _tokenIds(1);
         CosmeticInfo[] memory infos = _cosmeticInfos(1, EquipPosition.AVATAR, 9);
         vm.expectEmit(address(cosmetics));
-        emit SetCosmetics(tokenIds, infos);
+        emit Cosmetics.SetCosmetics(tokenIds, infos);
         cosmetics.setCosmetics(tokenIds, infos);
         vm.expectEmit(address(cosmetics));
-        emit SetCosmetics(tokenIds, infos);
+        emit Cosmetics.SetCosmetics(tokenIds, infos);
         cosmetics.setCosmetics(tokenIds, infos);
     }
 
@@ -91,7 +84,7 @@ contract CosmeticsTest is FullGameStack {
         tokenIds[0] = 1;
         tokenIds[1] = 2;
         vm.expectEmit(address(cosmetics));
-        emit RemoveCosmetics(tokenIds);
+        emit Cosmetics.RemoveCosmetics(tokenIds);
         cosmetics.removeCosmeticItems(tokenIds);
 
         uint256 newPlayerId = _createPlayer(BOB, 1, "New name", true);
@@ -272,7 +265,7 @@ contract CosmeticsTest is FullGameStack {
         brush.mint(BOB, 100 ether);
         vm.prank(BOB);
         brush.approve(address(playerNFT), 100 ether);
-        uint256 newPlayerId = _createEvolvedPlayer(BOB);
+        uint256 newPlayerId = _createPlayer(BOB, 1, "New name", true, true);
         _addWoodcuttingAvatar(true);
         _equipTestCosmetic(BOB, newPlayerId);
         QueuedActionInput memory queuedAction = _setupBasicWoodcutting();
@@ -386,18 +379,6 @@ contract CosmeticsTest is FullGameStack {
     function _pendingXP(address account, uint256 id) private view returns (uint256) {
         PendingQueuedActionState memory state = players.getPendingQueuedActionState(account, id);
         return state.actionMetadatas[0].xpGained;
-    }
-
-    function _createEvolvedPlayer(address account) private returns (uint256 createdPlayerId) {
-        vm.recordLogs();
-        vm.prank(account);
-        playerNFT.mint(1, "New name", "", "", "", true, true);
-        Vm.Log[] memory logs = vm.getRecordedLogs();
-        bytes32 topic = keccak256("NewPlayer(uint256,uint256,string,address,string,string,string,bool)");
-        for (uint256 i; i < logs.length; ++i) {
-            if (logs[i].topics[0] == topic) createdPlayerId = abi.decode(logs[i].data, (uint256));
-        }
-        require(createdPlayerId != 0, "NewPlayer event not found");
     }
 
     function _tokenIds(uint16 tokenId) private pure returns (uint16[] memory tokenIds) {

@@ -8,7 +8,6 @@ import {PVPBattleground} from "../contracts/PVPBattleground.sol";
 import {MockVRF} from "../contracts/test/MockVRF.sol";
 import {BattleResultEnum} from "../contracts/globals/clans.sol";
 import {Skill} from "../contracts/globals/misc.sol";
-import {XP_BYTES} from "../contracts/globals/players.sol";
 
 contract PVPBattlegroundTest is FullGameStack {
     uint256 private constant ATTACK_COOLDOWN = 3600;
@@ -298,16 +297,6 @@ contract PVPBattlegroundTest is FullGameStack {
         }
 
         fail("BattleResult event not found");
-    }
-
-    function _xpAtLevel(uint256 level) private pure returns (uint56) {
-        uint256 key = (level - 1) * 4;
-        return uint56(
-            uint32(
-                XP_BYTES[key] | (bytes4(XP_BYTES[key + 1]) >> 8) | (bytes4(XP_BYTES[key + 2]) >> 16)
-                    | (bytes4(XP_BYTES[key + 3]) >> 24)
-            )
-        );
     }
 
     function _skills(Skill a) private pure returns (Skill[] memory skills) {

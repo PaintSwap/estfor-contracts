@@ -30,6 +30,7 @@ contract ItemNFTTest is EstforTest {
     function _item(uint16 tokenId, EquipPosition equipPosition) private pure returns (ItemInput memory input) {
         input.tokenId = tokenId;
         input.equipPosition = equipPosition;
+        input.isTransferable = true;
     }
 
     function _addItem(uint16 tokenId, EquipPosition equipPosition, bool transferable) private {
@@ -195,18 +196,5 @@ contract ItemNFTTest is EstforTest {
         assertEq(itemNFT.balanceOfs(ALICE, _uint16s(TITANIUM_AXE, RUNITE_AXE, ORICHALCUM_AXE)), _uints(2, 1, 2));
         assertEq(itemNFT.balanceOfs(DEV, _uint16s(IRON_AXE, ADAMANTINE_AXE)), _uints(3, 4));
         assertEq(itemNFT.balanceOf(address(this), MITHRIL_AXE), 1);
-    }
-
-    function _uint16s(uint16 a, uint16 b) private pure returns (uint16[] memory values) {
-        values = new uint16[](2);
-        values[0] = a;
-        values[1] = b;
-    }
-
-    function _uint16s(uint16 a, uint16 b, uint16 c) private pure returns (uint16[] memory values) {
-        values = new uint16[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
     }
 }

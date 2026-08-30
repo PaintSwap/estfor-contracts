@@ -740,9 +740,16 @@ abstract contract FullGameStack is EstforTest {
         internal
         returns (uint256 createdPlayerId)
     {
+        return _createPlayer(account, avatarId, heroName, makeActive, false);
+    }
+
+    function _createPlayer(address account, uint256 avatarId, string memory heroName, bool makeActive, bool upgrade)
+        internal
+        returns (uint256 createdPlayerId)
+    {
         vm.recordLogs();
         vm.prank(account);
-        playerNFT.mint(avatarId, heroName, "", "", "", false, makeActive);
+        playerNFT.mint(avatarId, heroName, "", "", "", upgrade, makeActive);
         bytes32 newPlayerTopic = keccak256("NewPlayer(uint256,uint256,string,address,string,string,string,bool)");
         Vm.Log[] memory logs = vm.getRecordedLogs();
         for (uint256 i; i < logs.length; ++i) {
@@ -828,10 +835,5 @@ abstract contract FullGameStack is EstforTest {
         values = new uint256[](2);
         values[0] = a;
         values[1] = b;
-    }
-
-    function _uint16s(uint16 a) private pure returns (uint16[] memory values) {
-        values = new uint16[](1);
-        values[0] = a;
     }
 }

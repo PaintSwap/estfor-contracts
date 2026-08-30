@@ -30,6 +30,8 @@ import {MockBrushToken} from "../../contracts/test/external/MockBrushToken.sol";
 import {MockOracleCB} from "../../contracts/test/MockOracleCB.sol";
 import {MockRouter} from "../../contracts/test/external/MockRouter.sol";
 import {MockVRF} from "../../contracts/test/MockVRF.sol";
+import {Skill} from "../../contracts/globals/misc.sol";
+import {XP_BYTES} from "../../contracts/globals/players.sol";
 
 abstract contract EstforTest is Test, ERC1155Holder {
     address internal constant ALICE = address(0xA11CE);
@@ -277,5 +279,88 @@ abstract contract EstforTest is Test, ERC1155Holder {
         values[0] = a;
         values[1] = b;
         values[2] = c;
+    }
+
+    function _uint16s(uint16 a) internal pure returns (uint16[] memory values) {
+        values = new uint16[](1);
+        values[0] = a;
+    }
+
+    function _uint16s(uint16 a, uint16 b) internal pure returns (uint16[] memory values) {
+        values = new uint16[](2);
+        values[0] = a;
+        values[1] = b;
+    }
+
+    function _uint16s(uint16 a, uint16 b, uint16 c) internal pure returns (uint16[] memory values) {
+        values = new uint16[](3);
+        values[0] = a;
+        values[1] = b;
+        values[2] = c;
+    }
+
+    function _uint16s(uint16 a, uint16 b, uint16 c, uint16 d) internal pure returns (uint16[] memory values) {
+        values = new uint16[](4);
+        values[0] = a;
+        values[1] = b;
+        values[2] = c;
+        values[3] = d;
+    }
+
+    function _uint24s(uint24 a) internal pure returns (uint24[] memory values) {
+        values = new uint24[](1);
+        values[0] = a;
+    }
+
+    function _uint24s(uint24 a, uint24 b, uint24 c) internal pure returns (uint24[] memory values) {
+        values = new uint24[](3);
+        values[0] = a;
+        values[1] = b;
+        values[2] = c;
+    }
+
+    function _uint8s(Skill a, Skill b) internal pure returns (uint8[] memory values) {
+        values = new uint8[](2);
+        values[0] = uint8(a);
+        values[1] = uint8(b);
+    }
+
+    function _uint8s(Skill a, Skill b, Skill c) internal pure returns (uint8[] memory values) {
+        values = new uint8[](3);
+        values[0] = uint8(a);
+        values[1] = uint8(b);
+        values[2] = uint8(c);
+    }
+
+    function _uint8s(Skill a, Skill b, Skill c, Skill d) internal pure returns (uint8[] memory values) {
+        values = new uint8[](4);
+        values[0] = uint8(a);
+        values[1] = uint8(b);
+        values[2] = uint8(c);
+        values[3] = uint8(d);
+    }
+
+    function _uint32s(uint32 a, uint32 b, uint32 c) internal pure returns (uint32[] memory values) {
+        values = new uint32[](3);
+        values[0] = a;
+        values[1] = b;
+        values[2] = c;
+    }
+
+    function _int16s(int16 a, int16 b, int16 c) internal pure returns (int16[] memory values) {
+        values = new int16[](3);
+        values[0] = a;
+        values[1] = b;
+        values[2] = c;
+    }
+
+    function _xpAtLevel(uint256 level) internal pure returns (uint56) {
+        uint256 key = (level - 1) * 4;
+        return uint56(
+            uint32(
+                XP_BYTES[key] | (bytes4(XP_BYTES[key + 1]) >> 8) | (bytes4(XP_BYTES[key + 2]) >> 16)
+                    | (bytes4(XP_BYTES[key + 3]) >> 24)
+            )
+        );
     }
 }

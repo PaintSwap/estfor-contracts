@@ -5,9 +5,8 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 import {PlayerNFT} from "../contracts/PlayerNFT.sol";
-import {EstforLibrary} from "../contracts/EstforLibrary.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
-import {IPlayers} from "../contracts/interfaces/IPlayers.sol";
+import {PlayersBase} from "../contracts/Players/PlayersBase.sol";
 import {PlayersImplMisc1} from "../contracts/Players/PlayersImplMisc1.sol";
 import {Player, PlayerInfo, AvatarInfo} from "../contracts/globals/players.sol";
 import {Skill} from "../contracts/globals/misc.sol";
@@ -26,30 +25,6 @@ contract PlayerNFTTest is FullGameStack {
     uint256 private constant EDIT_COST = 1 ether;
     uint256 private constant UPGRADE_COST = 1 ether;
 
-    event NewPlayer(
-        uint256 playerId,
-        uint256 avatarId,
-        string name,
-        address from,
-        string discord,
-        string twitter,
-        string telegram,
-        bool upgrade
-    );
-    event EditPlayer(
-        uint256 playerId,
-        address from,
-        string newName,
-        uint256 paid,
-        string discord,
-        string twitter,
-        string telegram,
-        bool upgrade
-    );
-    event EditNameCost(uint256 newCost);
-    event UpgradePlayerCost(uint256 newCost);
-    event UpgradePlayerAvatar(uint256 playerId, uint256 newAvatarId, uint256 tokenCost);
-
     function setUp() public {
         deployFullGame();
     }
@@ -57,9 +32,9 @@ contract PlayerNFTTest is FullGameStack {
     function testCheckInitializationParams() public {
         PlayerNFT implementation = new PlayerNFT();
         vm.expectEmit(false, false, false, true);
-        emit EditNameCost(EDIT_COST);
+        emit PlayerNFT.EditNameCost(EDIT_COST);
         vm.expectEmit(false, false, false, true);
-        emit UpgradePlayerCost(2 ether);
+        emit PlayerNFT.UpgradePlayerCost(2 ether);
         new ERC1967Proxy(
             address(implementation),
             abi.encodeCall(
@@ -148,13 +123,13 @@ contract PlayerNFTTest is FullGameStack {
 
     function testEditSocialsNoChargeIfNameDoesNotChange() public {
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit EditPlayer(playerId, ALICE, ORIG_NAME, 0, "", "1231231", "", false);
+        emit PlayerNFT.EditPlayer(playerId, ALICE, ORIG_NAME, 0, "", "1231231", "", false);
         vm.prank(ALICE);
         playerNFT.editPlayer(playerId, ORIG_NAME, "", "1231231", "", false);
 
         _fundAndApprove(ALICE, EDIT_COST);
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit EditPlayer(playerId, ALICE, "New name", EDIT_COST, "", "1231231", "", false);
+        emit PlayerNFT.EditPlayer(playerId, ALICE, "New name", EDIT_COST, "", "1231231", "", false);
         vm.prank(ALICE);
         playerNFT.editPlayer(playerId, "New name", "", "1231231", "", false);
     }
@@ -166,9 +141,9 @@ contract PlayerNFTTest is FullGameStack {
         assertNotEq(mintedTimestamp, 0);
 
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit UpgradePlayerAvatar(playerId, 10001, UPGRADE_COST);
+        emit PlayerNFT.UpgradePlayerAvatar(playerId, 10001, UPGRADE_COST);
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit EditPlayer(playerId, ALICE, "new name", EDIT_COST, "", "1231231", "", true);
+        emit PlayerNFT.EditPlayer(playerId, ALICE, "new name", EDIT_COST, "", "1231231", "", true);
         vm.prank(ALICE);
         playerNFT.editPlayer(playerId, "new name", "", "1231231", "", true);
 
@@ -178,7 +153,7 @@ contract PlayerNFTTest is FullGameStack {
         assertEq(PlayersImplMisc1(address(players)).getPlayer(playerId).packedData, bytes1(0x80));
 
         vm.prank(ALICE);
-        vm.expectRevert(); // Players.AlreadyUpgraded is declared in a shared implementation base.
+        vm.expectRevert(PlayersBase.AlreadyUpgraded.selector);
         playerNFT.editPlayer(playerId, "new name", "", "1231231", "", true);
         PlayerInfo memory info = playerNFT.getPlayerInfo(playerId);
         assertEq(info.avatarId, 10001);
@@ -191,9 +166,9 @@ contract PlayerNFTTest is FullGameStack {
         _fundAndApprove(ALICE, UPGRADE_COST);
         uint256 newPlayerId = playerId + 1;
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit NewPlayer(newPlayerId, 1, "name", ALICE, "", "1231231", "", true);
+        emit PlayerNFT.NewPlayer(newPlayerId, 1, "name", ALICE, "", "1231231", "", true);
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit UpgradePlayerAvatar(newPlayerId, 10001, UPGRADE_COST);
+        emit PlayerNFT.UpgradePlayerAvatar(newPlayerId, 10001, UPGRADE_COST);
         vm.prank(ALICE);
         playerNFT.mint(1, "name", "", "1231231", "", true, true);
 
@@ -248,6 +223,9 @@ contract PlayerNFTTest is FullGameStack {
     }
 
     function testExternalURLWhenNotInBeta() public {
+        // Direct storage write: Players._isBeta is at slot 5, offset 20 (see `forge inspect Players storage-layout`).
+        // Clearing that byte flips the stack to non-beta; if the upstream layout changes, this write corrupts an
+        // unrelated variable and the assertions below fail.
         bytes32 slot = vm.load(address(players), bytes32(uint256(5)));
         vm.store(address(players), bytes32(uint256(5)), bytes32(uint256(slot) & ~(uint256(0xff) << 160)));
         assertEq(
@@ -275,6 +253,7 @@ contract PlayerNFTTest is FullGameStack {
     function testNameAndSymbol() public {
         assertEq(playerNFT.name(), "Estfor Players (Beta)");
         assertEq(playerNFT.symbol(), "EK_PB");
+        // Direct storage write: PlayerNFT._isBeta is at slot 9, offset 0 (see `forge inspect PlayerNFT storage-layout`).
         vm.store(address(playerNFT), bytes32(uint256(9)), bytes32(0));
         assertEq(playerNFT.name(), "Estfor Players");
         assertEq(playerNFT.symbol(), "EK_P");
