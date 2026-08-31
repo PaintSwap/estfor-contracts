@@ -19,6 +19,9 @@ artifacts
 # Foundry files
 cache-foundry
 out
+broadcast
+.forge-deploy-data
+.deployments
 
 # sol2uml
 DebugStorageSlots.svg

@@ -73,6 +73,7 @@
     "outputStorage": "npx hardhat check",
     "createHexXPString": "npx ts-node scripts/createHexXPString.ts",
     "deploy": "npx hardhat run scripts/deploy.ts",
+    "deploy:foundry": "bash scripts/deploy-beta-local.sh",
     "deployUpgrade": "npx hardhat run scripts/deployUpgrade.ts",
     "deployImpls": "npx hardhat run scripts/deployImpls.ts",
     "deployBankBeaconUpgrade": "npx hardhat run scripts/deployBankBeaconUpgrade.ts",
