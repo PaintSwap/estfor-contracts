@@ -4,7 +4,6 @@ on:
     branches:
       - main
       - beta
-      - sonic
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -12,20 +11,17 @@ jobs:
   Foundry:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
       - uses: foundry-rs/foundry-toolchain@v1
-      - uses: pnpm/action-setup@v4
-      - name: Install packages
-        uses: actions/setup-node@v4
+      - uses: pnpm/setup@v2
         with:
-          node-version-file: package.json
-          cache: "pnpm"
+          runtime: node@24
       - run: pnpm install --frozen-lockfile
         shell: bash
       - name: Restore Foundry build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             cache-foundry
