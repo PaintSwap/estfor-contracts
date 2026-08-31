@@ -24,7 +24,5 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
         shell: bash
-      - name: Deploy
-        run: forge test --match-path test-foundry/Deploy.t.sol
       - name: Tests
         run: forge test
