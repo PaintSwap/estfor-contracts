@@ -23,10 +23,10 @@ contract PlayersPetsTest is FullGameStack {
     uint16 private constant COOKED_MINNUS = 11_008;
     uint16 private constant SHADOW_SCROLL = 12_032;
     uint16 private constant NATURE_SCROLL = 12_033;
-    uint16 private constant PAPER = 12_064;
-    uint16 private constant ANCIENT_SCROLL = 12_035;
-    uint24 private constant PET_BASE_ID = 3;
-    uint24 private constant ALCHEMY_PET_BASE_ID = 4;
+    uint16 private constant PAPER = 65_496;
+    uint16 private constant ANCIENT_SCROLL = 12_039;
+    uint24 private constant PET_BASE_ID = 1;
+    uint24 private constant ALCHEMY_PET_BASE_ID = 2_001;
     uint40 private constant PET_ID = 1;
     uint56 private constant LEVEL_FIVE_XP = 374;
 
@@ -341,7 +341,7 @@ contract PlayersPetsTest is FullGameStack {
         choice.rate = rate;
         choice.xpPerHour = 3_600;
         choice.inputTokenIds = _uint16s(SHADOW_SCROLL, NATURE_SCROLL, PAPER);
-        choice.inputAmounts = _uint24s3(1, 1, 2);
+        choice.inputAmounts = _uint24s(1, 1, 2);
         choice.outputTokenId = ANCIENT_SCROLL;
         choice.outputAmount = outputAmount;
         choice.successPercent = 100;
@@ -371,12 +371,5 @@ contract PlayersPetsTest is FullGameStack {
     function _choices(ActionChoiceInput memory choice) private pure returns (ActionChoiceInput[] memory choices) {
         choices = new ActionChoiceInput[](1);
         choices[0] = choice;
-    }
-
-    function _uint24s3(uint24 a, uint24 b, uint24 c) private pure returns (uint24[] memory values) {
-        values = new uint24[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
     }
 }
