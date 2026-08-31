@@ -12,6 +12,7 @@ import {
     ActionInfo,
     ActionQueueStrategy,
     QueuedActionInput,
+    GUAR_MUL,
     SPAWN_MUL
 } from "../../contracts/globals/actions.sol";
 import {ActionChoiceInput, EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
@@ -20,6 +21,7 @@ import {GuaranteedReward, RandomReward} from "../../contracts/globals/rewards.so
 contract PlayersPetsTest is FullGameStack {
     uint16 private constant ACTION_ID = 1;
     uint16 private constant CHOICE_ID = 1;
+    uint16 private constant BRONZE_ARROW = 11_776;
     uint16 private constant COOKED_MINNUS = 11_008;
     uint16 private constant SHADOW_SCROLL = 12_032;
     uint16 private constant NATURE_SCROLL = 12_033;
@@ -255,7 +257,7 @@ contract PlayersPetsTest is FullGameStack {
         returns (PetNFT.BasePetInput memory input)
     {
         input.tier = 1;
-        input.skin = PetSkin.OG;
+        input.skin = PetSkin.DEFAULT;
         input.enhancementType = PetEnhancementType.MELEE;
         input.baseId = PET_BASE_ID;
         input.isTransferable = true;
@@ -287,12 +289,13 @@ contract PlayersPetsTest is FullGameStack {
     }
 
     function _setupCombat(uint40 petId) private returns (QueuedActionInput memory action) {
-        GuaranteedReward[] memory rewards = new GuaranteedReward[](0);
+        GuaranteedReward[] memory rewards = new GuaranteedReward[](1);
+        rewards[0] = GuaranteedReward(BRONZE_ARROW, uint16(GUAR_MUL));
         ActionInput[] memory inputs = new ActionInput[](1);
         inputs[0] = ActionInput({
             actionId: ACTION_ID,
             info: ActionInfo(
-                uint8(Skill.COMBAT), true, 3_600, 0, uint24(100 * SPAWN_MUL), 2_048, 2_303, 100, 0, false, true, 0
+                uint8(Skill.COMBAT), true, 3_600, 0, uint24(100 * SPAWN_MUL), 2_048, 2_559, 100, 0, false, true, 0
             ),
             guaranteedRewards: rewards,
             randomRewards: new RandomReward[](0),
@@ -347,6 +350,13 @@ contract PlayersPetsTest is FullGameStack {
         choice.successPercent = 100;
         choice.isAvailable = true;
         worldActions.addActionChoices(ACTION_ID, _uint16s(ACTION_ID), _choices(choice));
+        uint16[] memory tokenIds = _uint16s(SHADOW_SCROLL, NATURE_SCROLL, PAPER, ANCIENT_SCROLL);
+        ItemInput[] memory items = new ItemInput[](tokenIds.length);
+        for (uint256 i; i < tokenIds.length; ++i) {
+            items[i].tokenId = tokenIds[i];
+            items[i].isAvailable = true;
+        }
+        itemNFT.addItems(items);
         itemNFT.mint(ALICE, SHADOW_SCROLL, 100);
         itemNFT.mint(ALICE, NATURE_SCROLL, 100);
         itemNFT.mint(ALICE, PAPER, 200);
