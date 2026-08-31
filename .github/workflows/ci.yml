@@ -9,25 +9,14 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  Hardhat:
+  Foundry:
     runs-on: ubuntu-latest
-    env:
-      # These are just dummy values to prevent hardhat complaining about config issues
-      SONIC_RPC: NA
-      SONIC_BLAZE_RPC: NA
-      FANTOM_RPC: NA
-      PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
-      PRIVATE_KEY1: "0xa0610ad18a7a793b0d2c12d28d74ccc8d90a422514db2e4cea3a9eaec7215ad3"
-      PROPOSER_PRIVATE_KEY: "0xa0610ad18a7a793b0d2c12d28d74ccc8d90a422514db2e4cea3a9eaec7215ad4"
-      IS_BETA: true
-      USE_PRIVATE_KEY: false
-      USE_HARDHAT_FORK: false
-      CHAIN_ID: 31337
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
       - uses: pnpm/action-setup@v4
+      - uses: foundry-rs/foundry-toolchain@v1
       - name: Install packages
         uses: actions/setup-node@v4
         with:
@@ -36,6 +25,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
         shell: bash
       - name: Deploy
-        run: pnpm run deploy
+        run: forge test --match-path test-foundry/Deploy.t.sol
       - name: Tests
-        run: pnpm test
+        run: forge test
