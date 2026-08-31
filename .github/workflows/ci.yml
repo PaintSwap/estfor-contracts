@@ -24,6 +24,15 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
         shell: bash
+      - name: Restore Foundry build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            cache-foundry
+            out
+          key: foundry-${{ runner.os }}-${{ hashFiles('foundry.toml', 'foundry.lock', 'pnpm-lock.yaml', 'contracts/**/*.sol', 'test-foundry/**/*.sol', 'scripts/*.s.sol', 'lib/**/*.sol') }}
+          restore-keys: |
+            foundry-${{ runner.os }}-
       - name: Full beta deployment smoke
         run: pnpm run deploy:foundry
       - name: Foundry tests
