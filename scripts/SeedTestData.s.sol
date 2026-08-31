@@ -4,10 +4,10 @@ pragma solidity ^0.8.28;
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
 
-/// @notice Broadcasts the beta-only lifecycle at the end of scripts/deploy.ts.
+/// @notice Broadcasts the optional beta test-data lifecycle at the end of scripts/deploy.ts.
 /// @dev Time advances between phases are performed by the local deployment wrapper. Every state-changing
 /// contract call in these phases is broadcast by Forge.
-contract SeedBetaTestData is Script {
+contract SeedTestData is Script {
     string private dataDir;
     string private deploymentPath;
     string private deploymentJson;
@@ -25,13 +25,13 @@ contract SeedBetaTestData is Script {
     address private quests;
 
     function run() external {
-        require(block.chainid == 31337, "SeedBetaTestData: chain id must be 31337");
+        require(block.chainid == 31337, "SeedTestData: chain id must be 31337");
         uint256 ownerKey = vm.envUint("PRIVATE_KEY");
         uint256 aliceKey = vm.envUint("ALICE_PRIVATE_KEY");
         owner = vm.addr(ownerKey);
         alice = vm.addr(aliceKey);
         dataDir = vm.envOr("DEPLOY_DATA_DIR", string(".forge-deploy-data"));
-        deploymentPath = vm.envOr("DEPLOYMENT_INPUT", string(".deployments/beta-local.json"));
+        deploymentPath = vm.envOr("DEPLOYMENT_INPUT", string(".deployments/deployment.json"));
         deploymentJson = vm.readFile(deploymentPath);
         _loadContracts();
 
@@ -47,11 +47,11 @@ contract SeedBetaTestData is Script {
             else if (phase == 5) _phase5(ownerKey);
             else if (phase == 6) _phase6();
             else if (phase == 7) _phase7();
-            else revert("SeedBetaTestData: unknown phase");
+            else revert("SeedTestData: unknown phase");
             vm.stopBroadcast();
-            if (phase == 7) _recordBetaClanBank();
+            if (phase == 7) _recordTestClanBank();
         }
-        console2.log("Completed beta test-data phase", phase);
+        console2.log("Completed test-data phase", phase);
     }
 
     function _phase1() private {
@@ -86,7 +86,7 @@ contract SeedBetaTestData is Script {
         vm.stopBroadcast();
         vm.prank(owner);
         (bool success,) = shop.call(_testCall("sellTooEarly", _a0()));
-        require(!success, "SeedBetaTestData: early sale unexpectedly succeeded");
+        require(!success, "SeedTestData: early sale unexpectedly succeeded");
         vm.startBroadcast(ownerKey);
     }
 
@@ -104,9 +104,9 @@ contract SeedBetaTestData is Script {
 
         (bool success, bytes memory result) =
             bankFactory.staticcall(abi.encodeWithSignature("getBankAddress(uint256)", 30_000));
-        require(success, "SeedBetaTestData: bank lookup failed");
+        require(success, "SeedTestData: bank lookup failed");
         address bank = abi.decode(result, (address));
-        require(bank.code.length != 0, "SeedBetaTestData: clan bank was not deployed");
+        require(bank.code.length != 0, "SeedTestData: clan bank was not deployed");
         _call(itemNFT, _testCall("transferToBank", _a(owner, bank)));
     }
 
@@ -150,13 +150,13 @@ contract SeedBetaTestData is Script {
         vm.stopBroadcast();
     }
 
-    function _recordBetaClanBank() private {
+    function _recordTestClanBank() private {
         (bool success, bytes memory result) =
             bankFactory.staticcall(abi.encodeWithSignature("getBankAddress(uint256)", 30_000));
-        require(success, "SeedBetaTestData: bank lookup failed");
+        require(success, "SeedTestData: bank lookup failed");
         address bank = abi.decode(result, (address));
-        require(bank.code.length != 0, "SeedBetaTestData: clan bank was not deployed");
-        vm.writeJson(string.concat("\"", vm.toString(bank), "\""), deploymentPath, ".betaClanBank");
+        require(bank.code.length != 0, "SeedTestData: clan bank was not deployed");
+        vm.writeJson(string.concat("\"", vm.toString(bank), "\""), deploymentPath, ".testClanBank");
     }
 
     function _loadContracts() private {

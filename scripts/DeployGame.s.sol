@@ -4,10 +4,10 @@ pragma solidity ^0.8.28;
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
 
-/// @notice Broadcasts the complete beta game deployment and seed data to a blank chain.
+/// @notice Broadcasts a complete fresh game using configured external dependencies.
 /// @dev Contract bytecode is loaded from Foundry artifacts at runtime. External library placeholders
 /// are linked to the libraries deployed at the start of this broadcast before CREATE is executed.
-contract DeployBeta is Script {
+contract DeployGame is Script {
     string private constant ERC1967_PROXY = "out/ERC1967Proxy.sol/ERC1967Proxy.json";
     string private constant UPGRADEABLE_BEACON = "out/UpgradeableBeacon.sol/UpgradeableBeacon.json";
 
@@ -16,6 +16,7 @@ contract DeployBeta is Script {
     string private deploymentJson;
     string private deploymentInputJson;
     uint256 private phase;
+    bool private isBeta;
 
     address private estforLibrary;
     address private itemNFTLibrary;
@@ -80,54 +81,55 @@ contract DeployBeta is Script {
     address private bankFactory;
 
     function run() external {
-        require(block.chainid == 31337, "DeployBeta: chain id must be 31337");
         uint256 privateKey = vm.envUint("PRIVATE_KEY");
         owner = vm.addr(privateKey);
+        isBeta = vm.envOr("IS_BETA", false);
         dataDir = vm.envOr("DEPLOY_DATA_DIR", string(".forge-deploy-data"));
         phase = vm.envUint("DEPLOY_PHASE");
         if (phase != 1) {
-            deploymentInputJson = vm.readFile(vm.envOr("DEPLOYMENT_INPUT", string(".deployments/beta-local.json")));
+            deploymentInputJson = vm.readFile(vm.envOr("DEPLOYMENT_INPUT", string(".deployments/deployment.json")));
         }
 
         deploymentJson = vm.serializeUint("deployment", "chainId", block.chainid);
         deploymentJson = vm.serializeAddress("deployment", "owner", owner);
+        deploymentJson = vm.serializeBool("deployment", "isBeta", isBeta);
 
         vm.startBroadcast(privateKey);
         if (phase == 1) {
+            _loadExternalDependenciesFromEnvironment();
+            _recordExternalDependencies();
             _deployLibraries();
         } else if (phase == 2) {
-            _deployMocks();
-        } else if (phase == 3) {
-            _loadMocks();
+            _loadExternalDependencies();
             _deployGame1();
-        } else if (phase == 4) {
-            _loadMocks();
+        } else if (phase == 3) {
+            _loadExternalDependencies();
             _loadGame1();
             _deployGame2();
-        } else if (phase == 5) {
-            _loadMocks();
+        } else if (phase == 4) {
+            _loadExternalDependencies();
             _loadGame1();
             _loadGame2();
             _deployGame3();
-        } else if (phase == 6) {
+        } else if (phase == 5) {
             _loadAllContracts();
             _wireGame();
-        } else if (phase == 7) {
+        } else if (phase == 6) {
             _loadAllContracts();
             _seedGame1();
-        } else if (phase == 8) {
+        } else if (phase == 7) {
             _loadAllContracts();
             _seedGame2();
-        } else if (phase == 9) {
+        } else if (phase == 8) {
             _loadAllContracts();
             _seedGame3();
         } else {
-            revert("DeployBeta: unknown phase");
+            revert("DeployGame: unknown phase");
         }
         vm.stopBroadcast();
 
         vm.writeJson(deploymentJson, vm.envString("DEPLOYMENT_PHASE_OUTPUT"));
-        console2.log("Completed beta deployment phase", phase);
+        console2.log("Completed deployment phase", phase);
     }
 
     function _deployLibraries() private {
@@ -147,24 +149,29 @@ contract DeployBeta is Script {
         _record("lockedBankVaultsLibrary", lockedBankVaultsLibrary);
     }
 
-    function _deployMocks() private {
-        brush = _deploy("out/MockBrushToken.sol/MockBrushToken.json", "");
+    function _loadExternalDependenciesFromEnvironment() private {
+        brush = _externalAddress("BRUSH_ADDRESS");
+        wftm = _externalAddress("WFTM_ADDRESS");
+        vrf = _externalAddress("VRF_ADDRESS");
+        router = _externalAddress("ROUTER_ADDRESS");
+        paintSwapMarketplaceWhitelist = _externalAddress("PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS");
+        usdc = _externalAddress("USDC_ADDRESS");
+        lzEndpoint = _externalAddress("LZ_ENDPOINT_ADDRESS");
+    }
+
+    function _recordExternalDependencies() private {
         _record("brush", brush);
-        _call(brush, abi.encodeWithSignature("mint(address,uint256)", owner, 10_000_000 ether));
-        wftm = _deploy("out/MockWrappedNative.sol/WrappedNative.json", "");
         _record("wftm", wftm);
-        vrf = _deploy("out/MockVRF.sol/MockVRF.json", "");
         _record("vrf", vrf);
-        router = _deploy("out/MockRouter.sol/MockRouter.json", "");
         _record("router", router);
-        paintSwapMarketplaceWhitelist =
-            _deploy("out/MockPaintSwapMarketplaceWhitelist.sol/MockPaintSwapMarketplaceWhitelist.json", "");
         _record("paintSwapMarketplaceWhitelist", paintSwapMarketplaceWhitelist);
-        usdc = _deploy("out/MockUSDCToken.sol/MockUSDCToken.json", "");
         _record("usdc", usdc);
-        _call(usdc, abi.encodeWithSignature("mint(address,uint256)", owner, 10_000_000 ether));
-        lzEndpoint = _deploy("out/EndpointV2Mock.sol/EndpointV2Mock.json", abi.encode(uint32(30112), owner));
         _record("lzEndpoint", lzEndpoint);
+    }
+
+    function _externalAddress(string memory variableName) private view returns (address dependency) {
+        dependency = vm.envAddress(variableName);
+        require(dependency.code.length != 0, string.concat("DeployGame: no code at ", variableName));
     }
 
     function _deployGame1() private {
@@ -620,21 +627,23 @@ contract DeployBeta is Script {
             adminAccess,
             abi.encodeWithSignature("addPromotionalAdmins(address[])", _a(0xe9fB52D7611e502D93af381AC493981B42d91974))
         );
-        _call(
-            adminAccess,
-            abi.encodeWithSignature(
-                "addAdmins(address[])",
-                _a(
-                    0xB4DDa75e5Dee0a9e999152C3B72816fC1004d1dD,
-                    0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC,
-                    0xa801864d0D24686B15682261aa05D4e1e6e5BD94,
-                    0x6dC225F7f21ACB842761b8df52AE46208705c942
+        if (isBeta) {
+            _call(
+                adminAccess,
+                abi.encodeWithSignature(
+                    "addAdmins(address[])",
+                    _a(
+                        0xB4DDa75e5Dee0a9e999152C3B72816fC1004d1dD,
+                        0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC,
+                        0xa801864d0D24686B15682261aa05D4e1e6e5BD94,
+                        0x6dC225F7f21ACB842761b8df52AE46208705c942
+                    )
                 )
-            )
-        );
+            );
+        }
     }
 
-    function _loadMocks() private {
+    function _loadExternalDependencies() private {
         brush = _load("brush");
         wftm = _load("wftm");
         vrf = _load("vrf");
@@ -699,7 +708,7 @@ contract DeployBeta is Script {
     }
 
     function _loadAllContracts() private {
-        _loadMocks();
+        _loadExternalDependencies();
         _loadGame1();
         _loadGame2();
         _loadGame3();
@@ -732,7 +741,7 @@ contract DeployBeta is Script {
         assembly ("memory-safe") {
             deployed := create(0, add(creationCode, 0x20), mload(creationCode))
         }
-        require(deployed != address(0), string.concat("DeployBeta: CREATE failed for ", artifact));
+        require(deployed != address(0), string.concat("DeployGame: CREATE failed for ", artifact));
     }
 
     function _artifactCreationCode(string memory artifact) private view returns (bytes memory) {

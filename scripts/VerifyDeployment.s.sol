@@ -4,21 +4,26 @@ pragma solidity ^0.8.28;
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
 
-/// @notice Verifies the persistent local beta deployment through RPC-backed assertions.
-contract VerifyBetaDeployment is Script {
+/// @notice Verifies a persistent fresh deployment through RPC-backed assertions.
+contract VerifyDeployment is Script {
     bytes32 private constant IMPLEMENTATION_SLOT = bytes32(uint256(keccak256("eip1967.proxy.implementation")) - 1);
     bytes32 private constant ACTIVITY_POINT_CALLER = keccak256("ACTIVITY_POINT_CALLER");
 
     string private deploymentJson;
     string private manifestJson;
     address private owner;
+    bool private addTestData;
 
     function run() external {
-        require(block.chainid == 31337, "VerifyBetaDeployment: chain id must be 31337");
-        deploymentJson = vm.readFile(vm.envOr("DEPLOYMENT_INPUT", string(".deployments/beta-local.json")));
+        deploymentJson = vm.readFile(vm.envOr("DEPLOYMENT_INPUT", string(".deployments/deployment.json")));
         manifestJson =
             vm.readFile(string.concat(vm.envOr("DEPLOY_DATA_DIR", string(".forge-deploy-data")), "/manifest.json"));
         require(vm.parseJsonUint(deploymentJson, ".chainId") == block.chainid, "deployment chain id mismatch");
+        require(
+            vm.parseJsonBool(deploymentJson, ".isBeta") == vm.parseJsonBool(manifestJson, ".configuration.isBeta"),
+            "deployment data mode mismatch"
+        );
+        addTestData = vm.parseJsonBool(manifestJson, ".configuration.addTestData");
         owner = _load("owner");
 
         _assertAllRecordedContractsHaveCode();
@@ -26,17 +31,19 @@ contract VerifyBetaDeployment is Script {
         _assertBeacon();
         _assertGameWiring();
         _assertSeededData();
-        _assertBetaLifecycle();
+        if (addTestData) _assertTestDataLifecycle();
 
-        console2.log("Verified deployed bytecode addresses", vm.parseJsonKeys(deploymentJson, ".").length - 2);
-        console2.log("Verified complete beta deployment on chain", block.chainid);
+        console2.log("Verified recorded bytecode addresses", vm.parseJsonKeys(deploymentJson, ".").length - 3);
+        console2.log("Verified complete fresh deployment on chain", block.chainid);
     }
 
     function _assertAllRecordedContractsHaveCode() private view {
         string[] memory keys = vm.parseJsonKeys(deploymentJson, ".");
         for (uint256 i; i < keys.length; ++i) {
             bytes32 keyHash = keccak256(bytes(keys[i]));
-            if (keyHash == keccak256("chainId") || keyHash == keccak256("owner")) continue;
+            if (keyHash == keccak256("chainId") || keyHash == keccak256("owner") || keyHash == keccak256("isBeta")) {
+                continue;
+            }
             require(_load(keys[i]).code.length != 0, string.concat("no bytecode at ", keys[i]));
         }
     }
@@ -194,20 +201,20 @@ contract VerifyBetaDeployment is Script {
         require(success && unsellable, "unsellable item");
     }
 
-    function _assertBetaLifecycle() private view {
-        require(_addressCall(_load("playerNFT"), "ownerOf(uint256)", 200_000) == owner, "owner beta player");
+    function _assertTestDataLifecycle() private view {
+        require(_addressCall(_load("playerNFT"), "ownerOf(uint256)", 200_000) == owner, "owner test player");
         address alice = vm.addr(vm.envUint("ALICE_PRIVATE_KEY"));
-        require(_addressCall(_load("playerNFT"), "ownerOf(uint256)", 200_001) == alice, "alice beta player");
+        require(_addressCall(_load("playerNFT"), "ownerOf(uint256)", 200_001) == alice, "alice test player");
 
         (bool success, bytes memory result) =
             _load("clans").staticcall(abi.encodeWithSignature("getClan(uint256)", 30_000));
-        require(success && uint256(bytes32(result)) == 200_000, "beta clan");
+        require(success && uint256(bytes32(result)) == 200_000, "test clan");
         (success, result) = _load("bankFactory").staticcall(abi.encodeWithSignature("getBankAddress(uint256)", 30_000));
         address bank = abi.decode(result, (address));
-        require(success && bank == _load("betaClanBank") && bank.code.length != 0, "beta clan bank");
+        require(success && bank == _load("testClanBank") && bank.code.length != 0, "test clan bank");
 
         (success, result) = _load("orderBook").staticcall(abi.encodeWithSignature("getLowestAsk(uint256)", 3328));
-        require(success && abi.decode(result, (uint72)) != 0, "beta limit order");
+        require(success && abi.decode(result, (uint72)) != 0, "test limit order");
     }
 
     function _assertNonZeroCall(address target, bytes memory callData, string memory label) private view {
