@@ -340,7 +340,7 @@ contract PlayersPetsTest is FullGameStack {
         choice.skill = uint8(Skill.ALCHEMY);
         choice.rate = rate;
         choice.xpPerHour = 3_600;
-        choice.inputTokenIds = _uint16s3(SHADOW_SCROLL, NATURE_SCROLL, PAPER);
+        choice.inputTokenIds = _uint16s(SHADOW_SCROLL, NATURE_SCROLL, PAPER);
         choice.inputAmounts = _uint24s3(1, 1, 2);
         choice.outputTokenId = ANCIENT_SCROLL;
         choice.outputAmount = outputAmount;
@@ -371,13 +371,6 @@ contract PlayersPetsTest is FullGameStack {
     function _choices(ActionChoiceInput memory choice) private pure returns (ActionChoiceInput[] memory choices) {
         choices = new ActionChoiceInput[](1);
         choices[0] = choice;
-    }
-
-    function _uint16s3(uint16 a, uint16 b, uint16 c) private pure returns (uint16[] memory values) {
-        values = new uint16[](3);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
     }
 
     function _uint24s3(uint24 a, uint24 b, uint24 c) private pure returns (uint24[] memory values) {
