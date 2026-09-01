@@ -358,7 +358,7 @@ IOrderBook orderBook = IOrderBook(
 );
 ```
 
-A disposable test using this pattern compiled 36 sources with the legacy pipeline in 3.34 seconds and passed. A control experiment that restricted `test-foundry/**` to `via_ir = false` while `OrderBook.t.sol` still directly imported `OrderBook` failed before compilation with incompatible restrictions. Removing the implementation import is therefore necessary; changing only the deployment expression is not sufficient.
+A disposable test using this pattern compiled 36 sources with the legacy pipeline in 3.34 seconds and passed. A control experiment that restricted `test/**` to `via_ir = false` while `OrderBook.t.sol` still directly imported `OrderBook` failed before compilation with incompatible restrictions. Removing the implementation import is therefore necessary; changing only the deployment expression is not sufficient.
 
 The current test graph makes this a migration rather than a small configuration change:
 
@@ -367,11 +367,11 @@ The current test graph makes this a migration rather than a small configuration 
 - 25 test files directly import at least one of the ten confirmed offenders.
 - The 55 Solidity test/helper files and four Solidity scripts contain 147 direct contract-creation expressions across 27 files. Of these, 69 are concentrated in the two shared test helpers: 47 in `FullGameStack.sol` and 22 in `EstforTest.sol`.
 - There are 15 direct constructions of confirmed offenders: six `OrderBook`, two each of `Clans`, `CombatantsHelper`, and `PlayerNFT`, and one each of `Quests`, `PassiveActions`, and `UsageBasedSessionModule`. The three library offenders have no direct construction sites.
-- `test-foundry/utils/FullGameStack.sol` imports and deploys many affected game implementations. `test-foundry/utils/EstforTest.sol` imports and deploys `OrderBook` and `UsageBasedSessionModule`. Migrating these shared bases would have high leverage, but leaf tests also contain direct imports.
+- `test/utils/FullGameStack.sol` imports and deploys many affected game implementations. `test/utils/EstforTest.sol` imports and deploys `OrderBook` and `UsageBasedSessionModule`. Migrating these shared bases would have high leverage, but leaf tests also contain direct imports.
 - At least 18 tests use types scoped to affected concrete implementations, such as `Clans.Tier`, `Quests.MinimumRequirement`, `PassiveActions.PassiveActionInput`, and `UsageBasedSessionModule.ExecuteParams`. Some Players tests also refer to concrete-contract errors, events, or selectors. These definitions would need to move to neutral interface/global files, or the tests would need equivalent ABI declarations and selector constants.
 - Existing public interfaces do not consistently expose initializer and setup methods. Tests that deploy proxies would need test-only deployment interfaces or `abi.encodeWithSignature` instead of `abi.encodeCall(Concrete.initialize, ...)`.
 
-Do not add a blanket `{ paths = "test-foundry/**", via_ir = false }` restriction during migration. Tests with no affected imports will select the default non-IR profile automatically; tests that still import affected implementations must remain eligible for the IR profile.
+Do not add a blanket `{ paths = "test/**", via_ir = false }` restriction during migration. Tests with no affected imports will select the default non-IR profile automatically; tests that still import affected implementations must remain eligible for the IR profile.
 
 ### Artifact deployment and library linking
 
@@ -422,7 +422,7 @@ The recommendation was implemented after the discovery measurement:
 - `FullGameStack` separates deployment and wiring into smaller phases so that the fixture itself compiles with legacy codegen. Large initializer and mint payloads are encoded in bounded chunks where the legacy ABI encoder would otherwise exhaust the stack.
 - Solidity scripts already avoided affected implementation imports, so no script artifact deployment rewrite was required. `DeployGame.s.sol` now builds its 17-address Players initializer from contract state instead of a 17-argument helper, which lets the script itself compile without IR. Its existing artifact linker now replaces either unresolved placeholders or the fixed test addresses emitted by Foundry, so production deployments do not retain test-library links.
 
-Artifact metadata after the final cold build contained zero artifacts rooted under `test-foundry/` or `scripts/` with `metadata.settings.viaIR = true`. A separate forced target build of `scripts/DeployGame.s.sol` succeeded and emitted `DeployGame.json` with `viaIR = false`. The session test helpers under `contracts/test/Session/` also compile without IR. The only IR artifacts in test-helper paths are the explicitly restricted battle-result decoder and its neutral interface dependency. This verifies the intended import boundary directly. Production sources shared by both jobs can still have both legacy and IR artifacts; that duplication is expected.
+Artifact metadata after the final cold build contained zero artifacts rooted under `test/` or `scripts/` with `metadata.settings.viaIR = true`. A separate forced target build of `scripts/DeployGame.s.sol` succeeded and emitted `DeployGame.json` with `viaIR = false`. The session test helpers under `contracts/test/Session/` also compile without IR. The only IR artifacts in test-helper paths are the explicitly restricted battle-result decoder and its neutral interface dependency. This verifies the intended import boundary directly. Production sources shared by both jobs can still have both legacy and IR artifacts; that duplication is expected.
 
 The comparison used the same command shape in the same orb. Both runs started with `forge clean`, forced compilation, ran all tests, and exited successfully. The global baseline was recorded before this change, with the parent revision's `via_ir = true` configuration. The selective run used the configuration implemented in this change:
 

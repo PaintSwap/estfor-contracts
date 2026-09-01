@@ -2,7 +2,7 @@
 # Sonic's Brio hardfork raises the contract size limit (~48kb), so all profiles share the same
 # optimizer settings. Only sources that exceed legacy-codegen stack limits use the via-ir profile.
 src = "contracts"
-test = "test-foundry"
+test = "test"
 out = "out"
 cache_path = "cache-foundry"
 libs = ["node_modules", "lib"]

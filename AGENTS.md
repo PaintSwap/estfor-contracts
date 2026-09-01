@@ -17,7 +17,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
 After updating the contract code, add an Upgrade test to ensure the upgrade works as expected:
 
 ```solidity
-// test-foundry/UpgradeSafety.t.sol
+// test/UpgradeSafety.t.sol
 import {Test} from "forge-std/Test.sol";
 import {Upgrades, Options} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 

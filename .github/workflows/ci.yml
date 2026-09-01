@@ -26,7 +26,7 @@ jobs:
           path: |
             cache-foundry
             out
-          key: foundry-${{ runner.os }}-${{ hashFiles('foundry.toml', 'foundry.lock', 'pnpm-lock.yaml', 'contracts/**/*.sol', 'test-foundry/**/*.sol', 'scripts/*.s.sol', 'lib/**/*.sol') }}
+          key: foundry-${{ runner.os }}-${{ hashFiles('foundry.toml', 'foundry.lock', 'pnpm-lock.yaml', 'contracts/**/*.sol', 'test/**/*.sol', 'scripts/*.s.sol', 'lib/**/*.sol') }}
           restore-keys: |
             foundry-${{ runner.os }}-
       - name: Full fresh deployment smoke
