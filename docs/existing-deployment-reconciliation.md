@@ -461,6 +461,8 @@ The tracked records use the verified Sonic genesis hash, deployment start blocks
 
 ### Phase 2: read-only inventory and plan format
 
+Status: implemented on 2026-09-01.
+
 1. Extract shared proxy/beacon slot constants and checks from `VerifyDeployment` where practical.
 2. Inventory all stable contracts, externals, proxy implementations, beacon implementations, owners, code sizes, and code hashes.
 3. Parse Foundry artifacts and build-info into segmented implementation fingerprints.
@@ -473,6 +475,8 @@ Acceptance:
 - inventory is deterministic at a pinned block;
 - both Sonic deployments produce separate reports; and
 - implementation mismatches are classified, never collapsed into a false upgrade decision.
+
+`pnpm deployment:sync -- --deployment sonic-live` now pins an observation block and writes a hashable JSON plan plus a Markdown report under `runs/<deployment-id>/`. It inventories every stable and external address, discovers UUPS and beacon implementations, validates UUPS UUIDs and Safe ownership, fingerprints Foundry artifacts and build info, classifies segmented runtime differences, and treats the legacy OpenZeppelin manifest as a warning-only cross-check. Configuration domains remain explicitly unmanaged until their later phases. The command is read-only and exits with status 2 when the report contains alignment errors, including the known `DailyRewardsScheduler` owner drift.
 
 ### Phase 3: Shop read-only tracer bullet
 

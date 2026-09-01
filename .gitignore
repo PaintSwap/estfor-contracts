@@ -22,6 +22,7 @@ out
 broadcast
 .forge-deploy-data
 .deployments
+runs
 
 # sol2uml
 DebugStorageSlots.svg

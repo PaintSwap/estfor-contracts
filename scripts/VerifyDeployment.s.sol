@@ -3,10 +3,10 @@ pragma solidity ^0.8.28;
 
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
+import {DeploymentSlots} from "./DeploymentSlots.sol";
 
 /// @notice Verifies a persistent fresh deployment through RPC-backed assertions.
 contract VerifyDeployment is Script {
-    bytes32 private constant IMPLEMENTATION_SLOT = bytes32(uint256(keccak256("eip1967.proxy.implementation")) - 1);
     bytes32 private constant ACTIVITY_POINT_CALLER = keccak256("ACTIVITY_POINT_CALLER");
     uint256 private constant MAX_RUNTIME_CODE_SIZE = 49_152;
 
@@ -99,7 +99,7 @@ contract VerifyDeployment is Script {
     function _assertProxy(string memory proxyName, string memory implementationName) private view {
         address proxy = _load(proxyName);
         address expectedImplementation = _load(implementationName);
-        address actualImplementation = address(uint160(uint256(vm.load(proxy, IMPLEMENTATION_SLOT))));
+        address actualImplementation = address(uint160(uint256(vm.load(proxy, DeploymentSlots.IMPLEMENTATION))));
         require(
             actualImplementation == expectedImplementation, string.concat("implementation mismatch for ", proxyName)
         );
