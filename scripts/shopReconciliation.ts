@@ -1,16 +1,11 @@
-import {Interface, JsonRpcProvider, Log, getAddress} from "ethers";
+import {Interface, JsonRpcProvider, getAddress} from "ethers";
 import type {DeploymentRegistry} from "./deploymentRegistry";
 import {getShopData} from "./data/shop";
 import type {ShopData} from "./data/shop";
+import type {ReconciliationOperation, ReconciliationPlan, ReconciliationPlanOptions} from "./reconciliation";
 
 export const SHOP_RECONCILIATION_ABI = [
-  "event AddShopItems((uint16 tokenId,uint128 price)[] shopItems)",
-  "event EditShopItems((uint16 tokenId,uint128 price)[] shopItems)",
-  "event RemoveShopItems(uint16[] tokenIds)",
-  "event AddUnsellableItems(uint16[] tokenIds)",
-  "event RemoveUnsellableItems(uint16[] tokenIds)",
-  "function shopItems(uint16 tokenId) view returns (uint256)",
-  "function tokenInfos(uint16 tokenId) view returns (uint80 allocationRemaining,uint80 price,uint40 checkpointTimestamp,bool unsellable)",
+  "function getShopItemStates(uint256 startTokenId,uint256 endTokenId) view returns ((uint16 tokenId,uint256 price,bool unsellable)[])",
   "function addBuyableItems((uint16 tokenId,uint128 price)[] buyableItems)",
   "function editItems((uint16 tokenId,uint128 price)[] itemsToEdit)",
   "function removeItems(uint16[] tokenIds)",
@@ -25,28 +20,18 @@ export interface ShopRecord {
   unsellable: boolean;
 }
 
-export interface ShopOperation {
-  id: string;
-  domain: "shop";
-  action: "add" | "update" | "remove";
-  resource: "buyable-items" | "unsellable-items";
-  target: string;
-  caller: string;
-  value: "0";
-  data: string;
+export type ShopResource = "buyable-items" | "unsellable-items";
+export interface ShopPostcondition {
+  type: "shop-records-match";
   tokenIds: number[];
-  destructive: boolean;
-  dependencies: string[];
-  estimatedGas: string | null;
-  postcondition: {type: "shop-records-match"; tokenIds: number[]};
 }
+export type ShopOperation = ReconciliationOperation<ShopResource, ShopPostcondition> & {
+  domain: "shop";
+  value: "0";
+  tokenIds: number[];
+};
 
-export interface ShopPlan {
-  policy: "exact";
-  target: string;
-  membershipSource: "events" | "scan" | "events+scan-audit";
-  desired: ShopRecord[];
-  current: ShopRecord[];
+export interface ShopChanges {
   buyableItems: {
     add: ShopRecord[];
     update: ShopRecord[];
@@ -54,25 +39,25 @@ export interface ShopPlan {
     noOp: ShopRecord[];
   };
   unsellableItems: {add: number[]; remove: number[]; noOp: number[]};
-  limits: {
-    allowRemovals: boolean;
-    maxChangedItems: number;
-    maxRemovals: number;
-    maxAggregatePriceChange: string;
-    changedItems: number;
-    removals: number;
-    aggregatePriceChange: string;
-  };
-  blockedReasons: string[];
-  operations: ShopOperation[];
 }
 
-export interface ShopPlanOptions {
-  allowRemovals?: boolean;
-  maxChangedItems?: number;
-  maxRemovals?: number;
+export interface ShopLimits {
+  allowRemovals: boolean;
+  maxChangedItems: number;
+  maxRemovals: number;
+  maxAggregatePriceChange: string;
+  changedItems: number;
+  removals: number;
+  aggregatePriceChange: string;
+}
+
+export interface ShopPlan
+  extends ReconciliationPlan<ShopRecord[], ShopRecord[], ShopChanges, ShopLimits, ShopOperation> {
+  target: string;
+}
+
+export interface ShopPlanOptions extends ReconciliationPlanOptions {
   maxAggregatePriceChange?: bigint;
-  auditMembership?: boolean;
 }
 
 export const DEFAULT_SHOP_LIMITS = {
@@ -95,70 +80,19 @@ function desiredRecords(data: ShopData): ShopRecord[] {
   }));
 }
 
-async function eventMembership(
-  provider: JsonRpcProvider,
-  address: string,
-  fromBlock: number,
-  toBlock: number
-): Promise<Set<number>> {
-  const buyableMembers = new Set<number>();
-  const unsellableMembers = new Set<number>();
-  const topicSet = [
-    shopInterface.getEvent("AddShopItems")!.topicHash,
-    shopInterface.getEvent("EditShopItems")!.topicHash,
-    shopInterface.getEvent("RemoveShopItems")!.topicHash,
-    shopInterface.getEvent("AddUnsellableItems")!.topicHash,
-    shopInterface.getEvent("RemoveUnsellableItems")!.topicHash,
-  ];
-  const range = 50_000;
-  for (let start = fromBlock; start <= toBlock; start += range) {
-    const logs = await provider.getLogs({
-      address,
-      fromBlock: start,
-      toBlock: Math.min(toBlock, start + range - 1),
-      topics: [topicSet],
-    });
-    for (const log of logs) {
-      const parsed = shopInterface.parseLog(log as Log);
-      if (!parsed) continue;
-      if (parsed.name === "AddShopItems" || parsed.name === "EditShopItems") {
-        for (const item of parsed.args[0]) buyableMembers.add(Number(item.tokenId));
-      } else {
-        for (const tokenId of parsed.args[0]) {
-          if (parsed.name === "RemoveShopItems") buyableMembers.delete(Number(tokenId));
-          else if (parsed.name === "AddUnsellableItems") unsellableMembers.add(Number(tokenId));
-          else unsellableMembers.delete(Number(tokenId));
-        }
-      }
-    }
-  }
-  return new Set([...buyableMembers, ...unsellableMembers]);
-}
-
-async function readRecords(
-  provider: JsonRpcProvider,
-  address: string,
-  tokenIds: number[],
-  blockTag: number
-): Promise<ShopRecord[]> {
+async function readRecords(provider: JsonRpcProvider, address: string, blockTag: number): Promise<ShopRecord[]> {
   const records: ShopRecord[] = [];
-  const concurrency = 200;
-  for (let offset = 0; offset < tokenIds.length; offset += concurrency) {
-    const ids = tokenIds.slice(offset, offset + concurrency);
-    const values = await Promise.all(
-      ids.map(async (tokenId) => {
-        const [priceResult, tokenInfoResult] = await Promise.all([
-          provider.call({to: address, data: shopInterface.encodeFunctionData("shopItems", [tokenId]), blockTag}),
-          provider.call({to: address, data: shopInterface.encodeFunctionData("tokenInfos", [tokenId]), blockTag}),
-        ]);
-        return {
-          tokenId,
-          price: (shopInterface.decodeFunctionResult("shopItems", priceResult)[0] as bigint).toString(),
-          unsellable: Boolean(shopInterface.decodeFunctionResult("tokenInfos", tokenInfoResult)[3]),
-        };
-      })
-    );
-    records.push(...values.filter(({price, unsellable}) => price !== "0" || unsellable));
+  const pageSize = 1024;
+  for (let startTokenId = 0; startTokenId < 65_536; startTokenId += pageSize) {
+    const result = await provider.call({
+      to: address,
+      data: shopInterface.encodeFunctionData("getShopItemStates", [startTokenId, startTokenId + pageSize]),
+      blockTag,
+    });
+    const states = shopInterface.decodeFunctionResult("getShopItemStates", result)[0];
+    for (const state of states) {
+      records.push({tokenId: Number(state.tokenId), price: state.price.toString(), unsellable: state.unsellable});
+    }
   }
   return records;
 }
@@ -166,35 +100,10 @@ async function readRecords(
 export async function readCurrentShop(
   provider: JsonRpcProvider,
   deployment: DeploymentRegistry,
-  blockTag: number,
-  auditMembership = false
-): Promise<{records: ShopRecord[]; membershipSource: ShopPlan["membershipSource"]}> {
+  blockTag: number
+): Promise<ShopRecord[]> {
   const address = getAddress(deployment.contracts.shop.address);
-  let eventIds: Set<number>;
-  try {
-    eventIds = await eventMembership(provider, address, deployment.deploymentBlock, blockTag);
-  } catch {
-    const records = await readRecords(
-      provider,
-      address,
-      Array.from({length: 65_536}, (_, tokenId) => tokenId),
-      blockTag
-    );
-    return {records, membershipSource: "scan"};
-  }
-  const records = await readRecords(provider, address, sorted(eventIds), blockTag);
-  if (!auditMembership) return {records, membershipSource: "events"};
-
-  const scanned = await readRecords(
-    provider,
-    address,
-    Array.from({length: 65_536}, (_, tokenId) => tokenId),
-    blockTag
-  );
-  const eventKeys = records.map(({tokenId}) => tokenId).join(",");
-  const scanKeys = scanned.map(({tokenId}) => tokenId).join(",");
-  if (eventKeys !== scanKeys) throw new Error("Shop event membership does not match bounded uint16 audit scan");
-  return {records: scanned, membershipSource: "events+scan-audit"};
+  return readRecords(provider, address, blockTag);
 }
 
 function operation(
@@ -226,7 +135,6 @@ function operation(
 export function diffShop(
   deployment: DeploymentRegistry,
   current: ShopRecord[],
-  membershipSource: ShopPlan["membershipSource"],
   options: ShopPlanOptions = {}
 ): ShopPlan {
   const desired = desiredRecords(getShopData(deployment.profile));
@@ -343,11 +251,12 @@ export function diffShop(
   return {
     policy: "exact",
     target,
-    membershipSource,
     desired,
     current: [...current].sort((a, b) => a.tokenId - b.tokenId),
-    buyableItems: {add, update, remove, noOp},
-    unsellableItems: {add: unsellableAdd, remove: unsellableRemove, noOp: unsellableNoOp},
+    changes: {
+      buyableItems: {add, update, remove, noOp},
+      unsellableItems: {add: unsellableAdd, remove: unsellableRemove, noOp: unsellableNoOp},
+    },
     limits: {
       allowRemovals,
       maxChangedItems,
@@ -368,16 +277,13 @@ export async function buildShopPlan(
   blockTag: number,
   options: ShopPlanOptions = {}
 ): Promise<ShopPlan> {
-  const {records, membershipSource} = await readCurrentShop(provider, deployment, blockTag, options.auditMembership);
-  return diffShop(deployment, records, membershipSource, options);
+  const records = await readCurrentShop(provider, deployment, blockTag);
+  return diffShop(deployment, records, options);
 }
 
 export async function verifyShopPostconditions(provider: JsonRpcProvider, plan: ShopPlan): Promise<void> {
-  const managedIds = sorted(
-    new Set([...plan.desired.map(({tokenId}) => tokenId), ...plan.current.map(({tokenId}) => tokenId)])
-  );
   const blockTag = Number(await provider.send("eth_blockNumber", []));
-  const actual = await readRecords(provider, plan.target, managedIds, blockTag);
+  const actual = await readRecords(provider, plan.target, blockTag);
   const expected = plan.desired.filter(({price, unsellable}) => price !== "0" || unsellable);
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error("Shop simulation postconditions failed");
 }

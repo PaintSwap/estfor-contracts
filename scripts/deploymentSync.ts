@@ -47,7 +47,6 @@ async function main() {
     maxChangedItems: integerOption("--max-shop-changes", DEFAULT_SHOP_LIMITS.maxChangedItems),
     maxRemovals: integerOption("--max-shop-removals", DEFAULT_SHOP_LIMITS.maxRemovals),
     maxAggregatePriceChange: BigInt(option("--max-shop-value-change") ?? DEFAULT_SHOP_LIMITS.maxAggregatePriceChange),
-    auditMembership: process.argv.includes("--audit-shop-membership"),
   });
   if (plan.shop.blockedReasons.length === 0) {
     plan.simulation = await simulateShopPlan(

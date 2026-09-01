@@ -78,8 +78,7 @@ describe("Shop reconciliation", function () {
     const actual = new Interface(artifact.abi);
     const expected = new Interface(SHOP_RECONCILIATION_ABI);
     for (const name of [
-      "shopItems",
-      "tokenInfos",
+      "getShopItemStates",
       "addBuyableItems",
       "editItems",
       "removeItems",
@@ -87,15 +86,6 @@ describe("Shop reconciliation", function () {
       "removeUnsellableItems",
     ]) {
       assert.equal(actual.getFunction(name)!.selector, expected.getFunction(name)!.selector, name);
-    }
-    for (const name of [
-      "AddShopItems",
-      "EditShopItems",
-      "RemoveShopItems",
-      "AddUnsellableItems",
-      "RemoveUnsellableItems",
-    ]) {
-      assert.equal(actual.getEvent(name)!.topicHash, expected.getEvent(name)!.topicHash, name);
     }
   });
 
@@ -119,19 +109,19 @@ describe("Shop reconciliation", function () {
       maxAggregatePriceChange: 100_000n * 10n ** 18n,
     });
     assert.deepEqual(
-      plan.buyableItems.add.map(({tokenId}) => tokenId),
+      plan.changes.buyableItems.add.map(({tokenId}) => tokenId),
       [desired.buyableItems[0].tokenId]
     );
     assert.deepEqual(
-      plan.buyableItems.update.map(({tokenId}) => tokenId),
+      plan.changes.buyableItems.update.map(({tokenId}) => tokenId),
       [desired.buyableItems[1].tokenId]
     );
     assert.deepEqual(
-      plan.buyableItems.remove.map(({tokenId}) => tokenId),
+      plan.changes.buyableItems.remove.map(({tokenId}) => tokenId),
       [staleId]
     );
-    assert.equal(plan.buyableItems.noOp.length, desired.buyableItems.length - 2);
-    assert.deepEqual(plan.unsellableItems, {
+    assert.equal(plan.changes.buyableItems.noOp.length, desired.buyableItems.length - 2);
+    assert.deepEqual(plan.changes.unsellableItems, {
       add: [],
       remove: [],
       noOp: [...desired.unsellableItemIds].sort((a, b) => a - b),
@@ -169,7 +159,7 @@ describe("Shop reconciliation", function () {
       .filter((tokenId) => !desiredIds.has(tokenId))
       .slice(0, 11)
       .map((tokenId) => ({tokenId, price: "1", unsellable: false}));
-    const plan = diffShop(deployment, stale, "scan", {allowRemovals: true, maxRemovals: 10});
+    const plan = diffShop(deployment, stale, {allowRemovals: true, maxRemovals: 10});
     assert.ok(plan.blockedReasons.includes("Shop removal count 11 exceeds cap 10"));
   });
 });

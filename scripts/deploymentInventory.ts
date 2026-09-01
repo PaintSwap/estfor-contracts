@@ -18,8 +18,9 @@ import {
   getDeploymentRegistryPath,
 } from "./deploymentRegistry";
 import {buildShopPlan} from "./shopReconciliation";
-import type {ShopOperation, ShopPlan, ShopPlanOptions} from "./shopReconciliation";
+import type {ShopPlan, ShopPlanOptions} from "./shopReconciliation";
 import type {ShopSimulationResult} from "./shopSimulation";
+import type {ReconciliationOperation} from "./reconciliation";
 
 export const EIP1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
 export const EIP1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50";
@@ -84,7 +85,7 @@ export interface DeploymentPlan {
   externals: Array<CodeInventory & {name: string}>;
   domains: Array<{name: string; policy: "managed" | "observed" | "unmanaged"; reason: string}>;
   shop: ShopPlan;
-  operations: ShopOperation[];
+  operations: ReconciliationOperation[];
   simulation: ShopSimulationResult | {status: "blocked"; reasons: string[]} | null;
   findings: Finding[];
   summary: {
@@ -504,18 +505,18 @@ export function renderPlanMarkdown(plan: DeploymentPlan): string {
     "",
     "## Shop reconciliation",
     "",
-    `- Membership: ${plan.shop.membershipSource}`,
-    `- Buyable items: ${plan.shop.buyableItems.add.length} add, ${plan.shop.buyableItems.update.length} update, ${plan.shop.buyableItems.remove.length} remove, ${plan.shop.buyableItems.noOp.length} no-op`,
-    `- Unsellable flags: ${plan.shop.unsellableItems.add.length} add, ${plan.shop.unsellableItems.remove.length} remove, ${plan.shop.unsellableItems.noOp.length} no-op`,
+    "- Current state: paginated `getShopItemStates` reads at the observation block",
+    `- Buyable items: ${plan.shop.changes.buyableItems.add.length} add, ${plan.shop.changes.buyableItems.update.length} update, ${plan.shop.changes.buyableItems.remove.length} remove, ${plan.shop.changes.buyableItems.noOp.length} no-op`,
+    `- Unsellable flags: ${plan.shop.changes.unsellableItems.add.length} add, ${plan.shop.changes.unsellableItems.remove.length} remove, ${plan.shop.changes.unsellableItems.noOp.length} no-op`,
     `- Change limits: ${plan.shop.limits.changedItems}/${plan.shop.limits.maxChangedItems} items, ${plan.shop.limits.removals}/${plan.shop.limits.maxRemovals} removals, ${plan.shop.limits.aggregatePriceChange}/${plan.shop.limits.maxAggregatePriceChange} aggregate price change`,
     "",
     "### Removals",
     "",
-    ...(plan.shop.buyableItems.remove.length === 0 && plan.shop.unsellableItems.remove.length === 0
+    ...(plan.shop.changes.buyableItems.remove.length === 0 && plan.shop.changes.unsellableItems.remove.length === 0
       ? ["No removals."]
       : [
-          ...plan.shop.buyableItems.remove.map(({tokenId, price}) => `- Buyable item ${tokenId} at ${price}`),
-          ...plan.shop.unsellableItems.remove.map((tokenId) => `- Unsellable flag ${tokenId}`),
+          ...plan.shop.changes.buyableItems.remove.map(({tokenId, price}) => `- Buyable item ${tokenId} at ${price}`),
+          ...plan.shop.changes.unsellableItems.remove.map((tokenId) => `- Unsellable flag ${tokenId}`),
         ]),
     "",
     "## Contracts",

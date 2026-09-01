@@ -16,11 +16,11 @@ The command should be a desired-state reconciler, not another collection of impe
 - Applying a plan requires an explicit apply option and the hash of the previously reviewed plan.
 - Deployment identity and stable addresses live in tracked files keyed by deployment ID. Chain ID is validated but is not the deployment identity because Sonic already has live and beta deployments on chain 146.
 - Current proxy implementations are discovered from EIP-1967 slots. Implementation code is compared with linked Foundry runtime artifacts by bytecode segment. OpenZeppelin validation remains the upgrade-safety check; it is not an implementation identity check.
-- Configuration is compared as managed resources with add, update, remove, and no-op results. Existing per-ID getters support part of this. Exact removal discovery needs bounded ID scanning, event indexing, or new contract introspection depending on the resource.
+- Configuration is compared as managed resources with add, update, remove, and no-op results. Every managed resource must expose direct contract reads that discover its complete current key set and configuration values.
 - Every tracked contract and beacon is expected to be owned by a multisignature Safe. All upgrades, wiring, and configuration changes are submitted as Safe proposals. EOA ownership and direct owner broadcasts are unsupported legacy behavior.
 - A deployer EOA may deploy libraries, implementations, and brand-new proxy contracts. A new proxy must be owned by the tracked Safe before the deployment transaction completes; later authority-controlled changes still go through a Safe proposal.
 - The first useful implementation should inventory every contract but manage only Shop buyable items and unsellable flags. It should then add Safe proposal execution, upgrades, and other data domains in stages.
-- Do not add contract version methods solely for this tool. A manually maintained version does not prove that deployed code matches the build. Add missing state getters or events when a resource cannot otherwise be compared safely.
+- Do not add contract version methods solely for this tool. A manually maintained version does not prove that deployed code matches the build. Add missing state getters when a resource cannot otherwise be compared safely.
 
 The intended invariant is:
 
@@ -116,7 +116,7 @@ Use TypeScript as the coordinator and data diff engine. Use Foundry for compilat
          ┌──────────────┐
          │ RPC inventory│
          │ slots / code │
-         │ getters/logs │
+         │ getters      │
          └──────┬───────┘
                 ▼
          ┌──────────────┐
@@ -137,7 +137,13 @@ Use TypeScript as the coordinator and data diff engine. Use Foundry for compilat
 └────────────┘       └────────────┘
 ```
 
-A pure Solidity coordinator is not a good fit. Deployment selection, historical-log indexing, ABI-normalized object comparison, plan serialization, Safe service calls, and human review output are host concerns. Keeping on-chain assertions and execution in Foundry still makes Foundry the contract-facing engine.
+A pure Solidity coordinator is not a good fit. Deployment selection, ABI-normalized object comparison, plan serialization, Safe service calls, and human review output are host concerns. Keeping on-chain assertions and execution in Foundry still makes Foundry the contract-facing engine.
+
+The plan envelope is shared across data domains. A generic reconciliation operation carries the domain, action, resource,
+target, caller, value, calldata, dependencies, gas estimate, and postcondition. A generic domain plan carries desired and
+current state, changes, limits, blocked reasons, and operations. Domain adapters still own their record shape, diff rules,
+limits, calldata encoding, and postconditions. Making those semantics generic would hide important safety rules instead of
+removing duplication.
 
 ## Tracked deployment registry
 
@@ -193,7 +199,7 @@ Design rules:
 - `authority.type` must be `safe`. The loader rejects an EOA owner instead of selecting a direct-broadcast fallback.
 - Any newly created proxy must name the tracked Safe as owner during initialization or transfer ownership to it within the same creation transaction.
 - Current implementation addresses are discovered from the chain and recorded in run reports, not maintained as stable intent.
-- `deploymentBlock` is required if event history is used to discover current key sets.
+- `deploymentBlock` bounds deployment-specific verification and audit queries.
 - A genesis hash or another stable network fingerprint protects against an RPC that reports the expected chain ID for a different network.
 - `profile` is only a pointer in the first version. It maps current `live` and `beta` choices without designing future rule inheritance.
 - Generated plans, receipts, traces, and Safe payloads go under an ignored `runs/<deploymentId>/<runId>/` directory.
@@ -293,12 +299,11 @@ Canonical desired buyable items already live in [`scripts/data/shopItems.ts`](..
 - owner-only `addBuyableItems`, `editItems`, and `removeItems`; and
 - owner-only `addUnsellableItems` and `removeUnsellableItems`.
 
-For every desired item ID, the current getter is enough to calculate add, update, or no-op. Exact removal requires discovery of current IDs that are absent from desired state. There are two workable first-version methods:
-
-1. Scan the bounded `uint16` keyspace with batched RPC or Multicall reads. This is independent of archive logs and contract changes.
-2. Reconstruct membership from `AddShopItems`, `EditShopItems`, and `RemoveShopItems` starting at a trusted deployment block. This is faster but requires complete logs and a provider that can serve the range reliably.
-
-Use event reconstruction when the deployment block and archive service are reliable, with bounded scanning as an audit/bootstrap path. Cache indexed membership by block hash, not as unverified truth.
+For every desired item ID, the existing per-ID getters are enough to calculate add, update, or no-op. Exact removal also
+requires direct discovery of current IDs that are absent from desired state. `Shop.getShopItemStates(startTokenId,
+endTokenId)` therefore returns configured prices and unsellable flags for a bounded page of the complete `uint16`
+keyspace. Reconciliation reads all 64 pages at the pinned block. It does not depend on chain history, archive service
+behavior, or an off-chain membership cache.
 
 Removals must be displayed separately and require an explicit `--allow-removals`. Add limits for item count and aggregate value change. A wrong profile must not be able to silently remove a large set.
 
@@ -307,46 +312,44 @@ Do not reconcile `TokenInfo.allocationRemaining`, `price`, or `checkpointTimesta
 Shop is not fully introspectable:
 
 - `_packPrices` has a setter but no getter, enumeration, or removal;
-- the promotion discount, selling cutoff, brush distribution, dev address, supporter-pack token, and some linked addresses do not all have complete getters and events; and
+- the promotion discount, selling cutoff, brush distribution, dev address, supporter-pack token, and some linked addresses do not all have complete getters; and
 - supporter-pack `amountRemaining` is user-consumed runtime state and must not be reset by configuration alignment.
 
-Add narrow getters and missing setter events before those fields become managed. For supporter packs, first define which fields are configuration and which fields are inventory. Do not add an enumerable set only for the reconciler until event indexing or bounded reads are shown to be insufficient.
+Add narrow getters before those fields become managed. For supporter packs, first define which fields are configuration and which fields are inventory. Prefer bounded, domain-shaped reads over maintaining duplicate enumerable storage solely for reconciliation.
 
 ### Wider data capability
 
 The fresh deployment seeds these domains from `scripts/data/*` through `prepareForgeDeployData.ts` and `_seedGame1/_seedGame2/_seedGame3`:
 
-| Domain                | Current comparison capability                              | Main gap before exact management                                            |
-| --------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Items                 | `getItem(s)` plus add/edit/remove and events               | Discover complete current ID set; preserve supply/balances/first-mint state |
-| Quests                | Per-ID quest getter and add/edit/remove events             | No getter for minimum requirements; discover current IDs                    |
-| World actions/choices | Rich per-ID getters; choice add/edit/remove events         | No action removal and no ID enumeration                                     |
-| Shop/unsellable       | Per-ID price and token info; complete set mutation events  | Discover current IDs; other Shop configuration lacks reads                  |
-| Clan tiers            | Per-ID getter and add/edit events                          | No removal or enumeration                                                   |
-| Instant actions       | Per-key getter and add/edit/remove events                  | Discover current keys and verify getter covers full input                   |
-| Instant VRF actions   | Per-ID action and strategy getters; add/edit/remove events | Discover IDs and compare all strategy/reward fields                         |
-| Passive actions       | Per-ID getter and add/edit events                          | Rewards are not fully returned; no removal                                  |
-| Cosmetics             | Complete set/remove events                                 | No configuration getter or enumeration; preserve equipped cosmetics         |
-| Avatars               | Setter event                                               | No configuration getter, removal, or enumeration                            |
-| XP threshold rewards  | Add/edit events                                            | No raw getter, removal, or enumeration                                      |
-| Full attire bonuses   | Add event                                                  | No raw getter, edit/remove, or enumeration                                  |
-| Daily/weekly rewards  | Setters and derived reward behavior                        | No raw pool getter and incomplete configuration events                      |
-| Base pets             | Add/edit events                                            | No base-data getter, removal, or enumeration; preserve minted pets          |
-| Base raids            | Add/edit events                                            | No base-data getter, removal, or enumeration; preserve active raid state    |
-| Black market          | Owner mutation events                                      | No configuration getters or enumeration                                     |
-| Global events         | Owner add operations                                       | No configuration getter or enumeration                                      |
+| Domain                | Current comparison capability                | Main gap before exact management                                          |
+| --------------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
+| Items                 | Per-ID reads and add/edit/remove             | Add complete key discovery; preserve supply/balances/first-mint state     |
+| Quests                | Per-ID quest getter and add/edit/remove      | Add minimum-requirement and complete key reads                            |
+| World actions/choices | Rich per-ID getters and choice mutations     | No action removal or complete key read                                    |
+| Shop/unsellable       | Complete paginated state read and mutations  | Other Shop configuration lacks reads                                      |
+| Clan tiers            | Per-ID getter and add/edit                   | No removal or complete key read                                           |
+| Instant actions       | Per-key getter and add/edit/remove           | Add complete key discovery and verify getter covers full input            |
+| Instant VRF actions   | Per-ID action/strategy getters and mutations | Add complete key discovery and compare all strategy/reward fields         |
+| Passive actions       | Per-ID getter and add/edit                   | Rewards are not fully returned; no removal                                |
+| Cosmetics             | Set/remove mutations                         | No configuration getter or complete key read; preserve equipped cosmetics |
+| Avatars               | Setter                                       | No configuration getter, removal, or complete key read                    |
+| XP threshold rewards  | Add/edit mutations                           | No raw getter, removal, or complete key read                              |
+| Full attire bonuses   | Add mutation                                 | No raw getter, edit/remove, or complete key read                          |
+| Daily/weekly rewards  | Setters and derived reward behavior          | No raw pool getter                                                        |
+| Base pets             | Add/edit mutations                           | No base-data getter or removal; preserve minted pets                      |
+| Base raids            | Add/edit mutations                           | No base-data getter or removal; preserve active raid state                |
+| Black market          | Owner mutations                              | No configuration getters or complete key read                             |
+| Global events         | Owner add operations                         | No configuration getter or complete key read                              |
 
 This means the first CLI cannot truthfully claim that all repository data is aligned. It must report an inventory with each domain marked managed, observed, or unmanaged. Add domains one at a time after complete read semantics and safe deletion semantics are documented.
 
 Prefer these remedies in order:
 
-1. Existing per-key getter plus reliable event-derived membership.
-2. Bounded key scan when the key type makes it practical.
-3. A missing view getter for values that cannot be reconstructed safely.
-4. Complete setter events for future indexing.
-5. On-chain enumeration only when the previous options are not adequate.
+1. Existing complete, domain-shaped view getter.
+2. Add a bounded paginated getter when the key type makes complete scanning practical.
+3. Add direct on-chain enumeration when bounded reads are not practical.
 
-Adding arrays or enumerable sets to every contract increases storage, mutation gas, upgrade work, and migration complexity. It is not required for the Shop tracer bullet.
+Adding arrays or enumerable sets to every contract increases storage, mutation gas, upgrade work, and migration complexity. Use them only when a bounded direct getter cannot provide complete discovery.
 
 ## CLI behavior
 
@@ -484,7 +487,7 @@ Status: implemented on 2026-09-01.
 
 1. Refactor canonical data preparation so fresh deploy and reconciliation consume the same Shop data function.
 2. Read all desired Shop prices and unsellable flags.
-3. Implement event-derived membership with bounded `uint16` scanning as bootstrap/audit fallback.
+3. Add and consume a paginated contract getter over the bounded `uint16` keyspace.
 4. Produce stable add/update/remove/no-op sets.
 5. Exclude runtime `TokenInfo` fields.
 6. Add removal permission and change caps.
@@ -497,15 +500,17 @@ Acceptance:
 - rerunning after each partial batch emits only remaining changes; and
 - wrong-profile removal volume is blocked.
 
-The Shop adapter now shares `getShopData(profile)` with fresh deployment preparation. It reconstructs buyable and
-unsellable membership from bounded event queries, reads only buyable price and the `unsellable` flag, and supports a
-complete `uint16` scan as an automatic bootstrap fallback or explicit audit. Plans contain stable add, update, remove,
+The Shop adapter now shares `getShopData(profile)` with fresh deployment preparation. It discovers buyable and
+unsellable membership through paginated `getShopItemStates` calls over the complete `uint16` keyspace and reads only
+buyable price and the `unsellable` flag. Plans contain stable add, update, remove,
 and no-op classifications plus dependency-ordered calldata. Removals require `--allow-removals`; defaults cap a plan at
 100 changed IDs, 10 removals, and 10,000 BRUSH of aggregate price movement. These defaults can be overridden with
 `--max-shop-changes`, `--max-shop-removals`, and `--max-shop-value-change` (wei). Unblocked operations are preflighted
 at the observation block, executed from the tracked Safe on an ephemeral Anvil fork pinned to that block, and followed
-by verification of every managed ID. `--audit-shop-membership` also compares event membership with the full bounded
-scan. The command remains read-only and rejects `--apply` and `--resume` until Phase 4.
+by verification of every managed ID. The command remains read-only and rejects `--apply` and `--resume` until Phase 4.
+
+Existing Shop proxies must be upgraded to the implementation that exposes `getShopItemStates` before Phase 3 can inspect
+them. The reconciler fails closed when this direct read is unavailable; it does not fall back to chain-history reconstruction.
 
 ### Phase 4: Safe proposal execution
 
@@ -548,7 +553,7 @@ For each data domain:
 1. document managed keys and fields;
 2. identify mutable fields to preserve;
 3. prove complete current-state discovery;
-4. add missing getters or events only when required;
+4. add missing direct getters when required;
 5. define deletion semantics and dependencies;
 6. add diff, fork simulation, partial-resume, and second-plan-empty tests; and
 7. only then retire the equivalent one-off Hardhat scripts.
@@ -557,12 +562,11 @@ Good next candidates are Items, World action choices, Instant actions, and Quest
 
 ## Contract changes likely to be useful
 
-No contract change is required for the first Shop item implementation. Later work is likely to need:
+The Shop tracer bullet adds `getShopItemStates` for complete paginated discovery. Later work is likely to need:
 
 - a quest minimum-requirements getter;
 - raw configuration getters for rewards, passive action rewards, base pets, base raids, cosmetics, avatars, and XP threshold rewards;
 - Shop getters for scalar configuration and supporter-pack configuration;
-- events for setters that currently emit no complete state transition; and
 - explicit removal methods only where product semantics allow deletion.
 
 Do not expose private storage wholesale. Add domain-shaped read methods that return only configuration. Do not return or overwrite player state, consumed inventory, checkpoints, pending randomness, balances, or supply.
@@ -573,12 +577,11 @@ Every contract upgrade needed for introspection must follow the archive, annotat
 
 Phase 1 established the deployment blocks, Sonic network fingerprint, and intended Safe. Later phases still need these product decisions:
 
-1. whether a trusted archive RPC is guaranteed for historical event indexing;
-2. maximum removal and value-change caps;
-3. maximum Safe batch gas or operation count; and
-4. the first managed scope beyond Shop.
+1. maximum removal and value-change caps;
+2. maximum Safe batch gas or operation count; and
+3. the first managed scope beyond Shop.
 
-The recommended defaults are event indexing plus bounded scan verification, mandatory Safe proposal submission on apply, metadata-only bytecode drift as a warning, and no implementation-version rollout.
+The recommended defaults are complete direct contract reads, mandatory Safe proposal submission on apply, metadata-only bytecode drift as a warning, and no implementation-version rollout.
 
 ## Primary external references
 
