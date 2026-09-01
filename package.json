@@ -75,6 +75,7 @@
     "deploy": "npx hardhat run scripts/deploy.ts",
     "deploy:foundry": "bash scripts/deploy-foundry.sh",
     "deploy:foundry:smoke": "bash scripts/deploy-local-smoke.sh",
+    "test:deployment-registry": "node --require ts-node/register --test scripts/deploymentRegistry.test.ts",
     "deployment:validate": "ts-node scripts/validateDeploymentRegistry.ts",
     "deployUpgrade": "npx hardhat run scripts/deployUpgrade.ts",
     "deployImpls": "npx hardhat run scripts/deployImpls.ts",

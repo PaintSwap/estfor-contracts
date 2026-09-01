@@ -6,9 +6,9 @@
 
 All the smart contract code for the Estfor Kingdom MMORPG game on the Sonic Blockchain.
 
-Make sure `pnpm` is installed (or replace with equivalent npm instructions).
+Make sure `pnpm` is installed (or replace with equivalent npm instructions)
 
-These contracts use Hardhat and require Solidity 0.8.20 at minimum.
+These contracts use hardhat and require solidity 0.8.20 at minimum.
 
 Install dependencies:
 
@@ -61,6 +61,6 @@ DEPLOYMENT_ID=sonic-live pnpm deployment:validate
 
 The command requires `RPC_URL` or `SONIC_RPC`.
 
-### Obtain Safe API key
+### Obtain SAFE Api Key
 
-[Safe Developer Portal](https://developer.safe.global/api-keys)
+[https://developer.safe.global/api-keys](https://developer.safe.global/api-keys)

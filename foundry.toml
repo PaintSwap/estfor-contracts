@@ -50,6 +50,7 @@ build_info = true
 extra_output = ["storageLayout"]
 fs_permissions = [
   { access = "read", path = "./out" },
+  { access = "read", path = "./deployments" },
   { access = "read", path = "./.forge-deploy-data" },
   { access = "read-write", path = "./.deployments" },
 ]

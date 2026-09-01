@@ -454,10 +454,10 @@ Status: implemented on 2026-09-01.
 Acceptance:
 
 - live and beta can be selected independently on chain 146;
-- a wrong RPC, address, or non-Safe owner fails before any operation is prepared; and
+- a wrong RPC, no-code address, or non-Safe owner fails before any operation is prepared; and
 - existing Hardhat scripts still receive the same addresses.
 
-The tracked records use the verified Sonic genesis hash, deployment start blocks 1,375,466 (live) and 1,241,080 (beta), and Safe `0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9`. The validator confirmed code at every tracked contract and external address. It also found one intentional hard failure in both existing deployments: `DailyRewardsScheduler.owner()` is legacy EOA `0x316342122A9ae36de41B231260579b92F4C8Be7f`, not the tracked Safe. This is recorded as alignment drift, not as an accepted authority override. Until ownership is transferred, full registry validation correctly exits with an error for both deployment IDs.
+The tracked records use the verified Sonic genesis hash, deployment start blocks 1,375,466 (live) and 1,241,080 (beta), and Safe `0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9`. A Foundry validation script confirmed code at every tracked contract and external address. It also found one intentional hard failure in both existing deployments: `DailyRewardsScheduler.owner()` is legacy EOA `0x316342122A9ae36de41B231260579b92F4C8Be7f`, not the tracked Safe. This is recorded as alignment drift, not as an accepted authority override. Until ownership is transferred, full registry validation correctly exits with an error for both deployment IDs. Logical contract identity and implementation matching remain Phase 2 work; Phase 1 does not claim that swapping two valid Safe-owned UUPS addresses is detectable.
 
 ### Phase 2: read-only inventory and plan format
 

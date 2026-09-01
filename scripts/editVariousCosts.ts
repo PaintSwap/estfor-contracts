@@ -4,19 +4,17 @@ import {
   PET_NFT_ADDRESS,
   PLAYER_NFT_ADDRESS,
   SHOP_ADDRESS,
-  WISHING_WELL_ADDRESS
+  WISHING_WELL_ADDRESS,
 } from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
-import {getChainId} from "./utils";
+import {getChainId, isBeta} from "./utils";
 import {parseEther} from "ethers";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Edit various costs using account: ${owner.address} on chain id ${await getChainId(owner)}`);
-
-  const isBeta = process.env.IS_BETA == "true";
 
   // Edit shop items
   const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
@@ -29,7 +27,7 @@ async function main() {
     EstforConstants.XP_BOOST,
     EstforConstants.GATHERING_BOOST,
     EstforConstants.SKILL_BOOST,
-    EstforConstants.FLUX
+    EstforConstants.FLUX,
   ]);
 
   const allShopItems_ = isBeta ? allShopItemsBeta : allShopItems;

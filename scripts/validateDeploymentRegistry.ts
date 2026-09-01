@@ -1,5 +1,5 @@
-import {JsonRpcProvider} from "ethers";
-import {getSelectedDeploymentId, loadDeploymentRegistry, validateDeploymentOnChain} from "./deploymentRegistry";
+import {spawnSync} from "child_process";
+import {getDeploymentRegistryPath, getSelectedDeploymentId, loadDeploymentRegistry} from "./deploymentRegistry";
 
 function option(name: string): string | undefined {
   const index = process.argv.indexOf(name);
@@ -14,12 +14,24 @@ async function main() {
   const rpcUrl = process.env.RPC_URL ?? process.env.SONIC_RPC;
   if (!rpcUrl) throw new Error("RPC_URL or SONIC_RPC is required");
 
-  const deployment = loadDeploymentRegistry(deploymentId);
-  const result = await validateDeploymentOnChain(deployment, new JsonRpcProvider(rpcUrl));
-  console.log(
-    `Validated ${result.deploymentId} on chain ${result.chainId}: ${result.checkedContracts} contracts, ` +
-      `${result.checkedExternals} externals, Safe ${result.safe} (${result.safeThreshold}/${result.safeOwners})`
+  loadDeploymentRegistry(deploymentId);
+  const result = spawnSync(
+    "forge",
+    [
+      "script",
+      "scripts/ValidateDeploymentRegistry.s.sol:ValidateDeploymentRegistry",
+      "--rpc-url",
+      rpcUrl,
+      "--sig",
+      "run()",
+    ],
+    {
+      env: {...process.env, DEPLOYMENT_INPUT: getDeploymentRegistryPath(deploymentId)},
+      stdio: "inherit",
+    }
   );
+  if (result.error) throw result.error;
+  if (result.status !== 0) process.exitCode = result.status ?? 1;
 }
 
 main().catch((error) => {

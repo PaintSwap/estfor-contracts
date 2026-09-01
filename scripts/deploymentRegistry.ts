@@ -1,6 +1,6 @@
 import {readFileSync, readdirSync} from "fs";
 import {join, resolve} from "path";
-import {Contract, isAddress, Provider} from "ethers";
+import {isAddress} from "ethers";
 
 export const CONTRACT_NAMES = [
   "bridge",
@@ -83,21 +83,9 @@ export interface DeploymentRegistry {
   subsidySigners: string[];
 }
 
-export interface DeploymentValidationResult {
-  deploymentId: string;
-  chainId: number;
-  safe: string;
-  safeOwners: number;
-  safeThreshold: number;
-  checkedContracts: number;
-  checkedExternals: number;
-}
-
 const DEPLOYMENTS_ROOT = resolve(__dirname, "../deployments");
 const DEPLOYMENT_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const HASH_PATTERN = /^0x[0-9a-fA-F]{64}$/;
-const SAFE_ABI = ["function getOwners() view returns (address[])", "function getThreshold() view returns (uint256)"];
-const OWNABLE_ABI = ["function owner() view returns (address)"];
 
 function requireObject(value: unknown, label: string): Record<string, unknown> {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -221,6 +209,10 @@ export function loadDeploymentRegistry(deploymentId: string, deploymentsRoot = D
   return validateDeploymentRegistry(JSON.parse(readFileSync(file, "utf8")), deploymentId);
 }
 
+export function getDeploymentRegistryPath(deploymentId: string, deploymentsRoot = DEPLOYMENTS_ROOT): string {
+  return findDeploymentFile(deploymentId, deploymentsRoot);
+}
+
 export function getSelectedDeploymentId(environment: NodeJS.ProcessEnv = process.env): string {
   const deploymentId = environment.DEPLOYMENT_ID;
   if (!deploymentId) throw new Error("DEPLOYMENT_ID is required (for example, sonic-live or sonic-beta)");
@@ -239,61 +231,4 @@ export function getDeploymentIsBeta(environment: NodeJS.ProcessEnv = process.env
 
 export function getContractAddress(deployment: DeploymentRegistry, name: ContractName): string {
   return deployment.contracts[name].address;
-}
-
-export async function validateDeploymentOnChain(
-  deployment: DeploymentRegistry,
-  provider: Provider
-): Promise<DeploymentValidationResult> {
-  const network = await provider.getNetwork();
-  if (network.chainId !== BigInt(deployment.chainId)) {
-    throw new Error(`RPC chain ID ${network.chainId} does not match deployment chain ID ${deployment.chainId}`);
-  }
-
-  const genesisBlock = await provider.getBlock(0);
-  if (!genesisBlock || genesisBlock.hash?.toLowerCase() !== deployment.networkFingerprint.genesisHash.toLowerCase()) {
-    throw new Error("RPC genesis hash does not match deployment network fingerprint");
-  }
-
-  const latestBlock = await provider.getBlockNumber();
-  if (deployment.deploymentBlock > latestBlock) {
-    throw new Error(`deploymentBlock ${deployment.deploymentBlock} is ahead of latest block ${latestBlock}`);
-  }
-
-  const safeCode = await provider.getCode(deployment.authority.address);
-  if (safeCode === "0x") throw new Error(`No Safe code at ${deployment.authority.address}`);
-  const safe = new Contract(deployment.authority.address, SAFE_ABI, provider);
-  const [safeOwners, safeThreshold] = (await Promise.all([safe.getOwners(), safe.getThreshold()])) as [
-    string[],
-    bigint
-  ];
-  if (safeThreshold < 2n || safeOwners.length < Number(safeThreshold)) {
-    throw new Error(`Authority ${deployment.authority.address} is not a valid multisignature Safe`);
-  }
-
-  for (const [name, configuredContract] of Object.entries(deployment.contracts)) {
-    const code = await provider.getCode(configuredContract.address);
-    if (code === "0x") throw new Error(`No code at contracts.${name} (${configuredContract.address})`);
-    if (configuredContract.kind === "uups" || configuredContract.kind === "beacon") {
-      const ownable = new Contract(configuredContract.address, OWNABLE_ABI, provider);
-      const owner = (await ownable.owner()) as string;
-      if (owner.toLowerCase() !== deployment.authority.address.toLowerCase()) {
-        throw new Error(`contracts.${name} owner ${owner} does not match Safe ${deployment.authority.address}`);
-      }
-    }
-  }
-
-  for (const [name, address] of Object.entries(deployment.externals)) {
-    if ((await provider.getCode(address)) === "0x") throw new Error(`No code at externals.${name} (${address})`);
-  }
-
-  return {
-    deploymentId: deployment.deploymentId,
-    chainId: deployment.chainId,
-    safe: deployment.authority.address,
-    safeOwners: safeOwners.length,
-    safeThreshold: Number(safeThreshold),
-    checkedContracts: Object.keys(deployment.contracts).length,
-    checkedExternals: Object.keys(deployment.externals).length,
-  };
 }
