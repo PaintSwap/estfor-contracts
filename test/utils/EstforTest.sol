@@ -12,7 +12,6 @@ import {ItemNFT} from "../../contracts/ItemNFT.sol";
 import {RandomnessBeacon} from "../../contracts/RandomnessBeacon.sol";
 import {RoyaltyReceiver} from "../../contracts/RoyaltyReceiver.sol";
 import {Shop} from "../../contracts/Shop.sol";
-import {ShopV1} from "../../contracts/old/ShopV1.sol";
 import {Treasury} from "../../contracts/Treasury.sol";
 import {IOrderBook, IOrderBook as OrderBook} from "../../contracts/Bazaar/interfaces/IOrderBook.sol";
 import {GameSubsidisationRegistry} from "../../contracts/Session/GameSubsidisationRegistry.sol";
@@ -172,7 +171,7 @@ abstract contract EstforTest is Test, ERC1155Holder {
       _deployUUPS(
         address(shopImplementation),
         abi.encodeCall(
-          ShopV1.initialize,
+          Shop.initialize,
           (IBrushToken(address(brush)), treasury, DEV, MIN_ITEM_QUANTITY_BEFORE_SELLS_ALLOWED, SELLING_CUTOFF_DURATION)
         )
       )

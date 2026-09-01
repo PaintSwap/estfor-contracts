@@ -27,7 +27,6 @@ import {IPVPBattleground as PVPBattleground} from "../../contracts/interfaces/IP
 import {IQuests as Quests} from "../../contracts/interfaces/IQuests.sol";
 import {RoyaltyReceiver} from "../../contracts/RoyaltyReceiver.sol";
 import {Shop} from "../../contracts/Shop.sol";
-import {ShopV1} from "../../contracts/old/ShopV1.sol";
 import {Treasury} from "../../contracts/Treasury.sol";
 import {IWishingWell as WishingWell} from "../../contracts/interfaces/IWishingWell.sol";
 import {WorldActions} from "../../contracts/WorldActions.sol";
@@ -215,7 +214,7 @@ abstract contract FullGameStack is EstforTest {
       _deployUUPS(
         address(shopImplementation),
         abi.encodeCall(
-          ShopV1.initialize,
+          Shop.initialize,
           (IBrushToken(address(brush)), treasury, DEV, MIN_ITEM_QUANTITY_BEFORE_SELLS_ALLOWED, SELLING_CUTOFF_DURATION)
         )
       )

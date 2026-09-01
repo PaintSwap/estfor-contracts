@@ -4,8 +4,7 @@ pragma solidity ^0.8.28;
 import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import {EstforTest} from "./utils/EstforTest.sol";
-import {Shop as ShopContract} from "../contracts/Shop.sol";
-import {ShopV1 as Shop} from "../contracts/old/ShopV1.sol";
+import {Shop} from "../contracts/Shop.sol";
 import {ActivityPoints} from "../contracts/ActivityPoints/ActivityPoints.sol";
 import {MockBankFactory} from "../contracts/test/MockBankFactory.sol";
 import {MockUSDCToken} from "../contracts/test/external/MockUSDCToken.sol";
@@ -427,7 +426,7 @@ contract ShopTest is EstforTest {
     _addBuyable(BRONZE_SHIELD, 500);
     shop.addUnsellableItems(_uint16s(BRONZE_SHIELD));
 
-    ShopContract.ShopItemState[] memory states = shop.getShopItemStates(BRONZE_SHIELD, BRONZE_SHIELD + 1);
+    Shop.ShopItemState[] memory states = shop.getShopItemStates(BRONZE_SHIELD, BRONZE_SHIELD + 1);
     assertEq(states.length, 1);
     assertEq(states[0].tokenId, BRONZE_SHIELD);
     assertEq(states[0].price, 500);
@@ -435,9 +434,9 @@ contract ShopTest is EstforTest {
 
     assertEq(shop.getShopItemStates(BRONZE_SHIELD + 1, BRONZE_SHIELD + 2).length, 0);
     uint256 maxStateReadLength = shop.MAX_STATE_READ_LENGTH();
-    vm.expectRevert(ShopContract.InvalidStateReadRange.selector);
+    vm.expectRevert(Shop.InvalidStateReadRange.selector);
     shop.getShopItemStates(0, maxStateReadLength + 1);
-    vm.expectRevert(ShopContract.InvalidStateReadRange.selector);
+    vm.expectRevert(Shop.InvalidStateReadRange.selector);
     shop.getShopItemStates(type(uint16).max, uint256(type(uint16).max) + 2);
   }
 
