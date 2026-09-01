@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {PlayersImplMisc1 as IPlayersMisc1DelegateView} from "../interfaces/PlayersImplMisc1.sol";
+import {IPlayersImplMisc1 as IPlayersMisc1DelegateView} from "../../contracts/interfaces/IPlayersImplMisc1.sol";
 import {Skill, Attire, CombatStyle} from "../../contracts/globals/misc.sol";
 import {
     ActionInput,

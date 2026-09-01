@@ -2,13 +2,13 @@
 pragma solidity ^0.8.28;
 
 import {EstforTest} from "../utils/EstforTest.sol";
-import {LockedBankVaultsLibrary} from "../interfaces/LockedBankVaultsLibrary.sol";
+import {ILockedBankVaultsLibrary} from "../../contracts/interfaces/ILockedBankVaultsLibrary.sol";
 
 contract LockedBankVaultsLibraryTest is EstforTest {
-    LockedBankVaultsLibrary private lockedBankVaultsLibrary;
+    ILockedBankVaultsLibrary private lockedBankVaultsLibrary;
 
     function setUp() public {
-        lockedBankVaultsLibrary = LockedBankVaultsLibrary(
+        lockedBankVaultsLibrary = ILockedBankVaultsLibrary(
             _deployArtifact("contracts/Clans/LockedBankVaultsLibrary.sol:LockedBankVaultsLibrary:via-ir")
         );
     }

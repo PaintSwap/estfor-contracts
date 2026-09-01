@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 import {BokkyPooBahsRedBlackTreeLibrary} from "../BokkyPooBahsRedBlackTreeLibrary.sol";
 
@@ -79,6 +80,15 @@ interface IOrderBook is IERC1155Receiver {
   error FailedToTakeFromBook(address taker, OrderSide side, uint256 tokenId, uint256 quantityRemaining);
   error TotalCostConditionNotMet();
 
+  function initialize(
+    IERC1155 nft,
+    address token,
+    address devAddr,
+    uint16 devFee,
+    uint8 burntFee,
+    uint16 maxOrdersPerPrice
+  ) external;
+
   function marketOrder(MarketOrder calldata order) external;
 
   function limitOrders(LimitOrder[] calldata orders) external;
@@ -122,4 +132,12 @@ interface IOrderBook is IERC1155Receiver {
     uint256 tokenId,
     uint256 price
   ) external view returns (Order[] memory orderBookEntries);
+
+  function updateRoyaltyFee() external;
+
+  function setMaxOrdersPerPrice(uint16 maxOrdersPerPrice) external payable;
+
+  function setTokenIdInfos(uint256[] calldata tokenIds, TokenIdInfo[] calldata tokenIdInfos) external payable;
+
+  function setFees(address devAddr, uint16 devFee, uint8 burntFee) external;
 }

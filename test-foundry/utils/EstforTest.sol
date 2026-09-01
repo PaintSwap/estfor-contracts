@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 import {AdminAccess} from "../../contracts/AdminAccess.sol";
@@ -12,14 +13,16 @@ import {RandomnessBeacon} from "../../contracts/RandomnessBeacon.sol";
 import {RoyaltyReceiver} from "../../contracts/RoyaltyReceiver.sol";
 import {Shop} from "../../contracts/Shop.sol";
 import {Treasury} from "../../contracts/Treasury.sol";
-import {OrderBook} from "../interfaces/OrderBook.sol";
-import {IOrderBook} from "../../contracts/Bazaar/interfaces/IOrderBook.sol";
+import {IOrderBook, IOrderBook as OrderBook} from "../../contracts/Bazaar/interfaces/IOrderBook.sol";
 import {GameSubsidisationRegistry} from "../../contracts/Session/GameSubsidisationRegistry.sol";
-import {UsageBasedSessionModule} from "../interfaces/UsageBasedSessionModule.sol";
+import {
+    IUsageBasedSessionModule as UsageBasedSessionModule
+} from "../../contracts/interfaces/IUsageBasedSessionModule.sol";
 import {IBankFactory} from "../../contracts/interfaces/IBankFactory.sol";
 import {IPlayers} from "../../contracts/interfaces/IPlayers.sol";
 import {IBrushToken} from "../../contracts/interfaces/external/IBrushToken.sol";
 import {IOracleCB} from "../../contracts/interfaces/IOracleCB.sol";
+import {IGameSubsidisationRegistry} from "../../contracts/interfaces/IGameSubsidisationRegistry.sol";
 import {ISolidlyRouter} from "../../contracts/interfaces/external/ISolidlyRouter.sol";
 import {MockItemNFT} from "../../contracts/test/MockItemNFT.sol";
 import {MockPlayers} from "../../contracts/test/MockPlayers.sol";
@@ -227,7 +230,7 @@ abstract contract EstforTest is Test, ERC1155Holder {
                 address(orderBookImplementation),
                 abi.encodeCall(
                     OrderBook.initialize,
-                    (address(erc1155), address(brush), DEV, uint16(30), uint8(30), ORDERBOOK_MAX_ORDERS_PER_PRICE)
+                    (IERC1155(address(erc1155)), address(brush), DEV, uint16(30), uint8(30), ORDERBOOK_MAX_ORDERS_PER_PRICE)
                 )
             )
         );
@@ -265,7 +268,10 @@ abstract contract EstforTest is Test, ERC1155Holder {
         usageBasedSessionModule = UsageBasedSessionModule(
             payable(_deployUUPS(
                     address(moduleImplementation),
-                    abi.encodeCall(moduleImplementation.initialize, (address(this), address(gameSubsidisationRegistry)))
+                    abi.encodeCall(
+                        moduleImplementation.initialize,
+                        (address(this), IGameSubsidisationRegistry(address(gameSubsidisationRegistry)))
+                    )
                 ))
         );
     }

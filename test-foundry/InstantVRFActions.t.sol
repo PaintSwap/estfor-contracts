@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {InstantVRFActions} from "./interfaces/InstantVRFActions.sol";
+import {IInstantVRFActions} from "../contracts/interfaces/IInstantVRFActions.sol";
 import {
     GenericInstantVRFActionStrategy
 } from "../contracts/InstantVRFActionStrategies/GenericInstantVRFActionStrategy.sol";
-import {Quests} from "./interfaces/Quests.sol";
-import {PetNFT} from "./interfaces/PetNFT.sol";
+import {IQuests as Quests} from "../contracts/interfaces/IQuests.sol";
+import {IPetNFT as PetNFT} from "../contracts/interfaces/IPetNFT.sol";
 import {MockVRF} from "../contracts/test/MockVRF.sol";
 import {TestERC1155HolderRogue} from "../contracts/test/ERC1155HolderRogue.sol";
 import {EggInstantVRFActionStrategy} from "../contracts/InstantVRFActionStrategies/EggInstantVRFActionStrategy.sol";
@@ -52,15 +52,15 @@ contract InstantVRFActionsTest is FullGameStack {
         _addForgingStrategies();
         InstantVRFActionInput memory input = _forgingInput();
         input.inputAmounts[0] = 4;
-        vm.expectRevert(InstantVRFActions.InputAmountsMustBeInOrder.selector);
+        vm.expectRevert(IInstantVRFActions.InputAmountsMustBeInOrder.selector);
         _add(input);
         input.inputAmounts[0] = 1;
         input.inputAmounts[1] = 4;
-        vm.expectRevert(InstantVRFActions.InputAmountsMustBeInOrder.selector);
+        vm.expectRevert(IInstantVRFActions.InputAmountsMustBeInOrder.selector);
         _add(input);
         input.inputAmounts[1] = 2;
         input.inputAmounts[2] = 1;
-        vm.expectRevert(InstantVRFActions.InputAmountsMustBeInOrder.selector);
+        vm.expectRevert(IInstantVRFActions.InputAmountsMustBeInOrder.selector);
         _add(input);
         input.inputAmounts[2] = 3;
         _add(input);
@@ -76,7 +76,7 @@ contract InstantVRFActionsTest is FullGameStack {
         itemNFT.mint(ALICE, BRONZE_ARROW, 1);
         uint256 cost = instantVRFActions.requestCost(1);
         vm.prank(ALICE);
-        vm.expectRevert(InstantVRFActions.DependentQuestNotCompleted.selector);
+        vm.expectRevert(IInstantVRFActions.DependentQuestNotCompleted.selector);
         instantVRFActions.doInstantVRFActions{value: cost}(playerId, _uint16s(input.actionId), _uints(1));
 
         QuestInput[] memory qs = new QuestInput[](1);
@@ -97,13 +97,13 @@ contract InstantVRFActionsTest is FullGameStack {
         InstantVRFActionInput memory input = _forgingInput();
         input.inputTokenIds = _uint16s4(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, ORICHALCUM_ARROW);
         input.inputAmounts = _uint24s(1, 2, 3);
-        vm.expectRevert(InstantVRFActions.TooManyInputItems.selector);
+        vm.expectRevert(IInstantVRFActions.TooManyInputItems.selector);
         _add(input);
         input.inputTokenIds = _uint16s(BRONZE_ARROW, IRON_ARROW);
-        vm.expectRevert(InstantVRFActions.LengthMismatch.selector);
+        vm.expectRevert(IInstantVRFActions.LengthMismatch.selector);
         _add(input);
         input.inputTokenIds = _uint16s(BRONZE_ARROW, IRON_ARROW, BRONZE_ARROW);
-        vm.expectRevert(InstantVRFActions.InputItemNoDuplicates.selector);
+        vm.expectRevert(IInstantVRFActions.InputItemNoDuplicates.selector);
         _add(input);
     }
 
@@ -125,7 +125,7 @@ contract InstantVRFActionsTest is FullGameStack {
         itemNFT.mintBatch(ALICE, _uints(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW), _uints(1000, 1000, 1000));
         uint256 cost = instantVRFActions.requestCost(MAX_INSTANT_VRF_ACTION_AMOUNT + 1);
         vm.prank(ALICE);
-        vm.expectRevert(InstantVRFActions.TooManyActionAmounts.selector);
+        vm.expectRevert(IInstantVRFActions.TooManyActionAmounts.selector);
         instantVRFActions.doInstantVRFActions{value: cost}(
             playerId, _uint16s(input.actionId), _uints(MAX_INSTANT_VRF_ACTION_AMOUNT + 1)
         );
@@ -141,7 +141,7 @@ contract InstantVRFActionsTest is FullGameStack {
         itemNFT.mintBatch(ALICE, _uints(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW), _uints(1000, 1000, 1000));
         uint256 cost = instantVRFActions.requestCost(MAX_INSTANT_VRF_ACTION_AMOUNT - 2 + 3);
         vm.prank(ALICE);
-        vm.expectRevert(InstantVRFActions.TooManyActionAmounts.selector);
+        vm.expectRevert(IInstantVRFActions.TooManyActionAmounts.selector);
         instantVRFActions.doInstantVRFActions{value: cost}(
             playerId, _uint16s(input.actionId, input1.actionId), _uints(MAX_INSTANT_VRF_ACTION_AMOUNT - 2, 3)
         );
@@ -160,7 +160,7 @@ contract InstantVRFActionsTest is FullGameStack {
         itemNFT.mintBatch(ALICE, ids, _uints6(6, 6, 6, 6, 6, 6));
         uint16[] memory actionIds = _uint16s(input.actionId, input1.actionId);
         vm.expectEmit(false, false, false, true, address(instantVRFActions));
-        emit InstantVRFActions.DoInstantVRFActions(
+        emit IInstantVRFActions.DoInstantVRFActions(
             ALICE,
             playerId,
             1,
@@ -194,7 +194,7 @@ contract InstantVRFActionsTest is FullGameStack {
         itemNFT.mintBatch(ALICE, _uints(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW), _uints(3, 3, 3));
         uint256 cost = instantVRFActions.requestCost(1);
         vm.prank(ALICE);
-        vm.expectRevert(InstantVRFActions.PlayerNotUpgraded.selector);
+        vm.expectRevert(IInstantVRFActions.PlayerNotUpgraded.selector);
         instantVRFActions.doInstantVRFActions{value: cost}(playerId, _uint16s(input.actionId), _uints(1));
         brush.mint(ALICE, 1 ether);
         vm.startPrank(ALICE);
@@ -208,7 +208,7 @@ contract InstantVRFActionsTest is FullGameStack {
         _addForgingStrategies();
         InstantVRFActionInput memory input = _forgingInput();
         _add(input);
-        vm.expectRevert(InstantVRFActions.ActionAlreadyExists.selector);
+        vm.expectRevert(IInstantVRFActions.ActionAlreadyExists.selector);
         _add(input);
     }
 
@@ -216,7 +216,7 @@ contract InstantVRFActionsTest is FullGameStack {
         _addForgingStrategies();
         InstantVRFActionInput memory input = _forgingInput();
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         instantVRFActions.addActions(_inputs(input));
         _add(input);
     }
@@ -226,7 +226,7 @@ contract InstantVRFActionsTest is FullGameStack {
         InstantVRFActionInput memory input = _forgingInput();
         _add(input);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         instantVRFActions.editActions(_inputs(input));
         instantVRFActions.editActions(_inputs(input));
     }
@@ -236,12 +236,12 @@ contract InstantVRFActionsTest is FullGameStack {
         InstantVRFActionInput memory input = _forgingInput();
         input.inputTokenIds = _uint16s(BRONZE_ARROW);
         input.inputAmounts = _uint24s(1);
-        vm.expectRevert(InstantVRFActions.ActionDoesNotExist.selector);
+        vm.expectRevert(IInstantVRFActions.ActionDoesNotExist.selector);
         instantVRFActions.editActions(_inputs(input));
         _add(input);
         input.inputTokenIds = _uint16s(IRON_ARROW);
         vm.expectEmit(false, false, false, false, address(instantVRFActions));
-        emit InstantVRFActions.EditInstantVRFActions(_inputs(input));
+        emit IInstantVRFActions.EditInstantVRFActions(_inputs(input));
         instantVRFActions.editActions(_inputs(input));
         assertEq(instantVRFActions.getAction(input.actionId).inputTokenId1, IRON_ARROW);
     }
@@ -253,20 +253,20 @@ contract InstantVRFActionsTest is FullGameStack {
         input.inputAmounts = _uint24s(1);
         _add(input);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         instantVRFActions.removeActions(_uint16s(1));
     }
 
     function testRemovedActionMustExist() public {
         _addForgingStrategies();
-        vm.expectRevert(InstantVRFActions.ActionDoesNotExist.selector);
+        vm.expectRevert(IInstantVRFActions.ActionDoesNotExist.selector);
         instantVRFActions.removeActions(_uint16s(1));
         InstantVRFActionInput memory input = _forgingInput();
         input.inputTokenIds = _uint16s(BRONZE_ARROW);
         input.inputAmounts = _uint24s(1);
         _add(input);
         vm.expectEmit(false, false, false, true, address(instantVRFActions));
-        emit InstantVRFActions.RemoveInstantVRFActions(_uint16s(1));
+        emit IInstantVRFActions.RemoveInstantVRFActions(_uint16s(1));
         instantVRFActions.removeActions(_uint16s(1));
         assertEq(instantVRFActions.getAction(1).inputTokenId1, NONE);
     }
@@ -276,14 +276,14 @@ contract InstantVRFActionsTest is FullGameStack {
         InstantVRFActionInput memory input = _forgingInput();
         _add(input);
         uint256 cost = instantVRFActions.requestCost(1);
-        vm.expectRevert(InstantVRFActions.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IInstantVRFActions.NotOwnerOfPlayerAndActive.selector);
         instantVRFActions.doInstantVRFActions{value: cost}(playerId, _uint16s(input.actionId), _uints(1));
     }
 
     function testCannotDoAnActionWhichDoesNotExist() public {
         _addForgingStrategies();
         vm.prank(ALICE);
-        vm.expectRevert(InstantVRFActions.ActionDoesNotExist.selector);
+        vm.expectRevert(IInstantVRFActions.ActionDoesNotExist.selector);
         instantVRFActions.doInstantVRFActions(playerId, _uint16s(0), _uints(1));
     }
 
@@ -307,7 +307,7 @@ contract InstantVRFActionsTest is FullGameStack {
         itemNFT.mintBatch(ALICE, _uints(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW), _uints(6, 6, 6));
         _do(_uint16s(input.actionId), _uints(2));
         vm.expectEmit(false, false, false, true, address(instantVRFActions));
-        emit InstantVRFActions.CompletedInstantVRFActions(
+        emit IInstantVRFActions.CompletedInstantVRFActions(
             ALICE, playerId, 1, _uints(RUNITE_ARROW, RUNITE_ARROW), _uints(2, 2), new uint256[](0)
         );
         _fulfill(1);
@@ -321,7 +321,7 @@ contract InstantVRFActionsTest is FullGameStack {
         _do(_uint16s(input.actionId), _uints(2));
         uint256 cost = instantVRFActions.requestCost(2);
         vm.prank(ALICE);
-        vm.expectRevert(InstantVRFActions.AlreadyProcessing.selector);
+        vm.expectRevert(IInstantVRFActions.AlreadyProcessing.selector);
         instantVRFActions.doInstantVRFActions{value: cost}(playerId, _uint16s(input.actionId), _uints(2));
         _fulfill(1);
         _do(_uint16s(input.actionId), _uints(2));
@@ -335,7 +335,7 @@ contract InstantVRFActionsTest is FullGameStack {
         _do(_uint16s(input.actionId), _uints(2));
         instantVRFActions.removeActions(_uint16s(input.actionId));
         vm.expectEmit(false, false, false, true, address(instantVRFActions));
-        emit InstantVRFActions.CompletedInstantVRFActions(
+        emit IInstantVRFActions.CompletedInstantVRFActions(
             ALICE, playerId, 1, new uint256[](0), new uint256[](0), new uint256[](0)
         );
         _fulfill(1);
@@ -354,7 +354,7 @@ contract InstantVRFActionsTest is FullGameStack {
         );
         rogue.setRevertOnReceive(true);
         vm.expectEmit(false, false, false, true, address(instantVRFActions));
-        emit InstantVRFActions.CompletedInstantVRFActions(
+        emit IInstantVRFActions.CompletedInstantVRFActions(
             address(rogue), playerId, 1, new uint256[](0), new uint256[](0), new uint256[](0)
         );
         _fulfill(1);
@@ -370,10 +370,10 @@ contract InstantVRFActionsTest is FullGameStack {
         input1.inputTokenIds = _uint16s(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW);
         input1.inputAmounts = _uint24s(3, 5, 7);
         _addTwo(input, input1);
-        InstantVRFActions.InstantVRFAction memory action1 = instantVRFActions.getAction(1);
+        IInstantVRFActions.InstantVRFAction memory action1 = instantVRFActions.getAction(1);
         assertEq(action1.inputTokenId1, IRON_ARROW);
         assertEq(action1.inputTokenId3, NONE);
-        InstantVRFActions.InstantVRFAction memory action2 = instantVRFActions.getAction(2);
+        IInstantVRFActions.InstantVRFAction memory action2 = instantVRFActions.getAction(2);
         assertEq(action2.inputTokenId3, ADAMANTINE_ARROW);
     }
 
@@ -382,7 +382,7 @@ contract InstantVRFActionsTest is FullGameStack {
         InstantVRFActionInput memory input = _forgingInput();
         input.isFullModeOnly = true;
         _add(input);
-        InstantVRFActions.InstantVRFAction memory action = instantVRFActions.getAction(input.actionId);
+        IInstantVRFActions.InstantVRFAction memory action = instantVRFActions.getAction(input.actionId);
         assertEq(action.packedData, bytes1(0xC0)); // isFullModeOnly + isAvailable
         instantVRFActions.editActions(_inputs(_unavailable(input)));
         assertEq(instantVRFActions.getAction(input.actionId).packedData, bytes1(0x80)); // isFullModeOnly only
@@ -398,7 +398,7 @@ contract InstantVRFActionsTest is FullGameStack {
         itemNFT.mint(ALICE, BRONZE_ARROW, 2);
         uint256 cost = instantVRFActions.requestCost(2);
         vm.prank(ALICE);
-        vm.expectRevert(InstantVRFActions.PlayerNotUpgraded.selector);
+        vm.expectRevert(IInstantVRFActions.PlayerNotUpgraded.selector);
         instantVRFActions.doInstantVRFActions{value: cost}(playerId, _uint16s(input.actionId), _uints(2));
         brush.mint(ALICE, 1 ether);
         vm.startPrank(ALICE);
@@ -416,13 +416,13 @@ contract InstantVRFActionsTest is FullGameStack {
         instantVRFActions.editActions(_inputs(_unavailable(input)));
         uint256 cost = instantVRFActions.requestCost(2);
         vm.prank(ALICE);
-        vm.expectRevert(InstantVRFActions.ActionNotAvailable.selector);
+        vm.expectRevert(IInstantVRFActions.ActionNotAvailable.selector);
         instantVRFActions.doInstantVRFActions{value: cost}(playerId, _uint16s(input.actionId), _uints(2));
         instantVRFActions.editActions(_inputs(input));
         _do(_uint16s(input.actionId), _uints(2));
         instantVRFActions.editActions(_inputs(_unavailable(input)));
         vm.expectEmit(false, false, false, true, address(instantVRFActions));
-        emit InstantVRFActions.CompletedInstantVRFActions(
+        emit IInstantVRFActions.CompletedInstantVRFActions(
             ALICE, playerId, 1, _uints(RUNITE_ARROW, RUNITE_ARROW), _uints(2, 2), new uint256[](0)
         );
         _fulfill(1);
@@ -434,7 +434,7 @@ contract InstantVRFActionsTest is FullGameStack {
         address[] memory strategies =
             _addresses(address(genericInstantVRFActionStrategy), address(genericInstantVRFActionStrategy));
         vm.expectEmit(false, false, false, true, address(instantVRFActions));
-        emit InstantVRFActions.AddStrategies(actionTypes, strategies);
+        emit IInstantVRFActions.AddStrategies(actionTypes, strategies);
         instantVRFActions.addStrategies(actionTypes, strategies);
         assertEq(
             address(instantVRFActions.getStrategy(InstantVRFActionType.FORGING)),
@@ -451,24 +451,24 @@ contract InstantVRFActionsTest is FullGameStack {
         instantVRFActions.addStrategies(
             _actionTypes(InstantVRFActionType.FORGING), _addresses(address(genericInstantVRFActionStrategy))
         );
-        vm.expectRevert(InstantVRFActions.StrategyAlreadyExists.selector);
+        vm.expectRevert(IInstantVRFActions.StrategyAlreadyExists.selector);
         instantVRFActions.addStrategies(
             _actionTypes(InstantVRFActionType.FORGING), _addresses(address(genericInstantVRFActionStrategy))
         );
     }
 
     function testUnequalLengthOfArraysShouldRevert() public {
-        vm.expectRevert(InstantVRFActions.LengthMismatch.selector);
+        vm.expectRevert(IInstantVRFActions.LengthMismatch.selector);
         instantVRFActions.addStrategies(_actionTypes(InstantVRFActionType.EGG), new address[](0));
     }
 
     function testZeroAddressOrNoneActionTypeShouldRevert() public {
         address[] memory strategies = _addresses(address(genericInstantVRFActionStrategy), address(0));
-        vm.expectRevert(InstantVRFActions.InvalidStrategy.selector);
+        vm.expectRevert(IInstantVRFActions.InvalidStrategy.selector);
         instantVRFActions.addStrategies(
             _actionTypes(InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC), strategies
         );
-        vm.expectRevert(InstantVRFActions.InvalidStrategy.selector);
+        vm.expectRevert(IInstantVRFActions.InvalidStrategy.selector);
         instantVRFActions.addStrategies(
             _actionTypes(InstantVRFActionType.FORGING, InstantVRFActionType.NONE),
             _addresses(address(genericInstantVRFActionStrategy), address(genericInstantVRFActionStrategy))
@@ -481,7 +481,7 @@ contract InstantVRFActionsTest is FullGameStack {
 
     function testAddStrategiesMustBeCalledByOwner() public {
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         instantVRFActions.addStrategies(
             _actionTypes(InstantVRFActionType.FORGING), _addresses(address(genericInstantVRFActionStrategy))
         );
@@ -499,10 +499,10 @@ contract InstantVRFActionsTest is FullGameStack {
                 rewardBasePetIdMin: MIN_TIER1_BASE_PET_ID, rewardBasePetIdMax: MAX_TIER1_BASE_PET_ID
             })
         );
-        vm.expectRevert(InstantVRFActions.InvalidStrategy.selector);
+        vm.expectRevert(IInstantVRFActions.InvalidStrategy.selector);
         instantVRFActions.addActions(_inputs(input));
         vm.expectEmit(false, false, false, true, address(instantVRFActions));
-        emit InstantVRFActions.AddStrategies(
+        emit IInstantVRFActions.AddStrategies(
             _actionTypes(InstantVRFActionType.EGG), _addresses(address(eggInstantVRFActionStrategy))
         );
         instantVRFActions.addStrategies(

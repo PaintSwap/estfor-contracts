@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {PlayersBase} from "./PlayersBase.sol";
+import {IPlayersImplRewards} from "../interfaces/IPlayersImplRewards.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
 
@@ -12,7 +13,7 @@ import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
+contract PlayersImplRewards is PlayersBase, IPlayersImplRewards {
   using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for CombatStyle;
   using SkillLibrary for Skill;

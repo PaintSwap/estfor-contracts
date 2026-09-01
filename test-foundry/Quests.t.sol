@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Quests} from "./interfaces/Quests.sol";
+import {IQuests} from "../contracts/interfaces/IQuests.sol";
 import {QUEST_PURSE_STRINGS} from "../contracts/globals/quests.sol";
 import {QuestInput, Quest, PlayerQuest} from "../contracts/globals/quests.sol";
 import {ActionInput, ActionInfo, ActionQueueStrategy, QueuedActionInput} from "../contracts/globals/actions.sol";
 import {ActionChoiceInput, ItemInput, EquipPosition, PendingQueuedActionState} from "../contracts/globals/players.sol";
 import {GuaranteedReward, RandomReward, XPThresholdReward} from "../contracts/globals/rewards.sol";
 import {Skill, CombatStyle, CombatStats, Equipment} from "../contracts/globals/misc.sol";
-import {PlayersImplMisc1 as IPlayersMisc1DelegateView} from "./interfaces/PlayersImplMisc1.sol";
+import {IPlayersImplMisc1 as IPlayersMisc1DelegateView} from "../contracts/interfaces/IPlayersImplMisc1.sol";
 import {NONE, SKILL_BOOST} from "../contracts/globals/items.sol";
 
 contract QuestsTest is FullGameStack {
@@ -120,13 +120,13 @@ contract QuestsTest is FullGameStack {
 
     function testShouldFailToAddSameQuestTwice() public {
         _addQuests(_quests(firemakingQuest));
-        vm.expectRevert(Quests.QuestWithIdAlreadyExists.selector);
+        vm.expectRevert(IQuests.QuestWithIdAlreadyExists.selector);
         _addQuests(_quests(firemakingQuest));
     }
 
     function testShouldFailToAddAQuestForNonOwner() public {
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         _addQuests(_quests(firemakingQuest));
     }
 
@@ -139,34 +139,34 @@ contract QuestsTest is FullGameStack {
 
     function testShouldFailToAddSameQuestTwiceUsingBatch() public {
         QuestInput[] memory questsToAdd = _quests(firemakingQuest, firemakingQuest);
-        vm.expectRevert(Quests.QuestWithIdAlreadyExists.selector);
+        vm.expectRevert(IQuests.QuestWithIdAlreadyExists.selector);
         quests.addQuests(questsToAdd, _minRequirements(2));
     }
 
     function testShouldFailToAddMultipleQuestsForNonOwner() public {
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         _addQuests(_quests(firemakingQuest));
     }
 
     function testShouldRemoveAQuestCorrectly() public {
         _addQuests(_quests(firemakingQuest));
         vm.expectEmit(true, true, true, true, address(quests));
-        emit Quests.RemoveQuest(1);
+        emit IQuests.RemoveQuest(1);
         quests.removeQuest(1);
-        vm.expectRevert(Quests.QuestDoesntExist.selector);
+        vm.expectRevert(IQuests.QuestDoesntExist.selector);
         quests.removeQuest(2);
     }
 
     function testShouldFailToRemoveAQuestForNonOwner() public {
         _addQuests(_quests(firemakingQuest));
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         quests.removeQuest(1);
     }
 
     function testShouldFailToRemoveANonExistingQuest() public {
-        vm.expectRevert(Quests.QuestDoesntExist.selector);
+        vm.expectRevert(IQuests.QuestDoesntExist.selector);
         quests.removeQuest(2);
     }
 
@@ -180,7 +180,7 @@ contract QuestsTest is FullGameStack {
     function testShouldFailToEditAQuestForNonOwner() public {
         _addQuests(_quests(firemakingQuest));
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         quests.editQuests(_quests(firemakingQuest), _minRequirements(1));
     }
 
@@ -188,7 +188,7 @@ contract QuestsTest is FullGameStack {
         _addQuests(_quests(firemakingQuest));
         firemakingQuest.questId = 100;
         firemakingQuest.actionChoiceNum = 23;
-        vm.expectRevert(Quests.QuestDoesntExist.selector);
+        vm.expectRevert(IQuests.QuestDoesntExist.selector);
         quests.editQuests(_quests(firemakingQuest), _minRequirements(1));
     }
 
@@ -221,7 +221,7 @@ contract QuestsTest is FullGameStack {
     function testQuestNotActivated() public {
         _addQuests(_quests(_purseStringsQuest()));
         vm.prank(ALICE);
-        vm.expectRevert(Quests.InvalidActiveQuest.selector);
+        vm.expectRevert(IQuests.InvalidActiveQuest.selector);
         players.buyBrushQuest{value: 10}(ALICE, playerId, 0, true);
     }
 
@@ -230,7 +230,7 @@ contract QuestsTest is FullGameStack {
         vm.prank(ALICE);
         players.activateQuest(playerId, QUEST_PURSE_STRINGS);
         vm.prank(ALICE);
-        vm.expectRevert(Quests.InvalidFTMAmount.selector);
+        vm.expectRevert(IQuests.InvalidFTMAmount.selector);
         players.buyBrushQuest{value: 0}(ALICE, playerId, 0, true);
     }
 
@@ -315,17 +315,17 @@ contract QuestsTest is FullGameStack {
 
     function test1MinimumRequirement() public {
         QuestInput memory quest = _purseStringsQuest();
-        Quests.MinimumRequirement[3][] memory reqs = new Quests.MinimumRequirement[3][](1);
-        reqs[0][0] = Quests.MinimumRequirement(Skill.HEALTH, 3000);
+        IQuests.MinimumRequirement[3][] memory reqs = new IQuests.MinimumRequirement[3][](1);
+        reqs[0][0] = IQuests.MinimumRequirement(Skill.HEALTH, 3000);
         quests.addQuests(_quests(quest), reqs);
         vm.prank(ALICE);
-        vm.expectRevert(Quests.InvalidMinimumRequirement.selector);
+        vm.expectRevert(IQuests.InvalidMinimumRequirement.selector);
         players.activateQuest(playerId, QUEST_PURSE_STRINGS);
 
         vm.prank(ALICE);
         players.modifyXP(ALICE, playerId, Skill.HEALTH, 2999, true);
         vm.prank(ALICE);
-        vm.expectRevert(Quests.InvalidMinimumRequirement.selector);
+        vm.expectRevert(IQuests.InvalidMinimumRequirement.selector);
         players.activateQuest(playerId, QUEST_PURSE_STRINGS);
         vm.prank(ALICE);
         players.modifyXP(ALICE, playerId, Skill.HEALTH, 3000, true);
@@ -621,7 +621,7 @@ contract QuestsTest is FullGameStack {
         quests.addQuests(_quests(quest, anotherQuest), _minRequirements(2));
 
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(Quests.DependentQuestNotCompleted.selector, QUEST_SUPPLY_RUN));
+        vm.expectRevert(abi.encodeWithSelector(IQuests.DependentQuestNotCompleted.selector, QUEST_SUPPLY_RUN));
         players.activateQuest(playerId, QUEST_TWO_BIRDS);
 
         // Complete it
@@ -715,14 +715,14 @@ contract QuestsTest is FullGameStack {
 
     function testShouldFailToActivateAQuestForNonOwnerOfPlayer() public {
         _addQuests(_quests(firemakingQuestLog));
-        vm.expectRevert(Quests.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IQuests.NotOwnerOfPlayerAndActive.selector);
         players.activateQuest(playerId, 2);
     }
 
     function testShouldFailToActivateANonExistingQuest() public {
         _addQuests(_quests(firemakingQuestLog));
         vm.prank(ALICE);
-        vm.expectRevert(Quests.QuestDoesntExist.selector);
+        vm.expectRevert(IQuests.QuestDoesntExist.selector);
         players.activateQuest(playerId, 3);
     }
 
@@ -746,7 +746,7 @@ contract QuestsTest is FullGameStack {
         assertEq(quests.activeQuests(playerId).questId, 0);
         // Check it can't be activated again
         vm.prank(ALICE);
-        vm.expectRevert(Quests.QuestCompletedAlready.selector);
+        vm.expectRevert(IQuests.QuestCompletedAlready.selector);
         players.activateQuest(playerId, firemakingQuest.questId);
     }
 
@@ -859,7 +859,7 @@ contract QuestsTest is FullGameStack {
         _addQuests(_quests(quest));
 
         vm.prank(ALICE);
-        vm.expectRevert(Quests.CannotStartFullModeQuest.selector);
+        vm.expectRevert(IQuests.CannotStartFullModeQuest.selector);
         players.activateQuest(playerId, QUEST_SO_FLETCH);
 
         // Upgrade the player
@@ -1226,8 +1226,8 @@ contract QuestsTest is FullGameStack {
         out[1] = b;
     }
 
-    function _minRequirements(uint256 count) private pure returns (Quests.MinimumRequirement[3][] memory reqs) {
-        reqs = new Quests.MinimumRequirement[3][](count);
+    function _minRequirements(uint256 count) private pure returns (IQuests.MinimumRequirement[3][] memory reqs) {
+        reqs = new IQuests.MinimumRequirement[3][](count);
     }
 
     function _queuedActions(QueuedActionInput memory a) private pure returns (QueuedActionInput[] memory out) {

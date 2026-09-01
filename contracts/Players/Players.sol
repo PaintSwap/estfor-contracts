@@ -34,15 +34,6 @@ contract Players is
   IPlayers,
   IActivityPointsCaller
 {
-  event GamePaused(bool gamePaused);
-  event LockPlayer(uint256 playerId, uint256 cooldownTimestamp);
-  event UnlockPlayer(uint256 playerId);
-
-  error InvalidSelector();
-  error GameIsPaused();
-  error PlayerLocked();
-  error NotBridge();
-
   modifier isOwnerOfPlayerAndActiveMod(uint256 playerId) {
     require(isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
@@ -79,39 +70,39 @@ contract Players is
   }
 
   function initialize(
-    ItemNFT itemNFT,
-    PlayerNFT playerNFT,
-    PetNFT petNFT,
-    IWorldActions worldActions,
-    RandomnessBeacon randomnessBeacon,
-    DailyRewardsScheduler dailyRewardsScheduler,
-    AdminAccess adminAccess,
-    Quests quests,
-    Clans clans,
-    WishingWell wishingWell,
+    address itemNFT,
+    address playerNFT,
+    address petNFT,
+    address worldActions,
+    address randomnessBeacon,
+    address dailyRewardsScheduler,
+    address adminAccess,
+    address quests,
+    address clans,
+    address wishingWell,
     address implQueueActions,
     address implProcessActions,
     address implRewards,
     address implMisc,
     address implMisc1,
     address bridge,
-    IActivityPoints activityPoints,
+    address activityPoints,
     bool isBeta
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
     __ReentrancyGuardTransient_init();
 
-    _itemNFT = itemNFT;
-    _playerNFT = playerNFT;
-    _petNFT = petNFT;
-    _worldActions = worldActions;
-    _randomnessBeacon = randomnessBeacon;
-    _dailyRewardsScheduler = dailyRewardsScheduler;
-    _adminAccess = adminAccess;
-    _quests = quests;
-    _clans = clans;
-    _wishingWell = wishingWell;
+    _itemNFT = ItemNFT(itemNFT);
+    _playerNFT = PlayerNFT(playerNFT);
+    _petNFT = PetNFT(petNFT);
+    _worldActions = IWorldActions(worldActions);
+    _randomnessBeacon = RandomnessBeacon(payable(randomnessBeacon));
+    _dailyRewardsScheduler = DailyRewardsScheduler(dailyRewardsScheduler);
+    _adminAccess = AdminAccess(adminAccess);
+    _quests = Quests(payable(quests));
+    _clans = Clans(clans);
+    _wishingWell = WishingWell(wishingWell);
     _implQueueActions = implQueueActions;
     _implProcessActions = implProcessActions;
     _implRewards = implRewards;
@@ -123,7 +114,7 @@ contract Players is
     _nextQueueId = 1;
     setAlphaCombatParams(1, 1, 8);
 
-    _activityPoints = activityPoints;
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   // TODO: remove in prod
@@ -142,7 +133,7 @@ contract Players is
     uint256 playerId,
     QueuedActionInput[] calldata queuedActions,
     ActionQueueStrategy queueStrategy
-  ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
+  ) external override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     _startActions(playerId, queuedActions, NONE, 0, 0, 0, queueStrategy);
   }
 
@@ -165,7 +156,7 @@ contract Players is
     uint256 questId,
     uint256 donationAmount,
     ActionQueueStrategy queueStrategy
-  ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
+  ) external override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     _startActions(
       playerId,
       queuedActions,
@@ -178,7 +169,7 @@ contract Players is
   }
 
   /// @notice Process actions for a player up to the current block timestamp
-  function processActions(uint256 playerId) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
+  function processActions(uint256 playerId) external override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     _processActionsAndSetState(_msgSender(), playerId);
   }
 
@@ -242,7 +233,7 @@ contract Players is
     uint256 playerId,
     uint256 questId,
     bool useExactETH
-  ) external payable isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
+  ) external payable override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     _delegatecall(
       _implMisc,
       abi.encodeWithSelector(IPlayersDelegate.buyBrushQuest.selector, to, playerId, questId, useExactETH)
@@ -252,14 +243,14 @@ contract Players is
   function activateQuest(
     uint256 playerId,
     uint256 questId
-  ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
+  ) external override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     if (_players[playerId].actionQueue.length != 0) {
       _processActionsAndSetState(_msgSender(), playerId);
     }
     _quests.activateQuest(_msgSender(), playerId, questId);
   }
 
-  function deactivateQuest(uint256 playerId) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
+  function deactivateQuest(uint256 playerId) external override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     if (_players[playerId].actionQueue.length != 0) {
       _processActionsAndSetState(_msgSender(), playerId);
     }
@@ -376,15 +367,15 @@ contract Players is
     emit SetActivePlayer(from, existingActivePlayerId, playerId);
   }
 
-  function setActivePlayer(uint256 playerId) external isOwnerOfPlayerMod(playerId) {
+  function setActivePlayer(uint256 playerId) external override isOwnerOfPlayerMod(playerId) {
     _setActivePlayer(_msgSender(), playerId);
   }
 
-  function donate(uint256 playerId, uint256 amount) external isOwnerOfPlayerOrEmpty(playerId) {
+  function donate(uint256 playerId, uint256 amount) external override isOwnerOfPlayerOrEmpty(playerId) {
     _donate(_msgSender(), playerId, amount);
   }
 
-  function dailyClaimedRewards(uint256 playerId) external view returns (bool[7] memory claimed) {
+  function dailyClaimedRewards(uint256 playerId) external view override returns (bool[7] memory claimed) {
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector, playerId)
@@ -399,7 +390,7 @@ contract Players is
     address owner_,
     uint256 playerId,
     QueuedActionInput[] calldata queuedActions
-  ) external view returns (bool[] memory successes, bytes[] memory reasons) {
+  ) external view override returns (bool[] memory successes, bytes[] memory reasons) {
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(
@@ -416,11 +407,11 @@ contract Players is
     return _playerNFT.balanceOf(from, playerId) == 1 && _activePlayerInfos[from].playerId == playerId;
   }
 
-  function getPendingRandomRewards(uint256 playerId) external view returns (PendingRandomReward[] memory) {
+  function getPendingRandomRewards(uint256 playerId) external view override returns (PendingRandomReward[] memory) {
     return _pendingRandomRewards[playerId];
   }
 
-  function getActionQueue(uint256 playerId) external view returns (QueuedAction[] memory) {
+  function getActionQueue(uint256 playerId) external view override returns (QueuedAction[] memory) {
     return _players[playerId].actionQueue;
   }
 
@@ -449,7 +440,7 @@ contract Players is
   function getPendingQueuedActionState(
     address playerOwner,
     uint256 playerId
-  ) public view returns (PendingQueuedActionState memory) {
+  ) public view override returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, playerOwner, playerId)
@@ -461,7 +452,7 @@ contract Players is
     return _activePlayerInfos[playerOwner].playerId;
   }
 
-  function getActivePlayerInfo(address playerOwner) external view returns (ActivePlayerInfo memory) {
+  function getActivePlayerInfo(address playerOwner) external view override returns (ActivePlayerInfo memory) {
     return _activePlayerInfos[playerOwner];
   }
 
@@ -529,7 +520,7 @@ contract Players is
     address implRewards,
     address implMisc,
     address implMisc1
-  ) external onlyOwner {
+  ) external override onlyOwner {
     _implQueueActions = implQueueActions;
     _implProcessActions = implProcessActions;
     _implRewards = implRewards;
@@ -537,50 +528,50 @@ contract Players is
     _implMisc1 = implMisc1;
   }
 
-  function setAlphaCombatParams(uint8 alphaCombat, uint8 betaCombat, uint8 alphaCombatHealing) public onlyOwner {
+  function setAlphaCombatParams(uint8 alphaCombat, uint8 betaCombat, uint8 alphaCombatHealing) public override onlyOwner {
     _alphaCombat = alphaCombat;
     _betaCombat = betaCombat;
     _alphaCombatHealing = alphaCombatHealing;
     emit SetCombatParams(alphaCombat, betaCombat, alphaCombatHealing);
   }
 
-  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external onlyOwner {
+  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external override onlyOwner {
     _delegatecall(
       _implMisc,
       abi.encodeWithSelector(IPlayersDelegate.addXPThresholdRewards.selector, xpThresholdRewards)
     );
   }
 
-  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external onlyOwner {
+  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external override onlyOwner {
     _delegatecall(
       _implMisc,
       abi.encodeWithSelector(IPlayersDelegate.editXPThresholdRewards.selector, xpThresholdRewards)
     );
   }
 
-  function setDailyRewardsEnabled(bool dailyRewardsEnabled) external onlyOwner {
+  function setDailyRewardsEnabled(bool dailyRewardsEnabled) external override onlyOwner {
     _dailyRewardsEnabled = dailyRewardsEnabled;
   }
 
-  function pauseGame(bool gamePaused) external onlyOwner {
+  function pauseGame(bool gamePaused) external override onlyOwner {
     _gamePaused = gamePaused;
     emit GamePaused(gamePaused);
   }
 
-  function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external onlyOwner {
+  function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external override onlyOwner {
     _delegatecall(
       _implMisc1,
       abi.encodeWithSelector(IPlayersDelegate.addFullAttireBonuses.selector, fullAttireBonuses)
     );
   }
 
-  function setXPModifiers(address[] calldata accounts, bool isModifier) external onlyOwner {
+  function setXPModifiers(address[] calldata accounts, bool isModifier) external override onlyOwner {
     for (uint256 i; i < accounts.length; ++i) {
       _xpModifiers[accounts[i]] = isModifier;
     }
   }
 
-  function bridgePlayer(uint256 playerId, uint256 totalXP, uint256 totalLevel) external onlyBridge {
+  function bridgePlayer(uint256 playerId, uint256 totalXP, uint256 totalLevel) external override onlyBridge {
     Player storage player = _players[playerId];
     player.totalXP = uint48(totalXP);
     player.totalLevel = uint16(totalLevel);

@@ -4,9 +4,9 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Players} from "../interfaces/Players.sol";
-import {PlayersBase} from "../interfaces/PlayersBase.sol";
-import {PlayersImplMisc1 as IPlayersMisc1DelegateView} from "../interfaces/PlayersImplMisc1.sol";
+import {IPlayers as Players} from "../../contracts/interfaces/IPlayers.sol";
+import {IPlayersBase as PlayersBase} from "../../contracts/interfaces/IPlayersBase.sol";
+import {IPlayersImplMisc1 as IPlayersMisc1DelegateView} from "../../contracts/interfaces/IPlayersImplMisc1.sol";
 import {Skill, Attire, CombatStyle, CombatStats} from "../../contracts/globals/misc.sol";
 import {
     ActionInput,
@@ -36,7 +36,7 @@ contract PlayersCoreTest is FullGameStack {
 
     function testCheckInitialized() public {
         vm.recordLogs();
-        Players implementation = Players(_deployArtifact("contracts/Players/Players.sol:Players:via-ir"));
+        Players implementation = Players(_deployArtifact("contracts/Players/Players.sol:Players"));
         _deployUUPS(address(implementation), _playersInitializer());
         Vm.Log[] memory logs = vm.getRecordedLogs();
         bytes32 topic = keccak256("SetCombatParams(uint256,uint256,uint256)");

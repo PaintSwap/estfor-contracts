@@ -14,6 +14,7 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IMarketplaceNFT} from "./interfaces/IMarketplaceNFT.sol";
 import {IMarketplace} from "./interfaces/IMarketplace.sol";
+import {IPetNFT} from "./interfaces/IPetNFT.sol";
 
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 
@@ -30,81 +31,9 @@ import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.
 // It does not use the standard OZ _balances for tracking, instead it packs the owner
 // into the pet struct and avoid updating multiple to/from balances using
 // SamWitchERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
-contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, OwnableUpgradeable, IMarketplaceNFT {
+contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, OwnableUpgradeable, IMarketplaceNFT, IPetNFT {
   using SkillLibrary for Skill;
   using BloomFilter for BloomFilter.Filter;
-
-  event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
-  event SetBrushDistributionPercentages(
-    uint256 brushBurntPercentage,
-    uint256 brushTreasuryPercentage,
-    uint256 brushDevPercentage
-  );
-  event EditPlayerPet(uint256 playerId, uint256 petId, address from, string newName);
-  event AddBasePets(BasePetInput[] basePetInputs);
-  event EditBasePets(BasePetInput[] basePetInputs);
-  event EditNameCost(uint256 newCost);
-  event Train(uint256 playerId, uint256 petId, uint256 xpGained);
-  event SetApprovedMinters(address[] accounts, bool isApproved);
-  event SetApprovedBurners(address[] accounts, bool isApproved);
-
-  // Legacy, Needed for bridging
-  event BridgePets(uint256[] tokenIds, Pet[] pets, string[] names, address from);
-  event RefreshPets(uint256[] tokenIds, Pet[] pets, string[] names, address[] owners);
-
-  error PetAlreadyExists();
-  error PetDoesNotExist();
-  error ERC1155Metadata_URIQueryForNonexistentToken();
-  error NotAdminAndBeta();
-  error PlayerDoesNotOwnPet();
-  error NotOwnerOfPet();
-  error NotOwnerOfPlayer();
-  error InvalidTimestamp();
-  error StorageSlotIncorrect();
-  error NotMinter();
-  error NotBridge();
-  error NotBurner();
-  error NameAlreadyExists();
-  error NameTooLong();
-  error NameTooShort();
-  error NameInvalidCharacters();
-  error PercentNotTotal100();
-  error InvalidAddress();
-  error SkillEnhancementIncorrectOrder();
-  error SkillPercentageIncrementCannotBeZero();
-  error SkillPercentageMustBeAFactorOfIncrement();
-  error SkillEnhancementMinGreaterThanMax();
-  error MustHaveOneSkillEnhancement();
-  error SkillEnhancementIncorrectlyFilled();
-  error MustHaveAtLeastPercentageOrFixedSet();
-  error LengthMismatch();
-  error LevelNotHighEnough(Skill skill, uint256 level);
-  error SkillFixedIncrementCannotBeZero();
-  error SkillFixedMustBeAFactorOfIncrement();
-  error NotPlayers();
-  error IllegalNameStart();
-  error SameName();
-  error CannotTransferThisPet(uint256 petId);
-  error TrainOnCooldown();
-
-  struct BasePetInput {
-    string description;
-    uint8 tier;
-    PetSkin skin;
-    PetEnhancementType enhancementType;
-    uint24 baseId;
-    bool isTransferable;
-    Skill[2] skillEnhancements;
-    uint8[2] skillFixedMins;
-    uint8[2] skillFixedMaxs;
-    uint8[2] skillFixedIncrements;
-    uint8[2] skillPercentageMins;
-    uint8[2] skillPercentageMaxs;
-    uint8[2] skillPercentageIncrements;
-    uint8[2] skillMinLevels;
-    uint16 fixedStarThreshold;
-    uint16 percentageStarThreshold;
-  }
 
   // From base class uint40 _totalSupplyAll
   uint40 private _nextPetId;
@@ -729,11 +658,15 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     return _pets[tokenId];
   }
 
-  function ownerOf(uint256 tokenId) public view override returns (address) {
+  function ownerOf(
+    uint256 tokenId
+  ) public view override(IPetNFT, SamWitchERC1155UpgradeableSinglePerToken) returns (address) {
     return _pets[tokenId].owner;
   }
 
-  function uri(uint256 tokenId) public view virtual override returns (string memory) {
+  function uri(
+    uint256 tokenId
+  ) public view virtual override(IPetNFT, SamWitchERC1155UpgradeableSinglePerToken) returns (string memory) {
     require(_exists(tokenId), ERC1155Metadata_URIQueryForNonexistentToken());
 
     Pet storage pet = _pets[tokenId];

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {PlayersBase} from "./PlayersBase.sol";
+import {IPlayersImplQueueActions} from "../interfaces/IPlayersImplQueueActions.sol";
 
 import {RandomnessBeacon} from "../RandomnessBeacon.sol";
 import {ItemNFT} from "../ItemNFT.sol";
@@ -15,7 +16,7 @@ import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplQueueActions is PlayersBase {
+contract PlayersImplQueueActions is PlayersBase, IPlayersImplQueueActions {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
   using CombatStyleLibrary for uint8;

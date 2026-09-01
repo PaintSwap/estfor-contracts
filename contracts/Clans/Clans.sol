@@ -26,101 +26,6 @@ import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityP
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCaller {
   using BloomFilter for BloomFilter.Filter;
 
-  event ClanCreated(
-    uint256 clanId,
-    uint256 playerId,
-    string[] clanInfo,
-    uint256 imageId,
-    uint256 tierId,
-    uint256 createdTimestamp
-  );
-  event SetClanRank(uint256 clanId, uint256 playerId, ClanRank clan);
-  event InviteSent(uint256 clanId, uint256 playerId, uint256 fromPlayerId);
-  event InvitesSent(uint256 clanId, uint256[] playerIds, uint256 fromPlayerId);
-  event InviteAccepted(uint256 clanId, uint256 playerId);
-  event MemberLeft(uint256 clanId, uint256 playerId, uint256 removedByPlayerId);
-  event JoinRequestSent(uint256 clanId, uint256 playerId);
-  event JoinRequestAccepted(uint256 clanId, uint256 playerId, uint256 acceptedByPlayerId);
-  event JoinRequestsAccepted(uint256 clanId, uint256[] playerIds, uint256 acceptedByPlayerId);
-  event JoinRequestRemoved(uint256 clanId, uint256 playerId);
-  event ClanOwnershipTransferred(uint256 clanId, uint256 playerId);
-  event AddTiers(Tier[] tiers);
-  event EditTiers(Tier[] tiers);
-  event ClanOwnerLeft(uint256 clanId, uint256 playerId);
-  event ClanEdited(uint256 clanId, uint256 playerId, string[] clanInfo, uint256 imageId);
-  event ClanUpgraded(uint256 clanId, uint256 playerId, uint256 tierId);
-  event ClanDestroyed(uint256 clanId);
-  event PlayerRankUpdated(uint256 clanId, uint256 memberId, ClanRank rank, uint256 playerId);
-  event InvitesDeletedByPlayer(uint256[] clanIds, uint256 playerId);
-  event InvitesDeletedByClan(uint256 clanId, uint256[] invitedPlayerIds, uint256 deletedInvitesPlayerId);
-  event JoinRequestsRemovedByClan(uint256 clanId, uint256[] joinRequestPlayerIds, uint256 removingJoinRequestsPlayerId);
-  event EditNameCost(uint256 newCost);
-  event JoinRequestsEnabled(uint256 clanId, bool joinRequestsEnabled, uint256 playerId);
-  event GateKeepNFTs(uint256 clanId, address[] nfts, uint256 playerId);
-  event PinMessage(uint256 clanId, string message, uint256 playerId);
-  event SetInitialMMR(uint256 mmr);
-  event SetBrushDistributionPercentages(
-    uint256 brushBurntPercentage,
-    uint256 brushTreasuryPercentage,
-    uint256 brushDevPercentage
-  );
-  event AddXP(uint256 clanId, uint256 xp, bool xpEmittedElsewhere);
-  event SetMMR(uint256 clanId, uint256 mmr); // Only used by bridge currently
-
-  error AlreadyInClan();
-  error NotOwnerOfPlayer();
-  error NotOwnerOfPlayerAndActive();
-  error NotMemberOfClan();
-  error ClanIsFull();
-  error OwnerExists();
-  error InvalidImageId();
-  error NameTooShort();
-  error NameTooLong();
-  error NameInvalidCharacters();
-  error DiscordTooLong();
-  error DiscordTooShort();
-  error DiscordInvalidCharacters();
-  error TelegramTooLong();
-  error TelegramInvalidCharacters();
-  error TwitterTooLong();
-  error TwitterInvalidCharacters();
-  error ClanDoesNotExist();
-  error TierDoesNotExist();
-  error CannotDowngradeTier();
-  error TierAlreadyExists();
-  error NameAlreadyExists();
-  error ClanDestroyFailedHasMembers();
-  error PriceTooLow();
-  error MemberCapacityTooLow();
-  error BankCapacityTooLow();
-  error ImageIdTooLow();
-  error AlreadySentInvite();
-  error AlreadySentJoinRequest();
-  error NoJoinRequest();
-  error RankMustBeLowerRenounce();
-  error RankNotHighEnough();
-  error CannotSetSameRank();
-  error ChangingRankEqualOrHigherThanSelf();
-  error ChangingRankOfPlayerHigherThanSelf();
-  error ChangingRankOfPlayerEqualOrHigherThanSelf();
-  error CannotRenounceToSelf();
-  error InviteDoesNotExist();
-  error NoInvitesToDelete();
-  error NoJoinRequestsToDelete();
-  error JoinRequestsDisabled();
-  error TooManyNFTs();
-  error InvalidNFTType();
-  error NoGateKeptNFTFound();
-  error NFTNotWhitelistedOnMarketplace();
-  error UnsupportedNFTType();
-  error MessageTooLong();
-  error NotMMRSetter();
-  error PercentNotTotal100();
-  error PlayersAlreadySet();
-  error BankFactoryAlreadySet();
-  error NotXPModifier();
-  error NotBridge();
-
   struct Clan {
     uint64 ownerPlayerId;
     uint16 imageId;
@@ -133,26 +38,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     string name;
     mapping(uint256 playerId => bool invited) inviteRequests;
     NFTInfo[] gateKeptNFTs;
-  }
-
-  struct PlayerInfo {
-    uint40 clanId; // What clan they are in
-    ClanRank rank; // Current clan rank
-    uint40 requestedClanId; // What clan they have requested to join
-  }
-
-  struct Tier {
-    uint8 id;
-    uint16 maxMemberCapacity;
-    uint16 maxBankCapacity;
-    uint24 maxImageId;
-    uint40 minimumAge; // How old the clan must be before it can be upgraded to this tier
-    uint80 price;
-  }
-
-  struct NFTInfo {
-    address nft;
-    uint80 nftType; // e.g erc721 or erc1155
   }
 
   IBrushToken private _brush;
@@ -235,7 +120,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint40 startClanId,
     address bridge,
     IActivityPoints activityPoints
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
 
@@ -252,11 +137,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external override onlyOwner {
+  function setActivityPoints(address activityPoints) external override(IClans, IActivityPointsCaller) onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 
-  function initializeV2(ICombatantsHelper combatantsHelper) external reinitializer(2) {
+  function initializeV2(ICombatantsHelper combatantsHelper) external override reinitializer(2) {
     _combatantsHelper = combatantsHelper;
   }
 
@@ -268,7 +153,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     string calldata twitter,
     uint16 imageId,
     uint8 tierId
-  ) external isOwnerOfPlayerAndActive(playerId) {
+  ) external override isOwnerOfPlayerAndActive(playerId) {
     require(!isMemberOfAnyClan(playerId), AlreadyInClan());
 
     Tier storage tier = _tiers[tierId];
@@ -319,7 +204,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 tierId,
     uint256 mmr,
     bool disableJoinRequests
-  ) external onlyBridge {
+  ) external override onlyBridge {
     Clan storage clan = _clans[clanId];
     clan.ownerPlayerId = uint64(playerId);
     clan.tierId = uint8(tierId);
@@ -354,7 +239,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     string calldata twitter,
     uint256 imageId,
     uint256 playerId
-  ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
+  ) external override isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
     Clan storage clan = _clans[clanId];
     Tier storage tier = _tiers[clan.tierId];
     _checkClanImage(imageId, tier.maxImageId);
@@ -368,7 +253,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     emit ClanEdited(clanId, playerId, clanInfo, imageId);
   }
 
-  function deleteInvitesAsPlayer(uint256[] calldata clanIds, uint256 playerId) external isOwnerOfPlayer(playerId) {
+  function deleteInvitesAsPlayer(uint256[] calldata clanIds, uint256 playerId) external override isOwnerOfPlayer(playerId) {
     require(clanIds.length != 0, NoInvitesToDelete());
 
     for (uint256 i = 0; i < clanIds.length; ++i) {
@@ -383,7 +268,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     uint256[] calldata invitedPlayerIds,
     uint256 playerId
-  ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+  ) external override isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
     Clan storage clan = _clans[clanId];
     require(invitedPlayerIds.length != 0, NoInvitesToDelete());
 
@@ -400,7 +285,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     uint256[] calldata memberPlayerIds,
     uint256 playerId
-  ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+  ) external override isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
     Clan storage clan = _clans[clanId];
     Tier storage tier = _tiers[clan.tierId];
     require(clan.memberCount + memberPlayerIds.length <= tier.maxMemberCapacity, ClanIsFull());
@@ -437,7 +322,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     uint256 playerId,
     uint256 gateKeepTokenId
-  ) external isOwnerOfPlayerAndActive(playerId) {
+  ) external override isOwnerOfPlayerAndActive(playerId) {
     _acceptInvite(clanId, playerId, gateKeepTokenId);
   }
 
@@ -445,11 +330,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     uint256 playerId,
     uint256 gateKeepTokenId
-  ) external isOwnerOfPlayerAndActive(playerId) {
+  ) external override isOwnerOfPlayerAndActive(playerId) {
     _requestToJoin(clanId, playerId, gateKeepTokenId);
   }
 
-  function removeJoinRequest(uint256 clanId, uint256 playerId) public isOwnerOfPlayer(playerId) {
+  function removeJoinRequest(uint256 clanId, uint256 playerId) public override isOwnerOfPlayer(playerId) {
     _playerInfo[playerId].requestedClanId = 0;
     emit JoinRequestRemoved(clanId, playerId);
   }
@@ -458,7 +343,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     uint256[] calldata joinRequestPlayerIds,
     uint256 playerId
-  ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+  ) external override isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
     require(joinRequestPlayerIds.length != 0, NoJoinRequestsToDelete());
 
     for (uint256 i = 0; i < joinRequestPlayerIds.length; ++i) {
@@ -475,7 +360,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     uint256[] calldata newMemberPlayerIds,
     uint256 playerId
-  ) public isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+  ) public override isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
     Clan storage clan = _clans[clanId];
     Tier storage tier = _tiers[clan.tierId];
     require(clan.memberCount + newMemberPlayerIds.length <= tier.maxMemberCapacity, ClanIsFull());
@@ -492,7 +377,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 memberId,
     ClanRank rank,
     uint256 playerId
-  ) public isOwnerOfPlayer(playerId) isMemberOfClan(clanId, memberId) {
+  ) public override isOwnerOfPlayer(playerId) isMemberOfClan(clanId, memberId) {
     ClanRank currentMemberRank = _playerInfo[memberId].rank;
     ClanRank callerRank = _playerInfo[playerId].rank;
     bool changingSelf = memberId == playerId;
@@ -531,7 +416,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256[] calldata memberIds,
     ClanRank[] calldata ranks,
     uint256 playerId
-  ) external isOwnerOfPlayer(playerId) {
+  ) external override isOwnerOfPlayer(playerId) {
     for (uint256 i = 0; i < memberIds.length; ++i) {
       changeRank(clanId, memberIds[i], ranks[i], playerId);
     }
@@ -541,7 +426,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     uint256 newOwnerPlayerId,
     ClanRank newRank
-  ) external isOwnerOfPlayer(_clans[clanId].ownerPlayerId) isMemberOfClan(clanId, newOwnerPlayerId) {
+  ) external override isOwnerOfPlayer(_clans[clanId].ownerPlayerId) isMemberOfClan(clanId, newOwnerPlayerId) {
     Clan storage clan = _clans[clanId];
     uint256 oldOwnerPlayerId = clan.ownerPlayerId;
 
@@ -561,7 +446,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
   function claimOwnership(
     uint256 clanId,
     uint256 playerId
-  ) external isOwnerOfPlayer(playerId) isMemberOfClan(clanId, playerId) {
+  ) external override isOwnerOfPlayer(playerId) isMemberOfClan(clanId, playerId) {
     Clan storage clan = _clans[clanId];
     require(clan.ownerPlayerId == 0, OwnerExists());
 
@@ -572,13 +457,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     bool joinRequestsEnabled,
     uint256 playerId
-  ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+  ) external override isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
     Clan storage clan = _clans[clanId];
     clan.disableJoinRequests = !joinRequestsEnabled;
     emit JoinRequestsEnabled(clanId, joinRequestsEnabled, playerId);
   }
 
-  function upgradeClan(uint256 clanId, uint256 playerId, uint8 newTierId) public isOwnerOfPlayer(playerId) {
+  function upgradeClan(uint256 clanId, uint256 playerId, uint8 newTierId) public override isOwnerOfPlayer(playerId) {
     _upgradeClan(clanId, playerId, newTierId);
   }
 
@@ -586,7 +471,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     string calldata message,
     uint256 playerId
-  ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
+  ) external override isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
     require(bytes(message).length <= 200, MessageTooLong());
     emit PinMessage(clanId, message, playerId);
   }
@@ -595,7 +480,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint256 clanId,
     NFTInfo[] calldata nftInfos,
     uint256 playerId
-  ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
+  ) external override isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
     require(nftInfos.length <= 5, TooManyNFTs());
 
     address[] memory nfts = new address[](nftInfos.length);
@@ -624,12 +509,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
   }
 
   // The flag is for cases where XP is added in the future and not part of those events
-  function addXP(uint256 clanId, uint40 xp, bool xpEmittedElsewhere) external isXPModifier {
+  function addXP(uint256 clanId, uint40 xp, bool xpEmittedElsewhere) external override isXPModifier {
     _clans[clanId].xp += xp;
     emit AddXP(clanId, xp, xpEmittedElsewhere);
   }
 
-  function setMMR(uint256 clanId, uint16 mmr) external onlyMMRSetter {
+  function setMMR(uint256 clanId, uint16 mmr) external override onlyMMRSetter {
     _clans[clanId].mmr = mmr;
   }
 
@@ -851,11 +736,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     player.rank = ClanRank.COMMONER;
   }
 
-  function getClanIdFromPlayer(uint256 playerId) external view returns (uint256) {
+  function getClanIdFromPlayer(uint256 playerId) external override view returns (uint256) {
     return _playerInfo[playerId].clanId;
   }
 
-  function getClanNameOfPlayer(uint256 playerId) external view returns (string memory) {
+  function getClanNameOfPlayer(uint256 playerId) external override view returns (string memory) {
     uint256 clanId = _playerInfo[playerId].clanId;
     return _clans[clanId].name;
   }
@@ -864,27 +749,27 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     return _playerInfo[playerId].clanId == clanId && _playerInfo[playerId].rank >= ClanRank.TREASURER;
   }
 
-  function isClanMember(uint256 clanId, uint256 playerId) external view returns (bool) {
+  function isClanMember(uint256 clanId, uint256 playerId) external override view returns (bool) {
     return _playerInfo[playerId].clanId == clanId;
   }
 
-  function isMemberOfAnyClan(uint256 playerId) public view returns (bool) {
+  function isMemberOfAnyClan(uint256 playerId) public override view returns (bool) {
     return _playerInfo[playerId].clanId != 0;
   }
 
-  function getClanTierMembership(uint256 playerId) external view returns (uint8) {
+  function getClanTierMembership(uint256 playerId) external override view returns (uint8) {
     return _clans[_playerInfo[playerId].clanId].tierId;
   }
 
-  function getClanId(uint256 playerId) external view returns (uint256) {
+  function getClanId(uint256 playerId) external override view returns (uint256) {
     return _playerInfo[playerId].clanId;
   }
 
-  function getMMR(uint256 clanId) external view returns (uint16 mmr) {
+  function getMMR(uint256 clanId) external override view returns (uint16 mmr) {
     mmr = _clans[clanId].mmr;
   }
 
-  function hasInviteRequest(uint256 clanId, uint256 playerId) external view returns (bool) {
+  function hasInviteRequest(uint256 clanId, uint256 playerId) external override view returns (bool) {
     return _clans[clanId].inviteRequests[playerId];
   }
 
@@ -898,33 +783,33 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     return tier.maxMemberCapacity;
   }
 
-  function getRank(uint256 clanId, uint256 playerId) external view returns (ClanRank rank) {
+  function getRank(uint256 clanId, uint256 playerId) external override view returns (ClanRank rank) {
     if (_playerInfo[playerId].clanId == clanId) {
       return _playerInfo[playerId].rank;
     }
     return ClanRank.NONE;
   }
 
-  function getEditNameCost() external view returns (uint80) {
+  function getEditNameCost() external override view returns (uint80) {
     return _editNameCost;
   }
 
-  function getPlayerInfo(uint256 playerId) external view returns (PlayerInfo memory) {
+  function getPlayerInfo(uint256 playerId) external override view returns (PlayerInfo memory) {
     return _playerInfo[playerId];
   }
 
-  function getLowercaseNames(string calldata name) external view returns (bool) {
+  function getLowercaseNames(string calldata name) external override view returns (bool) {
     return _lowercaseNames[name];
   }
 
-  function getTier(uint256 tierId) external view returns (Tier memory) {
+  function getTier(uint256 tierId) external override view returns (Tier memory) {
     return _tiers[tierId];
   }
 
   function getClan(
     uint256 clanId
   )
-    external
+    external override
     view
     returns (
       uint64 ownerPlayerId,
@@ -957,7 +842,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     return _bankFactory.getBankAddress(clanId);
   }
 
-  function addTiers(Tier[] calldata tiers) external onlyOwner {
+  function addTiers(Tier[] calldata tiers) external override onlyOwner {
     for (uint256 i; i < tiers.length; ++i) {
       require(tiers[i].id != 0 && _tiers[tiers[i].id].id == 0, TierAlreadyExists());
       _setTier(tiers[i]);
@@ -965,7 +850,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     emit AddTiers(tiers);
   }
 
-  function editTiers(Tier[] calldata tiers) external onlyOwner {
+  function editTiers(Tier[] calldata tiers) external override onlyOwner {
     for (uint256 i; i < tiers.length; ++i) {
       _checkTierExists(tiers[i].id);
       _setTier(tiers[i]);
@@ -979,7 +864,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     IClanMemberLeftCB territories,
     IClanMemberLeftCB lockedBankVaults,
     IClanMemberLeftCB raids
-  ) external onlyOwner {
+  ) external override onlyOwner {
     require(address(_bankFactory) == address(0) || _bankFactory == bankFactory, BankFactoryAlreadySet());
 
     _players = players;
@@ -989,18 +874,18 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     _raids = raids;
   }
 
-  function setXPModifiers(address[] calldata accounts, bool isModifier) external onlyOwner {
+  function setXPModifiers(address[] calldata accounts, bool isModifier) external override onlyOwner {
     for (uint256 i; i < accounts.length; ++i) {
       _xpModifiers[accounts[i]] = isModifier;
     }
   }
 
-  function setEditNameCost(uint80 editNameCost) public onlyOwner {
+  function setEditNameCost(uint80 editNameCost) public override onlyOwner {
     _editNameCost = editNameCost;
     emit EditNameCost(editNameCost);
   }
 
-  function setInitialMMR(uint16 mmr) public onlyOwner {
+  function setInitialMMR(uint16 mmr) public override onlyOwner {
     _initialMMR = mmr;
     emit SetInitialMMR(mmr);
   }
@@ -1009,7 +894,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     uint8 brushBurntPercentage,
     uint8 brushTreasuryPercentage,
     uint8 brushDevPercentage
-  ) external onlyOwner {
+  ) external override onlyOwner {
     require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
 
     _brushBurntPercentage = brushBurntPercentage;
@@ -1018,7 +903,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
-  function setDevAddress(address dev) external onlyOwner {
+  function setDevAddress(address dev) external override onlyOwner {
     _dev = dev;
   }
   

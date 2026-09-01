@@ -12,7 +12,6 @@ import {IBank} from "../interfaces/IBank.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
 import {ILockedBankVaults} from "../interfaces/ILockedBankVaults.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
-import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
 
 import {AdminAccess} from "../AdminAccess.sol";
@@ -35,91 +34,8 @@ contract LockedBankVaults is
   OwnableUpgradeable,
   PaintswapVRFConsumerUpgradeable,
   ILockedBankVaults,
-  IClanMemberLeftCB,
   IActivityPointsCaller
 {
-  event AttackVaults(
-    uint256 clanId,
-    uint256 defendingClanId,
-    address from,
-    uint256 leaderPlayerId,
-    uint256 requestId,
-    uint256 pendingAttackId,
-    uint256 attackingCooldownTimestamp,
-    uint256 reattackingCooldownTimestamp,
-    uint256 itemTokenId
-  );
-  event SetComparableSkills(Skill[] skills);
-  event BattleResult(
-    uint256 requestId,
-    uint64[] attackingPlayerIds,
-    uint64[] defendingPlayerIds,
-    uint256[] attackingRolls,
-    uint256[] defendingRolls,
-    uint8[] battleResults, // BattleResultEnum
-    uint8[] randomSkills, // Skill
-    bool didAttackersWin,
-    uint256 attackingClanId,
-    uint256 defendingClanId,
-    uint256[] randomWords,
-    uint256 percentageToTake,
-    uint256 brushLost,
-    int256 attackingMMRDiff,
-    int256 defendingMMRDiff,
-    uint256 clanXPGainedWinner
-  );
-
-  event AssignCombatants(
-    uint256 clanId,
-    uint64[] playerIds,
-    address from,
-    uint256 leaderPlayerId,
-    uint256 cooldownTimestamp
-  );
-  event RemoveCombatant(uint256 playerId, uint256 clanId);
-  event ClaimFunds(uint256 clanId, address from, uint256 playerId, uint256 amount, uint256 numLocksClaimed);
-  event LockFunds(uint256 clanId, address from, uint256 playerId, uint256 amount, uint256 lockingTimestamp);
-  event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
-  event SetMaxLockedVaults(uint256 maxLockedVaults);
-  event SetMaxClanCombatants(uint256 maxClanCombatants);
-  event BlockingAttacks(
-    uint256 clanId,
-    uint256 itemTokenId,
-    address from,
-    uint256 leaderPlayerId,
-    uint256 blockAttacksTimestamp,
-    uint256 blockAttacksCooldownTimestamp
-  );
-  event SuperAttackCooldown(uint256 clanId, uint256 cooldownTimestamp);
-  event SetMMRAttackDistance(uint256 mmrAttackDistance);
-  event ForceMMRUpdate(uint256[] clanIdsToDelete);
-  event SetMMRs(uint256[] clanIds, uint16[] mmrs);
-  event SetKValues(uint256 Ka, uint256 Kd);
-  event SetBrushDistributionPercentages(
-    uint256 brushBurntPercentage,
-    uint256 brushTreasuryPercentage,
-    uint256 brushDevPercentage
-  );
-  event SetPreventAttacks(bool preventAttacks);
-
-  error PlayerOnTerritory();
-  error TooManyCombatants();
-  error NotOwnerOfPlayerAndActive();
-  error RankNotHighEnough();
-  error InvalidSkill(Skill skill);
-  error NotMemberOfClan();
-  error LengthMismatch();
-  error OnlyClans();
-  error OnlyTerritories();
-  error OnlyCombatantsHelper();
-  error TransferFailed();
-  error CannotChangeCombatantsDuringAttack();
-  error NotAdminAndBeta();
-  error RequestIdNotKnown();
-  error CallerNotSamWitchVRF();
-  error AttacksPrevented();
-  error PercentNotTotal100();
-
   struct PendingAttack {
     uint40 clanId;
     uint40 defendingClanId;
@@ -234,7 +150,7 @@ contract LockedBankVaults is
     AdminAccess adminAccess,
     IActivityPoints activityPoints,
     bool isBeta
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
@@ -265,11 +181,11 @@ contract LockedBankVaults is
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external override onlyOwner {
+  function setActivityPoints(address activityPoints) external override(ILockedBankVaults, IActivityPointsCaller) onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 
-  function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
+  function initializeV3(address paintswapVRFConsumer) external override reinitializer(3) {
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
   }
 
@@ -287,7 +203,7 @@ contract LockedBankVaults is
   }
 
   // Some vaults may no longer be attackable if they don't have any funds, so force the MMR arrays to be re-calculated.
-  function forceMMRUpdate(uint256[] calldata clanIds) external {
+  function forceMMRUpdate(uint256[] calldata clanIds) external override {
     uint256[] memory clanIdsToDelete = LockedBankVaultsLibrary.forceMMRUpdate(
       _sortedClansByMMR,
       _clans,
@@ -299,7 +215,7 @@ contract LockedBankVaults is
     }
   }
 
-  function getIdleClans() external view returns (uint256[] memory clanIds) {
+  function getIdleClans() external view override returns (uint256[] memory clanIds) {
     return LockedBankVaultsLibrary.getIdleClans(_sortedClansByMMR, _clanInfos, _clans);
   }
 
@@ -309,7 +225,7 @@ contract LockedBankVaults is
     uint256 defendingClanId,
     uint16 itemTokenId,
     uint256 leaderPlayerId
-  ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
+  ) external payable override isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
     require(!_preventAttacks, AttacksPrevented());
 
     (bool isReattacking, bool isUsingSuperAttack, uint256 superAttackCooldownTimestamp) = LockedBankVaultsLibrary
@@ -504,7 +420,7 @@ contract LockedBankVaults is
     }
   }
 
-  function claimFunds(uint256 clanId, uint256 playerId) external isOwnerOfPlayerAndActive(playerId) {
+  function claimFunds(uint256 clanId, uint256 playerId) external override isOwnerOfPlayerAndActive(playerId) {
     VaultClanInfo storage clanInfo = _clanInfos[clanId];
 
     address bankAddress = address(_clanInfos[clanId].bank);
@@ -524,13 +440,13 @@ contract LockedBankVaults is
     uint256 clanId,
     uint16 itemTokenId,
     uint256 playerId
-  ) external isOwnerOfPlayerAndActive(playerId) isClanMember(clanId, playerId) {
+  ) external override isOwnerOfPlayerAndActive(playerId) isClanMember(clanId, playerId) {
     uint256 blockAttacksTimestamp = LockedBankVaultsLibrary.blockAttacks(_itemNFT, itemTokenId, _clanInfos[clanId]);
     // TODO: Add blockAttacksCooldownHours to a BlockingAttacks
     emit BlockingAttacks(clanId, itemTokenId, _msgSender(), playerId, blockAttacksTimestamp, block.timestamp);
   }
 
-  function lockFunds(uint256 clanId, address from, uint256 playerId, uint256 amount) external onlyTerritories {
+  function lockFunds(uint256 clanId, address from, uint256 playerId, uint256 amount) external override onlyTerritories {
     _lockFunds(clanId, from, playerId, amount);
     VaultClanInfo storage clanInfo = _clanInfos[clanId];
     if (!clanInfo.isInMMRArray) {
@@ -606,11 +522,11 @@ contract LockedBankVaults is
     requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, DAO_MULTISIG_ADDRESS, gasPayment);
   }
 
-  function getAttackCost() public view returns (uint256) {
+  function getAttackCost() public view override returns (uint256) {
     return _calculateRequestPriceNative(_expectedGasLimitFulfill);
   }
 
-  function getClanInfo(uint256 clanId) external view returns (VaultClanInfo memory) {
+  function getClanInfo(uint256 clanId) external view override returns (VaultClanInfo memory) {
     return _clanInfos[clanId];
   }
 
@@ -624,19 +540,19 @@ contract LockedBankVaults is
     return searchIndex != type(uint256).max;
   }
 
-  function getSortedClanIdsByMMR() external view returns (uint32[] memory) {
+  function getSortedClanIdsByMMR() external view override returns (uint32[] memory) {
     return LockedBankVaultsLibrary.getSortedClanIdsByMMR(_sortedClansByMMR);
   }
 
-  function getSortedMMR() external view returns (uint16[] memory) {
+  function getSortedMMR() external view override returns (uint16[] memory) {
     return LockedBankVaultsLibrary.getSortedMMR(_sortedClansByMMR);
   }
 
-  function getLastClanBattles(uint256 clanId, uint256 otherClanId) external view returns (ClanBattleInfo memory) {
+  function getLastClanBattles(uint256 clanId, uint256 otherClanId) external view override returns (ClanBattleInfo memory) {
     return _lastClanBattles[clanId][otherClanId];
   }
 
-  function setComparableSkills(Skill[] calldata skills) public onlyOwner {
+  function setComparableSkills(Skill[] calldata skills) public override onlyOwner {
     for (uint256 i = 0; i < skills.length; ++i) {
       require(skills[i] != Skill.NONE && skills[i] != Skill.COMBAT, InvalidSkill(skills[i]));
 
@@ -645,23 +561,23 @@ contract LockedBankVaults is
     emit SetComparableSkills(skills);
   }
 
-  function setKValues(uint8 kA, uint8 kD) public onlyOwner {
+  function setKValues(uint8 kA, uint8 kD) public override onlyOwner {
     _kA = kA;
     _kD = kD;
     emit SetKValues(kA, kD);
   }
 
-  function setMMRAttackDistance(uint16 mmrAttackDistance) public onlyOwner {
+  function setMMRAttackDistance(uint16 mmrAttackDistance) public override onlyOwner {
     _mmrAttackDistance = mmrAttackDistance;
     emit SetMMRAttackDistance(mmrAttackDistance);
   }
 
-  function setMaxLockedVaults(uint8 maxLockedVaults) public onlyOwner {
+  function setMaxLockedVaults(uint8 maxLockedVaults) public override onlyOwner {
     _maxLockedVaults = maxLockedVaults;
     emit SetMaxLockedVaults(maxLockedVaults);
   }
 
-  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
+  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public override onlyOwner {
     _expectedGasLimitFulfill = expectedGasLimitFulfill;
     emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
@@ -670,7 +586,7 @@ contract LockedBankVaults is
     uint8 brushBurntPercentage,
     uint8 brushTreasuryPercentage,
     uint8 brushDevPercentage
-  ) external onlyOwner {
+  ) external override onlyOwner {
     require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
 
     _brushBurntPercentage = brushBurntPercentage;
@@ -679,23 +595,23 @@ contract LockedBankVaults is
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
-  function setDevAddress(address dev) external onlyOwner {
+  function setDevAddress(address dev) external override onlyOwner {
     _dev = dev;
   }
   
-  function setMaxClanCombatants(uint8 maxClanCombatants) public onlyOwner {
+  function setMaxClanCombatants(uint8 maxClanCombatants) public override onlyOwner {
     _maxClanCombatants = maxClanCombatants;
     emit SetMaxClanCombatants(maxClanCombatants);
   }
 
   // TODO: Can delete if necessary
-  function setPreventAttacks(bool preventAttacks) external onlyOwner {
+  function setPreventAttacks(bool preventAttacks) external override onlyOwner {
     _preventAttacks = preventAttacks;
     emit SetPreventAttacks(preventAttacks);
   }
 
   // TODO Can delete after setting initial MMR
-  function initializeMMR(uint256[] calldata clanIds, uint16[] calldata mmrs, bool clear) external onlyOwner {
+  function initializeMMR(uint256[] calldata clanIds, uint16[] calldata mmrs, bool clear) external override onlyOwner {
     // First clean up any in it
     if (clear) {
       delete _sortedClansByMMR;
@@ -708,18 +624,18 @@ contract LockedBankVaults is
     ITerritories territories,
     address combatantsHelper,
     IBankFactory bankFactory
-  ) external onlyOwner {
+  ) external override onlyOwner {
     _territories = territories;
     _combatantsHelper = combatantsHelper;
     _bankFactory = bankFactory;
   }
 
-  function clearCooldowns(uint256 clanId, uint256[] calldata otherClanIds) external isAdminAndBeta {
+  function clearCooldowns(uint256 clanId, uint256[] calldata otherClanIds) external override isAdminAndBeta {
     LockedBankVaultsLibrary.clearCooldowns(clanId, otherClanIds, _clanInfos[clanId], _lastClanBattles);
   }
 
   // Useful to re-run a battle for testing
-  function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
+  function setAttackInProgress(uint256 requestId) external override isAdminAndBeta {
     _pendingAttacks[_requestToPendingAttackIds[requestId]].attackInProgress = true;
   }
 

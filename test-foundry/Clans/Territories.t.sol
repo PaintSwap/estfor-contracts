@@ -4,9 +4,9 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Territories} from "../interfaces/Territories.sol";
-import {Clans} from "../interfaces/Clans.sol";
-import {CombatantsHelper} from "../interfaces/CombatantsHelper.sol";
+import {ITerritories} from "../../contracts/interfaces/ITerritories.sol";
+import {IClans as Clans} from "../../contracts/interfaces/IClans.sol";
+import {ICombatantsHelper as CombatantsHelper} from "../../contracts/interfaces/ICombatantsHelper.sol";
 import {ClanRank, VaultClanInfo} from "../../contracts/globals/clans.sol";
 import {BoostType, Skill, CombatStats} from "../../contracts/globals/misc.sol";
 import {EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
@@ -60,7 +60,7 @@ contract TerritoriesTest is FullGameStack {
     }
 
     function testCheckDefaults() public view {
-        Territories.Territory[] memory values = territories.getTerrorities();
+        ITerritories.Territory[] memory values = territories.getTerrorities();
         assertEq(values.length, 25);
         assertEq(territories.getTerritory(1).territoryId, 1);
         assertEq(territories.getTerritory(1).percentageEmissions, 100);
@@ -76,7 +76,7 @@ contract TerritoriesTest is FullGameStack {
 
         mockVRF.fulfill(1, address(territories));
         assertEq(territories.getTerritory(TERRITORY_ID).clanIdOccupier, CLAN_ID);
-        Territories.ClanInfo memory info = territories.getClanInfo(CLAN_ID);
+        ITerritories.ClanInfo memory info = territories.getClanInfo(CLAN_ID);
         assertEq(info.ownsTerritoryId, TERRITORY_ID);
         assertEq(info.attackingCooldownTimestamp, attackTimestamp + 1 days);
     }
@@ -89,7 +89,7 @@ contract TerritoriesTest is FullGameStack {
     function testCannotAttackOwnTerritory() public {
         _claim(ALICE, CLAN_ID, TERRITORY_ID, playerId, 1);
         vm.warp(block.timestamp + 1 days);
-        vm.expectRevert(Territories.CannotAttackSelf.selector);
+        vm.expectRevert(ITerritories.CannotAttackSelf.selector);
         vm.prank(ALICE);
         territories.attackTerritory(CLAN_ID, TERRITORY_ID, playerId);
     }
@@ -156,7 +156,7 @@ contract TerritoriesTest is FullGameStack {
         assertEq(territories.getTerritory(TERRITORY_ID).clanIdOccupier, CLAN_ID);
         clans.changeRank(CLAN_ID, ownerPlayerId, ClanRank.NONE, ownerPlayerId);
         assertEq(territories.getTerritory(TERRITORY_ID).clanIdOccupier, CLAN_ID);
-        Territories.ClanInfo memory aliceInfo = territories.getClanInfo(CLAN_ID);
+        ITerritories.ClanInfo memory aliceInfo = territories.getClanInfo(CLAN_ID);
         assertEq(aliceInfo.playerIds.length, 1);
         assertEq(aliceInfo.playerIds[0], playerId);
 
@@ -230,7 +230,7 @@ contract TerritoriesTest is FullGameStack {
         clans.changeRank(CLAN_ID, ownerPlayerId, ClanRank.SCOUT, playerId);
         _assign(ALICE, CLAN_ID, playerId, _ids(playerId, ownerPlayerId));
         uint256 attackCost = territories.getAttackCost();
-        vm.expectRevert(Territories.RankNotHighEnough.selector);
+        vm.expectRevert(ITerritories.RankNotHighEnough.selector);
         territories.attackTerritory{value: attackCost}(CLAN_ID, TERRITORY_ID, ownerPlayerId);
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, ownerPlayerId, ClanRank.COLONEL, playerId);
@@ -241,7 +241,7 @@ contract TerritoriesTest is FullGameStack {
         _join(CLAN_ID, address(this), ownerPlayerId, ALICE, playerId);
         _assign(ALICE, CLAN_ID, playerId, _ids(playerId, ownerPlayerId));
         vm.expectEmit(false, false, false, true, address(territories));
-        emit Territories.RemoveCombatant(ownerPlayerId, CLAN_ID);
+        emit ITerritories.RemoveCombatant(ownerPlayerId, CLAN_ID);
         clans.changeRank(CLAN_ID, ownerPlayerId, ClanRank.NONE, ownerPlayerId);
     }
 
@@ -259,7 +259,7 @@ contract TerritoriesTest is FullGameStack {
     }
 
     function testMustOwnActivePlayerWhenAttacking() public {
-        vm.expectRevert(Territories.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(ITerritories.NotOwnerOfPlayerAndActive.selector);
         territories.attackTerritory(CLAN_ID, TERRITORY_ID, playerId);
     }
 
@@ -274,7 +274,7 @@ contract TerritoriesTest is FullGameStack {
 
         vm.prank(ALICE);
         territories.harvest(TERRITORY_ID, playerId);
-        Territories.Territory memory territory = territories.getTerritory(TERRITORY_ID);
+        ITerritories.Territory memory territory = territories.getTerritory(TERRITORY_ID);
         assertEq(territory.unclaimedEmissions, 0);
         assertEq(territory.lastClaimTimestamp, block.timestamp);
         assertEq(brush.balanceOf(address(lockedBankVaults)), 100 ether);
@@ -290,7 +290,7 @@ contract TerritoriesTest is FullGameStack {
         territories.addUnclaimedEmissions(500 ether);
         territories.harvest(TERRITORY_ID, playerId);
         territories.addUnclaimedEmissions(500 ether);
-        vm.expectRevert(Territories.HarvestingTooSoon.selector);
+        vm.expectRevert(ITerritories.HarvestingTooSoon.selector);
         territories.harvest(TERRITORY_ID, playerId);
         vm.warp(block.timestamp + territories.HARVESTING_COOLDOWN());
         territories.harvest(TERRITORY_ID, playerId);
@@ -305,7 +305,7 @@ contract TerritoriesTest is FullGameStack {
         territories.addUnclaimedEmissions(500 ether);
         vm.stopPrank();
         _createClan(BOB, bobPlayerId, "Clan 2");
-        vm.expectRevert(Territories.NotMemberOfClan.selector);
+        vm.expectRevert(ITerritories.NotMemberOfClan.selector);
         vm.prank(BOB);
         territories.harvest(TERRITORY_ID, bobPlayerId);
     }
@@ -313,24 +313,24 @@ contract TerritoriesTest is FullGameStack {
     function testCombatantsChangeOnlyAfterCooldown() public {
         _assign(ALICE, CLAN_ID, playerId, _ids(playerId));
         combatantsHelper.clearCooldowns(_ids(playerId));
-        vm.expectRevert(Territories.ClanCombatantsChangeCooldown.selector);
+        vm.expectRevert(ITerritories.ClanCombatantsChangeCooldown.selector);
         _assign(ALICE, CLAN_ID, playerId, _ids(playerId));
         vm.warp(block.timestamp + COMBATANT_CHANGE_COOLDOWN - 1);
-        vm.expectRevert(Territories.ClanCombatantsChangeCooldown.selector);
+        vm.expectRevert(ITerritories.ClanCombatantsChangeCooldown.selector);
         _assign(ALICE, CLAN_ID, playerId, _ids(playerId));
         vm.warp(block.timestamp + 1);
         _assign(ALICE, CLAN_ID, playerId, _ids(playerId));
     }
 
     function testAddNewTerritory() public {
-        Territories.TerritoryInput[] memory inputs = _territoryInputs(27, 10);
-        vm.expectRevert(Territories.InvalidTerritoryId.selector);
+        ITerritories.TerritoryInput[] memory inputs = _territoryInputs(27, 10);
+        vm.expectRevert(ITerritories.InvalidTerritoryId.selector);
         territories.addTerritories(inputs);
         inputs[0].territoryId = 26;
-        vm.expectRevert(Territories.InvalidEmissionPercentage.selector);
+        vm.expectRevert(ITerritories.InvalidEmissionPercentage.selector);
         territories.addTerritories(inputs);
         inputs[0].percentageEmissions = 0;
-        vm.expectRevert(Territories.InvalidTerritory.selector);
+        vm.expectRevert(ITerritories.InvalidTerritory.selector);
         territories.addTerritories(inputs);
 
         inputs[0].percentageEmissions = 10;
@@ -392,13 +392,13 @@ contract TerritoriesTest is FullGameStack {
         itemNFT.mint(ALICE, MIRROR_SHIELD, 2);
         itemNFT.mint(ALICE, PROTECTION_SHIELD, 1);
 
-        vm.expectRevert(Territories.NotATerritoryDefenceItem.selector);
+        vm.expectRevert(ITerritories.NotATerritoryDefenceItem.selector);
         vm.prank(ALICE);
         territories.blockAttacks(CLAN_ID, PROTECTION_SHIELD, playerId);
 
         uint256 blockedUntil = block.timestamp + MIRROR_SHIELD_DURATION;
         vm.expectEmit(false, false, false, true, address(territories));
-        emit Territories.BlockingAttacks(
+        emit ITerritories.BlockingAttacks(
             CLAN_ID,
             MIRROR_SHIELD,
             ALICE,
@@ -413,11 +413,11 @@ contract TerritoriesTest is FullGameStack {
 
         vm.warp(block.timestamp + MIRROR_SHIELD_DURATION - 10);
         _expectBlockedAttack(BOB, bobClanId, bobPlayerId);
-        vm.expectRevert(Territories.BlockAttacksCooldown.selector);
+        vm.expectRevert(ITerritories.BlockAttacksCooldown.selector);
         vm.prank(ALICE);
         territories.blockAttacks(CLAN_ID, MIRROR_SHIELD, playerId);
         vm.warp(block.timestamp + uint256(MIRROR_SHIELD_COOLDOWN_HOURS) * 1 hours);
-        vm.expectRevert(Territories.BlockAttacksCooldown.selector);
+        vm.expectRevert(ITerritories.BlockAttacksCooldown.selector);
         vm.prank(ALICE);
         territories.blockAttacks(CLAN_ID, MIRROR_SHIELD, playerId);
         vm.warp(block.timestamp + 10);
@@ -441,7 +441,7 @@ contract TerritoriesTest is FullGameStack {
         minimumMMRs[0] = INITIAL_MMR + 1;
         territories.setMinimumMMRs(territoryIds, minimumMMRs);
         uint256 attackCost = territories.getAttackCost();
-        vm.expectRevert(abi.encodeWithSelector(Territories.NotEnoughMMR.selector, INITIAL_MMR + 1));
+        vm.expectRevert(abi.encodeWithSelector(ITerritories.NotEnoughMMR.selector, INITIAL_MMR + 1));
         vm.prank(ALICE);
         territories.attackTerritory{value: attackCost}(CLAN_ID, TERRITORY_ID, playerId);
 
@@ -527,10 +527,10 @@ contract TerritoriesTest is FullGameStack {
     function _territoryInputs(uint16 id, uint16 emissions)
         private
         pure
-        returns (Territories.TerritoryInput[] memory inputs)
+        returns (ITerritories.TerritoryInput[] memory inputs)
     {
-        inputs = new Territories.TerritoryInput[](1);
-        inputs[0] = Territories.TerritoryInput(id, emissions);
+        inputs = new ITerritories.TerritoryInput[](1);
+        inputs[0] = ITerritories.TerritoryInput(id, emissions);
     }
 
     function _addDefenceItems() private {
@@ -578,7 +578,7 @@ contract TerritoriesTest is FullGameStack {
 
     function _expectBlockedAttack(address account, uint256 clanId, uint256 leaderId) private {
         uint256 attackCost = territories.getAttackCost();
-        vm.expectRevert(Territories.ClanIsBlockingAttacks.selector);
+        vm.expectRevert(ITerritories.ClanIsBlockingAttacks.selector);
         vm.prank(account);
         territories.attackTerritory{value: attackCost}(clanId, TERRITORY_ID, leaderId);
     }

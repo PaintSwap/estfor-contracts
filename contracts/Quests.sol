@@ -7,6 +7,7 @@ import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IQuests} from "./interfaces/IQuests.sol";
 import {ISolidlyRouter, Route} from "./interfaces/external/ISolidlyRouter.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -16,58 +17,9 @@ import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPo
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
+contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   using Math for uint256;
   using BitMaps for BitMaps.BitMap;
-
-  event AddQuests(QuestInput[] quests, MinimumRequirement[3][] minimumRequirements);
-  event EditQuests(QuestInput[] quests, MinimumRequirement[3][] minimumRequirements);
-  event RemoveQuest(uint256 questId);
-  event ActivateQuest(address from, uint256 playerId, uint256 questId);
-  event DeactivateQuest(uint256 playerId, uint256 questId);
-  event QuestCompleted(address from, uint256 playerId, uint256 questId);
-  event UpdateQuestProgress(uint256 playerId, PlayerQuest playerQuest);
-  // Just for the bridge
-  event QuestCompletedFromBridge(
-    address from,
-    uint256 playerId,
-    uint256 questId,
-    uint256[] extraItemTokenIds,
-    uint256[] extraItemAMounts,
-    Skill[] extraSkills,
-    uint256[] extraSkillXPs
-  );
-
-  error NotWorld();
-  error NotOwnerOfPlayerAndActive();
-  error NotPlayers();
-  error QuestDoesntExist();
-  error InvalidQuestId();
-  error QuestWithIdAlreadyExists();
-  error QuestCompletedAlready();
-  error InvalidRewardAmount();
-  error InvalidActionNum();
-  error InvalidActionChoiceNum();
-  error LengthMismatch(uint256 questsLength, uint256 minimumRequirementsLength);
-  error InvalidSkillXPGained();
-  error InvalidFTMAmount();
-  error InvalidBrushAmount();
-  error InvalidActiveQuest();
-  error InvalidBurnAmount();
-  error NoActiveQuest();
-  error ActivatingQuestAlreadyActivated();
-  error DependentQuestNotCompleted(uint16 dependentQuestId);
-  error RefundFailed();
-  error InvalidMinimumRequirement();
-  error NotSupported();
-  error CannotStartFullModeQuest();
-  error CannotChangeBackToFullMode();
-  error NotBridge();
-
-  struct MinimumRequirement {
-    Skill skill;
-    uint64 xp;
-  }
 
   struct PlayerQuestInfo {
     uint32 numFixedQuestsCompleted;
@@ -116,7 +68,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     ISolidlyRouter router,
     address[2] calldata path,
     IActivityPoints activityPoints
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
 
@@ -135,15 +87,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     _activityPoints = IActivityPoints(activityPoints);
   }
 
-  function allFixedQuests(uint256 questId) external view returns (Quest memory) {
+  function allFixedQuests(uint256 questId) external override view returns (Quest memory) {
     return _allFixedQuests[questId];
   }
 
-  function activeQuests(uint256 playerId) external view returns (PlayerQuest memory) {
+  function activeQuests(uint256 playerId) external override view returns (PlayerQuest memory) {
     return _activeQuests[playerId];
   }
 
-  function activateQuest(address from, uint256 playerId, uint256 questId) external onlyPlayers {
+  function activateQuest(address from, uint256 playerId, uint256 questId) external override onlyPlayers {
     require(questId != 0, InvalidQuestId());
     require(_questExists(questId), QuestDoesntExist());
     require(!_questsCompleted[playerId].get(questId), QuestCompletedAlready());
@@ -190,7 +142,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     emit ActivateQuest(from, playerId, questId);
   }
 
-  function deactivateQuest(uint256 playerId) external onlyPlayers {
+  function deactivateQuest(uint256 playerId) external override onlyPlayers {
     PlayerQuest storage playerQuest = _activeQuests[playerId];
     uint256 questId = playerQuest.questId;
     require(questId != 0, NoActiveQuest());
@@ -207,7 +159,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     uint256 playerId,
     PlayerQuest[] calldata activeQuestInfo,
     uint256[] memory questsCompleted
-  ) external onlyPlayers {
+  ) external override onlyPlayers {
     if (questsCompleted.length != 0) {
       uint256 bounds = questsCompleted.length;
       for (uint256 i; i < bounds; ++i) {
@@ -238,7 +190,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     uint256[] calldata questActionCompletedNum2s,
     uint256[] calldata questActionChoiceCompletedNums,
     uint256[] calldata questBurnCompletedAmounts
-  ) external onlyBridge {
+  ) external override onlyBridge {
     for (uint256 i; i < questsCompleted.length; ++i) {
       uint256 questId = questsCompleted[i];
       _questCompletedBridge(from, playerId, questId);
@@ -265,7 +217,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     uint256 playerId,
     uint256 minimumBrushBack,
     bool useExactETH
-  ) external payable onlyPlayers returns (bool success) {
+  ) external override payable onlyPlayers returns (bool success) {
     PlayerQuest storage playerQuest = _activeQuests[playerId];
     require(playerQuest.questId == QUEST_PURSE_STRINGS, InvalidActiveQuest());
     _questCompleted(from, playerId, playerQuest.questId);
@@ -282,7 +234,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     address to,
     uint256 minimumBrushExpected,
     bool useExactETH
-  ) public payable returns (uint256[] memory amounts) {
+  ) public override payable returns (uint256[] memory amounts) {
     require(msg.value != 0, InvalidFTMAmount());
 
     uint256 deadline = block.timestamp + 10 minutes;
@@ -305,7 +257,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   }
 
   // This doesn't really belong here, just for consistency
-  function sellBrush(address to, uint256 brushAmount, uint256 minFTM, bool useExactETH) external {
+  function sellBrush(address to, uint256 brushAmount, uint256 minFTM, bool useExactETH) external override {
     require(brushAmount != 0, InvalidBrushAmount());
 
     uint256 deadline = block.timestamp + 10 minutes;
@@ -653,15 +605,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     }
   }
 
-  function isQuestCompleted(uint256 playerId, uint256 questId) external view returns (bool) {
+  function isQuestCompleted(uint256 playerId, uint256 questId) external override view returns (bool) {
     return _questsCompleted[playerId].get(questId);
   }
 
-  function getActiveQuestId(uint256 playerId) external view returns (uint256) {
+  function getActiveQuestId(uint256 playerId) external override view returns (uint256) {
     return _activeQuests[playerId].questId;
   }
 
-  function getActiveQuestBurnedItemTokenId(uint256 playerId) external view returns (uint256) {
+  function getActiveQuestBurnedItemTokenId(uint256 playerId) external override view returns (uint256) {
     uint256 questId = _activeQuests[playerId].questId;
     if (questId == 0) {
       return NONE;
@@ -672,7 +624,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
 
   function getQuestCompletedRewards(
     uint256 questId
-  ) public view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, Skill skillGained, uint32 xpGained) {
+  ) public override view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, Skill skillGained, uint32 xpGained) {
     Quest storage quest = _allFixedQuests[questId];
     // length can be 0, 1 or 2
     uint256 mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;
@@ -692,14 +644,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     xpGained = quest.skillXPGained;
   }
 
-  function setPlayers(IPlayers players) external onlyOwner {
+  function setPlayers(IPlayers players) external override onlyOwner {
     _players = players;
   }
 
   function addQuests(
     QuestInput[] calldata quests,
     MinimumRequirement[3][] calldata minimumRequirements
-  ) external onlyOwner {
+  ) external override onlyOwner {
     require(quests.length == minimumRequirements.length, LengthMismatch(quests.length, minimumRequirements.length));
 
     uint256 bounds = quests.length;
@@ -713,14 +665,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   function editQuests(
     QuestInput[] calldata quests,
     MinimumRequirement[3][] calldata minimumRequirements
-  ) external onlyOwner {
+  ) external override onlyOwner {
     for (uint256 i = 0; i < quests.length; ++i) {
       _editQuest(quests[i], minimumRequirements[i]);
     }
     emit EditQuests(quests, minimumRequirements);
   }
 
-  function removeQuest(uint256 questId) external onlyOwner {
+  function removeQuest(uint256 questId) external override onlyOwner {
     require(questId != 0, InvalidQuestId());
     require(_questExists(questId), QuestDoesntExist());
 

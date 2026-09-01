@@ -6,9 +6,9 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC1155MetadataURI} from "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import {IERC1155Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {EstforTest} from "./utils/EstforTest.sol";
+import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 import {ItemNFT} from "../contracts/ItemNFT.sol";
 import {MockBankFactory} from "../contracts/test/MockBankFactory.sol";
 import {BulkTransferInfo, EquipPosition, ItemInput} from "../contracts/globals/all.sol";
@@ -146,7 +146,7 @@ contract ItemNFTTest is EstforTest {
         assertEq(itemNFT.balanceOf(ALICE, BRONZE_AXE), 5);
 
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         itemNFT.airdrop(_addresses(ALICE), BRONZE_AXE, _uints(3));
     }
 

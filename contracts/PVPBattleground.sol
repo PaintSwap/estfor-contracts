@@ -10,10 +10,11 @@ import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/Paintswa
 
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IPlayerNFT} from "./interfaces/IPlayerNFT.sol";
+import {IPVPBattleground} from "./interfaces/IPVPBattleground.sol";
 
 import {AdminAccess} from "./AdminAccess.sol";
 import {ItemNFT} from "./ItemNFT.sol";
-import {PlayerNFT} from "./PlayerNFT.sol";
 
 import {Item, EquipPosition} from "./globals/players.sol";
 import {BoostType, Skill} from "./globals/misc.sol";
@@ -23,65 +24,8 @@ import {EstforLibrary} from "./EstforLibrary.sol";
 import {PlayersLibrary} from "./Players/PlayersLibrary.sol";
 
 // For battling a single player vs player
-contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable {
+contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, IPVPBattleground {
   using SafeCast for uint256;
-
-  event AttackPlayer(
-    address from,
-    uint256 playerId,
-    uint256 defendingPlayerId,
-    uint256 requestId,
-    uint256 pendingAttackId,
-    uint256 attackingCooldownTimestamp
-  );
-  event BattleResult(
-    uint256 requestId,
-    uint256 attackingPlayerId,
-    uint256 defendingPlayerId,
-    uint256[] attackingRolls,
-    uint256[] defendingRolls,
-    BattleResultEnum[] battleResults,
-    Skill[] randomSkills,
-    bool didAttackersWin,
-    uint256[] randomWords
-  );
-  event SetComparableSkills(Skill[] skills, uint256 numSkillsToCompare);
-  event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
-  event SetAttackCooldown(uint256 attackCooldown);
-  event SetPreventAttacks(bool preventAttacks);
-
-  error TransferFailed();
-  error PlayerAttackingCooldown();
-  error PlayerIsBlockingAttacks();
-  error InvalidSkill(Skill skill);
-  error LengthMismatch();
-  error NotOwnerOfPlayerAndActive();
-  error NotAdminAndBeta();
-  error CannotAttackWhileStillAttacking();
-  error AmountTooLow();
-  error RequestIdNotKnown();
-  error BlockAttacksCooldown();
-  error CannotAttackSelf();
-  error NotEnoughRandomWords();
-  error DefendingPlayerDoesntExist();
-  error TooManySkillsToCompare();
-  error AttacksPrevented();
-
-  struct PlayerInfo {
-    uint40 attackingCooldownTimestamp;
-    bool currentlyAttacking;
-    uint40 blockAttacksTimestamp;
-    uint8 blockAttacksCooldownHours; // Have many hours after blockAttacksTimestamp there is a cooldown for
-    //    uint40 numWins;
-    //    uint40 numLosses; // Only includes ones that you initiated
-    //    uint40 numLossesDefending; // Only includes ones that you were defending
-  }
-
-  struct PendingAttack {
-    uint64 playerId;
-    uint64 defendingPlayerId;
-    bool attackInProgress;
-  }
 
   uint256 private constant NUM_WORDS = 3;  
   address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
@@ -90,7 +34,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
   uint64 private _nextPendingAttackId;
   uint24 private _attackingCooldown;
   bool private _preventAttacks;
-  PlayerNFT private _playerNFT;
+  IPlayerNFT private _playerNFT;
   AdminAccess private _adminAccess;
   bool private _isBeta;
   ItemNFT private _itemNFT;
@@ -125,7 +69,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
 
   function initialize(
     IPlayers players,
-    PlayerNFT playerNFT,
+    IPlayerNFT playerNFT,
     IBrushToken brush,
     ItemNFT itemNFT,
     address paintswapVRFConsumer,
@@ -133,7 +77,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
     uint24 pvpAttackingCooldown,
     AdminAccess adminAccess,
     bool isBeta
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
@@ -152,7 +96,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
     setComparableSkills(comparableSkills, 8);
   }
 
-  function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
+  function initializeV3(address paintswapVRFConsumer) external override reinitializer(3) {
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
   }
 
@@ -160,7 +104,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
   function attackPlayer(
     uint256 playerId,
     uint256 defendingPlayerId
-  ) external payable isOwnerOfPlayerAndActive(playerId) {
+  ) external payable override isOwnerOfPlayerAndActive(playerId) {
     require(!_preventAttacks, AttacksPrevented());
     _checkCanAttackPlayer(playerId, defendingPlayerId);
 
@@ -287,6 +231,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
     uint256 extraRollsB
   )
     public
+    override
     view
     returns (BattleResultEnum[] memory battleResults, uint256[] memory rollsA, uint256[] memory rollsB, bool didAWin)
   {
@@ -338,23 +283,23 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
     didAWin = numWinnersA >= numWinnersB;
   }
 
-  function getPlayerInfo(uint256 playerId) external view returns (PlayerInfo memory) {
+  function getPlayerInfo(uint256 playerId) external view override returns (PlayerInfo memory) {
     return _playerInfos[playerId];
   }
 
-  function getAttackCost() public view returns (uint256) {
+  function getAttackCost() public view override returns (uint256) {
     return _calculateRequestPriceNative(_expectedGasLimitFulfill);
   }
 
-  function getPendingAttack(uint256 pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
+  function getPendingAttack(uint256 pendingAttackId) external view override returns (PendingAttack memory pendingAttack) {
     return _pendingAttacks[pendingAttackId];
   }
 
-  function getExpectedGasLimitFulfill() external view returns (uint88 expectedGasLimitFulfill) {
+  function getExpectedGasLimitFulfill() external view override returns (uint88 expectedGasLimitFulfill) {
     return _expectedGasLimitFulfill;
   }
 
-  function setComparableSkills(Skill[] calldata skills, uint8 numSkillsToCompare) public onlyOwner {
+  function setComparableSkills(Skill[] calldata skills, uint8 numSkillsToCompare) public override onlyOwner {
     require(numSkillsToCompare <= skills.length, TooManySkillsToCompare());
     for (uint256 i = 0; i < skills.length; ++i) {
       require(skills[i] != Skill.NONE && skills[i] != Skill.COMBAT, InvalidSkill(skills[i]));
@@ -366,28 +311,28 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
     emit SetComparableSkills(skills, numSkillsToCompare);
   }
 
-  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
+  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public override onlyOwner {
     _expectedGasLimitFulfill = expectedGasLimitFulfill;
     emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
-  function setAttackCooldown(uint24 attackCooldown) public onlyOwner {
+  function setAttackCooldown(uint24 attackCooldown) public override onlyOwner {
     _attackingCooldown = attackCooldown;
     emit SetAttackCooldown(attackCooldown);
   }
 
   // TODO: Can delete if necessary
-  function setPreventAttacks(bool preventAttacks) external onlyOwner {
+  function setPreventAttacks(bool preventAttacks) external override onlyOwner {
     _preventAttacks = preventAttacks;
     emit SetPreventAttacks(preventAttacks);
   }
 
-  function clearCooldowns(uint256 playerId) external isAdminAndBeta {
+  function clearCooldowns(uint256 playerId) external override isAdminAndBeta {
     // TODO:
   }
 
   // Useful to re-run a battle for testing
-  function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
+  function setAttackInProgress(uint256 requestId) external override isAdminAndBeta {
     _pendingAttacks[_requestToPendingAttackIds[requestId]].attackInProgress = true;
   }
 

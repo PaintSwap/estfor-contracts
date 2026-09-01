@@ -6,6 +6,7 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {PlayersBase} from "./PlayersBase.sol";
+import {IPlayersImplMisc1} from "../interfaces/IPlayersImplMisc1.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
@@ -20,7 +21,7 @@ import {IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
+contract PlayersImplMisc1 is PlayersBase, IPlayersImplMisc1 {
   using Strings for uint32;
   using Strings for uint256;
   using Strings for bytes32;

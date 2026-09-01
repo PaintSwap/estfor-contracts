@@ -10,41 +10,14 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Enum} from "../interfaces/external/Enum.sol";
 import {ISafe} from "../interfaces/external/ISafe.sol";
 import {IGameSubsidisationRegistry} from "../interfaces/IGameSubsidisationRegistry.sol";
+import {IUsageBasedSessionModule} from "../interfaces/IUsageBasedSessionModule.sol";
 
 /// @title UsageBasedSessionModule
 /// @notice A module for Gnosis Safe that allows for session keys with rate-limited actions
-contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712Upgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
-  error NoSessionKey();
-  error ActionNotPermitted();
-  error GroupLimitReached();
-  error InvalidSignature();
-  error SessionExpired();
-  error InvalidSessionDuration();
-  error ZeroSessionKey();
-  error InvalidCallData();
-  error ModuleCallFailed();
-  error UnauthorizedSigner();
-  error OnlyInternal();
-  error NoBatchItems();
-  error BatchTooLarge();
-  error ZeroAddress();
-  error SessionOpsPerDayLimitReached();
-  error AllItemsFailed();
-
-  event SessionEnabled(address indexed safe, address indexed sessionKey, uint48 deadline);
-  event SessionRevoked(address indexed safe);
-  event SessionNonceIncremented(address indexed safe, uint256 newNonce, uint256 groupId, uint256 groupUsageCount, uint256 groupUsageDay, uint256 groupUsageLimit);
-  event WhitelistedSignersUpdated(address[] signers, bool whitelisted);
-  event BatchItemFailed(address indexed safe, bytes4 selector, bytes errorData);
-  event RelayerRefundFailed(address indexed relayer, uint256 amount);
-  event GasOverheadUpdated(uint256 newOverhead);
-  event RegistryUpdated(address indexed newRegistry);
-  event ETHWithdrawn(address indexed to, uint256 amount);
-  event SessionOpsPerDayUpdated(uint16 newLimit);
-
-  uint48 public constant MAX_SESSION_DURATION = 30 days;
-  uint256 public constant MAX_BATCH_SIZE = 50;
-  uint16 public constant DEFAULT_SESSION_OPS_PER_DAY = 5;
+contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712Upgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable, IUsageBasedSessionModule {
+  uint48 public constant override MAX_SESSION_DURATION = 30 days;
+  uint256 public constant override MAX_BATCH_SIZE = 50;
+  uint16 public constant override DEFAULT_SESSION_OPS_PER_DAY = 5;
   bytes32 private constant SESSION_TYPEHASH = keccak256(
     "UsageBasedSession(address safe,address target,bytes data,uint256 value,uint256 nonce,uint48 sessionDeadline)"
   );
@@ -60,21 +33,6 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     uint256 nonce;
   }
 
-  struct Session {
-    address sessionKey;  // 20 bytes \
-    uint48 deadline;     //  6 bytes  } packed into one 32-byte slot
-    uint32 opDay;        //  4 bytes — UTC day number of last session op
-    uint16 opCount;      //  2 bytes — number of session ops performed today
-  }
-
-  struct ExecuteParams {
-    address safe;
-    address target;
-    bytes data;
-    uint256 value;
-    bytes signature;
-  }
-
   IGameSubsidisationRegistry private _registry;
   mapping(address => Session) private _sessions; // Safe => Session
   mapping(address => UserUsage) private _usage; // Safe => Usage
@@ -87,7 +45,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     _disableInitializers();
   }
 
-  function initialize(address owner, IGameSubsidisationRegistry registry) public initializer {
+  function initialize(address owner, IGameSubsidisationRegistry registry) public override initializer {
     __Ownable_init(owner);
     __EIP712_init("UsageBasedSessionModule", "1");
     __ReentrancyGuard_init();
@@ -100,7 +58,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   /**
    * @notice Enables a session. Must be called BY THE SAFE
    */
-  function enableSession(address _sessionKey, uint48 _duration) external {
+  function enableSession(address _sessionKey, uint48 _duration) external override {
     require(_sessionKey != address(0), ZeroSessionKey());
     require(_duration > 0 && _duration <= MAX_SESSION_DURATION, InvalidSessionDuration());
 
@@ -124,7 +82,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   /**
    * @notice Explicitly revoke the current session early. Must be called BY THE SAFE
    */
-  function revokeSession() external {
+  function revokeSession() external override {
     uint32 today = uint32(block.timestamp / 1 days);
     Session storage session = _sessions[msg.sender];
     uint16 newOpCount;
@@ -143,7 +101,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     emit SessionRevoked(msg.sender);
   }
 
-  function executeBatch(ExecuteParams[] calldata params) external nonReentrant whenNotPaused {
+  function executeBatch(ExecuteParams[] calldata params) external override nonReentrant whenNotPaused {
     uint256 startGas = gasleft();
     require(_whitelistedSigners[msg.sender], UnauthorizedSigner());
     require(params.length > 0, NoBatchItems());
@@ -185,7 +143,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
    * via eth_call runs the actual execution path with the full block gas budget and
    * returns the true gas consumed, which the relayer then uses as the gas limit.
    */
-  function simulateBatch(ExecuteParams[] calldata params) external nonReentrant whenNotPaused returns (uint256 gasUsed, uint256 successCount, bytes[] memory errors) {
+  function simulateBatch(ExecuteParams[] calldata params) external override nonReentrant whenNotPaused returns (uint256 gasUsed, uint256 successCount, bytes[] memory errors) {
     require(_whitelistedSigners[msg.sender], UnauthorizedSigner());
     require(params.length > 0, NoBatchItems());
     require(params.length <= MAX_BATCH_SIZE, BatchTooLarge());
@@ -204,7 +162,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   /**
    * @notice Helper to allow try/catch within executeBatch via an external call
   */
-  function executeSingle(ExecuteParams calldata params) external {
+  function executeSingle(ExecuteParams calldata params) external override {
     require(msg.sender == address(this), OnlyInternal());
     _execute(params.safe, params.target, params.data, params.value, params.signature);
   }
@@ -267,7 +225,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     emit SessionNonceIncremented(safe, user.nonce, groupId, group.count, group.day, limit);
   }
 
-  function setWhitelistedSigner(address[] calldata signers, bool whitelisted) external onlyOwner {
+  function setWhitelistedSigner(address[] calldata signers, bool whitelisted) external override onlyOwner {
     for (uint256 i = 0; i < signers.length; i++) {
       require(signers[i] != address(0), ZeroAddress());
       _whitelistedSigners[signers[i]] = whitelisted;
@@ -275,54 +233,54 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     emit WhitelistedSignersUpdated(signers, whitelisted);
   }
 
-  function withdrawETH(address to, uint256 amount) external onlyOwner {
+  function withdrawETH(address to, uint256 amount) external override onlyOwner {
     require(to != address(0), ZeroAddress());
     emit ETHWithdrawn(to, amount);
     (bool success, ) = to.call{value: amount}("");
     require(success, ModuleCallFailed());
   }
 
-  function setRegistry(IGameSubsidisationRegistry registry) external onlyOwner {
+  function setRegistry(IGameSubsidisationRegistry registry) external override onlyOwner {
     require(address(registry) != address(0), ZeroAddress());
     _registry = registry;
     emit RegistryUpdated(address(registry));
   }
 
-  function setGasOverhead(uint256 overhead) external onlyOwner {
+  function setGasOverhead(uint256 overhead) external override onlyOwner {
     _gasOverhead = overhead;
     emit GasOverheadUpdated(overhead);
   }
 
-  function setSessionOpsPerDay(uint16 limit) external onlyOwner {
+  function setSessionOpsPerDay(uint16 limit) external override onlyOwner {
     require(limit > 0, InvalidSessionDuration());
     _sessionOpsPerDay = limit;
     emit SessionOpsPerDayUpdated(limit);
   }
 
-  function pause() external onlyOwner {
+  function pause() external override onlyOwner {
     _pause();
   }
 
-  function unpause() external onlyOwner {
+  function unpause() external override onlyOwner {
     _unpause();
   }
 
-  function registerFeeM() external {
+  function registerFeeM() external override {
     (bool _success,) = address(0xDC2B0D2Dd2b7759D97D50db4eabDC36973110830).call(
         abi.encodeWithSignature("selfRegister(uint256)", FEEM_PROJECT_ID)
     );
     require(_success, "FeeM registration failed");
   }
 
-  function getGasOverhead() external view returns (uint256) {
+  function getGasOverhead() external view override returns (uint256) {
     return _gasOverhead;
   }
 
-  function getSessionOpsPerDay() external view returns (uint16) {
+  function getSessionOpsPerDay() external view override returns (uint16) {
     return _sessionOpsPerDay;
   }
 
-  function getSession(address safe) external view returns (Session memory) {
+  function getSession(address safe) external view override returns (Session memory) {
     return _sessions[safe];
   }
 

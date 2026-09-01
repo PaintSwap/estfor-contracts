@@ -4,7 +4,7 @@ Date: 2026-09-01
 
 ## Decision summary
 
-Selective `via_ir` profiles are worthwhile after test import isolation. The implementation reduced the measured cold full-suite wall time from 14:54.82 to 1:44.70 while preserving all 997 tests.
+Selective `via_ir` profiles are worthwhile after test import isolation. The production-interface implementation reduced the measured cold full-suite wall time from 14:54.82 to 1:47.35 while preserving all 997 tests.
 
 - The repository enables the IR pipeline in Foundry and Hardhat. Slither also passes `--via-ir` to Solidity.
 - A clean-artifact Foundry build with IR took 875.83 seconds wall time in the current orb. An independent orb run took 740.45 seconds. Peak memory was about 4.7 GiB in both runs.
@@ -12,7 +12,7 @@ Selective `via_ir` profiles are worthwhile after test import isolation. The impl
 - Two clean source targets that already compile without IR were 2.58× and 2.85× faster without IR. These small targets show a real cost, but they do not predict the full-project saving.
 - The ten first errors range from local expression pressure to ABI-sized functions. Several are likely small refactors. `PlayersLibrary`, `Quests`, and `LockedBankVaultsLibrary` are higher-risk changes.
 - Selective Foundry compiler profiles work, but configuration alone left 278 of 282 full-build sources in an IR job and made the measured clean build about 2.6% slower because 161 sources were also compiled with legacy codegen. A production-only selective build was much faster than the full build, which indicates that removing affected implementation imports from broad test fixtures is the main opportunity.
-- The selective-profile implementation now keeps all test and script artifacts out of IR compilation, apart from one explicitly isolated event-decoder helper under `contracts/test`. A clean `forge test --force` took 102.72 seconds and 2.71 GiB peak RSS, versus 894.82 seconds and 4.79 GiB with global IR. This is an 88.5% wall-time reduction and a 43.4% peak-memory reduction in the measured runs.
+- The selective-profile implementation now keeps all test and script artifacts out of IR compilation, apart from one explicitly isolated event-decoder helper under `contracts/test`. After replacing test-only ABI facades with production interfaces, a clean `forge test --force` took 107.35 seconds and 2.72 GiB peak RSS, versus 894.82 seconds and 4.79 GiB with global IR. This is an 88.0% wall-time reduction and a 43.2% peak-memory reduction in the measured runs.
 
 The selective-profile route is now implemented. Refactoring the ten stack-heavy production functions remains an optional follow-up rather than a prerequisite for fast Foundry compilation.
 
@@ -414,13 +414,15 @@ The recommendation was implemented after the discovery measurement:
 
 - Foundry now uses legacy codegen by default and a named `via-ir` profile for the ten confirmed offenders.
 - A small battle-result decoder is also restricted to IR. It exists only to keep three large event tuple decodes out of legacy-compiled test functions.
-- Test code no longer imports the affected production implementations. Twenty-nine test ABI facades expose the required constructors, initializers, structs, events, errors, selectors, and callable methods without pulling implementation code into the test compilation unit.
+- Test code no longer imports the affected production implementations. Canonical `I<Name>` interfaces under `contracts/interfaces` expose game-owned methods, structs, events, and errors, and the corresponding production contracts inherit those interfaces. This makes ABI drift a compile-time error instead of requiring manually synchronized test facades. Callable library ABIs also live under `contracts/interfaces`, but libraries cannot inherit interfaces.
+- Standard OpenZeppelin interfaces are used where they exist, including ERC-1155, ERC-2981, ERC-5313 ownership, ERC-1822 proxiable, and ERC-1967 upgrade events. Focused supplemental interfaces contain Ownable, UUPS, Initializable, Pausable, ReentrancyGuard, and ERC-1155 supply ABI that OpenZeppelin does not publish as complete standalone interfaces. These framework selectors do not pollute game interfaces.
+- Interface initializer parameters use neutral interface or address types where importing a concrete implementation would recreate the restricted import edge. The implementation converts those ABI-equivalent addresses back to its existing concrete storage types. This preserves storage layout and runtime ABI while keeping test roots in the legacy compiler job.
 - Affected implementations and libraries are loaded with profile-qualified artifact identifiers such as `contracts/PlayerNFT.sol:PlayerNFT:via-ir`.
 - Foundry links seven libraries at fixed test addresses. `EstforTest` installs each library's runtime bytecode at the matching address before artifact deployment. This supports implementations with link references while preserving artifact-based deployment.
 - `FullGameStack` separates deployment and wiring into smaller phases so that the fixture itself compiles with legacy codegen. Large initializer and mint payloads are encoded in bounded chunks where the legacy ABI encoder would otherwise exhaust the stack.
 - Solidity scripts already avoided affected implementation imports, so no script artifact deployment rewrite was required. `DeployGame.s.sol` now builds its 17-address Players initializer from contract state instead of a 17-argument helper, which lets the script itself compile without IR. Its existing artifact linker now replaces either unresolved placeholders or the fixed test addresses emitted by Foundry, so production deployments do not retain test-library links.
 
-Artifact metadata after the final cold build contained 113 artifacts rooted under `test-foundry/` or `scripts/` and zero with `metadata.settings.viaIR = true`. A separate forced target build of `scripts/DeployGame.s.sol` succeeded and emitted `DeployGame.json` with `viaIR = false`. The session test helpers under `contracts/test/Session/` also compile without IR. The only IR artifacts in test-helper paths are the explicitly restricted battle-result decoder and its neutral interface dependency. This verifies the intended import boundary directly. Production sources shared by both jobs can still have both legacy and IR artifacts; that duplication is expected.
+Artifact metadata after the final cold build contained zero artifacts rooted under `test-foundry/` or `scripts/` with `metadata.settings.viaIR = true`. A separate forced target build of `scripts/DeployGame.s.sol` succeeded and emitted `DeployGame.json` with `viaIR = false`. The session test helpers under `contracts/test/Session/` also compile without IR. The only IR artifacts in test-helper paths are the explicitly restricted battle-result decoder and its neutral interface dependency. This verifies the intended import boundary directly. Production sources shared by both jobs can still have both legacy and IR artifacts; that duplication is expected.
 
 The comparison used the same command shape in the same orb. Both runs started with `forge clean`, forced compilation, ran all tests, and exited successfully. The global baseline was recorded before this change, with the parent revision's `via_ir = true` configuration. The selective run used the configuration implemented in this change:
 
@@ -434,12 +436,12 @@ forge clean
 /usr/bin/time -v forge test --force
 ```
 
-| Configuration                          | Compiler jobs      | Test result | Wall time | User CPU |      Peak RSS |
-| -------------------------------------- | ------------------ | ----------- | --------: | -------: | ------------: |
-| Global `via_ir = true`                 | 282 files with IR  | 997 passed  |   894.82s |  892.04s | 4,785,628 KiB |
-| Selective profiles with isolated tests | 281 legacy; 148 IR | 997 passed  |   102.72s |  197.75s | 2,707,924 KiB |
+| Configuration                                 | Compiler jobs      | Test result | Wall time | User CPU |      Peak RSS |
+| --------------------------------------------- | ------------------ | ----------- | --------: | -------: | ------------: |
+| Global `via_ir = true`                        | 282 files with IR  | 997 passed  |   894.82s |  892.04s | 4,785,628 KiB |
+| Selective profiles with production interfaces | 283 legacy; 163 IR | 997 passed  |   107.35s |  206.10s | 2,716,824 KiB |
 
-In this measurement, selective compilation was 8.71× faster by wall clock. It removed 792.10 seconds (88.5%) and reduced peak RSS by 2,077,704 KiB (43.4%). The two selective compiler jobs can run concurrently inside one Foundry process, which explains the 196% CPU utilization and user CPU time greater than wall time.
+In the final measurement, selective compilation was 8.34× faster by wall clock. It removed 787.47 seconds (88.0%) and reduced peak RSS by 2,068,804 KiB (43.2%). The two selective compiler jobs can run concurrently inside one Foundry process, which explains the 195% CPU utilization and user CPU time greater than wall time.
 
 These are concrete single-run cold-artifact measurements, not a statistical benchmark. “Cold” means Foundry output and cache were removed; the operating-system page cache was not purged, and orb load was not controlled. The result is large enough to establish a material benefit, but repeated alternating runs are still appropriate if small future regressions must be assessed.
 

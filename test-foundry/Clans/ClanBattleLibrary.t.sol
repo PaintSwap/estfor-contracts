@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {EstforTest} from "../utils/EstforTest.sol";
-import {ClanBattleLibrary} from "../interfaces/ClanBattleLibrary.sol";
+import {IClanBattleLibrary} from "../../contracts/interfaces/IClanBattleLibrary.sol";
 import {Skill} from "../../contracts/globals/misc.sol";
 import {BattleResultEnum} from "../../contracts/globals/clans.sol";
 
@@ -39,12 +39,12 @@ contract ClanBattleLibraryTest is EstforTest {
   uint256 private constant XP_LEVEL_99 = 1_035_476;
 
   ClanBattlePlayersStub private players;
-  ClanBattleLibrary private clanBattleLibrary;
+  IClanBattleLibrary private clanBattleLibrary;
 
   function setUp() public {
     vm.warp(30 days);
     clanBattleLibrary =
-      ClanBattleLibrary(_deployArtifact("contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary:via-ir"));
+      IClanBattleLibrary(_deployArtifact("contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary"));
     players = new ClanBattlePlayersStub();
     for (uint256 i = 1; i <= 40; ++i) {
       players.setLastActiveTimestamp(i, block.timestamp);
@@ -289,7 +289,7 @@ contract ClanBattleLibraryTest is EstforTest {
   function testRequiresAtLeastSixRandomWords() public {
     uint256[] memory words = new uint256[](5);
     words[2] = 1;
-    vm.expectRevert(ClanBattleLibrary.NotEnoughRandomWords.selector);
+    vm.expectRevert(IClanBattleLibrary.NotEnoughRandomWords.selector);
     clanBattleLibrary.determineBattleOutcome(
       address(players),
       _members(17, 1),
@@ -302,7 +302,7 @@ contract ClanBattleLibraryTest is EstforTest {
   }
 
   function testRejectsTooManyAttackersOrDefenders() public {
-    vm.expectRevert(ClanBattleLibrary.TooManyAttackers.selector);
+    vm.expectRevert(IClanBattleLibrary.TooManyAttackers.selector);
     clanBattleLibrary.determineBattleOutcome(
       address(players),
       _members(33, 1),
@@ -312,7 +312,7 @@ contract ClanBattleLibraryTest is EstforTest {
       0,
       0
     );
-    vm.expectRevert(ClanBattleLibrary.TooManyDefenders.selector);
+    vm.expectRevert(IClanBattleLibrary.TooManyDefenders.selector);
     clanBattleLibrary.determineBattleOutcome(
       address(players),
       _members(1, 1),

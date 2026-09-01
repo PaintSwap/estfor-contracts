@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
+
 import {EstforTest} from "./utils/EstforTest.sol";
 import {EquipPosition, ItemInput} from "../contracts/globals/players.sol";
 import {IOrderBook} from "../contracts/Bazaar/interfaces/IOrderBook.sol";
@@ -44,7 +46,7 @@ contract EstforTestStacksTest is EstforTest {
     function testSessionStackWiresRegistryAndModule() public {
         _deploySessionStack();
 
-        assertEq(usageBasedSessionModule.owner(), address(this));
+        assertEq(IERC5313(address(usageBasedSessionModule)).owner(), address(this));
         assertEq(gameSubsidisationRegistry.owner(), address(this));
 
         gameSubsidisationRegistry.setGroupLimit(1, 5);

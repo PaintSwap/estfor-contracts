@@ -2,8 +2,9 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Clans} from "./interfaces/Clans.sol";
+import {IClans as Clans} from "../contracts/interfaces/IClans.sol";
 import {UpgradeableBeacon} from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
 
 contract FullGameStackTest is FullGameStack {
     function testFullGameDeploysWithWiring() public {
@@ -12,29 +13,29 @@ contract FullGameStackTest is FullGameStack {
         assertEq(playerId, 1);
         assertEq(playerNFT.balanceOf(ALICE, playerId), 1);
 
-        assertEq(players.owner(), address(this));
-        assertEq(playerNFT.owner(), address(this));
+        assertEq(IERC5313(address(players)).owner(), address(this));
+        assertEq(IERC5313(address(playerNFT)).owner(), address(this));
         assertEq(itemNFT.owner(), address(this));
-        assertEq(petNFT.owner(), address(this));
-        assertEq(clans.owner(), address(this));
-        assertEq(quests.owner(), address(this));
+        assertEq(IERC5313(address(petNFT)).owner(), address(this));
+        assertEq(IERC5313(address(clans)).owner(), address(this));
+        assertEq(IERC5313(address(quests)).owner(), address(this));
         assertEq(shop.owner(), address(this));
         assertEq(treasury.owner(), address(this));
         assertEq(activityPoints.owner(), address(this));
-        assertEq(territories.owner(), address(this));
-        assertEq(lockedBankVaults.owner(), address(this));
-        assertEq(raids.owner(), address(this));
-        assertEq(pvpBattleground.owner(), address(this));
-        assertEq(promotions.owner(), address(this));
-        assertEq(instantActions.owner(), address(this));
-        assertEq(instantVRFActions.owner(), address(this));
+        assertEq(IERC5313(address(territories)).owner(), address(this));
+        assertEq(IERC5313(address(lockedBankVaults)).owner(), address(this));
+        assertEq(IERC5313(address(raids)).owner(), address(this));
+        assertEq(IERC5313(address(pvpBattleground)).owner(), address(this));
+        assertEq(IERC5313(address(promotions)).owner(), address(this));
+        assertEq(IERC5313(address(instantActions)).owner(), address(this));
+        assertEq(IERC5313(address(instantVRFActions)).owner(), address(this));
         assertEq(bankFactory.owner(), address(this));
         assertEq(bankRegistry.owner(), address(this));
         assertEq(cosmetics.owner(), address(this));
         assertEq(globalEvents.owner(), address(this));
-        assertEq(bridge.owner(), address(this));
+        assertEq(IERC5313(address(bridge)).owner(), address(this));
         assertEq(gameSubsidisationRegistry.owner(), address(this));
-        assertEq(usageBasedSessionModule.owner(), address(this));
+        assertEq(IERC5313(address(usageBasedSessionModule)).owner(), address(this));
 
         assertTrue(UpgradeableBeacon(bank).implementation().code.length > 0);
         assertEq(UpgradeableBeacon(bank).owner(), address(this));

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Promotions} from "./interfaces/Promotions.sol";
+import {IPromotions} from "../contracts/interfaces/IPromotions.sol";
 import {PromotionsLibrary} from "../contracts/PromotionsLibrary.sol";
-import {Quests} from "./interfaces/Quests.sol";
+import {IQuests} from "../contracts/interfaces/IQuests.sol";
 import {Promotion, PromotionInfoInput, PromotionMintStatus} from "../contracts/globals/promotions.sol";
 import {Equipment, Skill} from "../contracts/globals/misc.sol";
 import {QuestInput, QUEST_PURSE_STRINGS} from "../contracts/globals/quests.sol";
@@ -43,24 +43,24 @@ contract PromotionTest is FullGameStack {
 
     function testOnlyPromotionalAdminCanMintStarterPack() public {
         vm.prank(BOB);
-        vm.expectRevert(Promotions.NotPromotionalAdmin.selector);
+        vm.expectRevert(IPromotions.NotPromotionalAdmin.selector);
         promotions.mintStarterPromotionalPack(ALICE, playerId, "1111111111111111");
     }
 
     function testStarterPackRejectsInvalidRedeemCode() public {
-        vm.expectRevert(Promotions.InvalidRedeemCode.selector);
+        vm.expectRevert(IPromotions.InvalidRedeemCode.selector);
         promotions.mintStarterPromotionalPack(ALICE, playerId, "11231");
     }
 
     function testStarterPackRequiresPlayerOwnership() public {
-        vm.expectRevert(Promotions.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IPromotions.NotOwnerOfPlayer.selector);
         promotions.mintStarterPromotionalPack(address(this), playerId, "1111111111111111");
     }
 
     function testStarterPackMintsItemsAndCannotBeClaimedTwice() public {
         promotions.mintStarterPromotionalPack(ALICE, playerId, "1111111111111111");
 
-        vm.expectRevert(Promotions.PromotionAlreadyClaimed.selector);
+        vm.expectRevert(IPromotions.PromotionAlreadyClaimed.selector);
         promotions.mintStarterPromotionalPack(ALICE, playerId, "1111111111111111");
 
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 5);
@@ -76,11 +76,11 @@ contract PromotionTest is FullGameStack {
         promotion.startTime = uint40(block.timestamp - 1 days);
 
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         promotions.editPromotions(_promotions(promotion));
 
         vm.expectEmit(false, false, false, false, address(promotions));
-        emit Promotions.EditPromotions(_promotions(promotion));
+        emit IPromotions.EditPromotions(_promotions(promotion));
         promotions.editPromotions(_promotions(promotion));
         assertEq(promotions.getActivePromotion(uint256(Promotion.HALLOWEEN_2023)).startTime, promotion.startTime);
     }
@@ -90,7 +90,7 @@ contract PromotionTest is FullGameStack {
         _addPromotion(promotion);
 
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         promotions.removePromotions(_promotionIds(Promotion.HALLOWEEN_2023));
 
         promotions.removePromotions(_promotionIds(Promotion.HALLOWEEN_2023));
@@ -104,7 +104,7 @@ contract PromotionTest is FullGameStack {
         _addPromotion(promotion);
 
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.PlayerNotEvolved.selector);
+        vm.expectRevert(IPromotions.PlayerNotEvolved.selector);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
 
         brush.mint(ALICE, 1 ether);
@@ -141,7 +141,7 @@ contract PromotionTest is FullGameStack {
         _addPromotion(promotion);
 
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.DependentQuestNotCompleted.selector);
+        vm.expectRevert(IPromotions.DependentQuestNotCompleted.selector);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
 
         _completePurseStringsQuest();
@@ -152,14 +152,14 @@ contract PromotionTest is FullGameStack {
     function testCannotMintNonexistentPromotion() public {
         _requestAndFulfillRandomWords();
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.MintingOutsideAvailableDate.selector);
+        vm.expectRevert(IPromotions.MintingOutsideAvailableDate.selector);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
     }
 
     function testGenericPromotionRequiresActivePlayerOwnership() public {
         _requestAndFulfillRandomWords();
         _addPromotion(_basicSinglePromotion());
-        vm.expectRevert(Promotions.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IPromotions.NotOwnerOfPlayerAndActive.selector);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
     }
 
@@ -194,7 +194,7 @@ contract PromotionTest is FullGameStack {
         promotion.endTime += 50;
         _addPromotion(promotion);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.MintingOutsideAvailableDate.selector);
+        vm.expectRevert(IPromotions.MintingOutsideAvailableDate.selector);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
     }
 
@@ -205,7 +205,7 @@ contract PromotionTest is FullGameStack {
         promotion.endTime = uint40(block.timestamp);
         _addPromotion(promotion);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.MintingOutsideAvailableDate.selector);
+        vm.expectRevert(IPromotions.MintingOutsideAvailableDate.selector);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
     }
 
@@ -215,7 +215,7 @@ contract PromotionTest is FullGameStack {
         promotion.minTotalXP = 10_000;
         _addPromotion(promotion);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.PlayerDoesNotQualify.selector);
+        vm.expectRevert(IPromotions.PlayerDoesNotQualify.selector);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
 
         players.modifyXP(ALICE, playerId, Skill.FIREMAKING, 100_000, true);
@@ -229,7 +229,7 @@ contract PromotionTest is FullGameStack {
         vm.warp(vm.getBlockTimestamp() + 1 days);
         _addPromotion(promotion);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.OracleNotCalled.selector);
+        vm.expectRevert(IPromotions.OracleNotCalled.selector);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
     }
 
@@ -238,7 +238,7 @@ contract PromotionTest is FullGameStack {
         _addPromotion(_basicSinglePromotion());
         vm.startPrank(ALICE);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
-        vm.expectRevert(Promotions.PromotionAlreadyClaimed.selector);
+        vm.expectRevert(IPromotions.PromotionAlreadyClaimed.selector);
         promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023);
         vm.stopPrank();
     }
@@ -354,7 +354,7 @@ contract PromotionTest is FullGameStack {
         _addPromotion(promotion);
         _fundAndApprovePromotion(10 ether);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.CannotPayForToday.selector);
+        vm.expectRevert(IPromotions.CannotPayForToday.selector);
         promotions.payMissedPromotionDays(playerId, promotion.promotion, _uints(0));
     }
 
@@ -366,10 +366,10 @@ contract PromotionTest is FullGameStack {
         _advanceDaysWithOracle(2);
 
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.DaysArrayNotSortedOrDuplicates.selector);
+        vm.expectRevert(IPromotions.DaysArrayNotSortedOrDuplicates.selector);
         promotions.payMissedPromotionDays(playerId, promotion.promotion, _uints(0, 0));
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.DaysArrayNotSortedOrDuplicates.selector);
+        vm.expectRevert(IPromotions.DaysArrayNotSortedOrDuplicates.selector);
         promotions.payMissedPromotionDays(playerId, promotion.promotion, _uints(1, 0));
         vm.prank(ALICE);
         promotions.payMissedPromotionDays(playerId, promotion.promotion, _uints(0, 1));
@@ -382,7 +382,7 @@ contract PromotionTest is FullGameStack {
         _fundAndApprovePromotion(10 ether);
         _advanceDaysWithOracle(2);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.PromotionFinished.selector);
+        vm.expectRevert(IPromotions.PromotionFinished.selector);
         promotions.payMissedPromotionDays(playerId, promotion.promotion, _uints(0));
     }
 
@@ -392,7 +392,7 @@ contract PromotionTest is FullGameStack {
         _addPromotion(promotion);
         _fundAndApprovePromotion(10 ether);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.OracleNotCalled.selector);
+        vm.expectRevert(IPromotions.OracleNotCalled.selector);
         promotions.payMissedPromotionDays(playerId, promotion.promotion, _uints(1));
     }
 
@@ -404,7 +404,7 @@ contract PromotionTest is FullGameStack {
         vm.warp(vm.getBlockTimestamp() + 1 days);
         _requestAndFulfillRandomWords();
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.InvalidBrushCost.selector);
+        vm.expectRevert(IPromotions.InvalidBrushCost.selector);
         promotions.payMissedPromotionDays(playerId, promotion.promotion, _uints(0));
     }
 
@@ -436,7 +436,7 @@ contract PromotionTest is FullGameStack {
         promotion.endTime = promotion.startTime + 7 days;
         _addPromotion(promotion);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.MintingOutsideAvailableDate.selector);
+        vm.expectRevert(IPromotions.MintingOutsideAvailableDate.selector);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
     }
 
@@ -445,7 +445,7 @@ contract PromotionTest is FullGameStack {
         _addPromotion(_basicMultidayPromotion());
         vm.warp(vm.getBlockTimestamp() + 2 days + 1);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.MintingOutsideAvailableDate.selector);
+        vm.expectRevert(IPromotions.MintingOutsideAvailableDate.selector);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
     }
 
@@ -455,7 +455,7 @@ contract PromotionTest is FullGameStack {
         promotion.minTotalXP = 10_000;
         _addPromotion(promotion);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.PlayerDoesNotQualify.selector);
+        vm.expectRevert(IPromotions.PlayerDoesNotQualify.selector);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
         players.modifyXP(ALICE, playerId, Skill.FIREMAKING, 100_000, true);
         vm.prank(ALICE);
@@ -467,7 +467,7 @@ contract PromotionTest is FullGameStack {
         PromotionInfoInput memory promotion = _basicMultidayPromotion();
         _addPromotion(promotion);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.OracleNotCalled.selector);
+        vm.expectRevert(IPromotions.OracleNotCalled.selector);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
     }
 
@@ -476,7 +476,7 @@ contract PromotionTest is FullGameStack {
         _addPromotion(_basicMultidayPromotion());
         vm.startPrank(ALICE);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
-        vm.expectRevert(Promotions.PromotionAlreadyClaimed.selector);
+        vm.expectRevert(IPromotions.PromotionAlreadyClaimed.selector);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
         vm.stopPrank();
     }
@@ -587,7 +587,7 @@ contract PromotionTest is FullGameStack {
         _requestAndFulfillRandomWords();
         vm.startPrank(ALICE);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
-        vm.expectRevert(Promotions.PromotionAlreadyClaimed.selector);
+        vm.expectRevert(IPromotions.PromotionAlreadyClaimed.selector);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
         vm.stopPrank();
     }
@@ -596,7 +596,7 @@ contract PromotionTest is FullGameStack {
         _prepareTwoDayStreak();
         vm.warp(vm.getBlockTimestamp() + 2 days);
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.MintingOutsideAvailableDate.selector);
+        vm.expectRevert(IPromotions.MintingOutsideAvailableDate.selector);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
     }
 
@@ -611,7 +611,7 @@ contract PromotionTest is FullGameStack {
         vm.warp(vm.getBlockTimestamp() + 2 days);
         _requestAndFulfillRandomWords();
         vm.prank(ALICE);
-        vm.expectRevert(Promotions.PlayerNotHitEnoughClaims.selector);
+        vm.expectRevert(IPromotions.PlayerNotHitEnoughClaims.selector);
         promotions.mintPromotion(playerId, Promotion.XMAS_2023);
     }
 
@@ -720,7 +720,7 @@ contract PromotionTest is FullGameStack {
         inputs[0].questId = uint16(QUEST_PURSE_STRINGS);
         inputs[0].skillReward = Skill.FIREMAKING;
         inputs[0].skillXPGained = 1;
-        Quests.MinimumRequirement[3][] memory requirements = new Quests.MinimumRequirement[3][](1);
+        IQuests.MinimumRequirement[3][] memory requirements = new IQuests.MinimumRequirement[3][](1);
         quests.addQuests(inputs, requirements);
         vm.deal(ALICE, 1 ether);
         vm.startPrank(ALICE);

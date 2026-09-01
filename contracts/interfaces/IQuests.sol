@@ -1,25 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../../contracts/globals/actions.sol";
-import "../../contracts/globals/clans.sol";
-import "../../contracts/globals/items.sol";
-import "../../contracts/globals/misc.sol";
-import "../../contracts/globals/pets.sol";
-import "../../contracts/globals/players.sol";
-import "../../contracts/globals/promotions.sol";
-import "../../contracts/globals/quests.sol";
-import "../../contracts/globals/rewards.sol";
+import "../globals/actions.sol";
+import "../globals/clans.sol";
+import "../globals/items.sol";
+import "../globals/misc.sol";
+import "../globals/pets.sol";
+import "../globals/players.sol";
+import "../globals/promotions.sol";
+import "../globals/quests.sol";
+import "../globals/rewards.sol";
+import {IPlayers} from "./IPlayers.sol";
+import {ISolidlyRouter} from "./external/ISolidlyRouter.sol";
+import {IActivityPoints, IActivityPointsCaller} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
-interface Quests {
+interface IQuests is IActivityPointsCaller {
     struct MinimumRequirement {
         Skill skill;
         uint64 xp;
     }
-    function UPGRADE_INTERFACE_VERSION() external view returns (string memory);
     function activateQuest(address from_, uint256 playerId, uint256 questId) external;
     function activeQuests(uint256 playerId) external view returns (PlayerQuest memory);
-    function addQuests(QuestInput[] calldata quests, Quests.MinimumRequirement[3][] calldata minimumRequirements)
+    function addQuests(QuestInput[] calldata quests, IQuests.MinimumRequirement[3][] calldata minimumRequirements)
         external;
     function allFixedQuests(uint256 questId) external view returns (Quest memory);
     function buyBrush(address to, uint256 minimumBrushExpected, bool useExactETH)
@@ -31,7 +33,7 @@ interface Quests {
         payable
         returns (bool success);
     function deactivateQuest(uint256 playerId) external;
-    function editQuests(QuestInput[] calldata quests, Quests.MinimumRequirement[3][] calldata minimumRequirements)
+    function editQuests(QuestInput[] calldata quests, IQuests.MinimumRequirement[3][] calldata minimumRequirements)
         external;
     function getActiveQuestBurnedItemTokenId(uint256 playerId) external view returns (uint256);
     function getActiveQuestId(uint256 playerId) external view returns (uint256);
@@ -42,12 +44,11 @@ interface Quests {
     function initialize(
         address randomnessBeacon,
         address bridge,
-        address router,
+        ISolidlyRouter router,
         address[2] calldata path,
-        address activityPoints
+        IActivityPoints activityPoints
     ) external;
     function isQuestCompleted(uint256 playerId, uint256 questId) external view returns (bool);
-    function owner() external view returns (address);
     function processQuests(
         address from_,
         uint256 playerId,
@@ -84,20 +85,14 @@ interface Quests {
             uint256[] memory questsCompleted,
             PlayerQuest[] memory activeQuestsCompletionInfo
         );
-    function proxiableUUID() external view returns (bytes32);
     function removeQuest(uint256 questId) external;
-    function renounceOwnership() external;
     function sellBrush(address to, uint256 brushAmount, uint256 minFTM, bool useExactETH) external;
     function setActivityPoints(address activityPoints) external;
-    function setPlayers(address players) external;
-    function transferOwnership(address newOwner) external;
-    function upgradeToAndCall(address newImplementation, bytes calldata data) external payable;
+    function setPlayers(IPlayers players) external;
     event ActivateQuest(address from_, uint256 playerId, uint256 questId);
-    event AddQuests(QuestInput[] quests, Quests.MinimumRequirement[3][] minimumRequirements);
+    event AddQuests(QuestInput[] quests, IQuests.MinimumRequirement[3][] minimumRequirements);
     event DeactivateQuest(uint256 playerId, uint256 questId);
-    event EditQuests(QuestInput[] quests, Quests.MinimumRequirement[3][] minimumRequirements);
-    event Initialized(uint64 version);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event EditQuests(QuestInput[] quests, IQuests.MinimumRequirement[3][] minimumRequirements);
     event QuestCompleted(address from_, uint256 playerId, uint256 questId);
     event QuestCompletedFromBridge(
         address from_,
@@ -110,22 +105,16 @@ interface Quests {
     );
     event RemoveQuest(uint256 questId);
     event UpdateQuestProgress(uint256 playerId, PlayerQuest playerQuest);
-    event Upgraded(address indexed implementation);
     error ActivatingQuestAlreadyActivated();
-    error AddressEmptyCode(address target);
     error CannotChangeBackToFullMode();
     error CannotStartFullModeQuest();
     error DependentQuestNotCompleted(uint16 dependentQuestId);
-    error ERC1967InvalidImplementation(address implementation);
-    error ERC1967NonPayable();
-    error FailedCall();
     error InvalidActionChoiceNum();
     error InvalidActionNum();
     error InvalidActiveQuest();
     error InvalidBrushAmount();
     error InvalidBurnAmount();
     error InvalidFTMAmount();
-    error InvalidInitialization();
     error InvalidMinimumRequirement();
     error InvalidQuestId();
     error InvalidRewardAmount();
@@ -133,17 +122,12 @@ interface Quests {
     error LengthMismatch(uint256 questsLength, uint256 minimumRequirementsLength);
     error NoActiveQuest();
     error NotBridge();
-    error NotInitializing();
     error NotOwnerOfPlayerAndActive();
     error NotPlayers();
     error NotSupported();
     error NotWorld();
-    error OwnableInvalidOwner(address owner);
-    error OwnableUnauthorizedAccount(address account);
     error QuestCompletedAlready();
     error QuestDoesntExist();
     error QuestWithIdAlreadyExists();
     error RefundFailed();
-    error UUPSUnauthorizedCallContext();
-    error UUPSUnsupportedProxiableUUID(bytes32 slot);
 }

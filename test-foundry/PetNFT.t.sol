@@ -7,7 +7,8 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC1155MetadataURI} from "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import {PetNFT} from "./interfaces/PetNFT.sol";
+import {IPetNFT} from "../contracts/interfaces/IPetNFT.sol";
+import {IERC1155Supply} from "../contracts/interfaces/IERC1155Supply.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
 import {Skill} from "../contracts/globals/misc.sol";
 import {PetSkin, PetEnhancementType} from "../contracts/globals/pets.sol";
@@ -24,7 +25,7 @@ contract PetNFTTest is FullGameStack {
 
     function testMustBeAMinterToMint() public {
         vm.prank(FRANK);
-        vm.expectRevert(PetNFT.NotMinter.selector);
+        vm.expectRevert(IPetNFT.NotMinter.selector);
         petNFT.mintBatch(FRANK, _uints(1), 1);
     }
 
@@ -63,14 +64,14 @@ contract PetNFTTest is FullGameStack {
 
     function testMintNonExistentPet() public {
         vm.prank(ALICE);
-        vm.expectRevert(PetNFT.PetDoesNotExist.selector);
+        vm.expectRevert(IPetNFT.PetDoesNotExist.selector);
         petNFT.mintBatch(ALICE, _uints(BASE_ID), 1);
     }
 
     function testExternalURLWhenNotInBeta() public {
-        PetNFT nonBeta = _deployPetNFT(false);
+        IPetNFT nonBeta = _deployIPetNFT(false);
         _addPet(nonBeta, _pet());
-        vm.expectRevert(PetNFT.NotMinter.selector);
+        vm.expectRevert(IPetNFT.NotMinter.selector);
         nonBeta.mintBatch(ALICE, _uints(BASE_ID), 1);
         nonBeta.initializeAddresses(ALICE, ALICE, ALICE);
         vm.prank(ALICE);
@@ -97,23 +98,23 @@ contract PetNFTTest is FullGameStack {
     function testNameAndSymbol() public {
         assertEq(petNFT.name(), "Estfor Pets (Beta)");
         assertEq(petNFT.symbol(), "EK_PETS_B");
-        PetNFT nonBeta = _deployPetNFT(false);
+        IPetNFT nonBeta = _deployIPetNFT(false);
         assertEq(nonBeta.name(), "Estfor Pets");
         assertEq(nonBeta.symbol(), "EK_PETS");
     }
 
     function testMustOwnPetToAssign() public {
         vm.prank(address(players));
-        vm.expectRevert(PetNFT.PlayerDoesNotOwnPet.selector);
+        vm.expectRevert(IPetNFT.PlayerDoesNotOwnPet.selector);
         petNFT.assignPet(ALICE, playerId, PET_ID, 0);
     }
 
     function testCheckMinLevelsAreRespected() public {
-        PetNFT.BasePetInput memory input = _pet();
+        IPetNFT.BasePetInput memory input = _pet();
         input.skillMinLevels[0] = 2;
         _mintPet(input, 0);
         vm.prank(address(players));
-        vm.expectRevert(abi.encodeWithSelector(PetNFT.LevelNotHighEnough.selector, Skill.MELEE, 2));
+        vm.expectRevert(abi.encodeWithSelector(IPetNFT.LevelNotHighEnough.selector, Skill.MELEE, 2));
         petNFT.assignPet(ALICE, playerId, PET_ID, 0);
         players.modifyXP(ALICE, playerId, Skill.MELEE, _xpAtLevel(2), true);
         vm.prank(address(players));
@@ -122,17 +123,17 @@ contract PetNFTTest is FullGameStack {
 
     function testMustBePlayersToCallAssignPet() public {
         _mintPet(_pet(), 0);
-        vm.expectRevert(PetNFT.NotPlayers.selector);
+        vm.expectRevert(IPetNFT.NotPlayers.selector);
         petNFT.assignPet(ALICE, playerId, PET_ID, 0);
         vm.prank(address(players));
         petNFT.assignPet(ALICE, playerId, PET_ID, 0);
     }
 
     function testCheckZeroForBothPercentageAndFixedReverts() public {
-        PetNFT.BasePetInput memory input = _pet();
+        IPetNFT.BasePetInput memory input = _pet();
         input.skillPercentageMins[0] = 0;
         input.skillPercentageMaxs[0] = 0;
-        vm.expectRevert(PetNFT.MustHaveAtLeastPercentageOrFixedSet.selector);
+        vm.expectRevert(IPetNFT.MustHaveAtLeastPercentageOrFixedSet.selector);
         _addPet(input);
         input.skillPercentageMins[0] = 1;
         input.skillPercentageMaxs[0] = 10;
@@ -144,7 +145,7 @@ contract PetNFTTest is FullGameStack {
     function testCheckAllSkins() public {
         string[10] memory names =
             ["Default", "OG", "OneKin", "Frost", "Crystal", "Anniv1", "Kragstyr", "Anniv2", "Rift", "Anniv3"];
-        PetNFT.BasePetInput memory input = _pet();
+        IPetNFT.BasePetInput memory input = _pet();
         for (uint256 i; i < names.length; ++i) {
             input.skin = PetSkin(i + 1);
             input.baseId = uint24(BASE_ID + i);
@@ -154,7 +155,7 @@ contract PetNFTTest is FullGameStack {
     }
 
     function testCheckZeroForFixedOrPercentageDoesNotRevert() public {
-        PetNFT.BasePetInput memory input = _pet();
+        IPetNFT.BasePetInput memory input = _pet();
         _mintPet(input, 0);
         vm.prank(address(players));
         petNFT.assignPet(ALICE, playerId, PET_ID, 0);
@@ -167,13 +168,13 @@ contract PetNFTTest is FullGameStack {
         petNFT.assignPet(ALICE, playerId, PET_ID, 0);
 
         input.skillFixedMaxs[1] = 1;
-        vm.expectRevert(PetNFT.SkillFixedIncrementCannotBeZero.selector);
+        vm.expectRevert(IPetNFT.SkillFixedIncrementCannotBeZero.selector);
         _editPet(input);
         input.skillFixedIncrements[1] = 1;
         _editPet(input);
         input.skillFixedMaxs[1] = 0;
         input.skillPercentageIncrements[1] = 0;
-        vm.expectRevert(PetNFT.SkillPercentageIncrementCannotBeZero.selector);
+        vm.expectRevert(IPetNFT.SkillPercentageIncrementCannotBeZero.selector);
         _editPet(input);
         input.skillPercentageIncrements[1] = 1;
         _editPet(input);
@@ -191,22 +192,22 @@ contract PetNFTTest is FullGameStack {
         petNFT.editPet(playerId, PET_ID, "My pet name is1");
         brush.mint(ALICE, EDIT_NAME_COST * 3);
         vm.prank(ALICE);
-        vm.expectRevert(PetNFT.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IPetNFT.NotOwnerOfPlayer.selector);
         petNFT.editPet(playerId + 1, PET_ID, "My pet name is1");
         vm.prank(ALICE);
         petNFT.safeTransferFrom(ALICE, address(this), PET_ID, 1, "");
         vm.prank(ALICE);
-        vm.expectRevert(PetNFT.NotOwnerOfPet.selector);
+        vm.expectRevert(IPetNFT.NotOwnerOfPet.selector);
         petNFT.editPet(playerId, PET_ID, "My pet name is1");
         petNFT.safeTransferFrom(address(this), ALICE, PET_ID, 1, "");
         vm.expectEmit(true, true, true, true, address(petNFT));
-        emit PetNFT.EditPlayerPet(playerId, PET_ID, ALICE, "My pet name is1");
+        emit IPetNFT.EditPlayerPet(playerId, PET_ID, ALICE, "My pet name is1");
         vm.prank(ALICE);
         petNFT.editPet(playerId, PET_ID, "My pet name is1");
         vm.prank(ALICE);
         petNFT.mintBatch(ALICE, _uints(BASE_ID), 0);
         vm.prank(ALICE);
-        vm.expectRevert(PetNFT.NameAlreadyExists.selector);
+        vm.expectRevert(IPetNFT.NameAlreadyExists.selector);
         petNFT.editPet(playerId, PET_ID + 1, "My pet name is1");
     }
 
@@ -223,7 +224,7 @@ contract PetNFTTest is FullGameStack {
         _fundApproveAndMint(3);
         vm.startPrank(ALICE);
         petNFT.editPet(playerId, PET_ID, "CHOO CHOO");
-        vm.expectRevert(PetNFT.SameName.selector);
+        vm.expectRevert(IPetNFT.SameName.selector);
         petNFT.editPet(playerId, PET_ID, "CHOO CHOO");
         vm.stopPrank();
     }
@@ -231,7 +232,7 @@ contract PetNFTTest is FullGameStack {
     function testMax15CharactersForTheName() public {
         _fundApproveAndMint(3);
         vm.startPrank(ALICE);
-        vm.expectRevert(PetNFT.NameTooLong.selector);
+        vm.expectRevert(IPetNFT.NameTooLong.selector);
         petNFT.editPet(playerId, PET_ID, "1234567890123456");
         petNFT.editPet(playerId, PET_ID, "123456789012345");
         vm.stopPrank();
@@ -240,9 +241,9 @@ contract PetNFTTest is FullGameStack {
     function testCannotEditNameToStartWithPetRegardlessOfCase() public {
         _fundApproveAndMint(3);
         vm.startPrank(ALICE);
-        vm.expectRevert(PetNFT.IllegalNameStart.selector);
+        vm.expectRevert(IPetNFT.IllegalNameStart.selector);
         petNFT.editPet(playerId, PET_ID, "Pet sdfs");
-        vm.expectRevert(PetNFT.IllegalNameStart.selector);
+        vm.expectRevert(IPetNFT.IllegalNameStart.selector);
         petNFT.editPet(playerId, PET_ID, "PET sdfs");
         vm.stopPrank();
     }
@@ -258,11 +259,11 @@ contract PetNFTTest is FullGameStack {
     }
 
     function testANonTransferablePetCannotBeTransferred() public {
-        PetNFT.BasePetInput memory input = _pet();
+        IPetNFT.BasePetInput memory input = _pet();
         input.isTransferable = false;
         _mintPet(input, 0);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(PetNFT.CannotTransferThisPet.selector, PET_ID));
+        vm.expectRevert(abi.encodeWithSelector(IPetNFT.CannotTransferThisPet.selector, PET_ID));
         petNFT.safeTransferFrom(ALICE, DEV, PET_ID, 1, "");
         input.baseId = BASE_ID + 1;
         input.isTransferable = true;
@@ -272,24 +273,24 @@ contract PetNFTTest is FullGameStack {
     }
 
     function testTotalSupply() public {
-        assertEq(petNFT.totalSupply(), 0);
+        assertEq(IERC1155Supply(address(petNFT)).totalSupply(), 0);
         _addPet(_pet());
         vm.startPrank(ALICE);
         petNFT.mintBatch(ALICE, _uints(BASE_ID), 1);
         petNFT.mintBatch(ALICE, _uints(BASE_ID), 1);
-        assertEq(petNFT.totalSupply(), 2);
-        assertEq(petNFT.totalSupply(1), 1);
-        assertEq(petNFT.totalSupply(2), 1);
+        assertEq(IERC1155Supply(address(petNFT)).totalSupply(), 2);
+        assertEq(IERC1155Supply(address(petNFT)).totalSupply(1), 1);
+        assertEq(IERC1155Supply(address(petNFT)).totalSupply(2), 1);
         petNFT.burn(ALICE, 1);
-        assertEq(petNFT.totalSupply(), 1);
-        assertEq(petNFT.totalSupply(1), 0);
+        assertEq(IERC1155Supply(address(petNFT)).totalSupply(), 1);
+        assertEq(IERC1155Supply(address(petNFT)).totalSupply(1), 0);
         petNFT.burn(ALICE, 2);
         vm.stopPrank();
-        assertEq(petNFT.totalSupply(), 0);
-        assertEq(petNFT.totalSupply(2), 0);
+        assertEq(IERC1155Supply(address(petNFT)).totalSupply(), 0);
+        assertEq(IERC1155Supply(address(petNFT)).totalSupply(2), 0);
     }
 
-    function _pet() private pure returns (PetNFT.BasePetInput memory input) {
+    function _pet() private pure returns (IPetNFT.BasePetInput memory input) {
         input.tier = 2;
         input.skin = PetSkin.OG;
         input.enhancementType = PetEnhancementType.MELEE;
@@ -307,23 +308,23 @@ contract PetNFTTest is FullGameStack {
         input.percentageStarThreshold = 1;
     }
 
-    function _addPet(PetNFT.BasePetInput memory input) private {
+    function _addPet(IPetNFT.BasePetInput memory input) private {
         _addPet(petNFT, input);
     }
 
-    function _addPet(PetNFT target, PetNFT.BasePetInput memory input) private {
-        PetNFT.BasePetInput[] memory inputs = new PetNFT.BasePetInput[](1);
+    function _addPet(IPetNFT target, IPetNFT.BasePetInput memory input) private {
+        IPetNFT.BasePetInput[] memory inputs = new IPetNFT.BasePetInput[](1);
         inputs[0] = input;
         target.addBasePets(inputs);
     }
 
-    function _editPet(PetNFT.BasePetInput memory input) private {
-        PetNFT.BasePetInput[] memory inputs = new PetNFT.BasePetInput[](1);
+    function _editPet(IPetNFT.BasePetInput memory input) private {
+        IPetNFT.BasePetInput[] memory inputs = new IPetNFT.BasePetInput[](1);
         inputs[0] = input;
         petNFT.editBasePets(inputs);
     }
 
-    function _mintPet(PetNFT.BasePetInput memory input, uint256 randomWord) private {
+    function _mintPet(IPetNFT.BasePetInput memory input, uint256 randomWord) private {
         _addPet(input);
         vm.prank(ALICE);
         petNFT.mintBatch(ALICE, _uints(input.baseId), randomWord);
@@ -340,24 +341,24 @@ contract PetNFTTest is FullGameStack {
         brush.mint(ALICE, EDIT_NAME_COST * count);
     }
 
-    function _deployPetNFT(bool beta) private returns (PetNFT target) {
-        PetNFT implementation = PetNFT(_deployArtifact("contracts/PetNFT.sol:PetNFT:via-ir"));
-        target = PetNFT(
+    function _deployIPetNFT(bool beta) private returns (IPetNFT target) {
+        IPetNFT implementation = IPetNFT(_deployArtifact("contracts/PetNFT.sol:PetNFT"));
+        target = IPetNFT(
             _deployUUPS(
                 address(implementation),
                 abi.encodeCall(
-                    PetNFT.initialize,
+                    IPetNFT.initialize,
                     (
-                        address(brush),
+                        IBrushToken(address(brush)),
                         address(royaltyReceiver),
                         "ipfs://",
                         DEV,
                         uint72(EDIT_NAME_COST),
                         address(treasury),
-                        address(randomnessBeacon),
+                        randomnessBeacon,
                         uint40(1),
                         address(bridge),
-                        address(adminAccess),
+                        adminAccess,
                         beta
                     )
                 )
@@ -389,7 +390,7 @@ contract PetNFTTest is FullGameStack {
         return true;
     }
 
-    function _uriJson(PetNFT target, uint256 id) private view returns (string memory) {
+    function _uriJson(IPetNFT target, uint256 id) private view returns (string memory) {
         bytes memory uriBytes = bytes(target.uri(id));
         bytes memory prefix = bytes("data:application/json;base64,");
         bytes memory encoded = new bytes(uriBytes.length - prefix.length);

@@ -13,56 +13,55 @@ import {ActivityPoints} from "../../contracts/ActivityPoints/ActivityPoints.sol"
 import {IActivityPoints, IActivityPointsCaller} from "../../contracts/ActivityPoints/interfaces/IActivityPoints.sol";
 import {BlackMarketTrader} from "../../contracts/Events/BlackMarketTrader.sol";
 import {GlobalEvents} from "../../contracts/Events/GlobalEvent.sol";
-import {Bridge} from "../interfaces/Bridge.sol";
+import {IBridge as Bridge} from "../../contracts/interfaces/IBridge.sol";
 import {Cosmetics} from "../../contracts/Cosmetics.sol";
 import {DailyRewardsScheduler} from "../../contracts/DailyRewardsScheduler.sol";
 import {Marketplace} from "../../contracts/Marketplace.sol";
-import {PassiveActions} from "../interfaces/PassiveActions.sol";
-import {PetNFT} from "../interfaces/PetNFT.sol";
-import {PetNFTReroll} from "../interfaces/PetNFTReroll.sol";
-import {PlayerNFT} from "../interfaces/PlayerNFT.sol";
-import {Promotions} from "../interfaces/Promotions.sol";
-import {PVPBattleground} from "../interfaces/PVPBattleground.sol";
-import {Quests} from "../interfaces/Quests.sol";
+import {RandomnessBeacon} from "../../contracts/RandomnessBeacon.sol";
+import {IPassiveActions as PassiveActions} from "../../contracts/interfaces/IPassiveActions.sol";
+import {IPetNFT as PetNFT} from "../../contracts/interfaces/IPetNFT.sol";
+import {IPetNFTReroll as PetNFTReroll} from "../../contracts/interfaces/IPetNFTReroll.sol";
+import {IPlayerNFT as PlayerNFT} from "../../contracts/interfaces/IPlayerNFT.sol";
+import {IPromotions as Promotions} from "../../contracts/interfaces/IPromotions.sol";
+import {IPVPBattleground as PVPBattleground} from "../../contracts/interfaces/IPVPBattleground.sol";
+import {IQuests as Quests} from "../../contracts/interfaces/IQuests.sol";
 import {RoyaltyReceiver} from "../../contracts/RoyaltyReceiver.sol";
 import {Shop} from "../../contracts/Shop.sol";
 import {Treasury} from "../../contracts/Treasury.sol";
-import {WishingWell} from "../interfaces/WishingWell.sol";
+import {IWishingWell as WishingWell} from "../../contracts/interfaces/IWishingWell.sol";
 import {WorldActions} from "../../contracts/WorldActions.sol";
 import {Bank} from "../../contracts/Clans/Bank.sol";
 import {BankFactory} from "../../contracts/Clans/BankFactory.sol";
 import {BankRegistry} from "../../contracts/Clans/BankRegistry.sol";
-import {BankRelay} from "../interfaces/BankRelay.sol";
-import {Clans} from "../interfaces/Clans.sol";
-import {CombatantsHelper} from "../interfaces/CombatantsHelper.sol";
-import {LockedBankVaults} from "../interfaces/LockedBankVaults.sol";
-import {Raids} from "../interfaces/Raids.sol";
-import {Territories} from "../interfaces/Territories.sol";
-import {IClans} from "../../contracts/interfaces/IClans.sol";
+import {IBankRelay as BankRelay} from "../../contracts/interfaces/IBankRelay.sol";
+import {IClans as Clans} from "../../contracts/interfaces/IClans.sol";
+import {ICombatantsHelper as CombatantsHelper} from "../../contracts/interfaces/ICombatantsHelper.sol";
+import {ILockedBankVaults as LockedBankVaults} from "../../contracts/interfaces/ILockedBankVaults.sol";
+import {IRaids as Raids} from "../../contracts/interfaces/IRaids.sol";
+import {ITerritories as Territories} from "../../contracts/interfaces/ITerritories.sol";
 import {ICombatants} from "../../contracts/interfaces/ICombatants.sol";
-import {ICombatantsHelper} from "../../contracts/interfaces/ICombatantsHelper.sol";
+import {IUUPSUpgradeable} from "../../contracts/interfaces/IUUPSUpgradeable.sol";
 import {IItemNFT} from "../../contracts/interfaces/IItemNFT.sol";
-import {IPlayerNFT} from "../../contracts/interfaces/IPlayerNFT.sol";
 import {IWorldActions} from "../../contracts/interfaces/IWorldActions.sol";
-import {InstantActions} from "../interfaces/InstantActions.sol";
-import {InstantVRFActions} from "../interfaces/InstantVRFActions.sol";
+import {IInstantActions as InstantActions} from "../../contracts/interfaces/IInstantActions.sol";
+import {IInstantVRFActions as InstantVRFActions} from "../../contracts/interfaces/IInstantVRFActions.sol";
 import {EggInstantVRFActionStrategy} from "../../contracts/InstantVRFActionStrategies/EggInstantVRFActionStrategy.sol";
 import {
     GenericInstantVRFActionStrategy
 } from "../../contracts/InstantVRFActionStrategies/GenericInstantVRFActionStrategy.sol";
 import {ItemNFT} from "../../contracts/ItemNFT.sol";
-import {Players} from "../interfaces/Players.sol";
-import {PlayersImplMisc} from "../interfaces/PlayersImplMisc.sol";
-import {PlayersImplMisc1} from "../interfaces/PlayersImplMisc1.sol";
-import {PlayersImplProcessActions} from "../interfaces/PlayersImplProcessActions.sol";
-import {PlayersImplQueueActions} from "../interfaces/PlayersImplQueueActions.sol";
-import {PlayersImplRewards} from "../interfaces/PlayersImplRewards.sol";
+import {IPlayers as Players} from "../../contracts/interfaces/IPlayers.sol";
+import {IPlayersImplMisc as PlayersImplMisc} from "../../contracts/interfaces/IPlayersImplMisc.sol";
+import {IPlayersImplMisc1 as PlayersImplMisc1} from "../../contracts/interfaces/IPlayersImplMisc1.sol";
+import {
+    IPlayersImplProcessActions as PlayersImplProcessActions
+} from "../../contracts/interfaces/IPlayersImplProcessActions.sol";
+import {IPlayersImplQueueActions as PlayersImplQueueActions} from "../../contracts/interfaces/IPlayersImplQueueActions.sol";
+import {IPlayersImplRewards as PlayersImplRewards} from "../../contracts/interfaces/IPlayersImplRewards.sol";
 import {IBankFactory} from "../../contracts/interfaces/IBankFactory.sol";
 import {IBrushToken} from "../../contracts/interfaces/external/IBrushToken.sol";
 import {IClanMemberLeftCB} from "../../contracts/interfaces/IClanMemberLeftCB.sol";
 import {IOracleCB} from "../../contracts/interfaces/IOracleCB.sol";
-import {ITerritories} from "../../contracts/interfaces/ITerritories.sol";
-import {IPlayers} from "../../contracts/interfaces/IPlayers.sol";
 import {ISolidlyRouter} from "../../contracts/interfaces/external/ISolidlyRouter.sol";
 import {MockBrushToken} from "../../contracts/test/external/MockBrushToken.sol";
 import {MockPaintSwapMarketplaceWhitelist} from "../../contracts/test/external/MockPaintSwapMarketplaceWhitelist.sol";
@@ -151,7 +150,7 @@ abstract contract FullGameStack is EstforTest {
         brush = new MockBrushToken();
         lzEndpoint = address(new EndpointV2Mock(LZ_FANTOM_EID, address(this)));
         Bridge bridgeImplementation =
-            Bridge(_deployArtifact("contracts/Bridge/Bridge.sol:Bridge:via-ir", abi.encode(lzEndpoint)));
+            Bridge(_deployArtifact("contracts/Bridge/Bridge.sol:Bridge", abi.encode(lzEndpoint)));
         bridge = Bridge(
             payable(_deployUUPS(address(bridgeImplementation), abi.encodeCall(Bridge.initialize, (LZ_FANTOM_EID))))
         );
@@ -258,7 +257,13 @@ abstract contract FullGameStack is EstforTest {
                     address(questsImplementation),
                     abi.encodeCall(
                         Quests.initialize,
-                        (address(randomnessBeacon), address(bridge), address(_router), buyPath, address(activityPoints))
+                        (
+                            address(randomnessBeacon),
+                            address(bridge),
+                            ISolidlyRouter(address(_router)),
+                            buyPath,
+                            IActivityPoints(address(activityPoints))
+                        )
                     )
                 ))
         );
@@ -283,7 +288,7 @@ abstract contract FullGameStack is EstforTest {
         );
 
         WishingWell wishingWellImplementation =
-            WishingWell(_deployArtifact("contracts/WishingWell.sol:WishingWell:via-ir"));
+            WishingWell(_deployArtifact("contracts/WishingWell.sol:WishingWell"));
         wishingWell = WishingWell(
             _deployUUPS(
                 address(wishingWellImplementation),
@@ -299,7 +304,7 @@ abstract contract FullGameStack is EstforTest {
     }
 
     function _deployPetSystems() internal {
-        PetNFT petNFTImplementation = PetNFT(_deployArtifact("contracts/PetNFT.sol:PetNFT:via-ir"));
+        PetNFT petNFTImplementation = PetNFT(_deployArtifact("contracts/PetNFT.sol:PetNFT"));
         petNFT = PetNFT(
             _deployUUPS(
                 address(petNFTImplementation),
@@ -316,12 +321,13 @@ abstract contract FullGameStack is EstforTest {
         );
 
         PetNFTReroll petNFTRerollImplementation =
-            PetNFTReroll(_deployArtifact("contracts/PetNFTReroll.sol:PetNFTReroll:via-ir"));
+            PetNFTReroll(_deployArtifact("contracts/PetNFTReroll.sol:PetNFTReroll"));
         petNFTReroll = PetNFTReroll(
             _deployUUPS(
                 address(petNFTRerollImplementation),
                 abi.encodeCall(
-                    PetNFTReroll.initialize, (address(this), address(itemNFT), address(petNFT), address(mockVRF))
+                    PetNFTReroll.initialize,
+                    (address(this), ItemNFT(address(itemNFT)), PetNFT(address(petNFT)), address(mockVRF))
                 )
             )
         );
@@ -329,24 +335,24 @@ abstract contract FullGameStack is EstforTest {
 
     function _deployPlayers() internal {
         PlayersImplQueueActions queueActionsImplementation = PlayersImplQueueActions(
-            _deployArtifact("contracts/Players/PlayersImplQueueActions.sol:PlayersImplQueueActions:via-ir")
+            _deployArtifact("contracts/Players/PlayersImplQueueActions.sol:PlayersImplQueueActions")
         );
         playersImplQueueActions = address(queueActionsImplementation);
         PlayersImplProcessActions processActionsImplementation = PlayersImplProcessActions(
-            _deployArtifact("contracts/Players/PlayersImplProcessActions.sol:PlayersImplProcessActions:via-ir")
+            _deployArtifact("contracts/Players/PlayersImplProcessActions.sol:PlayersImplProcessActions")
         );
         playersImplProcessActions = address(processActionsImplementation);
         PlayersImplRewards rewardsImplementation =
-            PlayersImplRewards(_deployArtifact("contracts/Players/PlayersImplRewards.sol:PlayersImplRewards:via-ir"));
+            PlayersImplRewards(_deployArtifact("contracts/Players/PlayersImplRewards.sol:PlayersImplRewards"));
         playersImplRewards = address(rewardsImplementation);
         PlayersImplMisc miscImplementation =
-            PlayersImplMisc(_deployArtifact("contracts/Players/PlayersImplMisc.sol:PlayersImplMisc:via-ir"));
+            PlayersImplMisc(_deployArtifact("contracts/Players/PlayersImplMisc.sol:PlayersImplMisc"));
         playersImplMisc = address(miscImplementation);
         PlayersImplMisc1 misc1Implementation =
-            PlayersImplMisc1(_deployArtifact("contracts/Players/PlayersImplMisc1.sol:PlayersImplMisc1:via-ir"));
+            PlayersImplMisc1(_deployArtifact("contracts/Players/PlayersImplMisc1.sol:PlayersImplMisc1"));
         playersImplMisc1 = address(misc1Implementation);
 
-        Players playersImplementation = Players(_deployArtifact("contracts/Players/Players.sol:Players:via-ir"));
+        Players playersImplementation = Players(_deployArtifact("contracts/Players/Players.sol:Players"));
         players = Players(_deployUUPS(address(playersImplementation), _playersInitializer()));
     }
 
@@ -375,7 +381,7 @@ abstract contract FullGameStack is EstforTest {
     }
 
     function _deployPromotionAndActionSystems() internal {
-        Promotions promotionsImplementation = Promotions(_deployArtifact("contracts/Promotions.sol:Promotions:via-ir"));
+        Promotions promotionsImplementation = Promotions(_deployArtifact("contracts/Promotions.sol:Promotions"));
         promotions = Promotions(
             _deployUUPS(
                 address(promotionsImplementation),
@@ -395,13 +401,18 @@ abstract contract FullGameStack is EstforTest {
         );
 
         InstantActions instantActionsImplementation =
-            InstantActions(_deployArtifact("contracts/InstantActions.sol:InstantActions:via-ir"));
+            InstantActions(_deployArtifact("contracts/InstantActions.sol:InstantActions"));
         instantActions = InstantActions(
             _deployUUPS(
                 address(instantActionsImplementation),
                 abi.encodeCall(
                     InstantActions.initialize,
-                    (address(players), address(itemNFT), address(quests), address(activityPoints))
+                    (
+                        Players(address(players)),
+                        ItemNFT(address(itemNFT)),
+                        Quests(address(quests)),
+                        IActivityPoints(address(activityPoints))
+                    )
                 )
             )
         );
@@ -415,7 +426,7 @@ abstract contract FullGameStack is EstforTest {
         );
 
         InstantVRFActions instantVRFActionsImplementation =
-            InstantVRFActions(_deployArtifact("contracts/InstantVRFActions.sol:InstantVRFActions:via-ir"));
+            InstantVRFActions(_deployArtifact("contracts/InstantVRFActions.sol:InstantVRFActions"));
         instantVRFActions = InstantVRFActions(
             _deployUUPS(
                 address(instantVRFActionsImplementation),
@@ -452,13 +463,13 @@ abstract contract FullGameStack is EstforTest {
     }
 
     function _deployPVPAndRaids() internal {
-        BankRelay bankRelayImplementation = BankRelay(_deployArtifact("contracts/Clans/BankRelay.sol:BankRelay:via-ir"));
+        BankRelay bankRelayImplementation = BankRelay(_deployArtifact("contracts/Clans/BankRelay.sol:BankRelay"));
         bankRelay = BankRelay(
             _deployUUPS(address(bankRelayImplementation), abi.encodeCall(BankRelay.initialize, (address(clans))))
         );
 
         PVPBattleground pvpBattlegroundImplementation =
-            PVPBattleground(_deployArtifact("contracts/PVPBattleground.sol:PVPBattleground:via-ir"));
+            PVPBattleground(_deployArtifact("contracts/PVPBattleground.sol:PVPBattleground"));
         pvpBattleground = PVPBattleground(
             _deployUUPS(
                 address(pvpBattlegroundImplementation),
@@ -480,7 +491,7 @@ abstract contract FullGameStack is EstforTest {
 
         _deploySessionStack();
 
-        Raids raidsImplementation = Raids(_deployArtifact("contracts/Clans/Raids.sol:Raids:via-ir"));
+        Raids raidsImplementation = Raids(_deployArtifact("contracts/Clans/Raids.sol:Raids"));
         raids = Raids(
             payable(_deployUUPS(
                     address(raidsImplementation),
@@ -504,7 +515,7 @@ abstract contract FullGameStack is EstforTest {
 
     function _deployCombatAndClanSystems() internal {
         LockedBankVaults lockedBankVaultsImplementation =
-            LockedBankVaults(_deployArtifact("contracts/Clans/LockedBankVaults.sol:LockedBankVaults:via-ir"));
+            LockedBankVaults(_deployArtifact("contracts/Clans/LockedBankVaults.sol:LockedBankVaults"));
         lockedBankVaults = LockedBankVaults(
             _deployUUPS(
                 address(lockedBankVaultsImplementation),
@@ -527,7 +538,7 @@ abstract contract FullGameStack is EstforTest {
         lockedBankVaults.setKValues(3, 3);
 
         Territories territoriesImplementation =
-            Territories(_deployArtifact("contracts/Clans/Territories.sol:Territories:via-ir"));
+            Territories(_deployArtifact("contracts/Clans/Territories.sol:Territories"));
         territories = Territories(_deployUUPS(address(territoriesImplementation), _territoriesInitializer()));
 
         CombatantsHelper combatantsHelperImplementation =
@@ -550,9 +561,9 @@ abstract contract FullGameStack is EstforTest {
             )
         );
 
-        clans.upgradeToAndCall(
+        IUUPSUpgradeable(address(clans)).upgradeToAndCall(
             address(Clans(_deployArtifact("contracts/Clans/Clans.sol:Clans:via-ir"))),
-            abi.encodeCall(Clans.initializeV2, (address(combatantsHelper)))
+            abi.encodeCall(Clans.initializeV2, (CombatantsHelper(address(combatantsHelper))))
         );
 
         PassiveActions passiveActionsImplementation =
@@ -563,11 +574,11 @@ abstract contract FullGameStack is EstforTest {
                 abi.encodeCall(
                     PassiveActions.initialize,
                     (
-                        address(players),
-                        address(itemNFT),
-                        address(randomnessBeacon),
+                        Players(address(players)),
+                        ItemNFT(address(itemNFT)),
+                        RandomnessBeacon(payable(address(randomnessBeacon))),
                         address(bridge),
-                        address(activityPoints)
+                        IActivityPoints(address(activityPoints))
                     )
                 )
             )
@@ -605,7 +616,7 @@ abstract contract FullGameStack is EstforTest {
             _deployUUPS(
                 address(new Cosmetics()),
                 abi.encodeCall(
-                    Cosmetics.initialize, (address(this), IItemNFT(address(itemNFT)), IPlayerNFT(address(playerNFT)))
+                    Cosmetics.initialize, (address(this), IItemNFT(address(itemNFT)), PlayerNFT(address(playerNFT)))
                 )
             )
         );
@@ -615,7 +626,7 @@ abstract contract FullGameStack is EstforTest {
             _deployUUPS(
                 address(globalEventsImplementation),
                 abi.encodeCall(
-                    GlobalEvents.initialize, (address(this), IPlayers(address(players)), IItemNFT(address(itemNFT)))
+                    GlobalEvents.initialize, (address(this), Players(address(players)), IItemNFT(address(itemNFT)))
                 )
             )
         );
@@ -625,14 +636,18 @@ abstract contract FullGameStack is EstforTest {
         randomnessBeacon.initializeAddresses(IOracleCB(address(wishingWell)), IOracleCB(address(dailyRewardsScheduler)));
         randomnessBeacon.initializeRandomWords();
 
-        playerNFT.setPlayers(address(players));
-        quests.setPlayers(address(players));
-        wishingWell.setPlayers(address(players));
+        playerNFT.setPlayers(Players(address(players)));
+        quests.setPlayers(Players(address(players)));
+        wishingWell.setPlayers(Players(address(players)));
 
         petNFT.initializeAddresses(address(instantVRFActions), address(players), address(territories));
 
         clans.initializeAddresses(
-            address(players), address(bankFactory), address(territories), address(lockedBankVaults), address(raids)
+            Players(address(players)),
+            IBankFactory(address(bankFactory)),
+            IClanMemberLeftCB(address(territories)),
+            IClanMemberLeftCB(address(lockedBankVaults)),
+            IClanMemberLeftCB(address(raids))
         );
 
         playerNFT.setBrushDistributionPercentages(25, 50, 25);
@@ -649,15 +664,17 @@ abstract contract FullGameStack is EstforTest {
     }
 
     function _wireItemAndClanSystems() internal {
-        itemNFT.initializeAddresses(IBankFactory(address(bankFactory)), IPlayers(address(players)));
+        itemNFT.initializeAddresses(IBankFactory(address(bankFactory)), Players(address(players)));
         itemNFT.setApproved(_gameItemApprovals(), true);
         itemNFT.setApprovedBurners(_addresses(address(petNFTReroll)), true);
         petNFT.setApprovedMinters(_addresses(address(petNFTReroll)), true);
         petNFT.setApprovedBurners(_addresses(address(petNFTReroll)), true);
 
         territories.setCombatantsHelper(address(combatantsHelper));
-        raids.initializeAddresses(address(combatantsHelper), address(bankFactory));
-        lockedBankVaults.initializeAddresses(address(territories), address(combatantsHelper), address(bankFactory));
+        raids.initializeAddresses(address(combatantsHelper), IBankFactory(address(bankFactory)));
+        lockedBankVaults.initializeAddresses(
+            Territories(address(territories)), address(combatantsHelper), IBankFactory(address(bankFactory))
+        );
         clans.setXPModifiers(_addresses(address(lockedBankVaults), address(territories), address(wishingWell)), true);
         players.setAlphaCombatParams(1, 1, 0);
     }

@@ -16,14 +16,9 @@ import {PlayerQuest} from "../globals/quests.sol";
 import {Skill} from "../globals/players.sol";
 
 import {PlayersLibrary} from "../Players/PlayersLibrary.sol";
+import {IBridge} from "../interfaces/IBridge.sol";
 
-contract Bridge is UUPSUpgradeable, OAppUpgradeable {
-  error InvalidInputLength();
-  error MessageAlreadyProcessed();
-  error InvalidSourceChain();
-  error UnknownMessageType();
-  error PlayerAlreadyExists();
-
+contract Bridge is UUPSUpgradeable, OAppUpgradeable, IBridge {
   PetNFT private _petNFT;
   PlayerNFT private _playerNFT;
   Players private _players;
@@ -42,7 +37,7 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
   }
 
   /// @custom:oz-upgrades-unsafe-allow missing-initializer-call
-  function initialize(uint32 srcEid) public initializer {
+  function initialize(uint32 srcEid) public override initializer {
     __Ownable_init(_msgSender());
     __OApp_init(_msgSender());
     __UUPSUpgradeable_init();
@@ -249,21 +244,21 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
   // }
 
   function initializeAddresses(
-    PetNFT petNFT,
-    ItemNFT itemNFT,
-    PlayerNFT playerNFT,
-    Players players,
-    Clans clans,
-    Quests quests,
-    PassiveActions passiveActions
-  ) external onlyOwner {
-    _petNFT = petNFT;
-    _itemNFT = itemNFT;
-    _playerNFT = playerNFT;
-    _players = players;
-    _clans = clans;
-    _quests = quests;
-    _passiveActions = passiveActions;
+    address petNFT,
+    address itemNFT,
+    address playerNFT,
+    address players,
+    address clans,
+    address quests,
+    address passiveActions
+  ) external override onlyOwner {
+    _petNFT = PetNFT(petNFT);
+    _itemNFT = ItemNFT(itemNFT);
+    _playerNFT = PlayerNFT(playerNFT);
+    _players = Players(players);
+    _clans = Clans(clans);
+    _quests = Quests(payable(quests));
+    _passiveActions = PassiveActions(passiveActions);
   }
 
   function _authorizeUpgrade(address) internal override onlyOwner {}

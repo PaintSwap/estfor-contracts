@@ -9,6 +9,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IOracleCB} from "./interfaces/IOracleCB.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IWishingWell} from "./interfaces/IWishingWell.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 import {Clans} from "./Clans/Clans.sol";
 
@@ -18,32 +19,8 @@ import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPo
 import {Equipment, LUCKY_POTION, LUCK_OF_THE_DRAW, PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3, CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3, LotteryWinnerInfo} from "./globals/all.sol";
 import {XP_EMITTED_ELSEWHERE} from "./globals/clans.sol";
 
-contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB, IActivityPointsCaller {
+contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IWishingWell {
   using BitMaps for BitMaps.BitMap;
-
-  event Donate(address from, uint256 playerId, uint256 amount, uint256 lotteryId, uint256 raffleId);
-  event DonateToClan(address from, uint256 playerId, uint256 amount, uint256 clanId, uint256 clanXPGained);
-  event WinnerAndNewLottery(uint256 lotteryId, uint256 raffleId, uint16 rewardItemTokenId, uint256 rewardAmount);
-  event SetRaffleEntryCost(uint256 brushAmount);
-  event GlobalDonationThreshold(uint256 thresholdIncrement);
-  event LastGlobalDonationThreshold(uint256 lastThreshold, uint16 rewardItemTokenId);
-  event ClaimedLotteryWinnings(uint256 lotteryId, uint256 raffleId, uint256 itemTokenId, uint256 amount);
-  event ClanDonationThreshold(uint256 thresholdIncrement, uint16 rewardItemTokenId);
-  event LastClanDonationThreshold(uint256 clanId, uint256 lastThreshold, uint16 rewardItemTokenId);
-
-  error NotOwnerOfPlayer();
-  error NotEnoughBrush();
-  error OracleNotCalledYet();
-  error MinimumOneBrush();
-  error NotPlayers();
-  error OnlyRandomnessBeacon();
-  error NoDecimalsAllowed(uint256 invalidAmount);
-
-  struct ClanInfo {
-    uint40 totalDonated;
-    uint40 lastThreshold;
-    uint16 nextReward;
-  }
 
   uint40 private constant CLAN_XP_GAINED_ON_RAFFLE_ENTRY = 1;
 
@@ -93,23 +70,23 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB, IActivit
 
   function initialize(
     IBrushToken brush,
-    PlayerNFT playerNFT,
+    address playerNFT,
     address treasury,
     address randomnessBeacon,
-    Clans clans,
+    address clans,
     uint256 raffleEntryCost,
     uint256 globalThresholdIncrement,
     uint256 clanThresholdIncrement,
     IActivityPoints activityPoints
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
 
     _brush = brush;
-    _playerNFT = playerNFT;
+    _playerNFT = PlayerNFT(playerNFT);
     _treasury = treasury;
     _randomnessBeacon = randomnessBeacon;
-    _clans = clans;
+    _clans = Clans(clans);
     _activityPoints = activityPoints;
 
     // Note: _clanBoostRewardItemTokenIds must be set before setClanDonationThresholdIncrement is called as it reads from them
@@ -326,7 +303,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB, IActivit
     _lastOracleRandomWordTimestamp = uint40((block.timestamp / 1 days) * 1 days);
   }
 
-  function claimedLotteryWinnings(uint256 lotteryId) external onlyPlayers {
+  function claimedLotteryWinnings(uint256 lotteryId) external override onlyPlayers {
     LotteryWinnerInfo storage _lotteryWinner = _winners[lotteryId];
     emit ClaimedLotteryWinnings(
       _lotteryWinner.lotteryId,
@@ -364,81 +341,81 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB, IActivit
   }
 
   // Scans the last 3 unclaimed winners to see if this playerId belongs there.
-  function getUnclaimedLotteryWinnings(uint256 playerId) external view returns (LotteryWinnerInfo memory winner) {
+  function getUnclaimedLotteryWinnings(uint256 playerId) external override view returns (LotteryWinnerInfo memory winner) {
     uint256 _lotteryId = _awaitingClaim(playerId);
     if (_lotteryId != 0) {
       winner = _winners[_lotteryId];
     }
   }
 
-  function getTotalDonated() external view returns (uint256) {
+  function getTotalDonated() external override view returns (uint256) {
     return uint256(_totalDonated) * 1 ether;
   }
 
-  function getClanTotalDonated(uint256 clanId) external view returns (uint256) {
+  function getClanTotalDonated(uint256 clanId) external override view returns (uint256) {
     return uint256(_clanDonationInfo[clanId].totalDonated) * 1 ether;
   }
 
-  function getNextGlobalThreshold() external view returns (uint256) {
+  function getNextGlobalThreshold() external override view returns (uint256) {
     return uint256(_lastGlobalThreshold + _globalThresholdIncrement) * 1 ether;
   }
 
-  function getNextClanThreshold(uint256 clanId) external view returns (uint256) {
+  function getNextClanThreshold(uint256 clanId) external override view returns (uint256) {
     return (uint256(_clanDonationInfo[clanId].lastThreshold) + _clanThresholdIncrement) * 1 ether;
   }
 
-  function getRaffleEntryCost() external view returns (uint256) {
+  function getRaffleEntryCost() external override view returns (uint256) {
     return uint256(_raffleEntryCost) * 1 ether;
   }
 
-  function hasClaimedReward(uint256 lotteryId) external view returns (bool) {
+  function hasClaimedReward(uint256 lotteryId) external override view returns (bool) {
     return _claimedRewards.get(lotteryId);
   }
 
-  function hasPlayerEntered(uint256 lotteryId, uint256 playerId) external view returns (bool) {
+  function hasPlayerEntered(uint256 lotteryId, uint256 playerId) external override view returns (bool) {
     return _playersEntered[lotteryId].get(playerId);
   }
 
-  function getLastLotteryId() external view returns (uint256) {
+  function getLastLotteryId() external override view returns (uint256) {
     return uint256(_lastLotteryId);
   }
 
-  function getWinner(uint256 lotteryId) external view returns (LotteryWinnerInfo memory) {
+  function getWinner(uint256 lotteryId) external override view returns (LotteryWinnerInfo memory) {
     return _winners[lotteryId];
   }
 
-  function getClanDonationInfo(uint256 clanId) external view returns (ClanInfo memory) {
+  function getClanDonationInfo(uint256 clanId) external override view returns (ClanInfo memory) {
     return _clanDonationInfo[clanId];
   }
 
-  function getLastUnclaimedWinner(uint256 index) external view returns (uint256) {
+  function getLastUnclaimedWinner(uint256 index) external override view returns (uint256) {
     return uint256(_lastUnclaimedWinners[index]);
   }
 
-  function setPlayers(IPlayers players) external onlyOwner {
+  function setPlayers(IPlayers players) external override onlyOwner {
     _players = players;
   }
 
-  function setRaffleEntryCost(uint256 raffleEntryCost) public onlyOwner {
+  function setRaffleEntryCost(uint256 raffleEntryCost) public override onlyOwner {
     require(raffleEntryCost % 1 ether == 0, NoDecimalsAllowed(raffleEntryCost));
     _raffleEntryCost = uint16(raffleEntryCost / 1 ether);
     emit SetRaffleEntryCost(raffleEntryCost);
   }
 
-  function setGlobalDonationThresholdIncrement(uint256 globalThresholdIncrement) public onlyOwner {
+  function setGlobalDonationThresholdIncrement(uint256 globalThresholdIncrement) public override onlyOwner {
     require(globalThresholdIncrement % 1 ether == 0, NoDecimalsAllowed(globalThresholdIncrement));
     _globalThresholdIncrement = uint24(globalThresholdIncrement / 1 ether);
     emit GlobalDonationThreshold(globalThresholdIncrement);
   }
 
-  function setClanDonationThresholdIncrement(uint256 clanThresholdIncrement) public onlyOwner {
+  function setClanDonationThresholdIncrement(uint256 clanThresholdIncrement) public override onlyOwner {
     require(clanThresholdIncrement % 1 ether == 0, NoDecimalsAllowed(clanThresholdIncrement));
 
     _clanThresholdIncrement = uint24(clanThresholdIncrement / 1 ether);
     emit ClanDonationThreshold(clanThresholdIncrement, _clanBoostRewardItemTokenIds[0]); // This passes in the first reward
   }
 
-  function setNextLotteryWinnerRewardItemTokenId(uint16 donationRewardItemTokenId) external onlyOwner {
+  function setNextLotteryWinnerRewardItemTokenId(uint16 donationRewardItemTokenId) external override onlyOwner {
     _nextLotteryWinnerRewardItemTokenId = donationRewardItemTokenId;
   }
 

@@ -3,8 +3,8 @@ pragma solidity ^0.8.28;
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
 import {Bank} from "../../contracts/Clans/Bank.sol";
-import {BankRelay} from "../interfaces/BankRelay.sol";
-import {Clans} from "../interfaces/Clans.sol";
+import {IBankRelay} from "../../contracts/interfaces/IBankRelay.sol";
+import {IClans as Clans} from "../../contracts/interfaces/IClans.sol";
 import {ClanRank} from "../../contracts/globals/clans.sol";
 import {BulkTransferInfo} from "../../contracts/globals/items.sol";
 import {EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
@@ -177,7 +177,7 @@ contract BankTest is FullGameStack {
         brush.mint(ALICE, 1000);
         vm.prank(ALICE);
         brush.approve(clanBank, 1000);
-        vm.expectRevert(BankRelay.PlayerNotInClan.selector);
+        vm.expectRevert(IBankRelay.PlayerNotInClan.selector);
         vm.prank(ALICE);
         bankRelay.depositToken(playerId + 1, address(brush), 1000);
         vm.expectEmit(false, false, false, true, clanBank);
@@ -232,7 +232,7 @@ contract BankTest is FullGameStack {
     function testWithdrawToManyWithdrawerNotOwner() public {
         _createClan();
         brush.mint(clanBank, 500);
-        vm.expectRevert(BankRelay.PlayerNotInClan.selector);
+        vm.expectRevert(IBankRelay.PlayerNotInClan.selector);
         vm.prank(ALICE);
         bankRelay.withdrawTokenToMany(playerId + 1, _addresses(ALICE), _uints(playerId), address(brush), _uints(250));
     }

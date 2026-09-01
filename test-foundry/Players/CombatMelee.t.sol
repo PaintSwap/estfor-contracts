@@ -13,10 +13,10 @@ import {
 import {EquipPosition, ItemInput, PendingQueuedActionState, Player} from "../../contracts/globals/players.sol";
 import {QuestInput} from "../../contracts/globals/quests.sol";
 import {GuaranteedReward, RandomReward} from "../../contracts/globals/rewards.sol";
-import {PlayersBase} from "../interfaces/PlayersBase.sol";
+import {IPlayersBase as PlayersBase} from "../../contracts/interfaces/IPlayersBase.sol";
 import {ItemNFT} from "../../contracts/ItemNFT.sol";
-import {Quests} from "../interfaces/Quests.sol";
-import {PlayersImplMisc1 as IPlayersMisc1DelegateView} from "../interfaces/PlayersImplMisc1.sol";
+import {IQuests as Quests} from "../../contracts/interfaces/IQuests.sol";
+import {IPlayersImplMisc1 as IPlayersMisc1DelegateView} from "../../contracts/interfaces/IPlayersImplMisc1.sol";
 import {NONE, BRONZE_SWORD, XP_BOOST, LUCK_OF_THE_DRAW} from "../../contracts/globals/items.sol";
 
 contract CombatMeleeTest is CombatTestBase {

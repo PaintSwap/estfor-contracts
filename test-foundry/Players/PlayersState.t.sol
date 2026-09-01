@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Players} from "../interfaces/Players.sol";
-import {PlayersBase} from "../interfaces/PlayersBase.sol";
-import {PlayersImplMisc1} from "../interfaces/PlayersImplMisc1.sol";
-import {Quests} from "../interfaces/Quests.sol";
+import {IOwnable} from "../../contracts/interfaces/IOwnable.sol";
+import {IPlayers as Players} from "../../contracts/interfaces/IPlayers.sol";
+import {IPlayersBase as PlayersBase} from "../../contracts/interfaces/IPlayersBase.sol";
+import {IPlayersImplMisc1 as PlayersImplMisc1} from "../../contracts/interfaces/IPlayersImplMisc1.sol";
+import {IQuests as Quests} from "../../contracts/interfaces/IQuests.sol";
 import {
     Player,
     AvatarInfo,
@@ -133,7 +132,7 @@ contract PlayersStateTest is FullGameStack {
     function testGamePauseRestrictsPlayersButOnlyOwnerCanPause() public {
         (QueuedActionInput memory action,) = _setupWoodcutting();
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         players.pauseGame(true);
         players.pauseGame(true);
         vm.prank(ALICE);

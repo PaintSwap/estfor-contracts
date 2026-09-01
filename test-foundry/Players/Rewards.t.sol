@@ -2,8 +2,8 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {PlayersBase} from "../interfaces/PlayersBase.sol";
-import {PlayersImplMisc} from "../interfaces/PlayersImplMisc.sol";
+import {IPlayersBase as PlayersBase} from "../../contracts/interfaces/IPlayersBase.sol";
+import {IPlayersImplMisc as PlayersImplMisc} from "../../contracts/interfaces/IPlayersImplMisc.sol";
 import {RandomnessBeacon} from "../../contracts/RandomnessBeacon.sol";
 import {Skill, CombatStyle, CombatStats, Equipment} from "../../contracts/globals/misc.sol";
 import {

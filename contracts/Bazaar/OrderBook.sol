@@ -83,7 +83,7 @@ contract OrderBook is
     uint16 devFee,
     uint8 burntFee,
     uint16 maxOrdersPerPrice
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
     __ReentrancyGuardTransient_init();
@@ -204,7 +204,7 @@ contract OrderBook is
   }
 
   /// @notice When the _nft royalty changes this updates the fee and recipient. Assumes all token ids have the same royalty
-  function updateRoyaltyFee() public {
+  function updateRoyaltyFee() public override {
     if (_nft.supportsInterface(type(IERC2981).interfaceId)) {
       (address royaltyRecipient, uint256 royaltyFee) = IERC2981(address(_nft)).royaltyInfo(1, 10000);
       _royaltyRecipient = royaltyRecipient;
@@ -1062,7 +1062,7 @@ contract OrderBook is
 
   /// @notice Set the maximum amount of orders allowed at a specific price level
   /// @param maxOrdersPerPrice The new maximum amount of orders allowed at a specific price level
-  function setMaxOrdersPerPrice(uint16 maxOrdersPerPrice) public payable onlyOwner {
+  function setMaxOrdersPerPrice(uint16 maxOrdersPerPrice) public payable override onlyOwner {
     require(maxOrdersPerPrice % NUM_ORDERS_PER_SEGMENT == 0, MaxOrdersNotMultipleOfOrdersInSegment());
     _maxOrdersPerPrice = maxOrdersPerPrice;
     emit SetMaxOrdersPerPriceLevel(maxOrdersPerPrice);
@@ -1075,7 +1075,7 @@ contract OrderBook is
   function setTokenIdInfos(
     uint256[] calldata tokenIds,
     TokenIdInfo[] calldata tokenIdInfos
-  ) external payable onlyOwner {
+  ) external payable override onlyOwner {
     require(tokenIds.length == tokenIdInfos.length, LengthMismatch());
 
     for (uint256 i = 0; i < tokenIds.length; ++i) {
@@ -1094,7 +1094,7 @@ contract OrderBook is
   /// @param devAddr The address to receive trade fees
   /// @param devFee The fee to send to the dev address (max 10%)
   /// @param burntFee The fee to burn (max 2%)
-  function setFees(address devAddr, uint16 devFee, uint8 burntFee) public onlyOwner {
+  function setFees(address devAddr, uint16 devFee, uint8 burntFee) public override onlyOwner {
     if (devFee != 0) {
       require(devAddr != address(0), ZeroAddress());
       require(devFee <= 1000, DevFeeTooHigh());

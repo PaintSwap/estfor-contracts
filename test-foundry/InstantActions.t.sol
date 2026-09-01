@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {InstantActions} from "./interfaces/InstantActions.sol";
-import {Quests} from "./interfaces/Quests.sol";
+import {IInstantActions} from "../contracts/interfaces/IInstantActions.sol";
+import {IQuests as Quests} from "../contracts/interfaces/IQuests.sol";
 import {Skill} from "../contracts/globals/misc.sol";
 import {QuestInput, QUEST_PURSE_STRINGS} from "../contracts/globals/quests.sol";
 
@@ -27,49 +27,49 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testCheckInputItemValidation() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.GENERIC);
         input.inputTokenIds = _uint16s(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, ORICHALCUM_ARROW);
         input.inputAmounts = _uint24s(1, 2, 3);
-        vm.expectRevert(InstantActions.TooManyInputItems.selector);
+        vm.expectRevert(IInstantActions.TooManyInputItems.selector);
         instantActions.addActions(_inputs(input));
         input.inputTokenIds = _uint16s(BRONZE_ARROW, IRON_ARROW);
-        vm.expectRevert(InstantActions.LengthMismatch.selector);
+        vm.expectRevert(IInstantActions.LengthMismatch.selector);
         instantActions.addActions(_inputs(input));
         input.inputTokenIds = _uint16s(BRONZE_ARROW, IRON_ARROW, BRONZE_ARROW);
-        vm.expectRevert(InstantActions.InputItemNoDuplicates.selector);
+        vm.expectRevert(IInstantActions.InputItemNoDuplicates.selector);
         instantActions.addActions(_inputs(input));
     }
 
     function testMinimumSkillValidation() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.GENERIC);
         input.minSkills = _skills4(Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING, Skill.ALCHEMY);
         input.minXPs = _uint32s(1, 1, 1);
-        vm.expectRevert(InstantActions.TooManyMinSkills.selector);
+        vm.expectRevert(IInstantActions.TooManyMinSkills.selector);
         instantActions.addActions(_inputs(input));
         input.minSkills = _skills(Skill.WOODCUTTING, Skill.FIREMAKING);
-        vm.expectRevert(InstantActions.LengthMismatch.selector);
+        vm.expectRevert(IInstantActions.LengthMismatch.selector);
         instantActions.addActions(_inputs(input));
         input.minSkills = _skills3(Skill.WOODCUTTING, Skill.FIREMAKING, Skill.WOODCUTTING);
-        vm.expectRevert(InstantActions.MinimumSkillsNoDuplicates.selector);
+        vm.expectRevert(IInstantActions.MinimumSkillsNoDuplicates.selector);
         instantActions.addActions(_inputs(input));
     }
 
     function testOutputItemValidation() public {
-        InstantActions.InstantActionInput memory input = _threeInput(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _threeInput(IInstantActions.InstantActionType.GENERIC);
         input.outputTokenId = RUNITE_ARROW;
-        vm.expectRevert(InstantActions.OutputAmountCannotBeZero.selector);
+        vm.expectRevert(IInstantActions.OutputAmountCannotBeZero.selector);
         instantActions.addActions(_inputs(input));
         input.outputAmount = 1;
         input.outputTokenId = 0;
-        vm.expectRevert(InstantActions.OutputTokenIdCannotBeEmpty.selector);
+        vm.expectRevert(IInstantActions.OutputTokenIdCannotBeEmpty.selector);
         instantActions.addActions(_inputs(input));
     }
 
     function testAnyInputsBurntGenericAndState() public {
-        InstantActions.InstantActionInput memory input = _threeOutput();
+        IInstantActions.InstantActionInput memory input = _threeOutput();
         _add(input);
         itemNFT.mintBatch(ALICE, _uints(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW), _uints(3, 3, 3));
-        InstantActions.InstantActionState memory state =
+        IInstantActions.InstantActionState memory state =
             instantActions.getInstantActionState(playerId, _uint16s(1), _uints(1), input.actionType);
         assertEq(state.consumedTokenIds, _uints(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW));
         assertEq(state.consumedAmounts, _uints(1, 2, 3));
@@ -83,8 +83,8 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testDoMultipleGenericInstantActionsAtOnce() public {
-        InstantActions.InstantActionInput memory a = _threeOutput();
-        InstantActions.InstantActionInput memory b = _input(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory a = _threeOutput();
+        IInstantActions.InstantActionInput memory b = _input(IInstantActions.InstantActionType.GENERIC);
         b.actionId = 2;
         b.inputTokenIds = _uint16s(BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR);
         b.inputAmounts = _uint24s(4, 5, 6);
@@ -94,7 +94,7 @@ contract InstantActionsTest is FullGameStack {
         uint256[] memory ids = _uints(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR);
         itemNFT.mintBatch(ALICE, ids, _uints(6, 6, 6, 6, 6, 6));
         vm.expectEmit(false, false, false, true, address(instantActions));
-        emit InstantActions.DoInstantActions(
+        emit IInstantActions.DoInstantActions(
             playerId,
             ALICE,
             _uint16s(1, 2),
@@ -125,92 +125,92 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testCannotAddSameInstantActionTwice() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.GENERIC);
         _add(input);
-        vm.expectRevert(InstantActions.ActionAlreadyExists.selector);
+        vm.expectRevert(IInstantActions.ActionAlreadyExists.selector);
         _add(input);
     }
 
     function testMustBeOwnerToAddAction() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.GENERIC);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         instantActions.addActions(_inputs(input));
         _add(input);
     }
 
     function testMustBeOwnerToEditAction() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.GENERIC);
         _add(input);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         instantActions.editActions(_inputs(input));
         instantActions.editActions(_inputs(input));
     }
 
     function testEditedActionMustExist() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.GENERIC);
-        vm.expectRevert(InstantActions.ActionDoesNotExist.selector);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.GENERIC);
+        vm.expectRevert(IInstantActions.ActionDoesNotExist.selector);
         instantActions.editActions(_inputs(input));
         _add(input);
         input.inputTokenIds[0] = IRON_ARROW;
         vm.expectEmit(false, false, false, false, address(instantActions));
-        emit InstantActions.EditInstantActions(_inputs(input));
+        emit IInstantActions.EditInstantActions(_inputs(input));
         instantActions.editActions(_inputs(input));
         assertEq(instantActions.getAction(input.actionType, 1).inputTokenId1, IRON_ARROW);
     }
 
     function testMustBeOwnerToRemoveAction() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.GENERIC);
         _add(input);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         instantActions.removeActions(_types(input.actionType), _uint16s(1));
     }
 
     function testRemovedActionMustExist() public {
-        InstantActions.InstantActionType t = InstantActions.InstantActionType.GENERIC;
-        vm.expectRevert(InstantActions.ActionDoesNotExist.selector);
+        IInstantActions.InstantActionType t = IInstantActions.InstantActionType.GENERIC;
+        vm.expectRevert(IInstantActions.ActionDoesNotExist.selector);
         instantActions.removeActions(_types(t), _uint16s(1));
         _add(_input(t));
         vm.expectEmit(false, false, false, true, address(instantActions));
-        emit InstantActions.RemoveInstantActions(_types(t), _uint16s(1));
+        emit IInstantActions.RemoveInstantActions(_types(t), _uint16s(1));
         instantActions.removeActions(_types(t), _uint16s(1));
         assertEq(instantActions.getAction(t, 1).inputTokenId1, 0);
     }
 
     function testMustOwnActivePlayerToDoInstantActions() public {
-        InstantActions.InstantActionType t = InstantActions.InstantActionType.GENERIC;
+        IInstantActions.InstantActionType t = IInstantActions.InstantActionType.GENERIC;
         _add(_input(t));
-        vm.expectRevert(InstantActions.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IInstantActions.NotOwnerOfPlayerAndActive.selector);
         instantActions.doInstantActions(playerId, _uint16s(1), _uints(1), t);
     }
 
     function testCannotDoNonexistentAction() public {
         vm.prank(ALICE);
-        vm.expectRevert(InstantActions.InvalidActionId.selector);
-        instantActions.doInstantActions(playerId, _uint16s(0), _uints(1), InstantActions.InstantActionType.GENERIC);
+        vm.expectRevert(IInstantActions.InvalidActionId.selector);
+        instantActions.doInstantActions(playerId, _uint16s(0), _uints(1), IInstantActions.InstantActionType.GENERIC);
     }
 
     function testMustHaveMinimumRequirements() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.GENERIC);
         input.minSkills = _skills(Skill.WOODCUTTING, Skill.FIREMAKING);
         input.minXPs = _uint32s2(1, 1);
         _add(input);
         itemNFT.mint(ALICE, BRONZE_ARROW, 1);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(InstantActions.MinimumXPNotReached.selector, Skill.WOODCUTTING, 1));
+        vm.expectRevert(abi.encodeWithSelector(IInstantActions.MinimumXPNotReached.selector, Skill.WOODCUTTING, 1));
         instantActions.doInstantActions(playerId, _uint16s(1), _uints(1), input.actionType);
         players.modifyXP(ALICE, playerId, Skill.WOODCUTTING, 1, true);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(InstantActions.MinimumXPNotReached.selector, Skill.FIREMAKING, 1));
+        vm.expectRevert(abi.encodeWithSelector(IInstantActions.MinimumXPNotReached.selector, Skill.FIREMAKING, 1));
         instantActions.doInstantActions(playerId, _uint16s(1), _uints(1), input.actionType);
         players.modifyXP(ALICE, playerId, Skill.FIREMAKING, 2, true);
         _do(_uint16s(1), _uints(1), input.actionType);
     }
 
     function testAmountGreaterThanOneGeneric() public {
-        InstantActions.InstantActionInput memory input = _threeOutput();
+        IInstantActions.InstantActionInput memory input = _threeOutput();
         _add(input);
         itemNFT.mintBatch(ALICE, _uints(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW), _uints(6, 6, 6));
         _do(_uint16s(1), _uints(2), input.actionType);
@@ -221,19 +221,19 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testAddMultipleActions() public {
-        InstantActions.InstantActionType t = InstantActions.InstantActionType.GENERIC;
-        InstantActions.InstantActionInput memory a = _input(t);
+        IInstantActions.InstantActionType t = IInstantActions.InstantActionType.GENERIC;
+        IInstantActions.InstantActionInput memory a = _input(t);
         a.inputTokenIds = _uint16s(IRON_ARROW, ADAMANTINE_ARROW);
         a.inputAmounts = _uint24s2(1, 2);
         a.outputTokenId = RUNITE_ARROW;
         a.outputAmount = 2;
-        InstantActions.InstantActionInput memory b = _threeOutput();
+        IInstantActions.InstantActionInput memory b = _threeOutput();
         b.actionId = 2;
         b.inputAmounts = _uint24s(3, 5, 7);
         b.outputTokenId = ORICHALCUM_ARROW;
         b.outputAmount = 3;
         instantActions.addActions(_inputs(a, b));
-        InstantActions.InstantAction memory x = instantActions.getAction(t, 1);
+        IInstantActions.InstantAction memory x = instantActions.getAction(t, 1);
         assertEq(x.inputTokenId1, IRON_ARROW);
         assertEq(x.inputTokenId3, 0);
         assertEq(x.outputTokenId, RUNITE_ARROW);
@@ -245,19 +245,19 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testCheckPackedData() public {
-        InstantActions.InstantActionInput memory input = _threeInput(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _threeInput(IInstantActions.InstantActionType.GENERIC);
         input.isFullModeOnly = true;
         _add(input);
         assertEq(instantActions.getAction(input.actionType, 1).packedData, bytes1(0x80));
     }
 
     function testCheckFullModeRequirements() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.GENERIC);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.GENERIC);
         input.isFullModeOnly = true;
         _add(input);
         itemNFT.mint(ALICE, BRONZE_ARROW, 2);
         vm.prank(ALICE);
-        vm.expectRevert(InstantActions.PlayerNotUpgraded.selector);
+        vm.expectRevert(IInstantActions.PlayerNotUpgraded.selector);
         instantActions.doInstantActions(playerId, _uint16s(1), _uints(2), input.actionType);
         brush.mint(ALICE, 1 ether);
         vm.startPrank(ALICE);
@@ -268,7 +268,7 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testSingleInputForging() public {
-        InstantActions.InstantActionInput memory input = _forge(IRON_ARROW, 1, BRONZE_ARROW, 2);
+        IInstantActions.InstantActionInput memory input = _forge(IRON_ARROW, 1, BRONZE_ARROW, 2);
         _add(input);
         itemNFT.mint(ALICE, IRON_ARROW, 1);
         _do(_uint16s(1), _uints(1), input.actionType);
@@ -277,19 +277,19 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testForgingIncorrectInputLength() public {
-        InstantActions.InstantActionInput memory input = _forge(IRON_ARROW, 1, BRONZE_ARROW, 2);
+        IInstantActions.InstantActionInput memory input = _forge(IRON_ARROW, 1, BRONZE_ARROW, 2);
         input.inputTokenIds = new uint16[](0);
         input.inputAmounts = new uint24[](0);
-        vm.expectRevert(InstantActions.IncorrectInputAmounts.selector);
+        vm.expectRevert(IInstantActions.IncorrectInputAmounts.selector);
         _add(input);
         input.inputTokenIds = _uint16s(IRON_ARROW, IRON_ARROW);
         input.inputAmounts = _uint24s2(1, 1);
-        vm.expectRevert(InstantActions.IncorrectInputAmounts.selector);
+        vm.expectRevert(IInstantActions.IncorrectInputAmounts.selector);
         _add(input);
     }
 
     function testForgingInputsBurnt() public {
-        InstantActions.InstantActionInput memory input = _forge(BRONZE_ARROW, 2, RUNITE_ARROW, 1);
+        IInstantActions.InstantActionInput memory input = _forge(BRONZE_ARROW, 2, RUNITE_ARROW, 1);
         _add(input);
         itemNFT.mint(ALICE, BRONZE_ARROW, 4);
         _do(_uint16s(1), _uints(1), input.actionType);
@@ -298,7 +298,7 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testAmountGreaterThanOneForging() public {
-        InstantActions.InstantActionInput memory input = _forge(BRONZE_ARROW, 1, RUNITE_ARROW, 3);
+        IInstantActions.InstantActionInput memory input = _forge(BRONZE_ARROW, 1, RUNITE_ARROW, 3);
         _add(input);
         itemNFT.mint(ALICE, BRONZE_ARROW, 6);
         _do(_uint16s(1), _uints(2), input.actionType);
@@ -307,19 +307,19 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testDoMultipleForgingInstantActionsAtOnce() public {
-        InstantActions.InstantActionInput memory a = _forge(BRONZE_ARROW, 1, RUNITE_ARROW, 2);
-        InstantActions.InstantActionInput memory b = _forge(BRONZE_BAR, 1, RUNITE_ARROW, 1);
+        IInstantActions.InstantActionInput memory a = _forge(BRONZE_ARROW, 1, RUNITE_ARROW, 2);
+        IInstantActions.InstantActionInput memory b = _forge(BRONZE_BAR, 1, RUNITE_ARROW, 1);
         b.actionId = 2;
         instantActions.addActions(_inputs(a, b));
         itemNFT.mintBatch(ALICE, _uints(BRONZE_ARROW, BRONZE_BAR), _uints(6, 6));
-        InstantActions.InstantActionState memory state =
+        IInstantActions.InstantActionState memory state =
             instantActions.getInstantActionState(playerId, _uint16s(1, 2), _uints(2, 1), a.actionType);
         assertEq(state.consumedTokenIds, _uints(BRONZE_ARROW, BRONZE_BAR));
         assertEq(state.consumedAmounts, _uints(2, 1));
         assertEq(state.producedTokenIds, _uints(RUNITE_ARROW));
         assertEq(state.producedAmounts, _uints(5));
         vm.expectEmit(false, false, false, true, address(instantActions));
-        emit InstantActions.DoInstantActions(
+        emit IInstantActions.DoInstantActions(
             playerId,
             ALICE,
             _uint16s(1, 2),
@@ -335,35 +335,35 @@ contract InstantActionsTest is FullGameStack {
     }
 
     function testCannotForgeDifferentOutputTokens() public {
-        InstantActions.InstantActionInput memory a = _forge(BRONZE_ARROW, 1, RUNITE_ARROW, 3);
-        InstantActions.InstantActionInput memory b = _forge(BRONZE_ARROW, 1, RUNITE_BAR, 1);
+        IInstantActions.InstantActionInput memory a = _forge(BRONZE_ARROW, 1, RUNITE_ARROW, 3);
+        IInstantActions.InstantActionInput memory b = _forge(BRONZE_ARROW, 1, RUNITE_BAR, 1);
         b.actionId = 2;
         instantActions.addActions(_inputs(a, b));
         itemNFT.mint(ALICE, BRONZE_ARROW, 6);
         vm.prank(ALICE);
-        vm.expectRevert(InstantActions.InvalidOutputTokenId.selector);
+        vm.expectRevert(IInstantActions.InvalidOutputTokenId.selector);
         instantActions.doInstantActions(playerId, _uint16s(1, 2), _uints(1, 1), a.actionType);
     }
 
     function testIncorrectActionTypeReverts() public {
-        InstantActions.InstantActionInput memory input = _input(InstantActions.InstantActionType.NONE);
-        vm.expectRevert(InstantActions.UnsupportedActionType.selector);
+        IInstantActions.InstantActionInput memory input = _input(IInstantActions.InstantActionType.NONE);
+        vm.expectRevert(IInstantActions.UnsupportedActionType.selector);
         _add(input);
         vm.prank(ALICE);
-        vm.expectRevert(InstantActions.UnsupportedActionType.selector);
+        vm.expectRevert(IInstantActions.UnsupportedActionType.selector);
         instantActions.doInstantActions(playerId, _uint16s(1), _uints(2), input.actionType);
     }
 
     function testQuestRequirementMustBeCompleted() public {
         vm.deal(ALICE, 1 ether);
-        InstantActions.InstantActionInput memory input = _threeOutput();
+        IInstantActions.InstantActionInput memory input = _threeOutput();
         input.questPrerequisiteId = uint16(QUEST_PURSE_STRINGS);
         input.inputTokenIds = _uint16s(BRONZE_ARROW);
         input.inputAmounts = _uint24s(1);
         _add(input);
         itemNFT.mint(ALICE, BRONZE_ARROW, 1);
         vm.prank(ALICE);
-        vm.expectRevert(InstantActions.DependentQuestNotCompleted.selector);
+        vm.expectRevert(IInstantActions.DependentQuestNotCompleted.selector);
         instantActions.doInstantActions(playerId, _uint16s(1), _uints(1), input.actionType);
         QuestInput[] memory qs = new QuestInput[](1);
         qs[0].questId = uint16(QUEST_PURSE_STRINGS);
@@ -378,10 +378,10 @@ contract InstantActionsTest is FullGameStack {
         vm.stopPrank();
     }
 
-    function _input(InstantActions.InstantActionType t)
+    function _input(IInstantActions.InstantActionType t)
         private
         pure
-        returns (InstantActions.InstantActionInput memory x)
+        returns (IInstantActions.InstantActionInput memory x)
     {
         x.actionId = 1;
         x.actionType = t;
@@ -390,18 +390,18 @@ contract InstantActionsTest is FullGameStack {
         x.isAvailable = true;
     }
 
-    function _threeInput(InstantActions.InstantActionType t)
+    function _threeInput(IInstantActions.InstantActionType t)
         private
         pure
-        returns (InstantActions.InstantActionInput memory x)
+        returns (IInstantActions.InstantActionInput memory x)
     {
         x = _input(t);
         x.inputTokenIds = _uint16s(BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW);
         x.inputAmounts = _uint24s(1, 2, 3);
     }
 
-    function _threeOutput() private pure returns (InstantActions.InstantActionInput memory x) {
-        x = _threeInput(InstantActions.InstantActionType.GENERIC);
+    function _threeOutput() private pure returns (IInstantActions.InstantActionInput memory x) {
+        x = _threeInput(IInstantActions.InstantActionType.GENERIC);
         x.outputTokenId = RUNITE_ARROW;
         x.outputAmount = 2;
     }
@@ -409,49 +409,49 @@ contract InstantActionsTest is FullGameStack {
     function _forge(uint16 inId, uint24 inAmount, uint16 outId, uint16 outAmount)
         private
         pure
-        returns (InstantActions.InstantActionInput memory x)
+        returns (IInstantActions.InstantActionInput memory x)
     {
-        x = _input(InstantActions.InstantActionType.FORGING_COMBINE);
+        x = _input(IInstantActions.InstantActionType.FORGING_COMBINE);
         x.inputTokenIds[0] = inId;
         x.inputAmounts[0] = inAmount;
         x.outputTokenId = outId;
         x.outputAmount = outAmount;
     }
 
-    function _add(InstantActions.InstantActionInput memory x) private {
+    function _add(IInstantActions.InstantActionInput memory x) private {
         instantActions.addActions(_inputs(x));
     }
 
-    function _do(uint16[] memory ids, uint256[] memory amounts, InstantActions.InstantActionType t) private {
+    function _do(uint16[] memory ids, uint256[] memory amounts, IInstantActions.InstantActionType t) private {
         vm.prank(ALICE);
         instantActions.doInstantActions(playerId, ids, amounts, t);
     }
 
-    function _inputs(InstantActions.InstantActionInput memory a)
+    function _inputs(IInstantActions.InstantActionInput memory a)
         private
         pure
-        returns (InstantActions.InstantActionInput[] memory v)
+        returns (IInstantActions.InstantActionInput[] memory v)
     {
-        v = new InstantActions.InstantActionInput[](1);
+        v = new IInstantActions.InstantActionInput[](1);
         v[0] = a;
     }
 
-    function _inputs(InstantActions.InstantActionInput memory a, InstantActions.InstantActionInput memory b)
+    function _inputs(IInstantActions.InstantActionInput memory a, IInstantActions.InstantActionInput memory b)
         private
         pure
-        returns (InstantActions.InstantActionInput[] memory v)
+        returns (IInstantActions.InstantActionInput[] memory v)
     {
-        v = new InstantActions.InstantActionInput[](2);
+        v = new IInstantActions.InstantActionInput[](2);
         v[0] = a;
         v[1] = b;
     }
 
-    function _types(InstantActions.InstantActionType a)
+    function _types(IInstantActions.InstantActionType a)
         private
         pure
-        returns (InstantActions.InstantActionType[] memory v)
+        returns (IInstantActions.InstantActionType[] memory v)
     {
-        v = new InstantActions.InstantActionType[](1);
+        v = new IInstantActions.InstantActionType[](1);
         v[0] = a;
     }
 

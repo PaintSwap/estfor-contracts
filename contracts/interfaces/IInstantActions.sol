@@ -1,17 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../../contracts/globals/actions.sol";
-import "../../contracts/globals/clans.sol";
-import "../../contracts/globals/items.sol";
-import "../../contracts/globals/misc.sol";
-import "../../contracts/globals/pets.sol";
-import "../../contracts/globals/players.sol";
-import "../../contracts/globals/promotions.sol";
-import "../../contracts/globals/quests.sol";
-import "../../contracts/globals/rewards.sol";
+import "../globals/actions.sol";
+import "../globals/clans.sol";
+import "../globals/items.sol";
+import "../globals/misc.sol";
+import "../globals/pets.sol";
+import "../globals/players.sol";
+import "../globals/promotions.sol";
+import "../globals/quests.sol";
+import "../globals/rewards.sol";
+import {IPlayers} from "./IPlayers.sol";
+import {ItemNFT} from "../ItemNFT.sol";
+import {IQuests} from "./IQuests.sol";
+import {IActivityPoints, IActivityPointsCaller} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
-interface InstantActions {
+interface IInstantActions is IActivityPointsCaller {
     enum InstantActionType {
         NONE,
         FORGING_COMBINE,
@@ -29,7 +33,7 @@ interface InstantActions {
         uint16 questPrerequisiteId;
         bool isFullModeOnly;
         bool isAvailable;
-        InstantActions.InstantActionType actionType;
+        IInstantActions.InstantActionType actionType;
     }
 
     struct InstantAction {
@@ -58,35 +62,29 @@ interface InstantActions {
         uint256[] producedTokenIds;
         uint256[] producedAmounts;
     }
-    function UPGRADE_INTERFACE_VERSION() external view returns (string memory);
-    function addActions(InstantActions.InstantActionInput[] calldata instantActionInputs) external;
+    function addActions(IInstantActions.InstantActionInput[] calldata instantActionInputs) external;
     function doInstantActions(
         uint256 playerId,
         uint16[] calldata actionIds,
         uint256[] calldata amounts,
-        InstantActions.InstantActionType actionType
+        IInstantActions.InstantActionType actionType
     ) external;
-    function editActions(InstantActions.InstantActionInput[] calldata instantActionInputs) external;
-    function getAction(InstantActions.InstantActionType actionType, uint16 actionId)
+    function editActions(IInstantActions.InstantActionInput[] calldata instantActionInputs) external;
+    function getAction(IInstantActions.InstantActionType actionType, uint16 actionId)
         external
         view
-        returns (InstantActions.InstantAction memory);
+        returns (IInstantActions.InstantAction memory);
     function getInstantActionState(
         uint256 playerId,
         uint16[] calldata actionIds,
         uint256[] calldata amounts,
-        InstantActions.InstantActionType actionType
-    ) external view returns (InstantActions.InstantActionState memory instantActionState);
-    function initialize(address players, address itemNFT, address quests, address activityPoints) external;
-    function owner() external view returns (address);
-    function proxiableUUID() external view returns (bytes32);
-    function removeActions(InstantActions.InstantActionType[] calldata actionTypes, uint16[] calldata instantActionIds)
+        IInstantActions.InstantActionType actionType
+    ) external view returns (IInstantActions.InstantActionState memory instantActionState);
+    function initialize(IPlayers players, ItemNFT itemNFT, IQuests quests, IActivityPoints activityPoints) external;
+    function removeActions(IInstantActions.InstantActionType[] calldata actionTypes, uint16[] calldata instantActionIds)
         external;
-    function renounceOwnership() external;
     function setActivityPoints(address activityPoints) external;
-    function transferOwnership(address newOwner) external;
-    function upgradeToAndCall(address newImplementation, bytes calldata data) external payable;
-    event AddInstantActions(InstantActions.InstantActionInput[] instantActionInputs);
+    event AddInstantActions(IInstantActions.InstantActionInput[] instantActionInputs);
     event DoInstantActions(
         uint256 playerId,
         address from_,
@@ -96,27 +94,19 @@ interface InstantActions {
         uint256[] consumedAmounts,
         uint256[] producedItemTokenIds,
         uint256[] producedAmounts,
-        InstantActions.InstantActionType actionType
+        IInstantActions.InstantActionType actionType
     );
-    event EditInstantActions(InstantActions.InstantActionInput[] instantActionInputs);
-    event Initialized(uint64 version);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    event RemoveInstantActions(InstantActions.InstantActionType[] actionTypes, uint16[] actionIds);
-    event Upgraded(address indexed implementation);
+    event EditInstantActions(IInstantActions.InstantActionInput[] instantActionInputs);
+    event RemoveInstantActions(IInstantActions.InstantActionType[] actionTypes, uint16[] actionIds);
     error ActionAlreadyExists();
     error ActionDoesNotExist();
     error ActionIdZeroNotAllowed();
     error ActionMustBeAvailable();
-    error AddressEmptyCode(address target);
     error DependentQuestNotCompleted();
-    error ERC1967InvalidImplementation(address implementation);
-    error ERC1967NonPayable();
-    error FailedCall();
     error IncorrectInputAmounts();
     error InputItemNoDuplicates();
     error InputSpecifiedWithoutAmount();
     error InvalidActionId();
-    error InvalidInitialization();
     error InvalidInputTokenId();
     error InvalidOutputTokenId();
     error InvalidSkill();
@@ -124,16 +114,11 @@ interface InstantActions {
     error LengthMismatch();
     error MinimumSkillsNoDuplicates();
     error MinimumXPNotReached(Skill minSkill, uint256 minXP);
-    error NotInitializing();
     error NotOwnerOfPlayerAndActive();
     error OutputAmountCannotBeZero();
     error OutputTokenIdCannotBeEmpty();
-    error OwnableInvalidOwner(address owner);
-    error OwnableUnauthorizedAccount(address account);
     error PlayerNotUpgraded();
     error TooManyInputItems();
     error TooManyMinSkills();
-    error UUPSUnauthorizedCallContext();
-    error UUPSUnsupportedProxiableUUID(bytes32 slot);
     error UnsupportedActionType();
 }

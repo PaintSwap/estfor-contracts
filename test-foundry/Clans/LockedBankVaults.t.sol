@@ -4,13 +4,13 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Clans} from "../interfaces/Clans.sol";
+import {IClans as Clans} from "../../contracts/interfaces/IClans.sol";
 import {ClanRank, ClanBattleInfo} from "../../contracts/globals/clans.sol";
 import {Skill} from "../../contracts/globals/misc.sol";
 import {ItemInput, EquipPosition} from "../../contracts/globals/players.sol";
 import {BoostType} from "../../contracts/globals/misc.sol";
-import {LockedBankVaults} from "../interfaces/LockedBankVaults.sol";
-import {LockedBankVaultsLibrary} from "../interfaces/LockedBankVaultsLibrary.sol";
+import {ILockedBankVaults} from "../../contracts/interfaces/ILockedBankVaults.sol";
+import {ILockedBankVaultsLibrary as LockedBankVaultsLibrary} from "../../contracts/interfaces/ILockedBankVaultsLibrary.sol";
 import {
     ILockedBankVaultsBattleResultDecoder,
     LockedBankVaultsBattleResultData
@@ -102,7 +102,7 @@ contract LockedBankVaultsTest is FullGameStack {
         brush.mint(ALICE, 100);
         vm.startPrank(ALICE);
         brush.approve(address(lockedBankVaults), 100);
-        vm.expectRevert(LockedBankVaults.OnlyTerritories.selector);
+        vm.expectRevert(ILockedBankVaults.OnlyTerritories.selector);
         lockedBankVaults.lockFunds(CLAN_ID, ALICE, playerId, 100);
         vm.stopPrank();
     }
@@ -128,7 +128,7 @@ contract LockedBankVaultsTest is FullGameStack {
         assertEq(_toU256(lockedBankVaults.getClanInfo(CLAN_ID).playerIds), _uints(playerId, ownerPlayerId));
 
         vm.expectEmit(true, true, true, true, address(lockedBankVaults));
-        emit LockedBankVaults.RemoveCombatant(ownerPlayerId, CLAN_ID);
+        emit ILockedBankVaults.RemoveCombatant(ownerPlayerId, CLAN_ID);
         clans.changeRank(CLAN_ID, ownerPlayerId, ClanRank.NONE, ownerPlayerId);
 
         assertEq(_toU256(lockedBankVaults.getClanInfo(CLAN_ID).playerIds), _uints(playerId));
@@ -567,7 +567,7 @@ contract LockedBankVaultsTest is FullGameStack {
 
         uint256 attackCost = lockedBankVaults.getAttackCost();
         vm.expectEmit(true, true, true, true, address(lockedBankVaults));
-        emit LockedBankVaults.SuperAttackCooldown(CLAN_ID, nowBefore + SUPER_ATTACK_COOLDOWN);
+        emit ILockedBankVaults.SuperAttackCooldown(CLAN_ID, nowBefore + SUPER_ATTACK_COOLDOWN);
         vm.prank(ALICE);
         lockedBankVaults.attackVaults{value: attackCost}(CLAN_ID, bobClanId, SHARPENED_CLAW, playerId);
         _fulfill(1);
@@ -592,7 +592,7 @@ contract LockedBankVaultsTest is FullGameStack {
         // Cooldown is now reached
         attackCost = lockedBankVaults.getAttackCost();
         vm.expectEmit(true, true, true, true, address(lockedBankVaults));
-        emit LockedBankVaults.SuperAttackCooldown(CLAN_ID, now1 + SUPER_ATTACK_COOLDOWN);
+        emit ILockedBankVaults.SuperAttackCooldown(CLAN_ID, now1 + SUPER_ATTACK_COOLDOWN);
         vm.prank(ALICE);
         lockedBankVaults.attackVaults{value: attackCost}(CLAN_ID, charlieClanId, SHARPENED_CLAW, playerId);
     }
@@ -736,7 +736,7 @@ contract LockedBankVaultsTest is FullGameStack {
         vm.prank(ALICE);
         lockedBankVaults.attackVaults{value: attackCost}(CLAN_ID, CLAN_ID + 1, 0, playerId);
 
-        vm.expectRevert(LockedBankVaults.RequestIdNotKnown.selector);
+        vm.expectRevert(ILockedBankVaults.RequestIdNotKnown.selector);
         _fulfill(3);
     }
 
@@ -765,7 +765,7 @@ contract LockedBankVaultsTest is FullGameStack {
         lockedBankVaults.setPreventAttacks(true);
         uint256 attackCost = lockedBankVaults.getAttackCost();
         vm.prank(ALICE);
-        vm.expectRevert(LockedBankVaults.AttacksPrevented.selector);
+        vm.expectRevert(ILockedBankVaults.AttacksPrevented.selector);
         lockedBankVaults.attackVaults{value: attackCost}(CLAN_ID, CLAN_ID + 1, 0, playerId);
         lockedBankVaults.setPreventAttacks(false);
         attackCost = lockedBankVaults.getAttackCost();
@@ -949,7 +949,7 @@ contract LockedBankVaultsTest is FullGameStack {
         assertEq(lockedBankVaults.getIdleClans(), _uints(bobClanId, erinClanId));
 
         vm.expectEmit(true, true, true, true, address(lockedBankVaults));
-        emit LockedBankVaults.ForceMMRUpdate(_uints(bobClanId, erinClanId));
+        emit ILockedBankVaults.ForceMMRUpdate(_uints(bobClanId, erinClanId));
         lockedBankVaults.forceMMRUpdate(_uints(CLAN_ID, bobClanId, erinClanId));
 
         assertEqU16(lockedBankVaults.getSortedMMR(), _uint16s(495));
@@ -1088,7 +1088,7 @@ contract LockedBankVaultsTest is FullGameStack {
         assertEq(lockedBankVaults.getIdleClans(), _uints(CLAN_ID));
 
         vm.expectEmit(true, true, true, true, address(lockedBankVaults));
-        emit LockedBankVaults.ForceMMRUpdate(_uints(CLAN_ID));
+        emit ILockedBankVaults.ForceMMRUpdate(_uints(CLAN_ID));
         lockedBankVaults.forceMMRUpdate(_uints(CLAN_ID));
 
         assertEqU16(lockedBankVaults.getSortedMMR(), _uint16s(501));
@@ -1129,7 +1129,7 @@ contract LockedBankVaultsTest is FullGameStack {
         assertEq(lockedBankVaults.getIdleClans(), _uints(bobClanId, CLAN_ID));
 
         vm.expectEmit(true, true, true, true, address(lockedBankVaults));
-        emit LockedBankVaults.ForceMMRUpdate(_uints(CLAN_ID, bobClanId));
+        emit ILockedBankVaults.ForceMMRUpdate(_uints(CLAN_ID, bobClanId));
         lockedBankVaults.forceMMRUpdate(_uints(CLAN_ID, bobClanId));
 
         assertEqU16(lockedBankVaults.getSortedMMR(), _uint16sEmpty());
@@ -1163,7 +1163,7 @@ contract LockedBankVaultsTest is FullGameStack {
         assertEq(lockedBankVaults.getIdleClans(), _uints(CLAN_ID, bobClanId));
 
         vm.expectEmit(true, true, true, true, address(lockedBankVaults));
-        emit LockedBankVaults.ForceMMRUpdate(_uints(CLAN_ID, bobClanId));
+        emit ILockedBankVaults.ForceMMRUpdate(_uints(CLAN_ID, bobClanId));
         lockedBankVaults.forceMMRUpdate(_uints(CLAN_ID, bobClanId));
 
         assertEqU16(lockedBankVaults.getSortedMMR(), _uint16sEmpty());
@@ -1199,7 +1199,7 @@ contract LockedBankVaultsTest is FullGameStack {
         assertEq(lockedBankVaults.getIdleClans(), _uints(bobClanId));
 
         vm.expectEmit(true, true, true, true, address(lockedBankVaults));
-        emit LockedBankVaults.ForceMMRUpdate(_uints(bobClanId));
+        emit ILockedBankVaults.ForceMMRUpdate(_uints(bobClanId));
         lockedBankVaults.forceMMRUpdate(_uints(CLAN_ID, bobClanId));
 
         assertEqU16(lockedBankVaults.getSortedMMR(), _uint16sEmpty());

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {EstforTest} from "../utils/EstforTest.sol";
-import {PlayersLibrary} from "../interfaces/PlayersLibrary.sol";
+import {IPlayersLibrary as PlayersLibrary} from "../../contracts/interfaces/IPlayersLibrary.sol";
 import {MAX_LEVEL} from "../../contracts/globals/players.sol";
 
 contract PlayersLibraryTest is EstforTest {

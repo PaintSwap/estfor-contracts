@@ -4,9 +4,9 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {WishingWell} from "./interfaces/WishingWell.sol";
-import {Clans} from "./interfaces/Clans.sol";
-import {PlayersImplMisc1 as IPlayersMisc1DelegateView} from "./interfaces/PlayersImplMisc1.sol";
+import {IWishingWell} from "../contracts/interfaces/IWishingWell.sol";
+import {IClans as Clans} from "../contracts/interfaces/IClans.sol";
+import {IPlayersImplMisc1 as IPlayersMisc1DelegateView} from "../contracts/interfaces/IPlayersImplMisc1.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
 import {IActivityPoints} from "../contracts/ActivityPoints/interfaces/IActivityPoints.sol";
 import {Skill, Attire, CombatStats, BoostType} from "../contracts/globals/misc.sol";
@@ -52,7 +52,7 @@ contract WishingWellTest is FullGameStack {
 
     function testOnlyPlayersContractCanCallDonate() public {
         vm.prank(ALICE);
-        vm.expectRevert(WishingWell.NotPlayers.selector);
+        vm.expectRevert(IWishingWell.NotPlayers.selector);
         wishingWell.donate(ALICE, 0, 100);
     }
 
@@ -70,17 +70,17 @@ contract WishingWellTest is FullGameStack {
         assertEq(brush.balanceOf(address(treasury)), 1 ether);
 
         vm.prank(ALICE);
-        vm.expectRevert(WishingWell.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IWishingWell.NotOwnerOfPlayer.selector);
         players.donate(playerId + 1, 1 ether);
     }
 
     function testInitializationParams() public {
-        WishingWell implementation = WishingWell(_deployArtifact("contracts/WishingWell.sol:WishingWell:via-ir"));
+        IWishingWell implementation = IWishingWell(_deployArtifact("contracts/WishingWell.sol:WishingWell"));
         vm.store(address(implementation), INITIALIZABLE_STORAGE, bytes32(0));
         vm.expectEmit(address(implementation));
-        emit WishingWell.ClanDonationThreshold(250 ether, CLAN_BOOSTER);
+        emit IWishingWell.ClanDonationThreshold(250 ether, CLAN_BOOSTER);
         implementation.initialize(
-            address(brush),
+            IBrushToken(address(brush)),
             address(playerNFT),
             address(treasury),
             address(randomnessBeacon),
@@ -88,7 +88,7 @@ contract WishingWellTest is FullGameStack {
             5 ether,
             1000 ether,
             250 ether,
-            address(activityPoints)
+            IActivityPoints(address(activityPoints))
         );
     }
 
@@ -109,7 +109,7 @@ contract WishingWellTest is FullGameStack {
         assertEq(winner.playerId, playerId);
 
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.ClaimedLotteryWinnings(lotteryId, 1, LUCKY_POTION, 1);
+        emit IWishingWell.ClaimedLotteryWinnings(lotteryId, 1, LUCKY_POTION, 1);
         vm.prank(ALICE);
         players.processActions(playerId);
         assertTrue(wishingWell.hasClaimedReward(lotteryId));
@@ -118,13 +118,13 @@ contract WishingWellTest is FullGameStack {
         vm.recordLogs();
         vm.prank(ALICE);
         players.processActions(playerId);
-        assertEq(_countLogs(address(wishingWell), WishingWell.ClaimedLotteryWinnings.selector), 0);
+        assertEq(_countLogs(address(wishingWell), IWishingWell.ClaimedLotteryWinnings.selector), 0);
     }
 
     function testMinimumOfOneBrushCanBeDonated() public {
         assertEq(wishingWell.getLastLotteryId(), 1);
         vm.prank(ALICE);
-        vm.expectRevert(WishingWell.MinimumOneBrush.selector);
+        vm.expectRevert(IWishingWell.MinimumOneBrush.selector);
         players.donate(playerId, 0.1 ether);
     }
 
@@ -134,18 +134,18 @@ contract WishingWellTest is FullGameStack {
         assertEq(wishingWell.getLastLotteryId(), 1);
 
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.DonateToClan(ALICE, playerId, 1 ether, 1, 0);
+        emit IWishingWell.DonateToClan(ALICE, playerId, 1 ether, 1, 0);
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.Donate(ALICE, playerId, 1 ether, 0, 0);
+        emit IWishingWell.Donate(ALICE, playerId, 1 ether, 0, 0);
         _donate(ALICE, playerId, 1.1 ether);
         assertEq(brush.balanceOf(ALICE), beforeBalance - 1.1 ether);
         assertEq(wishingWell.getTotalDonated(), 1 ether);
         assertEq(wishingWell.getClanTotalDonated(1), 1 ether);
 
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.DonateToClan(ALICE, playerId, 1 ether, 1, 0);
+        emit IWishingWell.DonateToClan(ALICE, playerId, 1 ether, 1, 0);
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.Donate(ALICE, playerId, 1 ether, 0, 0);
+        emit IWishingWell.Donate(ALICE, playerId, 1 ether, 0, 0);
         _donate(ALICE, playerId, 1.99 ether);
         assertEq(wishingWell.getTotalDonated(), 2 ether);
         assertEq(wishingWell.getClanTotalDonated(1), 2 ether);
@@ -154,14 +154,14 @@ contract WishingWellTest is FullGameStack {
     function testReachMinimumToGetATicket() public {
         uint256 lotteryId = wishingWell.getLastLotteryId();
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.Donate(ALICE, playerId, 1 ether, 0, 0);
+        emit IWishingWell.Donate(ALICE, playerId, 1 ether, 0, 0);
         _donate(ALICE, playerId, 1 ether);
         assertFalse(wishingWell.hasPlayerEntered(lotteryId, playerId));
         _donate(ALICE, playerId, raffleEntryCost - 1);
         assertFalse(wishingWell.hasPlayerEntered(lotteryId, playerId));
 
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.Donate(ALICE, playerId, raffleEntryCost, lotteryId, 1);
+        emit IWishingWell.Donate(ALICE, playerId, raffleEntryCost, lotteryId, 1);
         _donate(ALICE, playerId, raffleEntryCost);
         assertTrue(wishingWell.hasPlayerEntered(lotteryId, playerId));
     }
@@ -173,7 +173,7 @@ contract WishingWellTest is FullGameStack {
         vm.warp(vm.getBlockTimestamp() + 1 days);
         assertEq(wishingWell.getLastLotteryId(), 2);
         vm.prank(ALICE);
-        vm.expectRevert(WishingWell.OracleNotCalledYet.selector);
+        vm.expectRevert(IWishingWell.OracleNotCalledYet.selector);
         players.donate(playerId, raffleEntryCost);
         _fulfillNextRandomWords();
         _donate(ALICE, playerId, raffleEntryCost);
@@ -182,11 +182,11 @@ contract WishingWellTest is FullGameStack {
     function testCannotEnterRaffleWithPlayerMoreThanOnceADay() public {
         uint256 lotteryId = wishingWell.getLastLotteryId();
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.Donate(ALICE, playerId, raffleEntryCost, 1, 1);
+        emit IWishingWell.Donate(ALICE, playerId, raffleEntryCost, 1, 1);
         _donate(ALICE, playerId, raffleEntryCost);
         assertTrue(wishingWell.hasPlayerEntered(lotteryId, playerId));
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.Donate(ALICE, playerId, raffleEntryCost, 0, 0);
+        emit IWishingWell.Donate(ALICE, playerId, raffleEntryCost, 0, 0);
         _donate(ALICE, playerId, raffleEntryCost);
     }
 
@@ -197,21 +197,21 @@ contract WishingWellTest is FullGameStack {
         _donate(ALICE, playerId, 1 ether);
 
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.LastGlobalDonationThreshold(1000 ether, PRAY_TO_THE_BEARDIE_2);
+        emit IWishingWell.LastGlobalDonationThreshold(1000 ether, PRAY_TO_THE_BEARDIE_2);
         _donate(ALICE, 0, 1 ether);
         assertEq(wishingWell.getNextGlobalThreshold(), 2000 ether);
 
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.LastGlobalDonationThreshold(2000 ether, PRAY_TO_THE_BEARDIE_3);
+        emit IWishingWell.LastGlobalDonationThreshold(2000 ether, PRAY_TO_THE_BEARDIE_3);
         _donate(ALICE, 0, 1500 ether);
         assertEq(wishingWell.getNextGlobalThreshold(), 3000 ether);
         _donate(ALICE, 0, 499 ether);
 
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.LastGlobalDonationThreshold(3000 ether, PRAY_TO_THE_BEARDIE);
+        emit IWishingWell.LastGlobalDonationThreshold(3000 ether, PRAY_TO_THE_BEARDIE);
         _donate(ALICE, 0, 1 ether);
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.LastGlobalDonationThreshold(6000 ether, PRAY_TO_THE_BEARDIE_2);
+        emit IWishingWell.LastGlobalDonationThreshold(6000 ether, PRAY_TO_THE_BEARDIE_2);
         _donate(ALICE, 0, 3500 ether);
         assertEq(wishingWell.getTotalDonated(), 6500 ether);
         assertEq(wishingWell.getNextGlobalThreshold(), 7000 ether);
@@ -329,7 +329,7 @@ contract WishingWellTest is FullGameStack {
         assertEq(wishingWell.getWinner(lotteryId).lotteryId, lotteryId);
 
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.ClaimedLotteryWinnings(lotteryId, 1, LUCKY_POTION, 1);
+        emit IWishingWell.ClaimedLotteryWinnings(lotteryId, 1, LUCKY_POTION, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(playerId, actions, 0, 0, 0, raffleEntryCost, ActionQueueStrategy.OVERWRITE);
         assertTrue(wishingWell.hasClaimedReward(lotteryId));
@@ -388,7 +388,7 @@ contract WishingWellTest is FullGameStack {
 
     function _expectClanThreshold(uint256 threshold, uint16 nextReward) private {
         vm.expectEmit(address(wishingWell));
-        emit WishingWell.LastClanDonationThreshold(1, threshold, nextReward);
+        emit IWishingWell.LastClanDonationThreshold(1, threshold, nextReward);
     }
 
     function _clanBoost() private view returns (StandardBoostInfo memory) {

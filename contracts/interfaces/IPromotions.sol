@@ -1,19 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../../contracts/globals/actions.sol";
-import "../../contracts/globals/clans.sol";
-import "../../contracts/globals/items.sol";
-import "../../contracts/globals/misc.sol";
-import "../../contracts/globals/pets.sol";
-import "../../contracts/globals/players.sol";
-import "../../contracts/globals/promotions.sol";
-import "../../contracts/globals/quests.sol";
-import "../../contracts/globals/rewards.sol";
+import "../globals/actions.sol";
+import "../globals/clans.sol";
+import "../globals/items.sol";
+import "../globals/misc.sol";
+import "../globals/pets.sol";
+import "../globals/players.sol";
+import "../globals/promotions.sol";
+import "../globals/quests.sol";
+import "../globals/rewards.sol";
+import {AdminAccess} from "../AdminAccess.sol";
+import {DailyRewardsScheduler} from "../DailyRewardsScheduler.sol";
+import {ItemNFT} from "../ItemNFT.sol";
+import {RandomnessBeacon} from "../RandomnessBeacon.sol";
+import {IPlayers} from "./IPlayers.sol";
+import {IBrushToken} from "./external/IBrushToken.sol";
 
-interface Promotions {
+interface IPromotions {
     function FINAL_PROMOTION_DAY_INDEX() external view returns (uint256);
-    function UPGRADE_INTERFACE_VERSION() external view returns (string memory);
     function addPromotions(PromotionInfoInput[] calldata promotionInfoInput) external;
     function adminMintPromotionalPack(address to, uint256 playerId, string calldata redeemCode, Promotion promotion)
         external;
@@ -26,16 +31,16 @@ interface Promotions {
     function hasClaimedAny(uint256 playerId, Promotion promotion) external view returns (bool);
     function hasCompletedPromotion(uint256 playerId, Promotion promotion) external view returns (bool);
     function initialize(
-        address players,
-        address randomnessBeacon,
-        address dailyRewardsScheduler,
-        address itemNFT,
+        IPlayers players,
+        RandomnessBeacon randomnessBeacon,
+        DailyRewardsScheduler dailyRewardsScheduler,
+        ItemNFT itemNFT,
         address playerNFT,
         address quests,
-        address brush,
+        IBrushToken brush,
         address treasury,
         address dev,
-        address adminAccess,
+        AdminAccess adminAccess,
         bool isBeta
     ) external;
     function mintPromotion(uint256 playerId, Promotion promotion) external;
@@ -58,11 +63,8 @@ interface Promotions {
             PromotionMintStatus promotionMintStatus
         );
     function mintStarterPromotionalPack(address to, uint256 playerId, string calldata redeemCode) external;
-    function owner() external view returns (address);
     function payMissedPromotionDays(uint256 playerId, Promotion promotion, uint256[] calldata missedDays) external;
-    function proxiableUUID() external view returns (bytes32);
     function removePromotions(Promotion[] calldata promotions) external;
-    function renounceOwnership() external;
     function setBrushDistributionPercentages(
         uint8 brushBurntPercentage,
         uint8 brushTreasuryPercentage,
@@ -70,13 +72,9 @@ interface Promotions {
     ) external;
     function setDevAddress(address dev) external;
     function testClearPlayerPromotions(uint256 playerId, Promotion[] calldata promotions) external;
-    function transferOwnership(address newOwner) external;
-    function upgradeToAndCall(address newImplementation, bytes calldata data) external payable;
     event AddPromotions(PromotionInfoInput[] promotionInfos);
     event ClearPlayerPromotions(uint256 playerId, Promotion[] promotions);
     event EditPromotions(PromotionInfoInput[] promotionInfos);
-    event Initialized(uint64 version);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event PromotionRedeemed(
         address indexed to,
         uint256 playerId,
@@ -91,29 +89,20 @@ interface Promotions {
     event SetBrushDistributionPercentages(
         uint256 brushBurntPercentage, uint256 brushTreasuryPercentage, uint256 brushDevPercentage
     );
-    event Upgraded(address indexed implementation);
-    error AddressEmptyCode(address target);
     error CannotPayForToday();
     error DaysArrayNotSortedOrDuplicates();
     error DependentQuestNotCompleted();
-    error ERC1967InvalidImplementation(address implementation);
-    error ERC1967NonPayable();
-    error FailedCall();
     error InvalidBrushCost();
-    error InvalidInitialization();
     error InvalidPromotion();
     error InvalidRedeemCode();
     error MintingOutsideAvailableDate();
     error MustBeAdminOnlyPromotion();
     error NotAdminAndBeta();
     error NotEnoughBrush();
-    error NotInitializing();
     error NotOwnerOfPlayer();
     error NotOwnerOfPlayerAndActive();
     error NotPromotionalAdmin();
     error OracleNotCalled();
-    error OwnableInvalidOwner(address owner);
-    error OwnableUnauthorizedAccount(address account);
     error PercentNotTotal100();
     error PlayerDoesNotQualify();
     error PlayerNotEvolved();
@@ -122,6 +111,4 @@ interface Promotions {
     error PromotionFinished();
     error PromotionNotAdded();
     error PromotionNotSet();
-    error UUPSUnauthorizedCallContext();
-    error UUPSUnsupportedProxiableUUID(bytes32 slot);
 }

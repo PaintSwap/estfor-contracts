@@ -5,7 +5,8 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {ItemNFT} from "./ItemNFT.sol";
-import {PetNFT} from "./PetNFT.sol";
+import {IPetNFT} from "./interfaces/IPetNFT.sol";
+import {IPetNFTReroll} from "./interfaces/IPetNFTReroll.sol";
 import {Pet} from "./globals/pets.sol";
 import {PET_SHARD} from "./globals/items.sol";
 
@@ -14,17 +15,9 @@ import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/Paintswa
 contract PetNFTReroll is
   UUPSUpgradeable,
   OwnableUpgradeable,
-  PaintswapVRFConsumerUpgradeable
+  PaintswapVRFConsumerUpgradeable,
+  IPetNFTReroll
 {
-  error InvalidAddress();
-    error NotOwnerOfPet();
-    error NotOwnerOfPetShard();
-    error RequestDoesNotExist();
-    error NoRandomWords();
-
-    event CompletePetReroll(address indexed user, uint256 indexed originalPetTokenId, uint256 indexed newPetTokenId, uint256 requestId);
-    event RequestPetReroll(address indexed user, uint256 indexed petTokenId, uint256 requestId);
-
   uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 180_000;
   address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
@@ -35,7 +28,7 @@ contract PetNFTReroll is
   }
   
     ItemNFT private _itemNFT;
-    PetNFT private _petNFT;
+    IPetNFT private _petNFT;
   mapping(uint256 requestId => PetRerollInfo) private _requestIdToOwner;
 
 modifier isOwnerOfPet(uint256 petId) {
@@ -56,7 +49,7 @@ modifier isOwnerOfPet(uint256 petId) {
   function initialize(
     address owner,
     ItemNFT itemNFT,
-    PetNFT petNFT,
+    IPetNFT petNFT,
     address paintswapVRFConsumer
   ) external initializer {
     require(owner != address(0), InvalidAddress());

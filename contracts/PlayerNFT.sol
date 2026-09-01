@@ -23,59 +23,6 @@ import "./globals/all.sol";
 contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IMarketplaceNFT, IPlayerNFT {
   using BloomFilter for BloomFilter.Filter;
 
-  event NewPlayer(
-    uint256 playerId,
-    uint256 avatarId,
-    string name,
-    address from,
-    string discord,
-    string twitter,
-    string telegram,
-    bool upgrade
-  );
-  event EditPlayer(
-    uint256 playerId,
-    address from,
-    string newName,
-    uint256 paid,
-    string discord,
-    string twitter,
-    string telegram,
-    bool upgrade
-  );
-  event EditNameCost(uint256 newCost);
-  event UpgradePlayerCost(uint256 newCost);
-  event SetAvatars(uint256[] avatarIds, AvatarInfo[] avatarInfos);
-  event UpgradePlayerAvatar(uint256 playerId, uint256 newAvatarId, uint256 tokenCost);
-  event SetBrushDistributionPercentages(
-    uint256 brushBurntPercentage,
-    uint256 brushTreasuryPercentage,
-    uint256 brushDevPercentage
-  );
-  event EditAvatar(uint256 playerId, uint256 newAvatarId);
-
-  error NotOwnerOfPlayer();
-  error NotPlayers();
-  error BaseAvatarNotExists();
-  error NameTooShort();
-  error NameTooLong();
-  error NameAlreadyExists();
-  error NameInvalidCharacters();
-  error MintedMoreThanAllowed();
-  error NotInWhitelist();
-  error ERC1155Metadata_URIQueryForNonexistentToken();
-  error ERC1155BurnForbidden();
-  error DiscordTooLong();
-  error DiscordInvalidCharacters();
-  error TelegramTooLong();
-  error TelegramInvalidCharacters();
-  error TwitterTooLong();
-  error TwitterInvalidCharacters();
-  error LengthMismatch();
-  error PercentNotTotal100();
-  error NotBridge();
-  error NotCosmetics();
-
   uint256 private constant EVOLVED_OFFSET = 10000;
   uint256 public constant NUM_BASE_AVATARS = 8;
 
@@ -400,7 +347,9 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     super._update(from, to, ids, amounts);
   }
 
-  function uri(uint256 playerId) public view virtual override returns (string memory) {
+  function uri(
+    uint256 playerId
+  ) public view virtual override(IPlayerNFT, SamWitchERC1155UpgradeableSinglePerToken) returns (string memory) {
     require(exists(playerId), ERC1155Metadata_URIQueryForNonexistentToken());
     AvatarInfo storage avatarInfo = _avatars[_playerInfos[playerId].avatarId];
     string memory imageURI = string(abi.encodePacked(_imageBaseUri, avatarInfo.imageURI));
@@ -413,6 +362,15 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
    */
   function exists(uint256 tokenId) public view returns (bool) {
     return _playerInfos[tokenId].avatarId != 0;
+  }
+
+  function ownerOf(uint256 tokenId)
+    public
+    view
+    override(IPlayerNFT, SamWitchERC1155UpgradeableSinglePerToken)
+    returns (address)
+  {
+    return super.ownerOf(tokenId);
   }
 
   /**

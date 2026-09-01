@@ -2,14 +2,14 @@
 pragma solidity ^0.8.28;
 
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import {
-    ReentrancyGuardTransientUpgradeable
-} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardTransientUpgradeable.sol";
 
 import {EstforTest} from "./utils/EstforTest.sol";
-import {OrderBook} from "./interfaces/OrderBook.sol";
+import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
+import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
+import {IReentrancyGuard} from "../contracts/interfaces/IReentrancyGuard.sol";
+import {IUUPSUpgradeable} from "../contracts/interfaces/IUUPSUpgradeable.sol";
+import {IOrderBook as OrderBook} from "../contracts/Bazaar/interfaces/IOrderBook.sol";
 import {IOrderBook} from "../contracts/Bazaar/interfaces/IOrderBook.sol";
 import {TestERC721} from "../contracts/test/TestERC721.sol";
 import {TestERC1155NoRoyalty} from "../contracts/test/TestERC1155NoRoyalty.sol";
@@ -77,7 +77,7 @@ contract OrderBookTest is EstforTest {
                     address(implementation),
                     abi.encodeCall(
                         OrderBook.initialize,
-                        (address(erc1155), address(brush), dev, devFee, burntFee, ORDERBOOK_MAX_ORDERS_PER_PRICE)
+                        (IERC1155(address(erc1155)), address(brush), dev, devFee, burntFee, ORDERBOOK_MAX_ORDERS_PER_PRICE)
                     )
                 )
             )
@@ -100,7 +100,7 @@ contract OrderBookTest is EstforTest {
             address(implementation),
             abi.encodeCall(
                 OrderBook.initialize,
-                (address(erc721), address(brush), DEV, uint16(30), uint8(30), ORDERBOOK_MAX_ORDERS_PER_PRICE)
+                (IERC1155(address(erc721)), address(brush), DEV, uint16(30), uint8(30), ORDERBOOK_MAX_ORDERS_PER_PRICE)
             )
         );
 
@@ -266,7 +266,7 @@ contract OrderBookTest is EstforTest {
         assertEq(erc1155.balanceOf(address(orderBook), tokenId), 20);
 
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         orderBook.setTokenIdInfos(_uints(tokenId), _tokenInfo(10, 1));
         vm.expectRevert(IOrderBook.LengthMismatch.selector);
         orderBook.setTokenIdInfos(_uints(tokenId), new IOrderBook.TokenIdInfo[](0));
@@ -278,7 +278,7 @@ contract OrderBookTest is EstforTest {
 
     function testMaxOrdersConfiguration() public {
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         orderBook.setMaxOrdersPerPrice(100);
         vm.expectRevert(IOrderBook.MaxOrdersNotMultipleOfOrdersInSegment.selector);
         orderBook.setMaxOrdersPerPrice(101);
@@ -320,7 +320,7 @@ contract OrderBookTest is EstforTest {
 
     function testFeeConfigurationRequiresOwner() public {
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         orderBook.setFees(address(0), 0, 0);
 
         vm.expectEmit(false, false, false, true, address(orderBook));
@@ -337,7 +337,7 @@ contract OrderBookTest is EstforTest {
                     address(implementation),
                     abi.encodeCall(
                         OrderBook.initialize,
-                        (address(nft), address(brush), address(0), uint16(0), uint8(0), ORDERBOOK_MAX_ORDERS_PER_PRICE)
+                        (IERC1155(address(nft)), address(brush), address(0), uint16(0), uint8(0), ORDERBOOK_MAX_ORDERS_PER_PRICE)
                     )
                 )
             )
@@ -495,10 +495,10 @@ contract OrderBookTest is EstforTest {
     function testUpgradeRequiresOwner() public {
         OrderBook newImplementation = _deployOrderBookImplementation();
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
-        orderBook.upgradeToAndCall(address(newImplementation), "");
-        orderBook.upgradeToAndCall(address(newImplementation), "");
-        assertEq(orderBook.owner(), address(this));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
+        IUUPSUpgradeable(address(orderBook)).upgradeToAndCall(address(newImplementation), "");
+        IUUPSUpgradeable(address(orderBook)).upgradeToAndCall(address(newImplementation), "");
+        assertEq(IERC5313(address(orderBook)).owner(), address(this));
     }
 
     function testERC1155CallbackCannotReenterLimitOrders() public {
@@ -511,7 +511,7 @@ contract OrderBookTest is EstforTest {
         orderBook.limitOrders(_order(IOrderBook.OrderSide.Sell, PRICE, QUANTITY));
 
         vm.prank(attackerAddress);
-        vm.expectRevert(ReentrancyGuardTransientUpgradeable.ReentrancyGuardReentrantCall.selector);
+        vm.expectRevert(IReentrancyGuard.ReentrancyGuardReentrantCall.selector);
         OrderBook(attackerAddress).limitOrders(_order(IOrderBook.OrderSide.Buy, PRICE, 1));
     }
 
@@ -525,7 +525,7 @@ contract OrderBookTest is EstforTest {
                     abi.encodeCall(
                         OrderBook.initialize,
                         (
-                            address(erc1155),
+                            IERC1155(address(erc1155)),
                             address(reentrantToken),
                             DEV,
                             uint16(30),
@@ -543,7 +543,7 @@ contract OrderBookTest is EstforTest {
             _uints(ORDERBOOK_TOKEN_ID), _tokenInfo(ORDERBOOK_TICK, ORDERBOOK_MIN_QUANTITY)
         );
 
-        vm.expectRevert(ReentrancyGuardTransientUpgradeable.ReentrancyGuardReentrantCall.selector);
+        vm.expectRevert(IReentrancyGuard.ReentrancyGuardReentrantCall.selector);
         reentrantOrderBook.limitOrders(_order(IOrderBook.OrderSide.Buy, PRICE, QUANTITY));
     }
 

@@ -2,12 +2,12 @@
 pragma solidity ^0.8.28;
 
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
+import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 import {Cosmetics} from "../contracts/Cosmetics.sol";
-import {PlayerNFT} from "./interfaces/PlayerNFT.sol";
+import {IPlayerNFT as PlayerNFT} from "../contracts/interfaces/IPlayerNFT.sol";
 import {Skill, Attire, CombatStats} from "../contracts/globals/misc.sol";
 import {
     AvatarInfo,
@@ -40,7 +40,7 @@ contract CosmeticsTest is FullGameStack {
 
     function testShouldNotLetNonOwnersSetCosmetics() public {
         vm.prank(BOB);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, BOB));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, BOB));
         cosmetics.setCosmetics(_tokenIds(1), _cosmeticInfos(1, EquipPosition.AVATAR, 9));
     }
 
@@ -74,7 +74,7 @@ contract CosmeticsTest is FullGameStack {
     function testShouldNotLetNonOwnersRemoveCosmetics() public {
         _setTwoCosmetics();
         vm.prank(BOB);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, BOB));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, BOB));
         cosmetics.removeCosmeticItems(_tokenIds(1));
     }
 

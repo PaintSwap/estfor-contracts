@@ -4,10 +4,11 @@ pragma solidity ^0.8.28;
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-import {PlayerNFT} from "./interfaces/PlayerNFT.sol";
+import {IPlayerNFT} from "../contracts/interfaces/IPlayerNFT.sol";
+import {IERC1155Supply} from "../contracts/interfaces/IERC1155Supply.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
-import {PlayersBase} from "./interfaces/PlayersBase.sol";
-import {PlayersImplMisc1} from "./interfaces/PlayersImplMisc1.sol";
+import {IPlayersBase as PlayersBase} from "../contracts/interfaces/IPlayersBase.sol";
+import {IPlayersImplMisc1 as PlayersImplMisc1} from "../contracts/interfaces/IPlayersImplMisc1.sol";
 import {Player, PlayerInfo, AvatarInfo} from "../contracts/globals/players.sol";
 import {Skill} from "../contracts/globals/misc.sol";
 import {
@@ -30,17 +31,17 @@ contract PlayerNFTTest is FullGameStack {
     }
 
     function testCheckInitializationParams() public {
-        PlayerNFT implementation = PlayerNFT(_deployArtifact("contracts/PlayerNFT.sol:PlayerNFT:via-ir"));
+        IPlayerNFT implementation = IPlayerNFT(_deployArtifact("contracts/PlayerNFT.sol:PlayerNFT:via-ir"));
         vm.expectEmit(false, false, false, true);
-        emit PlayerNFT.EditNameCost(EDIT_COST);
+        emit IPlayerNFT.EditNameCost(EDIT_COST);
         vm.expectEmit(false, false, false, true);
-        emit PlayerNFT.UpgradePlayerCost(2 ether);
+        emit IPlayerNFT.UpgradePlayerCost(2 ether);
         new ERC1967Proxy(
             address(implementation),
             abi.encodeCall(
-                PlayerNFT.initialize,
+                IPlayerNFT.initialize,
                 (
-                    address(brush),
+                    IBrushToken(address(brush)),
                     address(shop),
                     DEV,
                     address(royaltyReceiver),
@@ -57,24 +58,24 @@ contract PlayerNFTTest is FullGameStack {
 
     function testEmptyName() public {
         vm.prank(ALICE);
-        vm.expectRevert(PlayerNFT.NameTooShort.selector);
+        vm.expectRevert(IPlayerNFT.NameTooShort.selector);
         playerNFT.mint(1, "", "", "", "", false, true);
     }
 
     function testNameTooLong() public {
         vm.prank(ALICE);
-        vm.expectRevert(PlayerNFT.NameTooLong.selector);
+        vm.expectRevert(IPlayerNFT.NameTooLong.selector);
         playerNFT.mint(1, "F12345678901234567890", "", "", "", false, true);
     }
 
     function testDuplicateNamesNotAllowed() public {
         _createPlayer(ALICE, 1, "A123", true);
         vm.startPrank(ALICE);
-        vm.expectRevert(PlayerNFT.NameAlreadyExists.selector);
+        vm.expectRevert(IPlayerNFT.NameAlreadyExists.selector);
         playerNFT.mint(1, "A123", "", "", "", false, true);
-        vm.expectRevert(PlayerNFT.NameAlreadyExists.selector);
+        vm.expectRevert(IPlayerNFT.NameAlreadyExists.selector);
         playerNFT.mint(1, "A123 ", "", "", "", false, true);
-        vm.expectRevert(PlayerNFT.NameAlreadyExists.selector);
+        vm.expectRevert(IPlayerNFT.NameAlreadyExists.selector);
         playerNFT.mint(1, "a123", "", "", "", false, true);
         vm.stopPrank();
     }
@@ -107,7 +108,7 @@ contract PlayerNFTTest is FullGameStack {
         playerNFT.editPlayer(playerId, "My name is edited", "", "", "", false);
         brush.mint(ALICE, EDIT_COST * 3);
 
-        vm.expectRevert(PlayerNFT.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IPlayerNFT.NotOwnerOfPlayer.selector);
         playerNFT.editPlayer(playerId, "My name is edited", "", "", "", false);
         assertTrue(playerNFT.hasLowercaseName("0xsamwitch"));
         vm.prank(ALICE);
@@ -117,19 +118,19 @@ contract PlayerNFTTest is FullGameStack {
 
         uint256 newPlayerId = _createPlayer(ALICE, 1, "name", true);
         vm.prank(ALICE);
-        vm.expectRevert(PlayerNFT.NameAlreadyExists.selector);
+        vm.expectRevert(IPlayerNFT.NameAlreadyExists.selector);
         playerNFT.editPlayer(newPlayerId, "My name is edited", "", "", "", false);
     }
 
     function testEditSocialsNoChargeIfNameDoesNotChange() public {
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit PlayerNFT.EditPlayer(playerId, ALICE, ORIG_NAME, 0, "", "1231231", "", false);
+        emit IPlayerNFT.EditPlayer(playerId, ALICE, ORIG_NAME, 0, "", "1231231", "", false);
         vm.prank(ALICE);
         playerNFT.editPlayer(playerId, ORIG_NAME, "", "1231231", "", false);
 
         _fundAndApprove(ALICE, EDIT_COST);
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit PlayerNFT.EditPlayer(playerId, ALICE, "New name", EDIT_COST, "", "1231231", "", false);
+        emit IPlayerNFT.EditPlayer(playerId, ALICE, "New name", EDIT_COST, "", "1231231", "", false);
         vm.prank(ALICE);
         playerNFT.editPlayer(playerId, "New name", "", "1231231", "", false);
     }
@@ -141,9 +142,9 @@ contract PlayerNFTTest is FullGameStack {
         assertNotEq(mintedTimestamp, 0);
 
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit PlayerNFT.UpgradePlayerAvatar(playerId, 10001, UPGRADE_COST);
+        emit IPlayerNFT.UpgradePlayerAvatar(playerId, 10001, UPGRADE_COST);
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit PlayerNFT.EditPlayer(playerId, ALICE, "new name", EDIT_COST, "", "1231231", "", true);
+        emit IPlayerNFT.EditPlayer(playerId, ALICE, "new name", EDIT_COST, "", "1231231", "", true);
         vm.prank(ALICE);
         playerNFT.editPlayer(playerId, "new name", "", "1231231", "", true);
 
@@ -166,9 +167,9 @@ contract PlayerNFTTest is FullGameStack {
         _fundAndApprove(ALICE, UPGRADE_COST);
         uint256 newPlayerId = playerId + 1;
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit PlayerNFT.NewPlayer(newPlayerId, 1, "name", ALICE, "", "1231231", "", true);
+        emit IPlayerNFT.NewPlayer(newPlayerId, 1, "name", ALICE, "", "1231231", "", true);
         vm.expectEmit(false, false, false, true, address(playerNFT));
-        emit PlayerNFT.UpgradePlayerAvatar(newPlayerId, 10001, UPGRADE_COST);
+        emit IPlayerNFT.UpgradePlayerAvatar(newPlayerId, 10001, UPGRADE_COST);
         vm.prank(ALICE);
         playerNFT.mint(1, "name", "", "1231231", "", true, true);
 
@@ -209,7 +210,7 @@ contract PlayerNFTTest is FullGameStack {
 
     function testMintNonExistentAvatar() public {
         vm.prank(ALICE);
-        vm.expectRevert(PlayerNFT.BaseAvatarNotExists.selector);
+        vm.expectRevert(IPlayerNFT.BaseAvatarNotExists.selector);
         playerNFT.mint(500, "New name", "", "", "", false, true);
     }
 
@@ -218,7 +219,7 @@ contract PlayerNFTTest is FullGameStack {
         infos[0] = AvatarInfo("Evolved", "description", "evolved.png", [Skill.MAGIC, Skill.NONE]);
         playerNFT.setAvatars(_uints(10001), infos);
         vm.prank(ALICE);
-        vm.expectRevert(PlayerNFT.BaseAvatarNotExists.selector);
+        vm.expectRevert(IPlayerNFT.BaseAvatarNotExists.selector);
         playerNFT.mint(10001, "New name", "", "", "", false, true);
     }
 
@@ -253,7 +254,7 @@ contract PlayerNFTTest is FullGameStack {
     function testNameAndSymbol() public {
         assertEq(playerNFT.name(), "Estfor Players (Beta)");
         assertEq(playerNFT.symbol(), "EK_PB");
-        // Direct storage write: PlayerNFT._isBeta is at slot 9, offset 0 (see `forge inspect PlayerNFT storage-layout`).
+        // Direct storage write: IPlayerNFT._isBeta is at slot 9, offset 0 (see `forge inspect IPlayerNFT storage-layout`).
         vm.store(address(playerNFT), bytes32(uint256(9)), bytes32(0));
         assertEq(playerNFT.name(), "Estfor Players");
         assertEq(playerNFT.symbol(), "EK_P");
@@ -275,16 +276,16 @@ contract PlayerNFTTest is FullGameStack {
     }
 
     function testTotalSupply() public {
-        assertEq(playerNFT.totalSupply(), 1);
+        assertEq(IERC1155Supply(address(playerNFT)).totalSupply(), 1);
         uint256 secondPlayerId = _createPlayer(address(this), 1, "name1", true);
-        assertEq(playerNFT.totalSupply(), 2);
-        assertEq(playerNFT.totalSupply(playerId), 1);
-        assertEq(playerNFT.totalSupply(secondPlayerId), 1);
+        assertEq(IERC1155Supply(address(playerNFT)).totalSupply(), 2);
+        assertEq(IERC1155Supply(address(playerNFT)).totalSupply(playerId), 1);
+        assertEq(IERC1155Supply(address(playerNFT)).totalSupply(secondPlayerId), 1);
         vm.prank(ALICE);
         playerNFT.burn(ALICE, playerId);
-        assertEq(playerNFT.totalSupply(), 1);
+        assertEq(IERC1155Supply(address(playerNFT)).totalSupply(), 1);
         playerNFT.burn(address(this), secondPlayerId);
-        assertEq(playerNFT.totalSupply(), 0);
+        assertEq(IERC1155Supply(address(playerNFT)).totalSupply(), 0);
     }
 
     function _fundAndApprove(address account, uint256 amount) private {

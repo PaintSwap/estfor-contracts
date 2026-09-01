@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {PlayersBase} from "./PlayersBase.sol";
+import {IPlayersImplProcessActions} from "../interfaces/IPlayersImplProcessActions.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersRewardsDelegate, IPlayersMiscDelegate} from "../interfaces/IPlayersDelegates.sol";
 import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
@@ -12,7 +13,7 @@ import {ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplProcessActions is PlayersBase {
+contract PlayersImplProcessActions is PlayersBase, IPlayersImplProcessActions {
   using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for CombatStyle;
 

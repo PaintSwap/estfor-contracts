@@ -3,11 +3,11 @@ pragma solidity ^0.8.28;
 
 import {Vm} from "forge-std/Vm.sol";
 import {stdError} from "forge-std/StdError.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Raids} from "../interfaces/Raids.sol";
-import {Clans} from "../interfaces/Clans.sol";
+import {IOwnable} from "../../contracts/interfaces/IOwnable.sol";
+import {IRaids} from "../../contracts/interfaces/IRaids.sol";
+import {IClans as Clans} from "../../contracts/interfaces/IClans.sol";
 import {Skill, CombatStats} from "../../contracts/globals/misc.sol";
 import {ClanRank} from "../../contracts/globals/clans.sol";
 import {ActionInput, ActionInfo, ACTIONCHOICE_MELEE_BASIC_SWORD} from "../../contracts/globals/actions.sol";
@@ -63,7 +63,7 @@ contract RaidsTest is FullGameStack {
 
     function testCanSpawnARaid() public {
         vm.expectEmit(false, false, false, true, address(raids));
-        emit Raids.RequestSpawnRaid(playerId, 1);
+        emit IRaids.RequestSpawnRaid(playerId, 1);
         vm.prank(ALICE);
         raids.requestSpawnRaid(uint64(playerId));
     }
@@ -71,13 +71,13 @@ contract RaidsTest is FullGameStack {
     function testCannotSpawnRaidWhilePreviousRaidNotFinished() public {
         vm.prank(ALICE);
         raids.requestSpawnRaid(uint64(playerId));
-        vm.expectRevert(Raids.PreviousRaidNotSpawnedYet.selector);
+        vm.expectRevert(IRaids.PreviousRaidNotSpawnedYet.selector);
         vm.prank(ALICE);
         raids.requestSpawnRaid(uint64(playerId));
 
         _addBaseRaids(1, false, 1);
         mockVRF.fulfill(1, address(raids));
-        vm.expectRevert(Raids.RaidInProgress.selector);
+        vm.expectRevert(IRaids.RaidInProgress.selector);
         vm.prank(ALICE);
         raids.requestSpawnRaid(uint64(playerId));
     }
@@ -85,7 +85,7 @@ contract RaidsTest is FullGameStack {
     function testSpawnsRaidWithRandomStatsInValidRanges() public {
         _addBaseRaids(1, false, 1);
         _spawn();
-        Raids.RaidInfo memory info = raids.getRaidInfo(1);
+        IRaids.RaidInfo memory info = raids.getRaidInfo(1);
         assertGe(info.health, 100);
         assertLe(info.health, 200);
         assertGe(info.meleeAttack, 10);
@@ -104,7 +104,7 @@ contract RaidsTest is FullGameStack {
     }
 
     function testSpawnsRaidWithSameMinMaxStatRanges() public {
-        Raids.BaseRaid memory raid = _basicRaid();
+        IRaids.BaseRaid memory raid = _basicRaid();
         raid.maxHealth = raid.minHealth;
         raid.maxMeleeAttack = raid.minMeleeAttack;
         raid.minMagicAttack = 150;
@@ -118,7 +118,7 @@ contract RaidsTest is FullGameStack {
         raid.maxRangedDefence = -20;
         raids.addBaseRaids(_uints(1), _baseRaids(raid));
         _spawn();
-        Raids.RaidInfo memory info = raids.getRaidInfo(1);
+        IRaids.RaidInfo memory info = raids.getRaidInfo(1);
         assertEq(info.health, 100);
         assertEq(info.meleeAttack, 10);
         assertEq(info.magicAttack, 150);
@@ -135,7 +135,7 @@ contract RaidsTest is FullGameStack {
         _mintBank(RAID_PASS, 1);
         _spawn();
         vm.expectEmit(false, false, false, true, address(raids));
-        emit Raids.RequestFightRaid(playerId, uint56(CLAN_ID), 1, 2);
+        emit IRaids.RequestFightRaid(playerId, uint56(CLAN_ID), 1, 2);
         uint256 attackCost = raids.getAttackCost();
         vm.prank(ALICE);
         raids.requestFightRaid{value: attackCost}(uint64(playerId), uint40(CLAN_ID), 1, 0);
@@ -158,7 +158,7 @@ contract RaidsTest is FullGameStack {
     function testDefeatMonstersAndRaidBoss() public {
         _winningFightSetup(1);
         vm.expectEmit(false, false, false, true, address(raids));
-        emit Raids.RequestFightRaid(playerId, uint56(CLAN_ID), 1, 2);
+        emit IRaids.RequestFightRaid(playerId, uint56(CLAN_ID), 1, 2);
         _requestFight();
         RaidBattleOutcomeData memory out = _fulfillOutcome(2, 100_000, true);
         assertGe(out.raidId, 1);
@@ -215,13 +215,13 @@ contract RaidsTest is FullGameStack {
     function testRemovesCombatantWhenLeavingClan() public {
         _assign();
         vm.expectEmit(false, false, false, true, address(raids));
-        emit Raids.RemoveCombatant(playerId, CLAN_ID);
+        emit IRaids.RemoveCombatant(playerId, CLAN_ID);
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.NONE, playerId);
     }
 
     function testOnlyCombatantsHelperCanAssignCombatants() public {
-        vm.expectRevert(Raids.OnlyCombatantsHelper.selector);
+        vm.expectRevert(IRaids.OnlyCombatantsHelper.selector);
         vm.prank(ALICE);
         raids.assignCombatants(CLAN_ID, _playerIds(playerId), 0, playerId);
     }
@@ -257,7 +257,7 @@ contract RaidsTest is FullGameStack {
             vm.stopPrank();
         }
 
-        vm.expectRevert(Raids.TooManyCombatants.selector);
+        vm.expectRevert(IRaids.TooManyCombatants.selector);
         vm.prank(ALICE);
         combatantsHelper.assignCombatants(
             CLAN_ID, false, new uint64[](0), false, new uint64[](0), true, tooManyIds, playerId
@@ -265,16 +265,16 @@ contract RaidsTest is FullGameStack {
     }
 
     function testOnlyOwnerCanAddBaseRaids() public {
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         vm.prank(ALICE);
         raids.addBaseRaids(_uints(1), _baseRaids(_basicRaid()));
     }
 
     function testCannotAddRaidWithInvalidStatsRanges() public {
-        Raids.BaseRaid memory raid = _basicRaid();
+        IRaids.BaseRaid memory raid = _basicRaid();
         raid.minHealth = 200;
         raid.maxHealth = 100;
-        vm.expectRevert(Raids.NotInRange.selector);
+        vm.expectRevert(IRaids.NotInRange.selector);
         raids.addBaseRaids(_uints(1), _baseRaids(raid));
     }
 
@@ -331,7 +331,7 @@ contract RaidsTest is FullGameStack {
 
     function _addBaseRaids(uint256 count, bool trash, uint8 tier) private {
         uint256[] memory ids = new uint256[](count);
-        Raids.BaseRaid[] memory values = new Raids.BaseRaid[](count);
+        IRaids.BaseRaid[] memory values = new IRaids.BaseRaid[](count);
         for (uint256 i; i < count; ++i) {
             ids[i] = i + 1;
             values[i] = trash ? _trashRaid(tier) : _basicRaid();
@@ -339,7 +339,7 @@ contract RaidsTest is FullGameStack {
         raids.addBaseRaids(ids, values);
     }
 
-    function _basicRaid() private pure returns (Raids.BaseRaid memory r) {
+    function _basicRaid() private pure returns (IRaids.BaseRaid memory r) {
         r.tier = 1;
         r.minHealth = 100;
         r.maxHealth = 200;
@@ -363,7 +363,7 @@ contract RaidsTest is FullGameStack {
         r.randomChances[1] = 10000;
     }
 
-    function _tierTwoRaid() private pure returns (Raids.BaseRaid memory r) {
+    function _tierTwoRaid() private pure returns (IRaids.BaseRaid memory r) {
         r.tier = 2;
         r.minHealth = 10;
         r.maxHealth = 10;
@@ -381,7 +381,7 @@ contract RaidsTest is FullGameStack {
         r.maxRangedDefence = 1;
     }
 
-    function _trashRaid(uint8 tier) private pure returns (Raids.BaseRaid memory r) {
+    function _trashRaid(uint8 tier) private pure returns (IRaids.BaseRaid memory r) {
         r.tier = tier;
         r.minHealth = 1;
         r.maxHealth = 1;
@@ -393,8 +393,8 @@ contract RaidsTest is FullGameStack {
         r.randomChances[1] = 10000;
     }
 
-    function _baseRaids(Raids.BaseRaid memory raid) private pure returns (Raids.BaseRaid[] memory values) {
-        values = new Raids.BaseRaid[](1);
+    function _baseRaids(IRaids.BaseRaid memory raid) private pure returns (IRaids.BaseRaid[] memory values) {
+        values = new IRaids.BaseRaid[](1);
         values[0] = raid;
     }
 

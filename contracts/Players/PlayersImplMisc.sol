@@ -11,12 +11,13 @@ import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
 import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
+import {IPlayersImplMisc} from "../interfaces/IPlayersImplMisc.sol";
 import {ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDelegateView {
+contract PlayersImplMisc is PlayersBase, IPlayersImplMisc {
   using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for CombatStyle;
 

@@ -4,8 +4,8 @@ pragma solidity ^0.8.28;
 import {EstforTest} from "./utils/EstforTest.sol";
 
 import {ItemNFT} from "../contracts/ItemNFT.sol";
-import {PetNFT} from "./interfaces/PetNFT.sol";
-import {PetNFTReroll} from "./interfaces/PetNFTReroll.sol";
+import {IPetNFT} from "../contracts/interfaces/IPetNFT.sol";
+import {IPetNFTReroll} from "../contracts/interfaces/IPetNFTReroll.sol";
 import {Pet} from "../contracts/globals/pets.sol";
 import {PET_SHARD} from "../contracts/globals/items.sol";
 import {MockVRF} from "../contracts/test/MockVRF.sol";
@@ -16,20 +16,21 @@ contract PetNFTRerollTest is EstforTest {
     );
 
     ItemNFT private constant ITEM_NFT = ItemNFT(address(0x1111));
-    PetNFT private constant PET_NFT = PetNFT(address(0x2222));
+    IPetNFT private constant PET_NFT = IPetNFT(address(0x2222));
     uint256 private constant ORIGINAL_PET_TOKEN_ID = 100;
     uint24 private constant BASE_PET_ID = 1;
 
-    PetNFTReroll private reroll;
+    IPetNFTReroll private reroll;
 
     function setUp() public {
         mockVRF = new MockVRF();
-        PetNFTReroll implementation = PetNFTReroll(_deployArtifact("contracts/PetNFTReroll.sol:PetNFTReroll:via-ir"));
-        reroll = PetNFTReroll(
+        IPetNFTReroll implementation =
+            IPetNFTReroll(_deployArtifact("contracts/PetNFTReroll.sol:PetNFTReroll"));
+        reroll = IPetNFTReroll(
             _deployUUPS(
                 address(implementation),
                 abi.encodeCall(
-                    implementation.initialize, (address(this), address(ITEM_NFT), address(PET_NFT), address(mockVRF))
+                    implementation.initialize, (address(this), ITEM_NFT, PET_NFT, address(mockVRF))
                 )
             )
         );
@@ -45,7 +46,7 @@ contract PetNFTRerollTest is EstforTest {
 
     function testRevertsWhenCallerIsNotThePetOwner() public {
         uint256 cost = reroll.requestCost(1);
-        vm.expectRevert(PetNFTReroll.NotOwnerOfPet.selector);
+        vm.expectRevert(IPetNFTReroll.NotOwnerOfPet.selector);
         vm.prank(BOB);
         reroll.rerollPet{value: cost}(ORIGINAL_PET_TOKEN_ID);
     }
@@ -54,7 +55,7 @@ contract PetNFTRerollTest is EstforTest {
         vm.mockCall(address(ITEM_NFT), abi.encodeCall(ITEM_NFT.balanceOf, (ALICE, PET_SHARD)), abi.encode(0));
         uint256 cost = reroll.requestCost(1);
 
-        vm.expectRevert(PetNFTReroll.NotOwnerOfPetShard.selector);
+        vm.expectRevert(IPetNFTReroll.NotOwnerOfPetShard.selector);
         vm.prank(ALICE);
         reroll.rerollPet{value: cost}(ORIGINAL_PET_TOKEN_ID);
     }
@@ -88,12 +89,12 @@ contract PetNFTRerollTest is EstforTest {
         emit CompletePetReroll(ALICE, ORIGINAL_PET_TOKEN_ID, newPetTokenId, requestId);
         mockVRF.fulfillSeeded(requestId, address(reroll), 987654321);
 
-        vm.expectRevert(PetNFTReroll.RequestDoesNotExist.selector);
+        vm.expectRevert(IPetNFTReroll.RequestDoesNotExist.selector);
         mockVRF.fulfillSeeded(requestId, address(reroll), 987654321);
     }
 
     function testRevertsIfTheRequestDoesNotExist() public {
-        vm.expectRevert(PetNFTReroll.RequestDoesNotExist.selector);
+        vm.expectRevert(IPetNFTReroll.RequestDoesNotExist.selector);
         mockVRF.fulfillSeeded(999999, address(reroll), 1);
     }
 }

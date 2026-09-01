@@ -2,7 +2,14 @@
 pragma solidity ^0.8.28;
 
 import {EstforTest} from "../utils/EstforTest.sol";
-import {CombatantsHelper} from "../interfaces/CombatantsHelper.sol";
+import {
+  ICombatantsHelper,
+  ICombatantsHelper as CombatantsHelper
+} from "../../contracts/interfaces/ICombatantsHelper.sol";
+import {IPlayers} from "../../contracts/interfaces/IPlayers.sol";
+import {IClans} from "../../contracts/interfaces/IClans.sol";
+import {ICombatants} from "../../contracts/interfaces/ICombatants.sol";
+import {AdminAccess} from "../../contracts/AdminAccess.sol";
 import {ClanRank} from "../../contracts/globals/clans.sol";
 
 contract CombatantsPlayersStub {
@@ -84,12 +91,12 @@ contract CombatantsHelperTest is EstforTest {
         abi.encodeCall(
           implementation.initialize,
           (
-            address(players),
-            address(clans),
-            address(territories),
-            address(lockedVaults),
-            address(raids),
-            address(_deployAdminAccess(_addresses(address(this)), new address[](0))),
+            IPlayers(address(players)),
+            IClans(address(clans)),
+            ICombatants(address(territories)),
+            ICombatants(address(lockedVaults)),
+            ICombatants(address(raids)),
+            AdminAccess(_deployAdminAccess(_addresses(address(this)), new address[](0))),
             true
           )
         )
@@ -107,7 +114,7 @@ contract CombatantsHelperTest is EstforTest {
   }
 
   function testCannotAssignSamePlayerToBothFresh() public {
-    vm.expectRevert(CombatantsHelper.PlayerCannotBeInAssignedMoreThanOnce.selector);
+    vm.expectRevert(ICombatantsHelper.PlayerCannotBeInAssignedMoreThanOnce.selector);
     _assign(true, _ids(PLAYER_ID), true, _ids(PLAYER_ID));
   }
 
@@ -115,7 +122,7 @@ contract CombatantsHelperTest is EstforTest {
     players.setEvolved(PLAYER_ID, true);
     _assign(true, _ids(PLAYER_ID), false, _ids());
 
-    vm.expectRevert(CombatantsHelper.PlayerAlreadyExistingCombatant.selector);
+    vm.expectRevert(ICombatantsHelper.PlayerAlreadyExistingCombatant.selector);
     _assign(false, _ids(), true, _ids(PLAYER_ID));
   }
 
@@ -123,7 +130,7 @@ contract CombatantsHelperTest is EstforTest {
     players.setEvolved(PLAYER_ID, true);
     _assign(false, _ids(), true, _ids(PLAYER_ID));
 
-    vm.expectRevert(CombatantsHelper.PlayerAlreadyExistingCombatant.selector);
+    vm.expectRevert(ICombatantsHelper.PlayerAlreadyExistingCombatant.selector);
     _assign(true, _ids(PLAYER_ID), false, _ids());
   }
 
@@ -153,13 +160,13 @@ contract CombatantsHelperTest is EstforTest {
   }
 
   function testAssigningUnevolvedCombatantsRevertsForEveryCombatantType() public {
-    vm.expectRevert(abi.encodeWithSelector(CombatantsHelper.PlayerNotUpgraded.selector, PLAYER_ID));
+    vm.expectRevert(abi.encodeWithSelector(ICombatantsHelper.PlayerNotUpgraded.selector, PLAYER_ID));
     _assign(true, _ids(PLAYER_ID), false, _ids());
 
-    vm.expectRevert(abi.encodeWithSelector(CombatantsHelper.PlayerNotUpgraded.selector, PLAYER_ID));
+    vm.expectRevert(abi.encodeWithSelector(ICombatantsHelper.PlayerNotUpgraded.selector, PLAYER_ID));
     _assign(false, _ids(), true, _ids(PLAYER_ID));
 
-    vm.expectRevert(abi.encodeWithSelector(CombatantsHelper.PlayerNotUpgraded.selector, PLAYER_ID));
+    vm.expectRevert(abi.encodeWithSelector(ICombatantsHelper.PlayerNotUpgraded.selector, PLAYER_ID));
     vm.prank(ALICE);
     combatantsHelper.assignCombatants(CLAN_ID, false, _ids(), false, _ids(), true, _ids(PLAYER_ID), PLAYER_ID);
   }

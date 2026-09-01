@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {PVPBattleground} from "./interfaces/PVPBattleground.sol";
+import {IPVPBattleground} from "../contracts/interfaces/IPVPBattleground.sol";
 import {MockVRF} from "../contracts/test/MockVRF.sol";
 import {BattleResultEnum} from "../contracts/globals/clans.sol";
 import {Skill} from "../contracts/globals/misc.sol";
@@ -168,7 +168,7 @@ contract PVPBattlegroundTest is FullGameStack {
 
     function testRequiresAtLeastTwoRandomWords() public {
         uint256[] memory randomWords = new uint256[](1);
-        vm.expectRevert(PVPBattleground.NotEnoughRandomWords.selector);
+        vm.expectRevert(IPVPBattleground.NotEnoughRandomWords.selector);
         pvpBattleground.determineBattleOutcome(
             uint64(playerId), uint64(defendingPlayerId), _skills(Skill.FISHING), randomWords, 0, 0
         );
@@ -176,7 +176,7 @@ contract PVPBattlegroundTest is FullGameStack {
 
     function testCannotAttackOwnPlayer() public {
         uint256 attackCost = pvpBattleground.getAttackCost();
-        vm.expectRevert(PVPBattleground.CannotAttackSelf.selector);
+        vm.expectRevert(IPVPBattleground.CannotAttackSelf.selector);
         vm.prank(ALICE);
         pvpBattleground.attackPlayer{value: attackCost}(playerId, playerId);
     }
@@ -184,7 +184,7 @@ contract PVPBattlegroundTest is FullGameStack {
     function testPlayerInfoIsSetAfterAttacking() public {
         _attack();
 
-        PVPBattleground.PlayerInfo memory info = pvpBattleground.getPlayerInfo(playerId);
+        IPVPBattleground.PlayerInfo memory info = pvpBattleground.getPlayerInfo(playerId);
         assertEq(info.attackingCooldownTimestamp, block.timestamp + ATTACK_COOLDOWN);
         assertTrue(info.currentlyAttacking);
 
@@ -197,7 +197,7 @@ contract PVPBattlegroundTest is FullGameStack {
         _attack();
         mockVRF.fulfill(1, address(pvpBattleground));
 
-        vm.expectRevert(PVPBattleground.RequestIdNotKnown.selector);
+        vm.expectRevert(IPVPBattleground.RequestIdNotKnown.selector);
         mockVRF.fulfill(1, address(pvpBattleground));
     }
 
@@ -207,12 +207,12 @@ contract PVPBattlegroundTest is FullGameStack {
 
         uint256 attackCost = pvpBattleground.getAttackCost();
         uint256 cooldownTimestamp = pvpBattleground.getPlayerInfo(playerId).attackingCooldownTimestamp;
-        vm.expectRevert(PVPBattleground.PlayerAttackingCooldown.selector);
+        vm.expectRevert(IPVPBattleground.PlayerAttackingCooldown.selector);
         vm.prank(ALICE);
         pvpBattleground.attackPlayer{value: attackCost}(playerId, defendingPlayerId);
 
         vm.warp(cooldownTimestamp - 10);
-        vm.expectRevert(PVPBattleground.PlayerAttackingCooldown.selector);
+        vm.expectRevert(IPVPBattleground.PlayerAttackingCooldown.selector);
         vm.prank(ALICE);
         pvpBattleground.attackPlayer{value: attackCost}(playerId, defendingPlayerId);
 
@@ -246,7 +246,7 @@ contract PVPBattlegroundTest is FullGameStack {
 
     function testCannotFulfillAnUnknownRequest() public {
         _attack();
-        vm.expectRevert(PVPBattleground.RequestIdNotKnown.selector);
+        vm.expectRevert(IPVPBattleground.RequestIdNotKnown.selector);
         mockVRF.fulfill(3, address(pvpBattleground));
     }
 

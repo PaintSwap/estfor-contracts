@@ -1,20 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../../contracts/globals/actions.sol";
-import "../../contracts/globals/clans.sol";
-import "../../contracts/globals/items.sol";
-import "../../contracts/globals/misc.sol";
-import "../../contracts/globals/pets.sol";
-import "../../contracts/globals/players.sol";
-import "../../contracts/globals/promotions.sol";
-import "../../contracts/globals/quests.sol";
-import "../../contracts/globals/rewards.sol";
+import "../globals/actions.sol";
+import "../globals/clans.sol";
+import "../globals/items.sol";
+import "../globals/misc.sol";
+import "../globals/pets.sol";
+import "../globals/players.sol";
+import "../globals/promotions.sol";
+import "../globals/quests.sol";
+import "../globals/rewards.sol";
+import {IPlayers} from "./IPlayers.sol";
+import {ItemNFT} from "../ItemNFT.sol";
+import {RandomnessBeacon} from "../RandomnessBeacon.sol";
+import {IActivityPoints, IActivityPointsCaller} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
-interface PassiveActions {
+interface IPassiveActions is IActivityPointsCaller {
     struct PassiveActionInput {
         uint16 actionId;
-        PassiveActions.PassiveActionInfoInput info;
+        IPassiveActions.PassiveActionInfoInput info;
         GuaranteedReward[] guaranteedRewards;
         RandomReward[] randomRewards;
     }
@@ -60,47 +64,30 @@ interface PassiveActions {
         bool skippedToday;
         bool isReady;
     }
-    function UPGRADE_INTERFACE_VERSION() external view returns (string memory);
-    function addActions(PassiveActions.PassiveActionInput[] calldata passiveActionInputs) external;
+    function addActions(IPassiveActions.PassiveActionInput[] calldata passiveActionInputs) external;
     function addPassiveActionBridge(uint256 playerId, uint256 actionId, uint256 startTime) external;
     function claim(uint256 playerId) external;
-    function editActions(PassiveActions.PassiveActionInput[] calldata passiveActionInputs) external;
+    function editActions(IPassiveActions.PassiveActionInput[] calldata passiveActionInputs) external;
     function endEarly(uint256 playerId) external;
     function finishedInfo(uint256 playerId)
         external
         view
         returns (bool finished, bool oracleCalled, bool hasRandomRewards, uint256 numWinners, bool skippedToday);
-    function getAction(uint16 actionId) external view returns (PassiveActions.PassiveAction memory);
+    function getAction(uint16 actionId) external view returns (IPassiveActions.PassiveAction memory);
     function initialize(
-        address players,
-        address itemNFT,
-        address randomnessBeacon,
+        IPlayers players,
+        ItemNFT itemNFT,
+        RandomnessBeacon randomnessBeacon,
         address bridge,
-        address activityPoints
+        IActivityPoints activityPoints
     ) external;
-    function onERC1155BatchReceived(
-        address arg0,
-        address arg1,
-        uint256[] calldata arg2,
-        uint256[] calldata arg3,
-        bytes calldata arg4
-    ) external returns (bytes4);
-    function onERC1155Received(address arg0, address arg1, uint256 arg2, uint256 arg3, bytes calldata arg4)
-        external
-        returns (bytes4);
-    function owner() external view returns (address);
     function pendingPassiveActionState(uint256 playerId)
         external
         view
-        returns (PassiveActions.PendingPassiveActionState memory _pendingPassiveActionState);
-    function proxiableUUID() external view returns (bytes32);
-    function renounceOwnership() external;
+        returns (IPassiveActions.PendingPassiveActionState memory _pendingPassiveActionState);
     function setActivityPoints(address activityPoints) external;
     function startAction(uint256 playerId, uint16 actionId, uint16 boostItemTokenId) external;
-    function supportsInterface(bytes4 interfaceId) external view returns (bool);
-    function transferOwnership(address newOwner) external;
-    function upgradeToAndCall(address newImplementation, bytes calldata data) external payable;
-    event AddPassiveActions(PassiveActions.PassiveActionInput[] passiveActionInputs);
+    event AddPassiveActions(IPassiveActions.PassiveActionInput[] passiveActionInputs);
     event ClaimPassiveAction(
         uint256 playerId,
         address from_,
@@ -110,9 +97,7 @@ interface PassiveActions {
         bool startingAnother
     );
     event EarlyEndPassiveAction(uint256 playerId, address from_, uint256 queueId);
-    event EditPassiveActions(PassiveActions.PassiveActionInput[] passiveActionInputs);
-    event Initialized(uint64 version);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event EditPassiveActions(IPassiveActions.PassiveActionInput[] passiveActionInputs);
     event StartPassiveAction(
         uint256 playerId,
         address from_,
@@ -121,23 +106,17 @@ interface PassiveActions {
         uint256 boostItemTokenId,
         uint256 startTimestamp
     );
-    event Upgraded(address indexed implementation);
     error ActionAlreadyExists(uint16 actionId);
     error ActionAlreadyFinished();
     error ActionDoesNotExist();
     error ActionIdZeroNotAllowed();
     error ActionNotAvailable();
-    error AddressEmptyCode(address target);
     error DurationTooLong();
-    error ERC1967InvalidImplementation(address implementation);
-    error ERC1967NonPayable();
-    error FailedCall();
     error GuaranteedRewardsNoDuplicates();
     error InputAmountsMustBeInOrder();
     error InputItemNoDuplicates();
     error InputSpecifiedWithoutAmount();
     error InvalidActionId();
-    error InvalidInitialization();
     error InvalidInputTokenId();
     error InvalidSkill();
     error LengthMismatch();
@@ -146,22 +125,16 @@ interface PassiveActions {
     error NoActivePassiveAction();
     error NoInputItemsSpecified();
     error NotBridge();
-    error NotInitializing();
     error NotOwnerOfPlayerAndActive();
     error NotPassiveVial();
-    error OwnableInvalidOwner(address owner);
-    error OwnableUnauthorizedAccount(address account);
     error PassiveActionNotReadyToBeClaimed();
     error PlayerNotUpgraded();
     error PreviousActionNotFinished();
     error PreviousInputTokenIdMustBeSpecified();
     error RandomRewardNoDuplicates();
     error RandomRewardsMustBeInOrder(uint16 chance1, uint16 chance2);
-    error ReentrancyGuardReentrantCall();
     error TooManyGuaranteedRewards();
     error TooManyInputItems();
     error TooManyMinSkills();
     error TooManyRandomRewards();
-    error UUPSUnauthorizedCallContext();
-    error UUPSUnsupportedProxiableUUID(bytes32 slot);
 }

@@ -3,8 +3,89 @@ pragma solidity ^0.8.28;
 
 import "../globals/misc.sol";
 import "../globals/players.sol";
+import "../globals/actions.sol";
+import "../globals/rewards.sol";
+import {IPlayersBase} from "./IPlayersBase.sol";
 
-interface IPlayers {
+interface IPlayers is IPlayersBase {
+  event GamePaused(bool gamePaused);
+  event LockPlayer(uint256 playerId, uint256 cooldownTimestamp);
+  event UnlockPlayer(uint256 playerId);
+
+  error InvalidSelector();
+  error GameIsPaused();
+  error PlayerLocked();
+  error NotBridge();
+
+  function initialize(
+    address itemNFT,
+    address playerNFT,
+    address petNFT,
+    address worldActions,
+    address randomnessBeacon,
+    address dailyRewardsScheduler,
+    address adminAccess,
+    address quests,
+    address clans,
+    address wishingWell,
+    address implQueueActions,
+    address implProcessActions,
+    address implRewards,
+    address implMisc,
+    address implMisc1,
+    address bridge,
+    address activityPoints,
+    bool isBeta
+  ) external;
+
+  function setAlphaCombatParams(uint8 alphaCombat, uint8 betaCombat, uint8 alphaCombatHealing) external;
+  function processActions(uint256 playerId) external;
+  function startActions(
+    uint256 playerId,
+    QueuedActionInput[] calldata queuedActions,
+    ActionQueueStrategy queueStrategy
+  ) external;
+  function startActionsAdvanced(
+    uint256 playerId,
+    QueuedActionInput[] calldata queuedActions,
+    uint16 boostItemTokenId,
+    uint8 boostStartReverseIndex,
+    uint256 questId,
+    uint256 donationAmount,
+    ActionQueueStrategy queueStrategy
+  ) external;
+  function buyBrushQuest(address to, uint256 playerId, uint256 questId, bool useExactETH) external payable;
+  function activateQuest(uint256 playerId, uint256 questId) external;
+  function deactivateQuest(uint256 playerId) external;
+  function setActivePlayer(uint256 playerId) external;
+  function donate(uint256 playerId, uint256 amount) external;
+  function dailyClaimedRewards(uint256 playerId) external view returns (bool[7] memory claimed);
+  function validateActions(address owner, uint256 playerId, QueuedActionInput[] calldata queuedActions)
+    external
+    view
+    returns (bool[] memory successes, bytes[] memory reasons);
+  function getPendingRandomRewards(uint256 playerId) external view returns (PendingRandomReward[] memory);
+  function getActionQueue(uint256 playerId) external view returns (QueuedAction[] memory);
+  function getPendingQueuedActionState(address playerOwner, uint256 playerId)
+    external
+    view
+    returns (PendingQueuedActionState memory);
+  function getActivePlayerInfo(address playerOwner) external view returns (ActivePlayerInfo memory);
+  function setImpls(
+    address implQueueActions,
+    address implProcessActions,
+    address implRewards,
+    address implMisc,
+    address implMisc1
+  ) external;
+  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external;
+  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external;
+  function setDailyRewardsEnabled(bool dailyRewardsEnabled) external;
+  function pauseGame(bool gamePaused) external;
+  function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external;
+  function setXPModifiers(address[] calldata accounts, bool isModifier) external;
+  function bridgePlayer(uint256 playerId, uint256 totalXP, uint256 totalLevel) external;
+
   function clearEverythingBeforeTokenTransfer(address from, uint256 tokenId) external;
 
   function beforeTokenTransferTo(address to, uint256 tokenId) external;

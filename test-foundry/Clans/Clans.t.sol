@@ -5,7 +5,7 @@ import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.so
 import {IERC721Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Clans} from "../interfaces/Clans.sol";
+import {IClans} from "../../contracts/interfaces/IClans.sol";
 import {ClanRank} from "../../contracts/globals/clans.sol";
 import {TestERC1155NoRoyalty} from "../../contracts/test/TestERC1155NoRoyalty.sol";
 import {TestERC721} from "../../contracts/test/TestERC721.sol";
@@ -24,8 +24,8 @@ contract ClansTest is FullGameStack {
 
     function setUp() public {
         deployFullGame();
-        Clans.Tier[] memory tiers = new Clans.Tier[](1);
-        tiers[0] = Clans.Tier(TIER_ID, 3, 3, 16, 0, 0);
+        IClans.Tier[] memory tiers = new IClans.Tier[](1);
+        tiers[0] = IClans.Tier(TIER_ID, 3, 3, 16, 0, 0);
         clans.addTiers(tiers);
         vm.prank(ALICE);
         clans.createClan(playerId, "Clan 1", DISCORD, TELEGRAM, TWITTER, IMAGE_ID, TIER_ID);
@@ -51,52 +51,52 @@ contract ClansTest is FullGameStack {
         assertEq(name, "Clan 1");
         assertEq(mmr, INITIAL_MMR);
         assertEq(createdTimestamp, vm.getBlockTimestamp());
-        Clans.Tier memory tier = clans.getTier(TIER_ID);
+        IClans.Tier memory tier = clans.getTier(TIER_ID);
         assertEq(tier.maxMemberCapacity, 3);
         assertEq(tier.maxBankCapacity, 3);
         assertTrue(clans.canWithdraw(CLAN_ID, playerId));
         assertTrue(clans.isClanMember(CLAN_ID, playerId));
         assertFalse(clans.hasInviteRequest(CLAN_ID, playerId));
 
-        Clans.PlayerInfo memory player = clans.getPlayerInfo(playerId);
+        IClans.PlayerInfo memory player = clans.getPlayerInfo(playerId);
         assertEq(player.clanId, CLAN_ID);
         assertEq(player.requestedClanId, 0);
     }
 
     function testCannotCreateAClanIfAlreadyInAnother() public {
         vm.prank(ALICE);
-        vm.expectRevert(Clans.AlreadyInClan.selector);
+        vm.expectRevert(IClans.AlreadyInClan.selector);
         clans.createClan(playerId, "Another clan", DISCORD, TELEGRAM, TWITTER, IMAGE_ID, TIER_ID);
     }
 
     function testCannotCreateAClanWithTheSameName() public {
         vm.prank(BOB);
-        vm.expectRevert(Clans.NameAlreadyExists.selector);
+        vm.expectRevert(IClans.NameAlreadyExists.selector);
         clans.createClan(bobPlayerId, "Clan 1", DISCORD, TELEGRAM, TWITTER, IMAGE_ID, TIER_ID);
     }
 
     function testCannotCreateAClanWithInvalidName() public {
         vm.prank(BOB);
-        vm.expectRevert(Clans.NameInvalidCharacters.selector);
+        vm.expectRevert(IClans.NameInvalidCharacters.selector);
         clans.createClan(bobPlayerId, unicode" uhh$£", DISCORD, TELEGRAM, TWITTER, IMAGE_ID, TIER_ID);
     }
 
     function testCannotCreateAClanWithInvalidSocialMediaHandles() public {
         string memory anotherName = "Another name";
         vm.startPrank(BOB);
-        vm.expectRevert(Clans.DiscordInvalidCharacters.selector);
+        vm.expectRevert(IClans.DiscordInvalidCharacters.selector);
         clans.createClan(bobPlayerId, anotherName, unicode"uhh$£", TELEGRAM, TWITTER, IMAGE_ID, TIER_ID);
-        vm.expectRevert(Clans.DiscordTooShort.selector);
+        vm.expectRevert(IClans.DiscordTooShort.selector);
         clans.createClan(bobPlayerId, anotherName, "12", TELEGRAM, TWITTER, IMAGE_ID, TIER_ID);
-        vm.expectRevert(Clans.DiscordTooLong.selector);
+        vm.expectRevert(IClans.DiscordTooLong.selector);
         clans.createClan(bobPlayerId, anotherName, "01234567890123456789012345", TELEGRAM, TWITTER, IMAGE_ID, TIER_ID);
-        vm.expectRevert(Clans.TelegramInvalidCharacters.selector);
+        vm.expectRevert(IClans.TelegramInvalidCharacters.selector);
         clans.createClan(bobPlayerId, anotherName, DISCORD, unicode"uhh$£", TWITTER, IMAGE_ID, TIER_ID);
-        vm.expectRevert(Clans.TelegramTooLong.selector);
+        vm.expectRevert(IClans.TelegramTooLong.selector);
         clans.createClan(bobPlayerId, anotherName, DISCORD, "01234567890123456789012345", TWITTER, IMAGE_ID, TIER_ID);
-        vm.expectRevert(Clans.TwitterInvalidCharacters.selector);
+        vm.expectRevert(IClans.TwitterInvalidCharacters.selector);
         clans.createClan(bobPlayerId, anotherName, DISCORD, TELEGRAM, unicode"uhh$£", IMAGE_ID, TIER_ID);
-        vm.expectRevert(Clans.TwitterTooLong.selector);
+        vm.expectRevert(IClans.TwitterTooLong.selector);
         clans.createClan(bobPlayerId, anotherName, DISCORD, TELEGRAM, "01234567890123456789012345", IMAGE_ID, TIER_ID);
         vm.stopPrank();
     }
@@ -118,20 +118,20 @@ contract ClansTest is FullGameStack {
 
     function testAllowedToCreateAClanIfThereIsAPendingRequestElsewhere() public {
         vm.prank(ALICE);
-        vm.expectRevert(Clans.AlreadyInClan.selector);
+        vm.expectRevert(IClans.AlreadyInClan.selector);
         clans.requestToJoin(CLAN_ID, playerId, 0);
         vm.prank(BOB);
-        vm.expectRevert(Clans.ClanDoesNotExist.selector);
+        vm.expectRevert(IClans.ClanDoesNotExist.selector);
         clans.requestToJoin(CLAN_ID + 1, bobPlayerId, 0);
 
         vm.prank(BOB);
         clans.requestToJoin(CLAN_ID, bobPlayerId, 0);
-        Clans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
+        IClans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
         assertEq(player.clanId, 0);
         assertEq(player.requestedClanId, CLAN_ID);
 
         vm.expectEmit(true, true, true, true, address(clans));
-        emit Clans.JoinRequestRemoved(CLAN_ID, bobPlayerId);
+        emit IClans.JoinRequestRemoved(CLAN_ID, bobPlayerId);
         vm.prank(BOB);
         clans.createClan(bobPlayerId, "Clan 11", DISCORD, TELEGRAM, TWITTER, IMAGE_ID, TIER_ID);
 
@@ -147,21 +147,21 @@ contract ClansTest is FullGameStack {
         assertFalse(clans.hasInviteRequest(CLAN_ID, playerId));
 
         vm.prank(ALICE);
-        vm.expectRevert(Clans.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayerAndActive.selector);
         clans.acceptInvite(CLAN_ID, bobPlayerId, 0);
         vm.prank(BOB);
         clans.acceptInvite(CLAN_ID, bobPlayerId, 0);
 
         assertFalse(clans.canWithdraw(CLAN_ID, bobPlayerId));
         assertTrue(clans.isClanMember(CLAN_ID, bobPlayerId));
-        Clans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
+        IClans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
         assertEq(player.clanId, CLAN_ID);
         assertEq(player.requestedClanId, 0);
     }
 
     function testInviteMultiplePlayersToAClan() public {
         vm.prank(ALICE);
-        vm.expectRevert(Clans.ClanIsFull.selector);
+        vm.expectRevert(IClans.ClanIsFull.selector);
         clans.inviteMembers(CLAN_ID, _playerIds(bobPlayerId, charliePlayerId, devPlayerId), playerId);
         vm.prank(ALICE);
         clans.inviteMembers(CLAN_ID, _playerIds(bobPlayerId, charliePlayerId), playerId);
@@ -173,7 +173,7 @@ contract ClansTest is FullGameStack {
 
     function testCannotAcceptAnInviteThatDoesNotExist() public {
         vm.prank(BOB);
-        vm.expectRevert(Clans.InviteDoesNotExist.selector);
+        vm.expectRevert(IClans.InviteDoesNotExist.selector);
         clans.acceptInvite(CLAN_ID, bobPlayerId, 0);
     }
 
@@ -182,7 +182,7 @@ contract ClansTest is FullGameStack {
         clans.changeRank(CLAN_ID, playerId, ClanRank.COMMONER, playerId);
         assertEq(uint8(clans.getPlayerInfo(playerId).rank), uint8(ClanRank.COMMONER));
         vm.prank(ALICE);
-        vm.expectRevert(Clans.RankNotHighEnough.selector);
+        vm.expectRevert(IClans.RankNotHighEnough.selector);
         clans.inviteMembers(CLAN_ID, _playerIds(bobPlayerId), playerId);
     }
 
@@ -192,7 +192,7 @@ contract ClansTest is FullGameStack {
         vm.prank(ALICE);
         clans.inviteMembers(CLAN_ID, _playerIds(bobPlayerId), playerId);
         vm.prank(BOB);
-        vm.expectRevert(Clans.AlreadyInClan.selector);
+        vm.expectRevert(IClans.AlreadyInClan.selector);
         clans.acceptInvite(CLAN_ID, bobPlayerId, 0);
     }
 
@@ -203,18 +203,18 @@ contract ClansTest is FullGameStack {
         clans.acceptInvite(CLAN_ID, bobPlayerId, 0);
 
         vm.prank(BOB);
-        vm.expectRevert(Clans.InviteDoesNotExist.selector);
+        vm.expectRevert(IClans.InviteDoesNotExist.selector);
         clans.deleteInvitesAsPlayer(_uints(CLAN_ID), bobPlayerId);
 
         vm.prank(ALICE);
         clans.inviteMembers(CLAN_ID, _playerIds(charliePlayerId), playerId);
 
         vm.prank(BOB);
-        vm.expectRevert(Clans.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayer.selector);
         clans.deleteInvitesAsPlayer(_uints(CLAN_ID), charliePlayerId);
 
         vm.expectEmit(true, true, true, true, address(clans));
-        emit Clans.InvitesDeletedByPlayer(_uints(CLAN_ID), charliePlayerId);
+        emit IClans.InvitesDeletedByPlayer(_uints(CLAN_ID), charliePlayerId);
         vm.prank(CHARLIE);
         clans.deleteInvitesAsPlayer(_uints(CLAN_ID), charliePlayerId);
         assertFalse(clans.hasInviteRequest(CLAN_ID, charliePlayerId));
@@ -231,17 +231,17 @@ contract ClansTest is FullGameStack {
         clans.inviteMembers(CLAN_ID, _playerIds(charliePlayerId), playerId);
 
         vm.prank(CHARLIE);
-        vm.expectRevert(Clans.NotMemberOfClan.selector);
+        vm.expectRevert(IClans.NotMemberOfClan.selector);
         clans.deleteInvitesAsClan(CLAN_ID, _playerIds(charliePlayerId), charliePlayerId);
 
         vm.prank(BOB);
-        vm.expectRevert(Clans.RankNotHighEnough.selector);
+        vm.expectRevert(IClans.RankNotHighEnough.selector);
         clans.deleteInvitesAsClan(CLAN_ID, _playerIds(charliePlayerId), bobPlayerId);
 
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.SCOUT, playerId);
         vm.expectEmit(true, true, true, true, address(clans));
-        emit Clans.InvitesDeletedByClan(CLAN_ID, _uints(charliePlayerId), bobPlayerId);
+        emit IClans.InvitesDeletedByClan(CLAN_ID, _uints(charliePlayerId), bobPlayerId);
         vm.prank(BOB);
         clans.deleteInvitesAsClan(CLAN_ID, _uints(charliePlayerId), bobPlayerId);
         assertFalse(clans.hasInviteRequest(CLAN_ID, charliePlayerId));
@@ -256,9 +256,9 @@ contract ClansTest is FullGameStack {
         clans.requestToJoin(CLAN_ID, devPlayerId, 0);
 
         vm.prank(ALICE);
-        vm.expectRevert(Clans.ClanIsFull.selector);
+        vm.expectRevert(IClans.ClanIsFull.selector);
         clans.acceptJoinRequests(CLAN_ID, _playerIds(bobPlayerId, charliePlayerId, devPlayerId), playerId);
-        vm.expectRevert(Clans.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayerAndActive.selector);
         clans.acceptJoinRequests(CLAN_ID, _playerIds(bobPlayerId, charliePlayerId, devPlayerId), playerId);
 
         vm.prank(ALICE);
@@ -294,10 +294,10 @@ contract ClansTest is FullGameStack {
         assertEq(clans.getPlayerInfo(devPlayerId).requestedClanId, CLAN_ID);
 
         vm.prank(ALICE);
-        vm.expectRevert(Clans.NoJoinRequest.selector);
+        vm.expectRevert(IClans.NoJoinRequest.selector);
         clans.removeJoinRequestsAsClan(CLAN_ID, _playerIds(charliePlayerId, charliePlayerId), playerId);
 
-        vm.expectRevert(Clans.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayer.selector);
         clans.removeJoinRequestsAsClan(CLAN_ID, _playerIds(charliePlayerId), playerId);
 
         vm.prank(ALICE);
@@ -306,7 +306,7 @@ contract ClansTest is FullGameStack {
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.COMMONER, playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.RankNotHighEnough.selector);
+        vm.expectRevert(IClans.RankNotHighEnough.selector);
         clans.removeJoinRequestsAsClan(CLAN_ID, _playerIds(bobPlayerId), playerId);
 
         assertEq(clans.getPlayerInfo(bobPlayerId).requestedClanId, CLAN_ID);
@@ -318,23 +318,23 @@ contract ClansTest is FullGameStack {
         vm.prank(BOB);
         clans.requestToJoin(CLAN_ID, bobPlayerId, 0);
 
-        vm.expectRevert(Clans.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayer.selector);
         clans.setJoinRequestsEnabled(CLAN_ID, false, playerId);
 
         vm.prank(ALICE);
         clans.setJoinRequestsEnabled(CLAN_ID, false, playerId);
 
         vm.prank(CHARLIE);
-        vm.expectRevert(Clans.JoinRequestsDisabled.selector);
+        vm.expectRevert(IClans.JoinRequestsDisabled.selector);
         clans.requestToJoin(CLAN_ID, charliePlayerId, 0);
 
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.COMMONER, playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.RankNotHighEnough.selector);
+        vm.expectRevert(IClans.RankNotHighEnough.selector);
         clans.setJoinRequestsEnabled(CLAN_ID, false, playerId);
 
-        vm.expectRevert(Clans.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayer.selector);
         clans.setJoinRequestsEnabled(CLAN_ID, false, playerId);
     }
 
@@ -343,7 +343,7 @@ contract ClansTest is FullGameStack {
         clans.requestToJoin(CLAN_ID, bobPlayerId, 0);
 
         vm.prank(ALICE);
-        vm.expectRevert(Clans.NotMemberOfClan.selector);
+        vm.expectRevert(IClans.NotMemberOfClan.selector);
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.TREASURER, playerId);
         vm.prank(ALICE);
         clans.acceptJoinRequests(CLAN_ID, _playerIds(bobPlayerId), playerId);
@@ -352,7 +352,7 @@ contract ClansTest is FullGameStack {
 
         assertTrue(clans.canWithdraw(CLAN_ID, bobPlayerId));
         assertTrue(clans.isClanMember(CLAN_ID, bobPlayerId));
-        Clans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
+        IClans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
         assertEq(player.clanId, CLAN_ID);
         assertEq(player.requestedClanId, 0);
     }
@@ -362,19 +362,19 @@ contract ClansTest is FullGameStack {
         clans.requestToJoin(CLAN_ID, bobPlayerId, 0);
 
         vm.prank(ALICE);
-        vm.expectRevert(Clans.NotMemberOfClan.selector);
+        vm.expectRevert(IClans.NotMemberOfClan.selector);
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.TREASURER, playerId);
         vm.prank(ALICE);
         clans.acceptJoinRequests(CLAN_ID, _playerIds(bobPlayerId), playerId);
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.TREASURER, playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.CannotSetSameRank.selector);
+        vm.expectRevert(IClans.CannotSetSameRank.selector);
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.TREASURER, playerId);
 
         assertTrue(clans.canWithdraw(CLAN_ID, bobPlayerId));
         assertTrue(clans.isClanMember(CLAN_ID, bobPlayerId));
-        Clans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
+        IClans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
         assertEq(player.clanId, CLAN_ID);
         assertEq(player.requestedClanId, 0);
 
@@ -382,7 +382,7 @@ contract ClansTest is FullGameStack {
         clans.requestToJoin(CLAN_ID, charliePlayerId, 0);
         vm.prank(BOB);
         clans.acceptJoinRequests(CLAN_ID, _playerIds(charliePlayerId), bobPlayerId);
-        vm.expectRevert(Clans.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayer.selector);
         clans.changeRank(CLAN_ID, charliePlayerId, ClanRank.TREASURER, charliePlayerId);
     }
 
@@ -399,13 +399,13 @@ contract ClansTest is FullGameStack {
         vm.prank(DEV);
         clans.acceptJoinRequests(CLAN_ID, _playerIds(bobPlayerId), devPlayerId);
         assertTrue(clans.isClanMember(CLAN_ID, bobPlayerId));
-        vm.expectRevert(Clans.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayer.selector);
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.SCOUT, playerId);
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.SCOUT, playerId);
 
         vm.prank(DEV);
-        vm.expectRevert(Clans.ChangingRankEqualOrHigherThanSelf.selector);
+        vm.expectRevert(IClans.ChangingRankEqualOrHigherThanSelf.selector);
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.SCOUT, devPlayerId);
 
         vm.prank(DEV);
@@ -421,7 +421,7 @@ contract ClansTest is FullGameStack {
         vm.prank(BOB);
         clans.acceptJoinRequests(CLAN_ID, _playerIds(charliePlayerId), bobPlayerId);
         vm.prank(DEV);
-        vm.expectRevert(Clans.ChangingRankEqualOrHigherThanSelf.selector);
+        vm.expectRevert(IClans.ChangingRankEqualOrHigherThanSelf.selector);
         clans.changeRank(CLAN_ID, charliePlayerId, ClanRank.NONE, devPlayerId);
 
         vm.prank(BOB);
@@ -429,7 +429,7 @@ contract ClansTest is FullGameStack {
 
         assertFalse(clans.canWithdraw(CLAN_ID, devPlayerId));
         assertFalse(clans.isClanMember(CLAN_ID, devPlayerId));
-        Clans.PlayerInfo memory player = clans.getPlayerInfo(devPlayerId);
+        IClans.PlayerInfo memory player = clans.getPlayerInfo(devPlayerId);
         assertEq(player.clanId, 0);
         assertEq(player.requestedClanId, 0);
     }
@@ -447,20 +447,20 @@ contract ClansTest is FullGameStack {
         }
 
         vm.prank(BOB);
-        vm.expectRevert(Clans.ClanIsFull.selector);
+        vm.expectRevert(IClans.ClanIsFull.selector);
         clans.acceptInvite(CLAN_ID, bobPlayerId, 0);
         uint256 newPlayerId = _createPlayer(address(this), 1, "unique name1", true);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.ClanIsFull.selector);
+        vm.expectRevert(IClans.ClanIsFull.selector);
         clans.inviteMembers(CLAN_ID, _playerIds(newPlayerId), playerId);
 
         vm.prank(BOB);
         clans.requestToJoin(CLAN_ID, bobPlayerId, 0);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.ClanIsFull.selector);
+        vm.expectRevert(IClans.ClanIsFull.selector);
         clans.acceptJoinRequests(CLAN_ID, _playerIds(bobPlayerId), playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.ClanIsFull.selector);
+        vm.expectRevert(IClans.ClanIsFull.selector);
         clans.acceptJoinRequests(CLAN_ID, _playerIds(bobPlayerId), playerId);
     }
 
@@ -498,7 +498,7 @@ contract ClansTest is FullGameStack {
         clans.inviteMembers(CLAN_ID, _playerIds(bobPlayerId), playerId);
 
         vm.prank(BOB);
-        vm.expectRevert(Clans.NotMemberOfClan.selector);
+        vm.expectRevert(IClans.NotMemberOfClan.selector);
         clans.claimOwnership(CLAN_ID, bobPlayerId);
 
         vm.prank(ALICE);
@@ -507,11 +507,11 @@ contract ClansTest is FullGameStack {
         clans.acceptInvite(CLAN_ID, charliePlayerId, 0);
 
         vm.prank(CHARLIE);
-        vm.expectRevert(Clans.OwnerExists.selector);
+        vm.expectRevert(IClans.OwnerExists.selector);
         clans.claimOwnership(CLAN_ID, charliePlayerId);
 
         vm.expectEmit(true, true, true, true, address(clans));
-        emit Clans.ClanOwnerLeft(CLAN_ID, playerId);
+        emit IClans.ClanOwnerLeft(CLAN_ID, playerId);
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.NONE, playerId);
         (uint64 ownerPlayerIdAfter,, uint16 memberCountAfter,,,,,,) = clans.getClan(CLAN_ID);
@@ -519,7 +519,7 @@ contract ClansTest is FullGameStack {
         assertEq(memberCountAfter, 1);
 
         vm.prank(BOB);
-        vm.expectRevert(Clans.NotMemberOfClan.selector);
+        vm.expectRevert(IClans.NotMemberOfClan.selector);
         clans.claimOwnership(CLAN_ID, bobPlayerId);
         vm.prank(BOB);
         clans.acceptInvite(CLAN_ID, bobPlayerId, 0);
@@ -578,8 +578,8 @@ contract ClansTest is FullGameStack {
     function testPayForTier1IfItHasACost() public {
         _addUpgradedTiers();
         uint256 price = 1000;
-        Clans.Tier[] memory tiers = new Clans.Tier[](1);
-        tiers[0] = Clans.Tier(1, 1, 1, 50, 0, uint80(price));
+        IClans.Tier[] memory tiers = new IClans.Tier[](1);
+        tiers[0] = IClans.Tier(1, 1, 1, 50, 0, uint80(price));
         clans.editTiers(tiers);
 
         brush.mint(ALICE, price);
@@ -593,8 +593,8 @@ contract ClansTest is FullGameStack {
 
     function testCheckCostsAreExpectedWhenCreatingHigherTierClanWhenTier1HasACost() public {
         _addUpgradedTiers();
-        Clans.Tier[] memory tiers = new Clans.Tier[](1);
-        tiers[0] = Clans.Tier(1, 1, 1, 50, 0, 1);
+        IClans.Tier[] memory tiers = new IClans.Tier[](1);
+        tiers[0] = IClans.Tier(1, 1, 1, 50, 0, 1);
         clans.editTiers(tiers);
 
         brush.mint(BOB, 1000);
@@ -628,7 +628,7 @@ contract ClansTest is FullGameStack {
         brush.approve(address(clans), 1000);
         vm.stopPrank();
         vm.prank(BOB);
-        vm.expectRevert(Clans.TierDoesNotExist.selector);
+        vm.expectRevert(IClans.TierDoesNotExist.selector);
         clans.upgradeClan(CLAN_ID, bobPlayerId, 4);
     }
 
@@ -638,36 +638,36 @@ contract ClansTest is FullGameStack {
         vm.startPrank(ALICE);
         brush.approve(address(clans), 1000);
         clans.upgradeClan(CLAN_ID, playerId, 2);
-        vm.expectRevert(Clans.CannotDowngradeTier.selector);
+        vm.expectRevert(IClans.CannotDowngradeTier.selector);
         clans.upgradeClan(CLAN_ID, playerId, 1);
         vm.stopPrank();
     }
 
     function testEditTiers() public {
-        Clans.Tier[] memory addedTiers = new Clans.Tier[](1);
-        addedTiers[0] = Clans.Tier(2, 10, 10, 16, 0, 10);
+        IClans.Tier[] memory addedTiers = new IClans.Tier[](1);
+        addedTiers[0] = IClans.Tier(2, 10, 10, 16, 0, 10);
         clans.addTiers(addedTiers);
 
-        Clans.Tier[] memory tiers = new Clans.Tier[](3);
-        tiers[0] = Clans.Tier(1, 1, 1, 50, 0, 1);
-        tiers[1] = Clans.Tier(2, 2, 2, 50, 0, 2);
-        tiers[2] = Clans.Tier(3, 3, 3, 150, 0, 3);
+        IClans.Tier[] memory tiers = new IClans.Tier[](3);
+        tiers[0] = IClans.Tier(1, 1, 1, 50, 0, 1);
+        tiers[1] = IClans.Tier(2, 2, 2, 50, 0, 2);
+        tiers[2] = IClans.Tier(3, 3, 3, 150, 0, 3);
 
-        vm.expectRevert(Clans.TierDoesNotExist.selector);
+        vm.expectRevert(IClans.TierDoesNotExist.selector);
         clans.editTiers(tiers);
 
-        Clans.Tier[] memory twoTiers = new Clans.Tier[](2);
+        IClans.Tier[] memory twoTiers = new IClans.Tier[](2);
         twoTiers[0] = tiers[0];
         twoTiers[1] = tiers[1];
         clans.editTiers(twoTiers);
 
-        Clans.Tier memory tier1 = clans.getTier(1);
+        IClans.Tier memory tier1 = clans.getTier(1);
         assertEq(tier1.maxMemberCapacity, 1);
         assertEq(tier1.maxBankCapacity, 1);
         assertEq(tier1.maxImageId, 50);
         assertEq(tier1.minimumAge, 0);
         assertEq(tier1.price, 1);
-        Clans.Tier memory tier2 = clans.getTier(2);
+        IClans.Tier memory tier2 = clans.getTier(2);
         assertEq(tier2.maxMemberCapacity, 2);
         assertEq(tier2.maxBankCapacity, 2);
         assertEq(tier2.maxImageId, 50);
@@ -676,7 +676,7 @@ contract ClansTest is FullGameStack {
     }
 
     function testMustBeOwnerOfPlayerToEdit() public {
-        vm.expectRevert(Clans.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayerAndActive.selector);
         clans.editClan(CLAN_ID, "Clan 1", DISCORD, TELEGRAM, TWITTER, IMAGE_ID, playerId);
     }
 
@@ -684,7 +684,7 @@ contract ClansTest is FullGameStack {
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.TREASURER, playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.RankNotHighEnough.selector);
+        vm.expectRevert(IClans.RankNotHighEnough.selector);
         clans.editClan(CLAN_ID, "Clan 1", DISCORD, TELEGRAM, TWITTER, IMAGE_ID, playerId);
     }
 
@@ -734,7 +734,7 @@ contract ClansTest is FullGameStack {
         clanInfo[2] = string.concat(TELEGRAM, "1");
         clanInfo[3] = string.concat(TWITTER, "1");
         vm.expectEmit(true, true, true, true, address(clans));
-        emit Clans.ClanEdited(CLAN_ID, playerId, clanInfo, IMAGE_ID);
+        emit IClans.ClanEdited(CLAN_ID, playerId, clanInfo, IMAGE_ID);
         vm.prank(ALICE);
         clans.editClan(
             CLAN_ID,
@@ -758,14 +758,14 @@ contract ClansTest is FullGameStack {
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.TREASURER, playerId);
 
         vm.prank(BOB);
-        vm.expectRevert(Clans.ChangingRankOfPlayerEqualOrHigherThanSelf.selector);
+        vm.expectRevert(IClans.ChangingRankOfPlayerEqualOrHigherThanSelf.selector);
         clans.changeRank(CLAN_ID, playerId, ClanRank.SCOUT, bobPlayerId);
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, bobPlayerId, ClanRank.SCOUT, playerId);
 
         assertFalse(clans.canWithdraw(CLAN_ID, bobPlayerId));
         assertTrue(clans.isClanMember(CLAN_ID, bobPlayerId));
-        Clans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
+        IClans.PlayerInfo memory player = clans.getPlayerInfo(bobPlayerId);
         assertEq(player.clanId, CLAN_ID);
         assertEq(player.requestedClanId, 0);
     }
@@ -774,49 +774,49 @@ contract ClansTest is FullGameStack {
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.LEADER, playerId);
         TestERC1155NoRoyalty erc1155 = new TestERC1155NoRoyalty();
-        Clans.NFTInfo[] memory infos = new Clans.NFTInfo[](1);
-        infos[0] = Clans.NFTInfo(address(erc1155), 1155);
+        IClans.NFTInfo[] memory infos = new IClans.NFTInfo[](1);
+        infos[0] = IClans.NFTInfo(address(erc1155), 1155);
 
-        vm.expectRevert(Clans.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayerAndActive.selector);
         clans.gateKeep(CLAN_ID, infos, playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.NFTNotWhitelistedOnMarketplace.selector);
+        vm.expectRevert(IClans.NFTNotWhitelistedOnMarketplace.selector);
         clans.gateKeep(CLAN_ID, infos, playerId);
         paintSwapMarketplaceWhitelist.setWhitelisted(address(erc1155), true);
-        infos[0] = Clans.NFTInfo(address(erc1155), 999);
+        infos[0] = IClans.NFTInfo(address(erc1155), 999);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.UnsupportedNFTType.selector);
+        vm.expectRevert(IClans.UnsupportedNFTType.selector);
         clans.gateKeep(CLAN_ID, infos, playerId);
-        infos[0] = Clans.NFTInfo(address(erc1155), 721);
+        infos[0] = IClans.NFTInfo(address(erc1155), 721);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.InvalidNFTType.selector);
+        vm.expectRevert(IClans.InvalidNFTType.selector);
         clans.gateKeep(CLAN_ID, infos, playerId);
-        infos[0] = Clans.NFTInfo(address(erc1155), 1155);
+        infos[0] = IClans.NFTInfo(address(erc1155), 1155);
         vm.prank(ALICE);
         clans.gateKeep(CLAN_ID, infos, playerId);
 
         TestERC721 erc721 = new TestERC721();
-        infos[0] = Clans.NFTInfo(address(erc721), 721);
+        infos[0] = IClans.NFTInfo(address(erc721), 721);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.NFTNotWhitelistedOnMarketplace.selector);
+        vm.expectRevert(IClans.NFTNotWhitelistedOnMarketplace.selector);
         clans.gateKeep(CLAN_ID, infos, playerId);
         paintSwapMarketplaceWhitelist.setWhitelisted(address(erc721), true);
-        infos[0] = Clans.NFTInfo(address(erc721), 999);
+        infos[0] = IClans.NFTInfo(address(erc721), 999);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.UnsupportedNFTType.selector);
+        vm.expectRevert(IClans.UnsupportedNFTType.selector);
         clans.gateKeep(CLAN_ID, infos, playerId);
-        infos[0] = Clans.NFTInfo(address(erc721), 1155);
+        infos[0] = IClans.NFTInfo(address(erc721), 1155);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.InvalidNFTType.selector);
+        vm.expectRevert(IClans.InvalidNFTType.selector);
         clans.gateKeep(CLAN_ID, infos, playerId);
-        infos[0] = Clans.NFTInfo(address(erc721), 721);
+        infos[0] = IClans.NFTInfo(address(erc721), 721);
         vm.prank(ALICE);
         clans.gateKeep(CLAN_ID, infos, playerId);
 
         vm.prank(ALICE);
         clans.gateKeep(CLAN_ID, _nftInfos(address(erc721), 5), playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.TooManyNFTs.selector);
+        vm.expectRevert(IClans.TooManyNFTs.selector);
         clans.gateKeep(CLAN_ID, _nftInfos(address(erc721), 6), playerId);
     }
 
@@ -826,14 +826,14 @@ contract ClansTest is FullGameStack {
         TestERC1155NoRoyalty erc1155 = new TestERC1155NoRoyalty();
         paintSwapMarketplaceWhitelist.setWhitelisted(address(erc1155), true);
 
-        Clans.NFTInfo[] memory infos = new Clans.NFTInfo[](1);
-        infos[0] = Clans.NFTInfo(address(erc1155), 1155);
+        IClans.NFTInfo[] memory infos = new IClans.NFTInfo[](1);
+        infos[0] = IClans.NFTInfo(address(erc1155), 1155);
         vm.prank(ALICE);
         clans.gateKeep(CLAN_ID, infos, playerId);
 
         uint256 tokenId = 1;
         vm.prank(BOB);
-        vm.expectRevert(Clans.NoGateKeptNFTFound.selector);
+        vm.expectRevert(IClans.NoGateKeptNFTFound.selector);
         clans.requestToJoin(CLAN_ID, bobPlayerId, tokenId);
 
         erc1155.mint(BOB, 1);
@@ -852,14 +852,14 @@ contract ClansTest is FullGameStack {
         TestERC721 erc721 = new TestERC721();
         paintSwapMarketplaceWhitelist.setWhitelisted(address(erc721), true);
 
-        Clans.NFTInfo[] memory infos = new Clans.NFTInfo[](1);
-        infos[0] = Clans.NFTInfo(address(erc721), 721);
+        IClans.NFTInfo[] memory infos = new IClans.NFTInfo[](1);
+        infos[0] = IClans.NFTInfo(address(erc721), 721);
         vm.prank(ALICE);
         clans.gateKeep(CLAN_ID, infos, playerId);
 
         uint256 tokenId = 1;
         vm.prank(BOB);
-        vm.expectRevert(Clans.NoGateKeptNFTFound.selector);
+        vm.expectRevert(IClans.NoGateKeptNFTFound.selector);
         clans.requestToJoin(CLAN_ID, bobPlayerId, tokenId);
 
         erc721.mint(BOB);
@@ -878,9 +878,9 @@ contract ClansTest is FullGameStack {
         TestERC721 erc721Another = new TestERC721();
         paintSwapMarketplaceWhitelist.setWhitelisted(address(erc721Another), true);
 
-        Clans.NFTInfo[] memory infos = new Clans.NFTInfo[](2);
-        infos[0] = Clans.NFTInfo(address(erc721Another), 721);
-        infos[1] = Clans.NFTInfo(address(erc721), 721);
+        IClans.NFTInfo[] memory infos = new IClans.NFTInfo[](2);
+        infos[0] = IClans.NFTInfo(address(erc721Another), 721);
+        infos[1] = IClans.NFTInfo(address(erc721), 721);
         vm.prank(ALICE);
         clans.gateKeep(CLAN_ID, infos, playerId);
 
@@ -890,7 +890,7 @@ contract ClansTest is FullGameStack {
         vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, tokenId));
         erc721Another.ownerOf(tokenId);
 
-        Clans.NFTInfo[] memory gateKeptNFTs;
+        IClans.NFTInfo[] memory gateKeptNFTs;
         (,,,,,,,, gateKeptNFTs) = clans.getClan(CLAN_ID);
         assertEq(gateKeptNFTs[0].nft, address(erc721Another));
 
@@ -910,14 +910,14 @@ contract ClansTest is FullGameStack {
         clans.inviteMembers(CLAN_ID, _playerIds(bobPlayerId), playerId);
         assertTrue(clans.hasInviteRequest(CLAN_ID, bobPlayerId));
 
-        Clans.NFTInfo[] memory infos = new Clans.NFTInfo[](1);
-        infos[0] = Clans.NFTInfo(address(erc1155), 1155);
+        IClans.NFTInfo[] memory infos = new IClans.NFTInfo[](1);
+        infos[0] = IClans.NFTInfo(address(erc1155), 1155);
         vm.prank(ALICE);
         clans.gateKeep(CLAN_ID, infos, playerId);
 
         uint256 tokenId = 1;
         vm.prank(BOB);
-        vm.expectRevert(Clans.NoGateKeptNFTFound.selector);
+        vm.expectRevert(IClans.NoGateKeptNFTFound.selector);
         clans.acceptInvite(CLAN_ID, bobPlayerId, tokenId);
         erc1155.mint(BOB, 1);
         vm.prank(BOB);
@@ -934,14 +934,14 @@ contract ClansTest is FullGameStack {
         clans.inviteMembers(CLAN_ID, _playerIds(bobPlayerId), playerId);
         assertTrue(clans.hasInviteRequest(CLAN_ID, bobPlayerId));
 
-        Clans.NFTInfo[] memory infos = new Clans.NFTInfo[](1);
-        infos[0] = Clans.NFTInfo(address(erc721), 721);
+        IClans.NFTInfo[] memory infos = new IClans.NFTInfo[](1);
+        infos[0] = IClans.NFTInfo(address(erc721), 721);
         vm.prank(ALICE);
         clans.gateKeep(CLAN_ID, infos, playerId);
 
         uint256 tokenId = 1;
         vm.prank(BOB);
-        vm.expectRevert(Clans.NoGateKeptNFTFound.selector);
+        vm.expectRevert(IClans.NoGateKeptNFTFound.selector);
         clans.acceptInvite(CLAN_ID, bobPlayerId, tokenId);
         erc721.mint(BOB);
         vm.prank(BOB);
@@ -949,7 +949,7 @@ contract ClansTest is FullGameStack {
     }
 
     function testMustBeOwnerOfPlayerToPin() public {
-        vm.expectRevert(Clans.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayerAndActive.selector);
         clans.pinMessage(CLAN_ID, "test", playerId);
         vm.prank(ALICE);
         clans.pinMessage(CLAN_ID, "test", playerId);
@@ -959,7 +959,7 @@ contract ClansTest is FullGameStack {
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.TREASURER, playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.RankNotHighEnough.selector);
+        vm.expectRevert(IClans.RankNotHighEnough.selector);
         clans.pinMessage(CLAN_ID, "test", playerId);
     }
 
@@ -967,7 +967,7 @@ contract ClansTest is FullGameStack {
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.LEADER, playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.MessageTooLong.selector);
+        vm.expectRevert(IClans.MessageTooLong.selector);
         clans.pinMessage(CLAN_ID, string(bytes.concat(bytes("x"), new bytes(200))), playerId);
     }
 
@@ -975,14 +975,14 @@ contract ClansTest is FullGameStack {
         vm.prank(ALICE);
         clans.changeRank(CLAN_ID, playerId, ClanRank.LEADER, playerId);
         vm.expectEmit(true, true, true, true, address(clans));
-        emit Clans.PinMessage(CLAN_ID, "test", playerId);
+        emit IClans.PinMessage(CLAN_ID, "test", playerId);
         vm.prank(ALICE);
         clans.pinMessage(CLAN_ID, "test", playerId);
     }
 
     function testMustBeOwnerToRenounce() public {
         vm.prank(ALICE);
-        vm.expectRevert(Clans.CannotRenounceToSelf.selector);
+        vm.expectRevert(IClans.CannotRenounceToSelf.selector);
         clans.renounceOwnershipTo(CLAN_ID, playerId, ClanRank.COMMONER);
 
         uint256 uniqueNamePlayerId = _createPlayer(BOB, 1, "unique name", true);
@@ -994,7 +994,7 @@ contract ClansTest is FullGameStack {
         vm.prank(ALICE);
         clans.renounceOwnershipTo(CLAN_ID, uniqueNamePlayerId, ClanRank.COMMONER);
 
-        Clans.PlayerInfo memory oldLeader = clans.getPlayerInfo(playerId);
+        IClans.PlayerInfo memory oldLeader = clans.getPlayerInfo(playerId);
         assertEq(uint8(oldLeader.rank), uint8(ClanRank.COMMONER));
         assertEq(oldLeader.clanId, CLAN_ID);
 
@@ -1003,7 +1003,7 @@ contract ClansTest is FullGameStack {
         assertEq(memberCountNow, 2);
 
         vm.prank(ALICE);
-        vm.expectRevert(Clans.NotOwnerOfPlayer.selector);
+        vm.expectRevert(IClans.NotOwnerOfPlayer.selector);
         clans.renounceOwnershipTo(CLAN_ID, uniqueNamePlayerId, ClanRank.COMMONER);
     }
 
@@ -1012,14 +1012,14 @@ contract ClansTest is FullGameStack {
         vm.prank(ALICE);
         clans.inviteMembers(CLAN_ID, _playerIds(uniqueNamePlayerId), playerId);
         vm.prank(ALICE);
-        vm.expectRevert(Clans.NotMemberOfClan.selector);
+        vm.expectRevert(IClans.NotMemberOfClan.selector);
         clans.renounceOwnershipTo(CLAN_ID, uniqueNamePlayerId, ClanRank.COMMONER);
     }
 
     function _addUpgradedTiers() private {
-        Clans.Tier[] memory tiers = new Clans.Tier[](2);
-        tiers[0] = Clans.Tier(2, 10, 10, 16, 0, 100);
-        tiers[1] = Clans.Tier(3, 20, 10, 30, 0, 1000);
+        IClans.Tier[] memory tiers = new IClans.Tier[](2);
+        tiers[0] = IClans.Tier(2, 10, 10, 16, 0, 100);
+        tiers[1] = IClans.Tier(3, 20, 10, 30, 0, 1000);
         clans.addTiers(tiers);
     }
 
@@ -1041,10 +1041,10 @@ contract ClansTest is FullGameStack {
         ids[2] = c;
     }
 
-    function _nftInfos(address nft, uint256 count) private pure returns (Clans.NFTInfo[] memory infos) {
-        infos = new Clans.NFTInfo[](count);
+    function _nftInfos(address nft, uint256 count) private pure returns (IClans.NFTInfo[] memory infos) {
+        infos = new IClans.NFTInfo[](count);
         for (uint256 i; i < count; ++i) {
-            infos[i] = Clans.NFTInfo(nft, 721);
+            infos[i] = IClans.NFTInfo(nft, 721);
         }
     }
 }

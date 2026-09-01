@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {PassiveActions} from "../interfaces/PassiveActions.sol";
+import {IOwnable} from "../../contracts/interfaces/IOwnable.sol";
+import {IPassiveActions} from "../../contracts/interfaces/IPassiveActions.sol";
 import {Skill, BoostType} from "../../contracts/globals/misc.sol";
 import {EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
 import {GuaranteedReward, RandomReward} from "../../contracts/globals/rewards.sol";
@@ -24,7 +23,7 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testSimple() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.skipSuccessPercent = 1;
         _add(input);
         _mintAndStart(POISON, 1, input.actionId, 0);
@@ -39,30 +38,30 @@ contract PassiveActionsTest is FullGameStack {
         (, oracleCalled,,,) = passiveActions.finishedInfo(playerId);
         assertTrue(oracleCalled);
         vm.prank(ALICE);
-        vm.expectRevert(PassiveActions.ActionAlreadyFinished.selector);
+        vm.expectRevert(IPassiveActions.ActionAlreadyFinished.selector);
         passiveActions.endEarly(playerId);
         vm.prank(ALICE);
         passiveActions.claim(playerId);
     }
 
     function testCheckInputItemOrder() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.inputTokenIds = _uint16s(1, 2, 3);
         input.info.inputAmounts = _uint24s(4, 2, 3);
-        vm.expectRevert(PassiveActions.InputAmountsMustBeInOrder.selector);
+        vm.expectRevert(IPassiveActions.InputAmountsMustBeInOrder.selector);
         _add(input);
         input.info.inputAmounts = _uint24s(1, 4, 3);
-        vm.expectRevert(PassiveActions.InputAmountsMustBeInOrder.selector);
+        vm.expectRevert(IPassiveActions.InputAmountsMustBeInOrder.selector);
         _add(input);
         input.info.inputAmounts = _uint24s(1, 2, 1);
-        vm.expectRevert(PassiveActions.InputAmountsMustBeInOrder.selector);
+        vm.expectRevert(IPassiveActions.InputAmountsMustBeInOrder.selector);
         _add(input);
         input.info.inputAmounts[2] = 3;
         _add(input);
     }
 
     function testAnyInputsShouldBeBurnt() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.inputTokenIds[0] = OAK_LOG;
         input.info.inputAmounts[0] = 100;
         _add(input);
@@ -77,33 +76,33 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testCannotAddSamePassiveActionTwice() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         _add(input);
-        vm.expectRevert(abi.encodeWithSelector(PassiveActions.ActionAlreadyExists.selector, 1));
+        vm.expectRevert(abi.encodeWithSelector(IPassiveActions.ActionAlreadyExists.selector, 1));
         _add(input);
     }
 
     function testPassiveActionMustNotBeGreaterThan64Days() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.durationDays = 65;
-        vm.expectRevert(PassiveActions.DurationTooLong.selector);
+        vm.expectRevert(IPassiveActions.DurationTooLong.selector);
         _add(input);
         input.info.durationDays = 64;
         _add(input);
     }
 
     function testMustBeOwnerToEditAnAction() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         _add(input);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         passiveActions.editActions(_inputs(input));
         passiveActions.editActions(_inputs(input));
     }
 
     function testEditedActionMustExist() public {
-        PassiveActions.PassiveActionInput memory input = _input();
-        vm.expectRevert(PassiveActions.ActionDoesNotExist.selector);
+        IPassiveActions.PassiveActionInput memory input = _input();
+        vm.expectRevert(IPassiveActions.ActionDoesNotExist.selector);
         passiveActions.editActions(_inputs(input));
 
         _add(input);
@@ -113,17 +112,17 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testMustBeOwnerOfPlayerToStartEndAndClaimActions() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         _add(input);
         itemNFT.mint(ALICE, POISON, 2);
-        vm.expectRevert(PassiveActions.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IPassiveActions.NotOwnerOfPlayerAndActive.selector);
         passiveActions.startAction(playerId, 1, 0);
         vm.prank(ALICE);
         passiveActions.startAction(playerId, 1, 0);
         vm.warp(block.timestamp + 1 days - 10);
         (bool finished,,,,) = passiveActions.finishedInfo(playerId);
         assertFalse(finished);
-        vm.expectRevert(PassiveActions.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IPassiveActions.NotOwnerOfPlayerAndActive.selector);
         passiveActions.endEarly(playerId);
         vm.prank(ALICE);
         passiveActions.endEarly(playerId);
@@ -131,7 +130,7 @@ contract PassiveActionsTest is FullGameStack {
         passiveActions.startAction(playerId, 1, 0);
         vm.warp(vm.getBlockTimestamp() + 1 days);
         _fulfill();
-        vm.expectRevert(PassiveActions.NotOwnerOfPlayerAndActive.selector);
+        vm.expectRevert(IPassiveActions.NotOwnerOfPlayerAndActive.selector);
         passiveActions.claim(playerId);
         vm.prank(ALICE);
         passiveActions.claim(playerId);
@@ -139,23 +138,23 @@ contract PassiveActionsTest is FullGameStack {
 
     function testCannotStartAnActionWhichDoesNotExist() public {
         vm.prank(ALICE);
-        vm.expectRevert(PassiveActions.InvalidActionId.selector);
+        vm.expectRevert(IPassiveActions.InvalidActionId.selector);
         passiveActions.startAction(playerId, 1, 0);
     }
 
     function testMustHaveMinimumRequirementsToStart() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.minSkills = _skills3(Skill.WOODCUTTING, Skill.FIREMAKING, Skill.ALCHEMY);
         input.info.minLevels = _uint8s3(2, 2, 2);
         _add(input);
         itemNFT.mint(ALICE, POISON, 1);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(PassiveActions.MinimumLevelNotReached.selector, Skill.WOODCUTTING, 2));
+        vm.expectRevert(abi.encodeWithSelector(IPassiveActions.MinimumLevelNotReached.selector, Skill.WOODCUTTING, 2));
         passiveActions.startAction(playerId, 1, 0);
         players.modifyXP(ALICE, playerId, Skill.WOODCUTTING, _xpAtLevel(3), true);
         players.modifyXP(ALICE, playerId, Skill.FIREMAKING, _xpAtLevel(2), true);
         vm.prank(ALICE);
-        vm.expectRevert(abi.encodeWithSelector(PassiveActions.MinimumLevelNotReached.selector, Skill.ALCHEMY, 2));
+        vm.expectRevert(abi.encodeWithSelector(IPassiveActions.MinimumLevelNotReached.selector, Skill.ALCHEMY, 2));
         passiveActions.startAction(playerId, 1, 0);
         players.modifyXP(ALICE, playerId, Skill.ALCHEMY, _xpAtLevel(2), true);
         vm.prank(ALICE);
@@ -163,11 +162,11 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testAddMultipleActions() public {
-        PassiveActions.PassiveActionInput memory a = _input();
+        IPassiveActions.PassiveActionInput memory a = _input();
         a.info.durationDays = 10;
         a.info.minSkills = _skills1(Skill.WOODCUTTING);
         a.info.minLevels = _uint8s1(uint8(_xpAtLevel(2)));
-        PassiveActions.PassiveActionInput memory b = _input();
+        IPassiveActions.PassiveActionInput memory b = _input();
         b.actionId = 2;
         b.info.minSkills = _skills1(Skill.FIREMAKING);
         b.info.minLevels = _uint8s1(uint8(_xpAtLevel(3)));
@@ -179,7 +178,7 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testCheckGuaranteedRewards() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.durationDays = 2;
         input.guaranteedRewards = _guaranteed3(OAK_LOG, 2, WILLOW_LOG, 5, MAGICAL_LOG, 10);
         _add(input);
@@ -210,7 +209,7 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testCheckRandomRewards() public {
-        PassiveActions.PassiveActionInput memory input = _randomInput(1, 2, 1, OAK_LOG, 10);
+        IPassiveActions.PassiveActionInput memory input = _randomInput(1, 2, 1, OAK_LOG, 10);
         input.randomRewards =
             _random4(BRONZE_ARROW, 65_535, 1, IRON_ARROW, 65_535, 3, ADAMANTINE_ARROW, 65_535, 2, RUNITE_ARROW, 1, 2);
         _fulfill();
@@ -247,8 +246,8 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testStartingNewActionWhenPreviousFinishedOracleNotCalled() public {
-        PassiveActions.PassiveActionInput memory a = _randomInput(1, 2, 0, OAK_LOG, 10);
-        PassiveActions.PassiveActionInput memory b = _randomInput(2, 1, 0, MAGICAL_LOG, 10);
+        IPassiveActions.PassiveActionInput memory a = _randomInput(1, 2, 0, OAK_LOG, 10);
+        IPassiveActions.PassiveActionInput memory b = _randomInput(2, 1, 0, MAGICAL_LOG, 10);
         b.randomRewards[0].amount = 2;
         passiveActions.addActions(_inputs(a, b));
         _fulfill();
@@ -261,18 +260,18 @@ contract PassiveActionsTest is FullGameStack {
         assertFalse(oracle);
         assertTrue(random);
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.ClaimPassiveAction(playerId, ALICE, 1, _uints(OAK_LOG), _uints(10), true);
+        emit IPassiveActions.ClaimPassiveAction(playerId, ALICE, 1, _uints(OAK_LOG), _uints(10), true);
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.StartPassiveAction(playerId, ALICE, 2, 2, 0, vm.getBlockTimestamp());
+        emit IPassiveActions.StartPassiveAction(playerId, ALICE, 2, 2, 0, vm.getBlockTimestamp());
         _start(2, 0);
         assertEq(itemNFT.balanceOf(ALICE, OAK_LOG), 10);
         assertEq(itemNFT.balanceOf(ALICE, MAGICAL_LOG), 0);
         assertEq(itemNFT.balanceOf(ALICE, BRONZE_ARROW), 0);
         vm.warp(block.timestamp + 1 days);
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.ClaimPassiveAction(playerId, ALICE, 2, _uints(MAGICAL_LOG), _uints(10), true);
+        emit IPassiveActions.ClaimPassiveAction(playerId, ALICE, 2, _uints(MAGICAL_LOG), _uints(10), true);
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.StartPassiveAction(playerId, ALICE, 2, 3, 0, vm.getBlockTimestamp());
+        emit IPassiveActions.StartPassiveAction(playerId, ALICE, 2, 3, 0, vm.getBlockTimestamp());
         _start(2, 0);
         assertEq(itemNFT.balanceOf(ALICE, OAK_LOG), 10);
         assertEq(itemNFT.balanceOf(ALICE, MAGICAL_LOG), 10);
@@ -280,8 +279,8 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testStartingNewActionWhenPreviousFinishedOracleCalled() public {
-        PassiveActions.PassiveActionInput memory a = _randomInput(1, 2, 1, OAK_LOG, 10);
-        PassiveActions.PassiveActionInput memory b = _randomInput(2, 1, 1, MAGICAL_LOG, 10);
+        IPassiveActions.PassiveActionInput memory a = _randomInput(1, 2, 1, OAK_LOG, 10);
+        IPassiveActions.PassiveActionInput memory b = _randomInput(2, 1, 1, MAGICAL_LOG, 10);
         b.randomRewards[0].amount = 2;
         passiveActions.addActions(_inputs(a, b));
         _fulfill();
@@ -295,14 +294,14 @@ contract PassiveActionsTest is FullGameStack {
         assertTrue(oracle);
         assertTrue(random);
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.ClaimPassiveAction(playerId, ALICE, 1, _uints(OAK_LOG, BRONZE_ARROW), _uints(10, 2), true);
+        emit IPassiveActions.ClaimPassiveAction(playerId, ALICE, 1, _uints(OAK_LOG, BRONZE_ARROW), _uints(10, 2), true);
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.StartPassiveAction(playerId, ALICE, 2, 2, 0, vm.getBlockTimestamp());
+        emit IPassiveActions.StartPassiveAction(playerId, ALICE, 2, 2, 0, vm.getBlockTimestamp());
         _start(2, 0);
         assertEq(itemNFT.balanceOf(ALICE, OAK_LOG), 10);
         assertEq(itemNFT.balanceOf(ALICE, BRONZE_ARROW), 2);
         vm.warp(block.timestamp + 1 days);
-        PassiveActions.PendingPassiveActionState memory state = passiveActions.pendingPassiveActionState(playerId);
+        IPassiveActions.PendingPassiveActionState memory state = passiveActions.pendingPassiveActionState(playerId);
         assertFalse(state.isReady);
         assertEq(state.producedRandomRewardItemTokenIds.length, 0);
         _fulfill();
@@ -310,19 +309,19 @@ contract PassiveActionsTest is FullGameStack {
         assertEq(state.producedRandomRewardItemTokenIds, _uints(BRONZE_ARROW));
         assertEq(state.producedRandomRewardAmounts, _uints(2));
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.ClaimPassiveAction(
+        emit IPassiveActions.ClaimPassiveAction(
             playerId, ALICE, 2, _uints(MAGICAL_LOG, BRONZE_ARROW), _uints(10, 2), true
         );
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.StartPassiveAction(playerId, ALICE, 2, 3, 0, vm.getBlockTimestamp());
+        emit IPassiveActions.StartPassiveAction(playerId, ALICE, 2, 3, 0, vm.getBlockTimestamp());
         _start(2, 0);
         assertEq(itemNFT.balanceOf(ALICE, MAGICAL_LOG), 10);
         assertEq(itemNFT.balanceOf(ALICE, BRONZE_ARROW), 4);
     }
 
     function testStartingNewActionWhenPreviousNotFinishedIsNotAllowed() public {
-        PassiveActions.PassiveActionInput memory a = _randomInput(1, 2, 1, OAK_LOG, 10);
-        PassiveActions.PassiveActionInput memory b = _randomInput(2, 1, 0, MAGICAL_LOG, 10);
+        IPassiveActions.PassiveActionInput memory a = _randomInput(1, 2, 1, OAK_LOG, 10);
+        IPassiveActions.PassiveActionInput memory b = _randomInput(2, 1, 0, MAGICAL_LOG, 10);
         b.randomRewards[0].amount = 2;
         passiveActions.addActions(_inputs(a, b));
         itemNFT.mint(ALICE, POISON, 3);
@@ -335,19 +334,19 @@ contract PassiveActionsTest is FullGameStack {
         assertTrue(oracle);
         assertTrue(random);
         vm.prank(ALICE);
-        vm.expectRevert(PassiveActions.PreviousActionNotFinished.selector);
+        vm.expectRevert(IPassiveActions.PreviousActionNotFinished.selector);
         passiveActions.startAction(playerId, 2, 0);
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.EarlyEndPassiveAction(playerId, ALICE, 1);
+        emit IPassiveActions.EarlyEndPassiveAction(playerId, ALICE, 1);
         vm.prank(ALICE);
         passiveActions.endEarly(playerId);
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.StartPassiveAction(playerId, ALICE, 2, 2, 0, vm.getBlockTimestamp());
+        emit IPassiveActions.StartPassiveAction(playerId, ALICE, 2, 2, 0, vm.getBlockTimestamp());
         _start(2, 0);
     }
 
     function testDoNotAllowCompletingUnlessOracleCalledWithRandomRewards() public {
-        PassiveActions.PassiveActionInput memory input = _randomInput(1, 2, 0, 0, 0);
+        IPassiveActions.PassiveActionInput memory input = _randomInput(1, 2, 0, 0, 0);
         input.guaranteedRewards = new GuaranteedReward[](0);
         _add(input);
         _mintAndStart(POISON, 1, 1, 0);
@@ -358,12 +357,12 @@ contract PassiveActionsTest is FullGameStack {
         assertFalse(oracle);
         assertTrue(random);
         vm.prank(ALICE);
-        vm.expectRevert(PassiveActions.PassiveActionNotReadyToBeClaimed.selector);
+        vm.expectRevert(IPassiveActions.PassiveActionNotReadyToBeClaimed.selector);
         passiveActions.claim(playerId);
     }
 
     function testAllowCompletingWithoutRandomRewards() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         _add(input);
         _mintAndStart(POISON, 1, 1, 0);
         vm.warp(block.timestamp + 1 days);
@@ -376,20 +375,20 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testCheckPackedData() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.isFullModeOnly = true;
         _add(input);
         assertEq(passiveActions.getAction(1).packedData, bytes1(0xc0));
     }
 
     function testCheckFullModeRequirements() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.isFullModeOnly = true;
         _add(input);
         assertEq(passiveActions.getAction(1).packedData, bytes1(0xc0));
         itemNFT.mint(ALICE, POISON, 1);
         vm.prank(ALICE);
-        vm.expectRevert(PassiveActions.PlayerNotUpgraded.selector);
+        vm.expectRevert(IPassiveActions.PlayerNotUpgraded.selector);
         passiveActions.startAction(playerId, 1, 0);
         brush.mint(ALICE, 1 ether);
         vm.startPrank(ALICE);
@@ -400,29 +399,29 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testCannotClaimTwice() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         _add(input);
         _mintAndStart(POISON, 1, 1, 0);
         vm.warp(block.timestamp + 1 days);
         _fulfill();
         _fulfill();
         vm.expectEmit(false, false, false, true, address(passiveActions));
-        emit PassiveActions.ClaimPassiveAction(playerId, ALICE, 1, new uint256[](0), new uint256[](0), false);
+        emit IPassiveActions.ClaimPassiveAction(playerId, ALICE, 1, new uint256[](0), new uint256[](0), false);
         vm.prank(ALICE);
         passiveActions.claim(playerId);
         vm.prank(ALICE);
-        vm.expectRevert(PassiveActions.NoActivePassiveAction.selector);
+        vm.expectRevert(IPassiveActions.NoActivePassiveAction.selector);
         passiveActions.claim(playerId);
     }
 
     function testEndEarlyOnNonExistentActionReverts() public {
         vm.prank(ALICE);
-        vm.expectRevert(PassiveActions.NoActivePassiveAction.selector);
+        vm.expectRevert(IPassiveActions.NoActivePassiveAction.selector);
         passiveActions.endEarly(playerId);
     }
 
     function testCheckSkipSuccessPercent() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.durationDays = 10;
         input.info.skipSuccessPercent = 100;
         _add(input);
@@ -435,7 +434,7 @@ contract PassiveActionsTest is FullGameStack {
         (bool finished, bool oracle,,,) = passiveActions.finishedInfo(playerId);
         assertFalse(finished);
         assertTrue(oracle);
-        PassiveActions.PendingPassiveActionState memory state = passiveActions.pendingPassiveActionState(playerId);
+        IPassiveActions.PendingPassiveActionState memory state = passiveActions.pendingPassiveActionState(playerId);
         assertFalse(state.isReady);
         assertEq(state.numDaysSkipped, 3);
         assertTrue(state.skippedToday);
@@ -452,7 +451,7 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testBoostGivesGreaterChanceOfSkippingDay() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.inputTokenIds = _uint16s(BRONZE_ARROW, IRON_ARROW);
         input.info.inputAmounts = _uint24s2(2, 3);
         input.info.durationDays = 10;
@@ -483,21 +482,21 @@ contract PassiveActionsTest is FullGameStack {
         (bool finished, bool oracle,,,) = passiveActions.finishedInfo(playerId);
         assertTrue(finished);
         assertTrue(oracle);
-        PassiveActions.PendingPassiveActionState memory state = passiveActions.pendingPassiveActionState(playerId);
+        IPassiveActions.PendingPassiveActionState memory state = passiveActions.pendingPassiveActionState(playerId);
         assertTrue(state.isReady);
         assertEq(state.numDaysSkipped, 5);
         assertTrue(state.skippedToday);
     }
 
     function testCheckSkippedToday() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.durationDays = 10;
         input.info.skipSuccessPercent = 100;
         _add(input);
         _mintAndStart(POISON, 1, 1, 0);
         _fulfill();
         vm.warp(block.timestamp + 3 days);
-        PassiveActions.PendingPassiveActionState memory state = passiveActions.pendingPassiveActionState(playerId);
+        IPassiveActions.PendingPassiveActionState memory state = passiveActions.pendingPassiveActionState(playerId);
         assertFalse(state.isReady);
         assertEq(state.numDaysSkipped, 0);
         assertFalse(state.skippedToday);
@@ -521,7 +520,7 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testPassiveActionOfZeroDaysAllowed() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.info.durationDays = 0;
         _add(input);
         _mintAndStart(POISON, 1, 1, 0);
@@ -530,7 +529,7 @@ contract PassiveActionsTest is FullGameStack {
     }
 
     function testUnavailableActionCannotBeStartedButCanBeLooted() public {
-        PassiveActions.PassiveActionInput memory input = _input();
+        IPassiveActions.PassiveActionInput memory input = _input();
         input.guaranteedRewards = _guaranteed1(MAGICAL_LOG, 10);
         _add(input);
         _mintAndStart(POISON, 1, 1, 0);
@@ -538,14 +537,14 @@ contract PassiveActionsTest is FullGameStack {
         input.info.isAvailable = false;
         passiveActions.editActions(_inputs(input));
         vm.prank(ALICE);
-        vm.expectRevert(PassiveActions.ActionNotAvailable.selector);
+        vm.expectRevert(IPassiveActions.ActionNotAvailable.selector);
         passiveActions.startAction(playerId, 1, 0);
         vm.prank(ALICE);
         passiveActions.claim(playerId);
         assertEq(itemNFT.balanceOf(ALICE, MAGICAL_LOG), 10);
     }
 
-    function _input() private pure returns (PassiveActions.PassiveActionInput memory input) {
+    function _input() private pure returns (IPassiveActions.PassiveActionInput memory input) {
         input.actionId = 1;
         input.info.durationDays = 1;
         input.info.inputTokenIds = _uint16s(POISON);
@@ -560,7 +559,7 @@ contract PassiveActionsTest is FullGameStack {
     function _randomInput(uint16 id, uint8 days_, uint8 skip, uint16 guaranteedId, uint16 rate)
         private
         pure
-        returns (PassiveActions.PassiveActionInput memory input)
+        returns (IPassiveActions.PassiveActionInput memory input)
     {
         input = _input();
         input.actionId = id;
@@ -570,7 +569,7 @@ contract PassiveActionsTest is FullGameStack {
         input.randomRewards = _random1(BRONZE_ARROW, 65_535, 1);
     }
 
-    function _add(PassiveActions.PassiveActionInput memory input) private {
+    function _add(IPassiveActions.PassiveActionInput memory input) private {
         passiveActions.addActions(_inputs(input));
     }
 
@@ -593,21 +592,21 @@ contract PassiveActionsTest is FullGameStack {
         mockVRF.fulfillSeeded(requestId, address(randomnessBeacon), seed);
     }
 
-    function _inputs(PassiveActions.PassiveActionInput memory a)
+    function _inputs(IPassiveActions.PassiveActionInput memory a)
         private
         pure
-        returns (PassiveActions.PassiveActionInput[] memory x)
+        returns (IPassiveActions.PassiveActionInput[] memory x)
     {
-        x = new PassiveActions.PassiveActionInput[](1);
+        x = new IPassiveActions.PassiveActionInput[](1);
         x[0] = a;
     }
 
-    function _inputs(PassiveActions.PassiveActionInput memory a, PassiveActions.PassiveActionInput memory b)
+    function _inputs(IPassiveActions.PassiveActionInput memory a, IPassiveActions.PassiveActionInput memory b)
         private
         pure
-        returns (PassiveActions.PassiveActionInput[] memory x)
+        returns (IPassiveActions.PassiveActionInput[] memory x)
     {
-        x = new PassiveActions.PassiveActionInput[](2);
+        x = new IPassiveActions.PassiveActionInput[](2);
         x[0] = a;
         x[1] = b;
     }

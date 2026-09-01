@@ -1,10 +1,9 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ITerritories} from "../interfaces/ITerritories.sol";
 import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 
-contract MockTerritories is ITerritories {
+contract MockTerritories {
   uint256 public addUnclaimedEmissionsCBCount;
   IBrushToken _brush;
 
@@ -12,12 +11,12 @@ contract MockTerritories is ITerritories {
     _brush = brush;
   }
 
-  function addUnclaimedEmissions(uint256 amount) external override {
+  function addUnclaimedEmissions(uint256 amount) external {
     _brush.transferFrom(msg.sender, address(this), amount);
     ++addUnclaimedEmissionsCBCount;
   }
 
-  function isCombatant(uint256 /* _clanId */, uint256 /* _playerId */) external pure override returns (bool) {
+  function isCombatant(uint256 /* _clanId */, uint256 /* _playerId */) external pure returns (bool) {
     return false;
   }
 
@@ -26,5 +25,5 @@ contract MockTerritories is ITerritories {
     uint64[] calldata playerIds,
     uint256 combatantCooldownTimestamp,
     uint256 leaderPlayerId
-  ) external override {}
+  ) external {}
 }

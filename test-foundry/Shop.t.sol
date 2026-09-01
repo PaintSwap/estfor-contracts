@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import {EstforTest} from "./utils/EstforTest.sol";
 import {Shop} from "../contracts/Shop.sol";
@@ -491,7 +491,7 @@ contract ShopTest is EstforTest {
 
     function testNonOwnerCannotSetSupporterPackToken() public {
         vm.prank(BOB);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, BOB));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, BOB));
         shop.setSupporterPackToken(address(usdc));
     }
 
@@ -501,7 +501,7 @@ contract ShopTest is EstforTest {
         Shop.SupporterPack[] memory packs = new Shop.SupporterPack[](1);
         packs[0] = _pack(10, uint32(block.timestamp));
         vm.prank(BOB);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, BOB));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, BOB));
         shop.setSupporterPacks(ids, packs);
     }
 

@@ -9,8 +9,7 @@ import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/Paintswa
 
 import {ItemNFT} from "../ItemNFT.sol";
 
-import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
-import {ICombatants} from "../interfaces/ICombatants.sol";
+import {IRaids} from "../interfaces/IRaids.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IWorldActions} from "../interfaces/IWorldActions.sol";
 import {RandomnessBeacon} from "../RandomnessBeacon.sol";
@@ -29,79 +28,9 @@ import "../globals/all.sol";
 // Colonel can decide to fight in raids
 // Spawning needs calling manually (every 8 hours or w.e it is set to)
 // 1-3 Random spawn with different stats, you can pick one to kill. Loot is given based on total rolls of the monster?
-contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, ICombatants, IClanMemberLeftCB {
+contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, IRaids {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
-
-  event AssignCombatants(
-    uint256 clanId,
-    uint64[] playerIds,
-    address from,
-    uint256 leaderPlayerId,
-    uint256 cooldownTimestamp
-  );
-  event RequestFightRaid(uint256 playerId, uint56 clanId, uint256 raidId, uint256 requestId);
-  event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
-  event SetSpawnRaidCooldown(uint256 spawnRaidCooldown);
-  event RequestSpawnRaid(uint256 playerId, uint256 requestId);
-  event AddBaseRaids(uint256[] baseRaidIds, BaseRaid[] baseRaids);
-  event EditBaseRaids(uint256[] baseRaidIds, BaseRaid[] baseRaids);
-  event RemoveCombatant(uint256 playerId, uint256 clanId);
-  event NewRaidsSpawned(uint40 startRaidId, RaidInfo[] raidInfos, uint256 requestId);
-  event RaidBattleOutcome(
-    uint256 clanId,
-    uint256 raidId,
-    uint256 requestId,
-    uint256 regenerateId,
-    uint256 regenerateAmountUsed,
-    uint16[] choiceIds,
-    uint256 bossChoiceId,
-    bool defeatedRaid,
-    uint256[] lootTokenIds,
-    uint256[] lootTokenAmounts
-  );
-  event SetPreventRaids(bool preventRaids);
-  event SetMaxClanCombatants(uint256 maxClanCombatants);
-  event SetCombatActions(uint16[] combatActionIds);
-
-  error NotOwnerOfPlayerAndActive();
-  error RequestDoesNotExist();
-  error CallerNotSamWitchVRF();
-  error RankNotHighEnough();
-  error RaidInProgress();
-  error LengthMismatch();
-  error OnlyCombatantsHelper();
-  error OnlyClans();
-  error PreviousRaidNotSpawnedYet();
-  error TooManyCombatants();
-  error ClanCombatantsChangeCooldown();
-  error RaidAlreadyExists();
-  error RaidDoesNotExist();
-  error NotInRange();
-  error RaidsPrevented();
-  error NoCombatants();
-
-  struct BaseRaid {
-    uint8 tier;
-    // Boss stats
-    int16 minHealth;
-    int16 maxHealth;
-    int16 minMeleeAttack;
-    int16 maxMeleeAttack;
-    int16 minMagicAttack;
-    int16 maxMagicAttack;
-    int16 minRangedAttack;
-    int16 maxRangedAttack;
-    int16 minMeleeDefence;
-    int16 maxMeleeDefence;
-    int16 minMagicDefence;
-    int16 maxMagicDefence;
-    int16 minRangedDefence;
-    int16 maxRangedDefence;
-    uint16[16] randomLootTokenIds; // 1 slot
-    uint32[16] randomLootTokenAmounts; // 2 slots
-    uint16[16] randomChances; // 1 slot
-  }
 
   struct ClanInfo {
     IBank bank;
@@ -110,19 +39,6 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     bool currentlyAttacking;
     uint64[] playerIds;
     uint96 totalBrushClaimable; // TODO Needed?
-  }
-
-  struct RaidInfo {
-    uint16 baseRaidId;
-    int16 health;
-    int16 meleeAttack;
-    int16 magicAttack;
-    int16 rangedAttack;
-    int16 meleeDefence;
-    int16 magicDefence;
-    int16 rangedDefence;
-    uint8 tier;
-    uint16[5] combatActionIds;
   }
 
   struct PendingRaidAttack {
@@ -199,7 +115,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     uint8 maxClanCombatants,
     uint16[] calldata combatActionIds,
     bool isBeta
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
@@ -218,11 +134,11 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     setCombatActions(combatActionIds);
   }
 
-  function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
+  function initializeV3(address paintswapVRFConsumer) external override reinitializer(3) {
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
   }
 
-  function requestSpawnRaid(uint64 playerId) external payable isOwnerOfPlayerAndActive(playerId) {
+  function requestSpawnRaid(uint64 playerId) external payable override isOwnerOfPlayerAndActive(playerId) {
     // Spawn a random monster
     // Must be after the last raid is finished
     require(_raidSpawnRequestId == 0, PreviousRaidNotSpawnedYet());
@@ -245,7 +161,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     uint40 clanId,
     uint40 raidId,
     uint16 regenerateId
-  ) external payable isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.COLONEL) {
+  ) external payable override isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.COLONEL) {
     require(!_preventRaids, RaidsPrevented());
     uint256 playerLength = _clanInfos[clanId].playerIds.length;
     require(playerLength != 0, NoCombatants());
@@ -681,20 +597,20 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     return searchIndex != type(uint256).max;
   }
 
-  function getRaidInfo(uint256 raidId) external view returns (RaidInfo memory) {
+  function getRaidInfo(uint256 raidId) external view override returns (RaidInfo memory) {
     return _raidInfos[raidId];
   }
 
-  function getAttackCost() public view returns (uint256) {
+  function getAttackCost() public view override returns (uint256) {
     return _calculateRequestPriceNative(_expectedGasLimitFulfill);
   }
 
-  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
+  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public override onlyOwner {
     _expectedGasLimitFulfill = expectedGasLimitFulfill;
     emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
-  function addBaseRaids(uint256[] calldata baseRaidIds, BaseRaid[] calldata baseRaids) external onlyOwner {
+  function addBaseRaids(uint256[] calldata baseRaidIds, BaseRaid[] calldata baseRaids) external override onlyOwner {
     require(baseRaids.length == baseRaidIds.length, LengthMismatch());
     for (uint256 i; i < baseRaids.length; ++i) {
       BaseRaid calldata baseRaid = baseRaids[i];
@@ -706,7 +622,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     emit AddBaseRaids(baseRaidIds, baseRaids);
   }
 
-  function editBaseRaids(uint256[] calldata baseRaidIds, BaseRaid[] calldata baseRaids) external onlyOwner {
+  function editBaseRaids(uint256[] calldata baseRaidIds, BaseRaid[] calldata baseRaids) external override onlyOwner {
     require(baseRaids.length == baseRaidIds.length, LengthMismatch());
     for (uint256 i = 0; i < baseRaids.length; ++i) {
       BaseRaid calldata baseRaid = baseRaids[i];
@@ -717,27 +633,27 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     emit EditBaseRaids(baseRaidIds, baseRaids);
   }
 
-  function setSpawnRaidCooldown(uint24 spawnRaidCooldown) public onlyOwner {
+  function setSpawnRaidCooldown(uint24 spawnRaidCooldown) public override onlyOwner {
     _spawnRaidCooldown = spawnRaidCooldown;
     emit SetSpawnRaidCooldown(spawnRaidCooldown);
   }
 
-  function setMaxClanCombatants(uint8 maxClanCombatants) public onlyOwner {
+  function setMaxClanCombatants(uint8 maxClanCombatants) public override onlyOwner {
     _maxClanCombatants = maxClanCombatants;
     emit SetMaxClanCombatants(maxClanCombatants);
   }
 
-  function setPreventRaids(bool preventRaids) external onlyOwner {
+  function setPreventRaids(bool preventRaids) external override onlyOwner {
     _preventRaids = preventRaids;
     emit SetPreventRaids(preventRaids);
   }
 
-  function setCombatActions(uint16[] calldata combatActionIds) public onlyOwner {
+  function setCombatActions(uint16[] calldata combatActionIds) public override onlyOwner {
     _combatActionIds = combatActionIds;
     emit SetCombatActions(combatActionIds);
   }
 
-  function initializeAddresses(address combatantsHelper, IBankFactory bankFactory) external onlyOwner {
+  function initializeAddresses(address combatantsHelper, IBankFactory bankFactory) external override onlyOwner {
     _combatantsHelper = combatantsHelper;
     _bankFactory = bankFactory;
   }

@@ -3,9 +3,9 @@ pragma solidity ^0.8.28;
 
 import {Vm} from "forge-std/Vm.sol";
 import {stdError} from "forge-std/StdError.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
+import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 import {BlackMarketTrader} from "../contracts/Events/BlackMarketTrader.sol";
 import {ItemInput} from "../contracts/globals/players.sol";
 import {WOODCUTTING_BASE} from "../contracts/globals/items.sol";
@@ -71,14 +71,14 @@ contract BlackMarketTraderTest is FullGameStack {
     function testOnlyOwnerCanAddEditRemoveItems() public {
         _addItems(_ids(BRONZE_AXE));
         BlackMarketTrader.ShopItem[] memory items = _shopItems(_item(BRONZE_AXE, 1, 100, 10, true));
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         vm.prank(ALICE);
         blackMarketTrader.addShopItems(items, EVENT_ID);
         blackMarketTrader.addShopItems(items, EVENT_ID);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         vm.prank(ALICE);
         blackMarketTrader.editShopItems(items, EVENT_ID);
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         vm.prank(ALICE);
         blackMarketTrader.removeShopItems(_ids(BRONZE_AXE), EVENT_ID);
     }
@@ -175,7 +175,7 @@ contract BlackMarketTraderTest is FullGameStack {
 
     function testSetAcceptedItemIdValidationsAndEvents() public {
         _addItems(_ids(BRONZE_BAR));
-        vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, ALICE));
         vm.prank(ALICE);
         blackMarketTrader.setAcceptedItemId(EVENT_ID, BRONZE_BAR);
         vm.expectRevert(BlackMarketTrader.ItemDoesNotExist.selector);

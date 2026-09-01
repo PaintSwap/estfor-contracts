@@ -20,21 +20,6 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 // And more efficiently checking if they are already combatants in either territory or locked vaults
 // as the same player cannot be in both
 contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHelper {
-  event EditMemberLeftCombatantCooldownTimestampPenalty(uint256 newCooldownTimestampPenalty);
-
-  error NotOwnerOfPlayerAndActive();
-  error RankNotHighEnough();
-  error PlayerCannotBeInAssignedMoreThanOnce();
-  error PlayerAlreadyExistingCombatant();
-  error SetCombatantsIncorrectly();
-  error NotSettingCombatants();
-  error NotAdminAndBeta();
-  error PlayerCombatantCooldownTimestamp();
-  error PlayerIdsNotSortedOrDuplicates();
-  error NotMemberOfClan();
-  error PlayerNotUpgraded(uint256 playerId);
-  error NotClans();
-
   struct PlayerInfo {
     uint40 combatantCooldownTimestamp;
   }
@@ -83,7 +68,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHel
     ICombatants raids,
     AdminAccess adminAccess,
     bool isBeta
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
 
@@ -100,7 +85,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHel
     _playerLeftCombatantCooldownTimestampPenalty = 0 days;
   }
 
-  function initializeV4() external reinitializer(4) {
+  function initializeV4() external override reinitializer(4) {
     _playerLeftCombatantCooldownTimestampPenalty = 0 days; // needs to be zero for subgraph tracking
   }
 
@@ -113,7 +98,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHel
     bool setRaidCombatants,
     uint64[] calldata raidPlayerIds,
     uint256 leaderPlayerId
-  ) external isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
+  ) external override isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
     require(setTerritoryCombatants || setLockedVaultCombatants || setRaidCombatants, NotSettingCombatants());
 
     _checkAndSetAssignCombatants(
@@ -216,7 +201,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHel
     }
   }
 
-  function clearCooldowns(uint64[] calldata playerIds) public isAdminAndBeta {
+  function clearCooldowns(uint64[] calldata playerIds) public override isAdminAndBeta {
     for (uint256 i; i < playerIds.length; ++i) {
       _playerInfos[playerIds[i]].combatantCooldownTimestamp = 0;
     }
@@ -224,14 +209,14 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHel
   
   function setPlayerLeftCombatantCooldownTimestampPenalty(
     uint24 cooldownTimestampPenalty
-  ) external onlyOwner {
+  ) external override onlyOwner {
     _playerLeftCombatantCooldownTimestampPenalty = cooldownTimestampPenalty;
     emit EditMemberLeftCombatantCooldownTimestampPenalty(cooldownTimestampPenalty);
   }
 
   function applyPlayerCombatantCooldownPenalty(
     uint256 playerId
-  ) external onlyClans {
+  ) external override onlyClans {
     PlayerInfo storage playerInfo = _playerInfos[playerId];
     if (_playerLeftCombatantCooldownTimestampPenalty == 0) {
       return;

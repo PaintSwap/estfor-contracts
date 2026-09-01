@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UsageBasedSessionModule} from "../interfaces/UsageBasedSessionModule.sol";
-import {PlayerNFT} from "../interfaces/PlayerNFT.sol";
+import {IUsageBasedSessionModule} from "../../contracts/interfaces/IUsageBasedSessionModule.sol";
+import {IPlayerNFT as PlayerNFT} from "../../contracts/interfaces/IPlayerNFT.sol";
 import {EstforTest} from "../utils/EstforTest.sol";
 import {FullGameStack} from "../utils/FullGameStack.sol";
 
 interface TestSessionSafe {
-    function callEnableSession(UsageBasedSessionModule module, address sessionKey, uint48 duration) external;
-    function callRevokeSession(UsageBasedSessionModule module) external;
+    function callEnableSession(IUsageBasedSessionModule module, address sessionKey, uint48 duration) external;
+    function callRevokeSession(IUsageBasedSessionModule module) external;
 }
 
 interface TestSessionTarget {
@@ -44,41 +44,41 @@ contract UsageBasedSessionModuleTest is EstforTest {
     }
 
     function testCannotEnableSessionWithZeroKey() public {
-        vm.expectRevert(UsageBasedSessionModule.ZeroSessionKey.selector);
+        vm.expectRevert(IUsageBasedSessionModule.ZeroSessionKey.selector);
         safe.callEnableSession(usageBasedSessionModule, address(0), SESSION_DURATION);
     }
 
     function testCannotEnableSessionWithZeroDuration() public {
-        vm.expectRevert(UsageBasedSessionModule.InvalidSessionDuration.selector);
+        vm.expectRevert(IUsageBasedSessionModule.InvalidSessionDuration.selector);
         safe.callEnableSession(usageBasedSessionModule, vm.addr(SECOND_SESSION_KEY), 0);
     }
 
     function testCannotEnableSessionBeyondMaximumDuration() public {
         uint48 maxDuration = usageBasedSessionModule.MAX_SESSION_DURATION();
-        vm.expectRevert(UsageBasedSessionModule.InvalidSessionDuration.selector);
+        vm.expectRevert(IUsageBasedSessionModule.InvalidSessionDuration.selector);
         safe.callEnableSession(usageBasedSessionModule, vm.addr(SECOND_SESSION_KEY), maxDuration + 1);
     }
 
     function testRevokesActiveSession() public {
         vm.expectEmit(true, false, false, false, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.SessionRevoked(address(safe));
+        emit IUsageBasedSessionModule.SessionRevoked(address(safe));
         safe.callRevokeSession(usageBasedSessionModule);
 
-        UsageBasedSessionModule.Session memory session = usageBasedSessionModule.getSession(address(safe));
+        IUsageBasedSessionModule.Session memory session = usageBasedSessionModule.getSession(address(safe));
         assertEq(session.sessionKey, address(0));
     }
 
     function testRejectsShortCalldata() public {
-        UsageBasedSessionModule.ExecuteParams memory bad = UsageBasedSessionModule.ExecuteParams({
+        IUsageBasedSessionModule.ExecuteParams memory bad = IUsageBasedSessionModule.ExecuteParams({
             safe: address(safe), target: address(0), data: hex"123456", value: 0, signature: ""
         });
 
-        _expectFailedItem(bad, bytes4(0), UsageBasedSessionModule.InvalidCallData.selector);
+        _expectFailedItem(bad, bytes4(0), IUsageBasedSessionModule.InvalidCallData.selector);
     }
 
     function testRejectsSafeWithoutActiveSession() public {
         safe.callRevokeSession(usageBasedSessionModule);
-        UsageBasedSessionModule.ExecuteParams memory bad = UsageBasedSessionModule.ExecuteParams({
+        IUsageBasedSessionModule.ExecuteParams memory bad = IUsageBasedSessionModule.ExecuteParams({
             safe: address(safe),
             target: address(target),
             data: abi.encodeCall(target.doAction, ()),
@@ -86,22 +86,22 @@ contract UsageBasedSessionModuleTest is EstforTest {
             signature: ""
         });
 
-        _expectFailedItem(bad, DO_ACTION_SELECTOR, UsageBasedSessionModule.NoSessionKey.selector);
+        _expectFailedItem(bad, DO_ACTION_SELECTOR, IUsageBasedSessionModule.NoSessionKey.selector);
     }
 
     function testRejectsExpiredSession() public {
         vm.warp(block.timestamp + SESSION_DURATION + 1);
-        UsageBasedSessionModule.ExecuteParams memory bad = _signedParams(safe, target, SESSION_KEY, 0, sessionDeadline);
+        IUsageBasedSessionModule.ExecuteParams memory bad = _signedParams(safe, target, SESSION_KEY, 0, sessionDeadline);
 
-        _expectFailedItem(bad, DO_ACTION_SELECTOR, UsageBasedSessionModule.SessionExpired.selector);
+        _expectFailedItem(bad, DO_ACTION_SELECTOR, IUsageBasedSessionModule.SessionExpired.selector);
     }
 
     function testRejectsActionWithoutGroup() public {
         TestSessionTarget unmappedTarget = _deployTarget();
-        UsageBasedSessionModule.ExecuteParams memory bad =
+        IUsageBasedSessionModule.ExecuteParams memory bad =
             _signedParams(safe, unmappedTarget, SESSION_KEY, 0, sessionDeadline);
 
-        _expectFailedItem(bad, DO_ACTION_SELECTOR, UsageBasedSessionModule.ActionNotPermitted.selector);
+        _expectFailedItem(bad, DO_ACTION_SELECTOR, IUsageBasedSessionModule.ActionNotPermitted.selector);
     }
 
     function testRejectsRevertingTargetCall() public {
@@ -110,7 +110,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
             address(revertingTarget), TestSessionRevertingTarget.revertAction.selector, 1
         );
         bytes memory data = abi.encodeCall(revertingTarget.revertAction, ());
-        UsageBasedSessionModule.ExecuteParams memory bad = UsageBasedSessionModule.ExecuteParams({
+        IUsageBasedSessionModule.ExecuteParams memory bad = IUsageBasedSessionModule.ExecuteParams({
             safe: address(safe),
             target: address(revertingTarget),
             data: data,
@@ -119,27 +119,27 @@ contract UsageBasedSessionModuleTest is EstforTest {
         });
 
         _expectFailedItem(
-            bad, TestSessionRevertingTarget.revertAction.selector, UsageBasedSessionModule.ModuleCallFailed.selector
+            bad, TestSessionRevertingTarget.revertAction.selector, IUsageBasedSessionModule.ModuleCallFailed.selector
         );
     }
 
     function testRejectsWrongSessionKey() public {
-        UsageBasedSessionModule.ExecuteParams memory bad =
+        IUsageBasedSessionModule.ExecuteParams memory bad =
             _signedParams(safe, target, SECOND_SESSION_KEY, 0, sessionDeadline);
 
-        _expectFailedItem(bad, DO_ACTION_SELECTOR, UsageBasedSessionModule.InvalidSignature.selector);
+        _expectFailedItem(bad, DO_ACTION_SELECTOR, IUsageBasedSessionModule.InvalidSignature.selector);
     }
 
     function testRejectsWrongNonce() public {
-        UsageBasedSessionModule.ExecuteParams memory bad = _signedParams(safe, target, SESSION_KEY, 1, sessionDeadline);
+        IUsageBasedSessionModule.ExecuteParams memory bad = _signedParams(safe, target, SESSION_KEY, 1, sessionDeadline);
 
-        _expectFailedItem(bad, DO_ACTION_SELECTOR, UsageBasedSessionModule.InvalidSignature.selector);
+        _expectFailedItem(bad, DO_ACTION_SELECTOR, IUsageBasedSessionModule.InvalidSignature.selector);
     }
 
     function testRejectsWrongSignedTarget() public {
         TestSessionTarget otherTarget = _deployTarget();
         bytes memory data = abi.encodeCall(target.doAction, ());
-        UsageBasedSessionModule.ExecuteParams memory bad = UsageBasedSessionModule.ExecuteParams({
+        IUsageBasedSessionModule.ExecuteParams memory bad = IUsageBasedSessionModule.ExecuteParams({
             safe: address(safe),
             target: address(target),
             data: data,
@@ -147,7 +147,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
             signature: _sign(SESSION_KEY, address(safe), address(otherTarget), data, 0, sessionDeadline)
         });
 
-        _expectFailedItem(bad, DO_ACTION_SELECTOR, UsageBasedSessionModule.InvalidSignature.selector);
+        _expectFailedItem(bad, DO_ACTION_SELECTOR, IUsageBasedSessionModule.InvalidSignature.selector);
     }
 
     function testEnforcesGroupDailyLimit() public {
@@ -157,7 +157,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
         _expectFailedItem(
             _signedParams(safe, target, SESSION_KEY, 2, sessionDeadline),
             DO_ACTION_SELECTOR,
-            UsageBasedSessionModule.GroupLimitReached.selector
+            IUsageBasedSessionModule.GroupLimitReached.selector
         );
     }
 
@@ -168,9 +168,9 @@ contract UsageBasedSessionModuleTest is EstforTest {
             address(revertingTarget), TestSessionRevertingTarget.revertAction.selector, 1
         );
         bytes memory failingData = abi.encodeCall(revertingTarget.revertAction, ());
-        UsageBasedSessionModule.ExecuteParams[] memory params = new UsageBasedSessionModule.ExecuteParams[](3);
+        IUsageBasedSessionModule.ExecuteParams[] memory params = new IUsageBasedSessionModule.ExecuteParams[](3);
         params[0] = _signedParams(safe, target, SESSION_KEY, 0, sessionDeadline);
-        params[1] = UsageBasedSessionModule.ExecuteParams({
+        params[1] = IUsageBasedSessionModule.ExecuteParams({
             safe: address(safe),
             target: address(revertingTarget),
             data: failingData,
@@ -181,15 +181,15 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
         uint256 currentDay = block.timestamp / 1 days;
         vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.SessionNonceIncremented(address(safe), 1, 1, 1, currentDay, 5);
+        emit IUsageBasedSessionModule.SessionNonceIncremented(address(safe), 1, 1, 1, currentDay, 5);
         vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.BatchItemFailed(
+        emit IUsageBasedSessionModule.BatchItemFailed(
             address(safe),
             TestSessionRevertingTarget.revertAction.selector,
-            abi.encodeWithSelector(UsageBasedSessionModule.ModuleCallFailed.selector)
+            abi.encodeWithSelector(IUsageBasedSessionModule.ModuleCallFailed.selector)
         );
         vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.SessionNonceIncremented(address(safe), 2, 1, 2, currentDay, 5);
+        emit IUsageBasedSessionModule.SessionNonceIncremented(address(safe), 2, 1, 2, currentDay, 5);
         usageBasedSessionModule.executeBatch(params);
 
         assertEq(target.calls(), 2);
@@ -198,17 +198,17 @@ contract UsageBasedSessionModuleTest is EstforTest {
     function testBatchSupportsMixedResultsForDifferentSafes() public {
         gameSubsidisationRegistry.setGroupLimit(1, 5);
         (TestSessionSafe safe2, TestSessionTarget target2, uint48 deadline2) = _createSession(SECOND_SESSION_KEY, 5);
-        UsageBasedSessionModule.ExecuteParams[] memory params = new UsageBasedSessionModule.ExecuteParams[](2);
+        IUsageBasedSessionModule.ExecuteParams[] memory params = new IUsageBasedSessionModule.ExecuteParams[](2);
         params[0] = _signedParams(safe, target, SESSION_KEY, 0, sessionDeadline);
         params[1] = _signedParams(safe2, target2, SECOND_SESSION_KEY, 999, deadline2);
 
         vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.SessionNonceIncremented(address(safe), 1, 1, 1, block.timestamp / 1 days, 5);
+        emit IUsageBasedSessionModule.SessionNonceIncremented(address(safe), 1, 1, 1, block.timestamp / 1 days, 5);
         vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.BatchItemFailed(
+        emit IUsageBasedSessionModule.BatchItemFailed(
             address(safe2),
             DO_ACTION_SELECTOR,
-            abi.encodeWithSelector(UsageBasedSessionModule.InvalidSignature.selector)
+            abi.encodeWithSelector(IUsageBasedSessionModule.InvalidSignature.selector)
         );
         usageBasedSessionModule.executeBatch(params);
 
@@ -218,14 +218,14 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
     function testDuplicateBatchItemCannotBeReplayed() public {
         gameSubsidisationRegistry.setGroupLimit(1, 5);
-        UsageBasedSessionModule.ExecuteParams memory item = _signedParams(safe, target, SESSION_KEY, 0, sessionDeadline);
-        UsageBasedSessionModule.ExecuteParams[] memory params = new UsageBasedSessionModule.ExecuteParams[](2);
+        IUsageBasedSessionModule.ExecuteParams memory item = _signedParams(safe, target, SESSION_KEY, 0, sessionDeadline);
+        IUsageBasedSessionModule.ExecuteParams[] memory params = new IUsageBasedSessionModule.ExecuteParams[](2);
         params[0] = item;
         params[1] = item;
 
         vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.BatchItemFailed(
-            address(safe), DO_ACTION_SELECTOR, abi.encodeWithSelector(UsageBasedSessionModule.InvalidSignature.selector)
+        emit IUsageBasedSessionModule.BatchItemFailed(
+            address(safe), DO_ACTION_SELECTOR, abi.encodeWithSelector(IUsageBasedSessionModule.InvalidSignature.selector)
         );
         usageBasedSessionModule.executeBatch(params);
 
@@ -233,8 +233,8 @@ contract UsageBasedSessionModuleTest is EstforTest {
     }
 
     function testRejectsEmptyBatch() public {
-        vm.expectRevert(UsageBasedSessionModule.NoBatchItems.selector);
-        usageBasedSessionModule.executeBatch(new UsageBasedSessionModule.ExecuteParams[](0));
+        vm.expectRevert(IUsageBasedSessionModule.NoBatchItems.selector);
+        usageBasedSessionModule.executeBatch(new IUsageBasedSessionModule.ExecuteParams[](0));
     }
 
     function testTracksDailyLimitsSeparatelyByGroup() public {
@@ -250,13 +250,13 @@ contract UsageBasedSessionModuleTest is EstforTest {
         _expectFailedItem(
             _signedParams(safe, target, SESSION_KEY, 2, sessionDeadline),
             DO_ACTION_SELECTOR,
-            UsageBasedSessionModule.ActionNotPermitted.selector
+            IUsageBasedSessionModule.ActionNotPermitted.selector
         );
     }
 
     function testRejectsNonWhitelistedSigner() public {
         vm.prank(ALICE);
-        vm.expectRevert(UsageBasedSessionModule.UnauthorizedSigner.selector);
+        vm.expectRevert(IUsageBasedSessionModule.UnauthorizedSigner.selector);
         usageBasedSessionModule.executeBatch(_single(_signedParams(safe, target, SESSION_KEY, 0, sessionDeadline)));
     }
 
@@ -275,13 +275,13 @@ contract UsageBasedSessionModuleTest is EstforTest {
         usageBasedSessionModule.setSessionOpsPerDay(1);
         (TestSessionSafe limitedSafe,,) = _createSession(SECOND_SESSION_KEY, 2);
 
-        vm.expectRevert(UsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
+        vm.expectRevert(IUsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
         limitedSafe.callRevokeSession(usageBasedSessionModule);
     }
 
     function testRevokeSucceedsWithinDailySessionOperationLimit() public {
         vm.expectEmit(true, false, false, false, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.SessionRevoked(address(safe));
+        emit IUsageBasedSessionModule.SessionRevoked(address(safe));
         safe.callRevokeSession(usageBasedSessionModule);
 
         assertEq(usageBasedSessionModule.getSession(address(safe)).sessionKey, address(0));
@@ -293,7 +293,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
         safe.callRevokeSession(usageBasedSessionModule);
         safe.callEnableSession(usageBasedSessionModule, vm.addr(SESSION_KEY), SESSION_DURATION);
 
-        vm.expectRevert(UsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
+        vm.expectRevert(IUsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
         safe.callRevokeSession(usageBasedSessionModule);
     }
 
@@ -302,7 +302,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
         (TestSessionSafe limitedSafe,,) = _createSession(SECOND_SESSION_KEY, 2);
         limitedSafe.callRevokeSession(usageBasedSessionModule);
 
-        vm.expectRevert(UsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
+        vm.expectRevert(IUsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
         limitedSafe.callEnableSession(usageBasedSessionModule, vm.addr(SESSION_KEY), SESSION_DURATION);
     }
 
@@ -311,12 +311,12 @@ contract UsageBasedSessionModuleTest is EstforTest {
         (TestSessionSafe limitedSafe,,) = _createSession(SECOND_SESSION_KEY, 2);
         limitedSafe.callRevokeSession(usageBasedSessionModule);
 
-        vm.expectRevert(UsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
+        vm.expectRevert(IUsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
         limitedSafe.callEnableSession(usageBasedSessionModule, vm.addr(SESSION_KEY), SESSION_DURATION);
         vm.warp(block.timestamp + 1 days);
 
         vm.expectEmit(true, true, false, false, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.SessionEnabled(
+        emit IUsageBasedSessionModule.SessionEnabled(
             address(limitedSafe), vm.addr(SESSION_KEY), uint48(block.timestamp + SESSION_DURATION)
         );
         limitedSafe.callEnableSession(usageBasedSessionModule, vm.addr(SESSION_KEY), SESSION_DURATION);
@@ -327,7 +327,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
     function testRevokePreservesOperationDayAndCount() public {
         safe.callRevokeSession(usageBasedSessionModule);
 
-        UsageBasedSessionModule.Session memory session = usageBasedSessionModule.getSession(address(safe));
+        IUsageBasedSessionModule.Session memory session = usageBasedSessionModule.getSession(address(safe));
         assertEq(session.sessionKey, address(0));
         assertEq(session.opDay, uint32(block.timestamp / 1 days));
         assertEq(session.opCount, 2);
@@ -337,7 +337,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
     function testOwnerCanUpdateSessionOperationsPerDay() public {
         vm.expectEmit(false, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.SessionOpsPerDayUpdated(3);
+        emit IUsageBasedSessionModule.SessionOpsPerDayUpdated(3);
         usageBasedSessionModule.setSessionOpsPerDay(3);
 
         assertEq(usageBasedSessionModule.getSessionOpsPerDay(), 3);
@@ -350,7 +350,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
     }
 
     function testSessionOperationsPerDayCannotBeZero() public {
-        vm.expectRevert(UsageBasedSessionModule.InvalidSessionDuration.selector);
+        vm.expectRevert(IUsageBasedSessionModule.InvalidSessionDuration.selector);
         usageBasedSessionModule.setSessionOpsPerDay(0);
     }
 
@@ -362,7 +362,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
     function testOwnerCanWhitelistSigner() public {
         vm.expectEmit(false, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.WhitelistedSignersUpdated(_addresses(ALICE), true);
+        emit IUsageBasedSessionModule.WhitelistedSignersUpdated(_addresses(ALICE), true);
         usageBasedSessionModule.setWhitelistedSigner(_addresses(ALICE), true);
     }
 
@@ -377,8 +377,8 @@ contract UsageBasedSessionModuleTest is EstforTest {
         usageBasedSessionModule.setWhitelistedSigner(_addresses(ALICE), false);
 
         vm.prank(ALICE);
-        vm.expectRevert(UsageBasedSessionModule.UnauthorizedSigner.selector);
-        usageBasedSessionModule.executeBatch(new UsageBasedSessionModule.ExecuteParams[](0));
+        vm.expectRevert(IUsageBasedSessionModule.UnauthorizedSigner.selector);
+        usageBasedSessionModule.executeBatch(new IUsageBasedSessionModule.ExecuteParams[](0));
     }
 
     function _createSession(uint256 key, uint256 groupLimit)
@@ -399,9 +399,9 @@ contract UsageBasedSessionModuleTest is EstforTest {
         uint256 key,
         uint256 nonce,
         uint48 deadline
-    ) private returns (UsageBasedSessionModule.ExecuteParams memory) {
+    ) private returns (IUsageBasedSessionModule.ExecuteParams memory) {
         bytes memory data = abi.encodeCall(sessionTarget.doAction, ());
-        return UsageBasedSessionModule.ExecuteParams({
+        return IUsageBasedSessionModule.ExecuteParams({
             safe: address(sessionSafe),
             target: address(sessionTarget),
             data: data,
@@ -437,26 +437,26 @@ contract UsageBasedSessionModuleTest is EstforTest {
         return abi.encodePacked(r, s, v);
     }
 
-    function _single(UsageBasedSessionModule.ExecuteParams memory item)
+    function _single(IUsageBasedSessionModule.ExecuteParams memory item)
         private
         pure
-        returns (UsageBasedSessionModule.ExecuteParams[] memory params)
+        returns (IUsageBasedSessionModule.ExecuteParams[] memory params)
     {
-        params = new UsageBasedSessionModule.ExecuteParams[](1);
+        params = new IUsageBasedSessionModule.ExecuteParams[](1);
         params[0] = item;
     }
 
-    function _expectFailedItem(UsageBasedSessionModule.ExecuteParams memory bad, bytes4 selector, bytes4 errorSelector)
+    function _expectFailedItem(IUsageBasedSessionModule.ExecuteParams memory bad, bytes4 selector, bytes4 errorSelector)
         private
     {
         (TestSessionSafe fallbackSafe, TestSessionTarget fallbackTarget, uint48 fallbackDeadline) =
             _createSession(SECOND_SESSION_KEY, 2);
-        UsageBasedSessionModule.ExecuteParams[] memory params = new UsageBasedSessionModule.ExecuteParams[](2);
+        IUsageBasedSessionModule.ExecuteParams[] memory params = new IUsageBasedSessionModule.ExecuteParams[](2);
         params[0] = bad;
         params[1] = _signedParams(fallbackSafe, fallbackTarget, SECOND_SESSION_KEY, 0, fallbackDeadline);
 
         vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.BatchItemFailed(bad.safe, selector, abi.encodeWithSelector(errorSelector));
+        emit IUsageBasedSessionModule.BatchItemFailed(bad.safe, selector, abi.encodeWithSelector(errorSelector));
         usageBasedSessionModule.executeBatch(params);
     }
 
@@ -515,25 +515,25 @@ contract UsageBasedSessionModulePlayerNFTTest is FullGameStack {
         fallbackSafe.callEnableSession(usageBasedSessionModule, vm.addr(fallbackKey), 1 hours);
         uint48 fallbackDeadline = usageBasedSessionModule.getSession(address(fallbackSafe)).deadline;
         bytes memory fallbackData = _mintData("FourthHero4");
-        UsageBasedSessionModule.ExecuteParams[] memory params = new UsageBasedSessionModule.ExecuteParams[](2);
+        IUsageBasedSessionModule.ExecuteParams[] memory params = new IUsageBasedSessionModule.ExecuteParams[](2);
         params[0] = _params(_mintData("ThirdHero3"), 2, SESSION_KEY);
         params[1] = _paramsFor(fallbackSafe, fallbackData, 0, fallbackKey, fallbackDeadline);
 
         vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.BatchItemFailed(
-            address(safe), MINT_SELECTOR, abi.encodeWithSelector(UsageBasedSessionModule.GroupLimitReached.selector)
+        emit IUsageBasedSessionModule.BatchItemFailed(
+            address(safe), MINT_SELECTOR, abi.encodeWithSelector(IUsageBasedSessionModule.GroupLimitReached.selector)
         );
         usageBasedSessionModule.executeBatch(params);
     }
 
     function testRejectsPlayerNFTMintSignedByWrongKey() public {
-        UsageBasedSessionModule.ExecuteParams[] memory params = new UsageBasedSessionModule.ExecuteParams[](2);
+        IUsageBasedSessionModule.ExecuteParams[] memory params = new IUsageBasedSessionModule.ExecuteParams[](2);
         params[0] = _params(_mintData("BadKeyHero"), 0, 0xBAD);
         params[1] = _params(_mintData("GoodKeyHero"), 0, SESSION_KEY);
 
         vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
-        emit UsageBasedSessionModule.BatchItemFailed(
-            address(safe), MINT_SELECTOR, abi.encodeWithSelector(UsageBasedSessionModule.InvalidSignature.selector)
+        emit IUsageBasedSessionModule.BatchItemFailed(
+            address(safe), MINT_SELECTOR, abi.encodeWithSelector(IUsageBasedSessionModule.InvalidSignature.selector)
         );
         usageBasedSessionModule.executeBatch(params);
     }
@@ -544,14 +544,14 @@ contract UsageBasedSessionModulePlayerNFTTest is FullGameStack {
 
     function _params(bytes memory data, uint256 nonce, uint256 key)
         private
-        returns (UsageBasedSessionModule.ExecuteParams memory)
+        returns (IUsageBasedSessionModule.ExecuteParams memory)
     {
         return _paramsFor(safe, data, nonce, key, sessionDeadline);
     }
 
     function _paramsFor(TestSessionSafe sessionSafe, bytes memory data, uint256 nonce, uint256 key, uint48 deadline)
         private
-        returns (UsageBasedSessionModule.ExecuteParams memory)
+        returns (IUsageBasedSessionModule.ExecuteParams memory)
     {
         bytes32 typeHash = keccak256(
             "UsageBasedSession(address safe,address target,bytes data,uint256 value,uint256 nonce,uint48 sessionDeadline)"
@@ -570,7 +570,7 @@ contract UsageBasedSessionModulePlayerNFTTest is FullGameStack {
         );
         (uint8 v, bytes32 r, bytes32 s) =
             vm.sign(key, keccak256(abi.encodePacked(hex"1901", domainSeparator, structHash)));
-        return UsageBasedSessionModule.ExecuteParams({
+        return IUsageBasedSessionModule.ExecuteParams({
             safe: address(sessionSafe),
             target: address(playerNFT),
             data: data,
@@ -579,12 +579,12 @@ contract UsageBasedSessionModulePlayerNFTTest is FullGameStack {
         });
     }
 
-    function _single(UsageBasedSessionModule.ExecuteParams memory item)
+    function _single(IUsageBasedSessionModule.ExecuteParams memory item)
         private
         pure
-        returns (UsageBasedSessionModule.ExecuteParams[] memory params)
+        returns (IUsageBasedSessionModule.ExecuteParams[] memory params)
     {
-        params = new UsageBasedSessionModule.ExecuteParams[](1);
+        params = new IUsageBasedSessionModule.ExecuteParams[](1);
         params[0] = item;
     }
 

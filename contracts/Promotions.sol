@@ -8,6 +8,7 @@ import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IPromotions} from "./interfaces/IPromotions.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 import {RandomnessBeacon} from "./RandomnessBeacon.sol";
@@ -19,52 +20,8 @@ import "./globals/items.sol";
 import "./globals/rewards.sol";
 import "./globals/promotions.sol";
 
-contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
+contract Promotions is UUPSUpgradeable, OwnableUpgradeable, IPromotions {
   using BitMaps for BitMaps.BitMap;
-
-  event PromotionRedeemed(
-    address indexed to,
-    uint256 playerId,
-    Promotion promotion,
-    string redeemCode,
-    uint256[] itemTokenIds,
-    uint256[] amounts,
-    uint256[] daysRedeemed,
-    uint256 tokenCost
-  );
-
-  event AddPromotions(PromotionInfoInput[] promotionInfos);
-  event EditPromotions(PromotionInfoInput[] promotionInfos);
-  event RemovePromotions(Promotion[] promotions);
-  event ClearPlayerPromotions(uint256 playerId, Promotion[] promotions);
-  event SetBrushDistributionPercentages(
-    uint256 brushBurntPercentage,
-    uint256 brushTreasuryPercentage,
-    uint256 brushDevPercentage
-  );
-
-  error NotOwnerOfPlayer();
-  error PromotionAlreadyClaimed();
-  error InvalidRedeemCode();
-  error NotPromotionalAdmin();
-  error NotAdminAndBeta();
-  error NotOwnerOfPlayerAndActive();
-  error InvalidPromotion();
-  error PlayerDoesNotQualify();
-  error OracleNotCalled();
-  error PromotionNotAdded();
-  error MintingOutsideAvailableDate();
-  error PromotionNotSet();
-  error PlayerNotHitEnoughClaims();
-  error InvalidBrushCost();
-  error PlayerNotEvolved();
-  error NotEnoughBrush();
-  error MustBeAdminOnlyPromotion();
-  error CannotPayForToday();
-  error DaysArrayNotSortedOrDuplicates();
-  error PromotionFinished();
-  error PercentNotTotal100();
-  error DependentQuestNotCompleted();
 
   AdminAccess private _adminAccess;
   IPlayers private _players;
@@ -89,7 +46,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   mapping(address user => BitMaps.BitMap) private _userPromotionsClaimed;
   mapping(uint256 playerId => BitMaps.BitMap) private _playerPromotionsClaimed;
 
-  uint256 public constant FINAL_PROMOTION_DAY_INDEX = 31;
+  uint256 public override constant FINAL_PROMOTION_DAY_INDEX = 31;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -106,14 +63,14 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     RandomnessBeacon randomnessBeacon,
     DailyRewardsScheduler dailyRewardsScheduler,
     ItemNFT itemNFT,
-    PlayerNFT playerNFT,
-    Quests quests,
+    address playerNFT,
+    address quests,
     IBrushToken brush,
     address treasury,
     address dev,
     AdminAccess adminAccess,
     bool isBeta
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
 
@@ -121,8 +78,8 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     _randomnessBeacon = randomnessBeacon;
     _dailyRewardsScheduler = dailyRewardsScheduler;
     _itemNFT = itemNFT;
-    _playerNFT = playerNFT;
-    _quests = quests;
+    _playerNFT = PlayerNFT(playerNFT);
+    _quests = Quests(payable(quests));
     _brush = brush;
     _treasury = treasury;
     _dev = dev;
@@ -145,7 +102,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     address to,
     uint256 playerId,
     string calldata redeemCode
-  ) external onlyPromotionalAdmin {
+  ) external override onlyPromotionalAdmin {
     require(!_userPromotionsClaimed[to].get(uint8(Promotion.STARTER)), PromotionAlreadyClaimed());
     require(bytes(redeemCode).length == 16, InvalidRedeemCode());
     require(_playerNFT.balanceOf(to, playerId) == 1, NotOwnerOfPlayer());
@@ -185,7 +142,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint256 playerId,
     string calldata redeemCode,
     Promotion promotion
-  ) external onlyPromotionalAdmin {
+  ) external override onlyPromotionalAdmin {
     PromotionInfo storage promotionInfo = _activePromotions[promotion];
 
     require(promotionInfo.adminOnly, MustBeAdminOnlyPromotion());
@@ -227,7 +184,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint256 playerId,
     Promotion promotion,
     uint256[] calldata missedDays
-  ) external isOwnerOfPlayerAndActive(playerId) {
+  ) external override isOwnerOfPlayerAndActive(playerId) {
     PromotionInfo storage promotionInfo = _activePromotions[promotion];
 
     require(promotionInfo.isMultiday, PromotionNotSet());
@@ -289,7 +246,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function mintPromotion(uint256 playerId, Promotion promotion) external isOwnerOfPlayerAndActive(playerId) {
+  function mintPromotion(uint256 playerId, Promotion promotion) external override isOwnerOfPlayerAndActive(playerId) {
     (
       uint256[] memory itemTokenIds,
       uint256[] memory amounts,
@@ -373,7 +330,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function getActivePromotion(uint256 promotionId) external view returns (PromotionInfo memory) {
+  function getActivePromotion(uint256 promotionId) external override view returns (PromotionInfo memory) {
     return _activePromotions[Promotion(promotionId)];
   }
 
@@ -381,7 +338,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint256 playerId,
     Promotion promotion,
     uint256 day
-  ) external view returns (uint8) {
+  ) external override view returns (uint8) {
     return _multidayPlayerPromotionsCompleted[playerId][promotion][day];
   }
 
@@ -634,7 +591,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   // Takes into account the current day for multiday promotions unless outside the range in which case checks the final day bonus.
-  function hasCompletedPromotion(uint256 playerId, Promotion promotion) external view returns (bool) {
+  function hasCompletedPromotion(uint256 playerId, Promotion promotion) external override view returns (bool) {
     PromotionInfo memory promotionInfo = _activePromotions[promotion];
     if (promotionInfo.isMultiday) {
       if (block.timestamp < promotionInfo.startTime) {
@@ -651,7 +608,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     return _singlePlayerPromotionsCompleted[playerId].get(uint256(promotion));
   }
 
-  function hasClaimedAny(uint256 playerId, Promotion promotion) public view returns (bool) {
+  function hasClaimedAny(uint256 playerId, Promotion promotion) public override view returns (bool) {
     PromotionInfo storage promotionInfo = _activePromotions[promotion];
     if (promotionInfo.isMultiday) {
       bool anyClaimed;
@@ -665,7 +622,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     return _singlePlayerPromotionsCompleted[playerId].get(uint256(promotion));
   }
 
-  function testClearPlayerPromotions(uint256 playerId, Promotion[] calldata promotions) external isAdminAndBeta {
+  function testClearPlayerPromotions(uint256 playerId, Promotion[] calldata promotions) external override isAdminAndBeta {
     for (uint256 i; i < promotions.length; ++i) {
       _singlePlayerPromotionsCompleted[playerId].unset(uint256(promotions[i]));
       delete _multidayPlayerPromotionsCompleted[playerId][promotions[i]];
@@ -673,21 +630,21 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     emit ClearPlayerPromotions(playerId, promotions);
   }
 
-  function addPromotions(PromotionInfoInput[] calldata promotionInfoInput) external onlyOwner {
+  function addPromotions(PromotionInfoInput[] calldata promotionInfoInput) external override onlyOwner {
     for (uint256 i; i < promotionInfoInput.length; ++i) {
       PromotionsLibrary.addPromotion(_activePromotions, promotionInfoInput[i]);
     }
     emit AddPromotions(promotionInfoInput);
   }
 
-  function editPromotions(PromotionInfoInput[] calldata promotionInfoInputs) external onlyOwner {
+  function editPromotions(PromotionInfoInput[] calldata promotionInfoInputs) external override onlyOwner {
     for (uint256 i; i < promotionInfoInputs.length; ++i) {
       PromotionsLibrary.editPromotion(_activePromotions, promotionInfoInputs[i]);
     }
     emit EditPromotions(promotionInfoInputs);
   }
 
-  function removePromotions(Promotion[] calldata promotions) external onlyOwner {
+  function removePromotions(Promotion[] calldata promotions) external override onlyOwner {
     for (uint256 i; i < promotions.length; ++i) {
       require(_activePromotions[promotions[i]].promotion != Promotion.NONE, PromotionNotAdded());
       delete _activePromotions[promotions[i]];
@@ -699,7 +656,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint8 brushBurntPercentage,
     uint8 brushTreasuryPercentage,
     uint8 brushDevPercentage
-  ) external onlyOwner {
+  ) external override onlyOwner {
     require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
     _brushBurntPercentage = brushBurntPercentage;
     _brushTreasuryPercentage = brushTreasuryPercentage;
@@ -707,7 +664,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
-  function setDevAddress(address dev) external onlyOwner {
+  function setDevAddress(address dev) external override onlyOwner {
     _dev = dev;
   }
   

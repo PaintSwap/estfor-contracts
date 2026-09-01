@@ -11,11 +11,10 @@ import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/Paintswa
 import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
-import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
+import {ILockedBankVaults} from "../interfaces/ILockedBankVaults.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IBank} from "../interfaces/IBank.sol";
 
-import {LockedBankVaults} from "./LockedBankVaults.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 
@@ -34,136 +33,15 @@ contract Territories is
   OwnableUpgradeable,
   PaintswapVRFConsumerUpgradeable,
   ITerritories,
-  IClanMemberLeftCB,
   IActivityPointsCaller
 {
   using SafeCast for uint256;
 
-  event AddTerritories(TerritoryInput[] territories);
-  event EditTerritories(TerritoryInput[] territories);
-  event RemoveTerritories(uint256[] territoryIds);
-  event SetMinimumMMRs(uint256[] territoryIds, uint16[] minimumMMRs);
-  event AttackTerritory(
-    uint256 clanId,
-    uint256 territoryId,
-    address from,
-    uint256 leaderPlayerId,
-    uint256 requestId,
-    uint256 pendingAttackId,
-    uint256 attackingCooldownTimestamp
-  );
-  event BattleResult(
-    uint256 requestId,
-    uint64[] attackingPlayerIds,
-    uint64[] defendingPlayerIds,
-    uint256[] attackingRolls,
-    uint256[] defendingRolls,
-    uint8[] battleResults, // BattleResultEnum[]
-    uint8[] randomSkills, // Skill[]
-    bool didAttackersWin,
-    uint256 attackingClanId,
-    uint256 defendingClanId,
-    uint256[] randomWords,
-    uint256 territoryId,
-    uint256 clanXPGainedWinner
-  );
-  event Deposit(uint256 amount);
-  event SetComparableSkills(Skill[] skills);
-  event ClaimUnoccupiedTerritory(
-    uint256 territoryId,
-    uint256 clanId,
-    address from,
-    uint256 leaderPlayerId,
-    uint256 requestId
-  );
-  event AssignCombatants(
-    uint256 clanId,
-    uint64[] playerIds,
-    address from,
-    uint256 leaderPlayerId,
-    uint256 cooldownTimestamp
-  );
-  event RemoveCombatant(uint256 playerId, uint256 clanId);
-  event Harvest(uint256 territoryId, address from, uint256 playerId, uint256 cooldownTimestamp, uint256 amount);
-  event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
-  event SetMaxClanCombatants(uint256 maxClanCombatants);
-  event BlockingAttacks(
-    uint256 clanId,
-    uint256 itemTokenId,
-    address from,
-    uint256 leaderPlayerId,
-    uint256 blockAttacksTimestamp,
-    uint256 blockAttacksCooldownTimestamp
-  );
-  event SetAttackCooldown(uint256 attackCooldown);
-
-  error InvalidTerritory();
-  error InvalidTerritoryId();
-  error InvalidEmissionPercentage();
-  error TransferFailed();
-  error RankNotHighEnough();
-  error ClanAttackingCooldown();
-  error NotMemberOfClan();
-  error InvalidSkill(Skill skill);
-  error LengthMismatch();
-  error OnlyClans();
-  error OnlyCombatantsHelper();
-  error NotOwnerOfPlayerAndActive();
-  error HarvestingTooSoon();
-  error NotAdminAndBeta();
-  error NoCombatants();
-  error TooManyCombatants();
-  error PlayerDefendingLockedVaults();
-  error CannotChangeCombatantsDuringAttack();
-  error NoEmissionsToHarvest();
-  error CannotAttackWhileStillAttacking();
-  error AmountTooLow();
-  error ClanCombatantsChangeCooldown();
-  error RequestIdNotKnown();
-  error ClanIsBlockingAttacks();
-  error NotATerritoryDefenceItem();
-  error BlockAttacksCooldown();
-  error CannotAttackSelf();
-  error CallerNotSamWitchVRF();
-  error NotEnoughMMR(uint256 minimumMMR);
-
-  struct TerritoryInput {
-    uint16 territoryId;
-    uint16 percentageEmissions; // Is multiplied by PERCENTAGE_EMISSION_MUL
-  }
-
-  struct Territory {
-    uint16 territoryId; // TODO: Could be removed if necessary
-    uint16 percentageEmissions; // Is multiplied by PERCENTAGE_EMISSION_MUL
-    uint40 clanIdOccupier;
-    uint88 unclaimedEmissions;
-    uint40 lastClaimTimestamp;
-    uint16 minimumMMR;
-  }
-
-  struct ClanInfo {
-    uint16 ownsTerritoryId;
-    uint40 attackingCooldownTimestamp;
-    uint40 assignCombatantsCooldownTimestamp;
-    bool currentlyAttacking;
-    uint40 blockAttacksTimestamp;
-    uint8 blockAttacksCooldownHours; // Have many hours after blockAttacksTimestamp there is a cooldown for
-    uint64[] playerIds;
-  }
-
-  struct PendingAttack {
-    address from;
-    uint16 territoryId;
-    uint32 clanId; // Reduced from uint40 to make this fit in a storage c
-    bool attackInProgress;
-    uint40 leaderPlayerId;
-  }
-
   uint256 private constant NUM_WORDS = 7;
-  uint256 public constant MAX_DAILY_EMISSIONS = 10000 ether;
-  uint256 public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
-  uint256 public constant PERCENTAGE_EMISSION_MUL = 10;
-  uint256 public constant HARVESTING_COOLDOWN = 8 hours;
+  uint256 public constant override MAX_DAILY_EMISSIONS = 10000 ether;
+  uint256 public constant override TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
+  uint256 public constant override PERCENTAGE_EMISSION_MUL = 10;
+  uint256 public constant override HARVESTING_COOLDOWN = 8 hours;
   uint40 private constant CLAN_XP_GAINED_ON_TERRITORY_WIN = 10;
   address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
@@ -177,7 +55,7 @@ contract Territories is
   IClans private _clans;
   AdminAccess private _adminAccess;
   bool private _isBeta;
-  LockedBankVaults private _lockedBankVaults;
+  ILockedBankVaults private _lockedBankVaults;
   ItemNFT private _itemNFT;
 
   mapping(uint256 clanId => ClanInfo clanInfo) private _clanInfos;
@@ -237,7 +115,7 @@ contract Territories is
     address players,
     IClans clans,
     IBrushToken brush,
-    LockedBankVaults lockedBankVaults,
+    ILockedBankVaults lockedBankVaults,
     ItemNFT itemNFT,
     address paintswapVRFConsumer,
     Skill[] calldata comparableSkills,
@@ -246,7 +124,7 @@ contract Territories is
     AdminAccess adminAccess,
     IActivityPoints activityPoints,
     bool isBeta
-  ) external initializer {
+  ) external override initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
@@ -275,11 +153,11 @@ contract Territories is
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external override onlyOwner {
+  function setActivityPoints(address activityPoints) external override(ITerritories, IActivityPointsCaller) onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 
-  function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
+  function initializeV3(address paintswapVRFConsumer) external override reinitializer(3) {
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
   }
 
@@ -301,7 +179,7 @@ contract Territories is
     uint256 clanId,
     uint256 territoryId,
     uint256 leaderPlayerId
-  ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
+  ) external payable override isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
     uint256 clanIdOccupier = _territories[territoryId].clanIdOccupier;
 
     _checkCanAttackTerritory(clanId, clanIdOccupier, territoryId);
@@ -437,7 +315,7 @@ contract Territories is
   function harvest(
     uint256 territoryId,
     uint256 playerId
-  ) external isOwnerOfPlayerAndActive(playerId) isClanMember(_territories[territoryId].clanIdOccupier, playerId) {
+  ) external override isOwnerOfPlayerAndActive(playerId) isClanMember(_territories[territoryId].clanIdOccupier, playerId) {
     Territory storage territory = _territories[territoryId];
     uint256 unclaimedEmissions = territory.unclaimedEmissions;
 
@@ -451,7 +329,7 @@ contract Territories is
     emit Harvest(territoryId, _msgSender(), playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
   }
 
-  function addUnclaimedEmissions(uint256 amount) external {
+  function addUnclaimedEmissions(uint256 amount) external override {
     require(amount >= _totalEmissionPercentage, AmountTooLow());
 
     for (uint256 i = 1; i < _nextTerritoryId; ++i) {
@@ -468,7 +346,7 @@ contract Territories is
     uint256 clanId,
     uint16 itemTokenId,
     uint256 playerId
-  ) external isOwnerOfPlayerAndActive(playerId) isClanMember(clanId, playerId) {
+  ) external override isOwnerOfPlayerAndActive(playerId) isClanMember(clanId, playerId) {
     Item memory item = _itemNFT.getItem(itemTokenId);
     require(
       item.equipPosition == EquipPosition.TERRITORY && item.boostType == BoostType.PVP_BLOCK,
@@ -554,11 +432,11 @@ contract Territories is
     require(territory.territoryId != 0 && territory.percentageEmissions != 0, InvalidTerritory());
   }
 
-  function getAttackCost() public view returns (uint256) {
+  function getAttackCost() public view override returns (uint256) {
     return _calculateRequestPriceNative(_expectedGasLimitFulfill);
   }
 
-  function getTerrorities() external view returns (Territory[] memory) {
+  function getTerrorities() external view override returns (Territory[] memory) {
     Territory[] memory territories = new Territory[](_nextTerritoryId - 1);
     for (uint256 i; i < territories.length; ++i) {
       territories[i] = _territories[i + 1];
@@ -566,23 +444,23 @@ contract Territories is
     return territories;
   }
 
-  function getClanInfo(uint256 clanId) external view returns (ClanInfo memory clanInfo) {
+  function getClanInfo(uint256 clanId) external view override returns (ClanInfo memory clanInfo) {
     return _clanInfos[clanId];
   }
 
-  function getPendingAttack(uint256 pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
+  function getPendingAttack(uint256 pendingAttackId) external view override returns (PendingAttack memory pendingAttack) {
     return _pendingAttacks[pendingAttackId];
   }
 
-  function getTerritory(uint256 territoryId) external view returns (Territory memory territory) {
+  function getTerritory(uint256 territoryId) external view override returns (Territory memory territory) {
     return _territories[territoryId];
   }
 
-  function getExpectedGasLimitFulfill() external view returns (uint88 expectedGasLimitFulfill) {
+  function getExpectedGasLimitFulfill() external view override returns (uint88 expectedGasLimitFulfill) {
     return _expectedGasLimitFulfill;
   }
 
-  function getTotalEmissionPercentage() external view returns (uint16 totalEmissionPercentage) {
+  function getTotalEmissionPercentage() external view override returns (uint16 totalEmissionPercentage) {
     return _totalEmissionPercentage;
   }
 
@@ -594,7 +472,7 @@ contract Territories is
     }
   }
 
-  function addTerritories(TerritoryInput[] calldata territories) public onlyOwner {
+  function addTerritories(TerritoryInput[] calldata territories) public override onlyOwner {
     uint256 totalEmissionPercentage = _totalEmissionPercentage;
     uint256 nextTerritoryId = _nextTerritoryId;
     for (uint256 i; i < territories.length; ++i) {
@@ -621,7 +499,7 @@ contract Territories is
     emit AddTerritories(territories);
   }
 
-  function editTerritories(TerritoryInput[] calldata territories) external onlyOwner {
+  function editTerritories(TerritoryInput[] calldata territories) external override onlyOwner {
     uint256 totalEmissionPercentage = _totalEmissionPercentage;
     for (uint256 i; i < territories.length; ++i) {
       _checkTerritory(territories[i]);
@@ -635,7 +513,7 @@ contract Territories is
     emit EditTerritories(territories);
   }
 
-  function removeTerritories(uint256[] calldata territoryIds) external onlyOwner {
+  function removeTerritories(uint256[] calldata territoryIds) external override onlyOwner {
     uint256 totalEmissionPercentage = _totalEmissionPercentage;
     for (uint256 i; i < territoryIds.length; ++i) {
       require(_territories[territoryIds[i]].territoryId != 0, InvalidTerritoryId());
@@ -648,7 +526,7 @@ contract Territories is
     emit RemoveTerritories(territoryIds);
   }
 
-  function setMinimumMMRs(uint256[] calldata territoryIds, uint16[] calldata minimumMMRs) external onlyOwner {
+  function setMinimumMMRs(uint256[] calldata territoryIds, uint16[] calldata minimumMMRs) external override onlyOwner {
     require(territoryIds.length == minimumMMRs.length, LengthMismatch());
 
     for (uint256 i; i < territoryIds.length; ++i) {
@@ -657,7 +535,7 @@ contract Territories is
     emit SetMinimumMMRs(territoryIds, minimumMMRs); // TODO: Currently not used elsewhere
   }
 
-  function setComparableSkills(Skill[] calldata skills) public onlyOwner {
+  function setComparableSkills(Skill[] calldata skills) public override onlyOwner {
     for (uint256 i = 0; i < skills.length; ++i) {
       require(skills[i] != Skill.NONE && skills[i] != Skill.COMBAT, InvalidSkill(skills[i]));
 
@@ -666,26 +544,26 @@ contract Territories is
     emit SetComparableSkills(skills);
   }
 
-  function setCombatantsHelper(address combatantsHelper) external onlyOwner {
+  function setCombatantsHelper(address combatantsHelper) external override onlyOwner {
     _combatantsHelper = combatantsHelper;
   }
 
-  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
+  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public override onlyOwner {
     _expectedGasLimitFulfill = expectedGasLimitFulfill;
     emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
-  function setMaxClanCombatants(uint8 maxClanCombatants) public onlyOwner {
+  function setMaxClanCombatants(uint8 maxClanCombatants) public override onlyOwner {
     _maxClanCombatants = maxClanCombatants;
     emit SetMaxClanCombatants(maxClanCombatants);
   }
 
-  function setAttackCooldown(uint24 attackCooldown) public onlyOwner {
+  function setAttackCooldown(uint24 attackCooldown) public override onlyOwner {
     _attackingCooldown = attackCooldown;
     emit SetAttackCooldown(attackCooldown);
   }
 
-  function clearCooldowns(uint256 clanId) external isAdminAndBeta {
+  function clearCooldowns(uint256 clanId) external override isAdminAndBeta {
     ClanInfo storage clanInfo = _clanInfos[clanId];
     clanInfo.attackingCooldownTimestamp = 0;
     clanInfo.assignCombatantsCooldownTimestamp = 0;
@@ -694,7 +572,7 @@ contract Territories is
   }
 
   // Useful to re-run a battle for testing
-  function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
+  function setAttackInProgress(uint256 requestId) external override isAdminAndBeta {
     _pendingAttacks[_requestToPendingAttackIds[requestId]].attackInProgress = true;
   }
 
