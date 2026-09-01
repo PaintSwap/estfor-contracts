@@ -1,276 +1,81 @@
-import {isBeta} from "./utils";
+import {getContractAddress, loadSelectedDeployment} from "./deploymentRegistry";
 
-let brush;
-let wftm;
-let vrf;
-let router;
-let paintSwapMarketplaceWhitelist;
-let worldActions;
-let randomnessBeacon;
-let dailyRewardsScheduler;
-let treasury;
-let shop;
-let royaltyReceiver;
-let adminAccess;
-let itemNFTLibrary;
-let itemNFT;
-let estforLibrary;
-let playerNFT;
-let wishingWell;
-let promotions;
-let promotionsLibrary;
-let quests;
-let clans;
-let bank;
-let bankRegistry;
-let bankFactory;
-let bankRelay;
-let playersLibrary;
-let playersImplQueueActions;
-let playersImplProcessActions;
-let playersImplRewards;
-let playersImplMisc;
-let playersImplMisc1;
-let players;
-let instantActions;
-let instantVRFActions;
-let genericInstantVRFActionStrategy;
-let eggInstantVRFActionStrategy;
-let clanBattleLibrary;
-let lockedBankVaults;
-let lockedBankVaultsLibrary;
-let territories;
-let territoryTreasury;
-let combatantsHelper;
-let bazaar;
-let petNFTLibrary;
-let petNFT;
-let passiveActions;
-let pvpBattleground;
-let raids;
-let bridge;
-let activityPoints;
-let marketplace;
-let cosmetics;
-let usdc;
-let globalEvent;
-let blackMarketTrader;
-let usageBasedSessionModule;
-let gameSubsidisationRegistry;
-let petNFTReroll;
-let orderbookV2;
-let subsidySigners: string[] = [];
+export const SELECTED_DEPLOYMENT = loadSelectedDeployment();
 
-// Third party stuff chain specific addresses
-const chainId = process.env.CHAIN_ID;
-if (chainId == "146") {
-  brush = "0xE51EE9868C1f0d6cd968A8B8C8376Dc2991BFE44";
-  wftm = "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38";
-  vrf = "0x6E3efcB244e74Cb898A7961061fAA43C3cf79691";
-  router = "0xcC6169aA1E879d3a4227536671F85afdb2d23fAD";
-  paintSwapMarketplaceWhitelist = "0xc1dd8640b3acbc34a228f632ef9bea39dcc7b0ce";
-  usdc = "0x29219dd400f2Bf60E5a23d13Be72B486D4038894";
-} else {
-  router = "0x";
-  brush = "0x";
-  wftm = "0x";
-  vrf = "0x";
-  router = "0x";
-  paintSwapMarketplaceWhitelist = "0x";
-  usdc = "0x";
-}
+export const BRIDGE_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "bridge");
+export const WORLD_ACTIONS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "worldActions");
+export const RANDOMNESS_BEACON_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "randomnessBeacon");
+export const DAILY_REWARDS_SCHEDULER_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "dailyRewardsScheduler");
+export const TREASURY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "treasury");
+export const SHOP_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "shop");
+export const ROYALTY_RECEIVER_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "royaltyReceiver");
+export const ADMIN_ACCESS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "adminAccess");
+export const ITEM_NFT_LIBRARY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "itemNFTLibrary");
+export const ITEM_NFT_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "itemNFT");
 
-if (!isBeta) {
-  bridge = "0x551944b340a17f277a97773355f463beefea7901";
-  worldActions = "0x9e1275dd55e9623dc8f1673fc3c94cf1176a2816";
-  randomnessBeacon = "0x9b4ba31bf6031d9304c5d4487c3b30d58cef49a3";
-  dailyRewardsScheduler = "0x56ddffd7126b55883b603c4c5f33c639dfa424bc";
-  treasury = "0x50b64112cc5af4ff4f8e079143c5b19decddaf03";
-  shop = "0x80b78e431b6e52027debe297cd8ba614820a2f1b";
-  royaltyReceiver = "0x6c01e51d7254e5d3a3d844d2d56c35dd8abfa753";
-  adminAccess = "0x3977a0e1a9f7564ce20cd88a22ae76d13386087a";
-  itemNFTLibrary = "0xefba3016f46b06b98fae8a8b8f9df17567a824d3";
-  itemNFT = "0x8970c63da309d5359a579c2f53bfd64f72b7b706";
-  bazaar = "0x0d6d3794c858b512716e77e05588d4f1fc264319";
-  estforLibrary = "0xe3223eaf0e260b54a8ce777ac9f4a972310370c0";
-  playerNFT = "0x076aeec336f5abbdf64ba8ddf96fc974b0463528";
-  quests = "0x193ecbc093f3bcf6ae6155c9f1bd7c963af6b8d2";
-  clans = "0xbc6ed9e6cb54661ed9682c5055a6631d92e9e1d0";
-  wishingWell = "0x1207d2f1dc47a9228f20e9d0ce5094ff08bcb00b";
-  bank = "0x144884e1b42ccc9c648adee9b5dc1479ce1c8fe3";
-  petNFTLibrary = "0xB4a1665777c13738D9AaE55B6ADE24d24e9D35FB";
-  petNFT = "0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed";
-  playersLibrary = "0x8548737b2579C2dA6458C5B0360DBb3a749BFdf2";
-  playersImplQueueActions = "0x609a8ebad0f8837b6209b98e71ebe35c53c75fa2";
-  playersImplProcessActions = "0x0a2f19d4729f0060fd9b113bfe7ff830fc0cc27c";
-  playersImplRewards = "0x086e4e3dd7e30232d5c3cedae83fec8ee0f9ddb6";
-  playersImplMisc = "0x692ff62bf6434240b0107ab131e45c49c7a59c3f";
-  playersImplMisc1 = "0x3b14d1e2407e0723a3c45b11ec654e0862cc53b9";
-  players = "0xefa670aad6d5921236e9655f346ca13a5c56481b";
-  promotionsLibrary = "0x201ffa5be3886d19ef2f18da877ff3b9e34d10c9";
-  promotions = "0xaf48a8a12f29e30b3831392aa2ee6344d07d188b";
-  passiveActions = "0x72bb8faee4094d5a701faa26f9f442d32dfe53b6";
-  instantActions = "0x765f7068c3cd210b52374498f3ce01617667aed0";
-  instantVRFActions = "0x1ea4b1fa7f069b89eb8cceee30bfb24945e4d638";
-  genericInstantVRFActionStrategy = "0x05cd907e6ad6cad21ab2a39e49c68b110be7189a";
-  eggInstantVRFActionStrategy = "0x231363f40693698df92354275e2bcc4cbe48aa56";
-  bankRelay = "0x0df55b940e993f8d3b06a64212962c3d0fef8cba";
-  pvpBattleground = "0x679193f35e696651e125b2851ee7c4e44bf40a18";
-  raids = "0xec57b7988ee3344bcf4ce64e5d11f495df7cd951";
-  clanBattleLibrary = "0x97be54a51ca91ca34377563d865e4e21a5637472";
-  lockedBankVaultsLibrary = "0x55b7fd81638b81806d1c89f7930383030621b2e5";
-  lockedBankVaults = "0xfaa31b6ddb7e07cae5ff15475b3966d78d660240";
-  territories = "0x5a6d80bb035318d2a24c1fdfd055032a15f11b12";
-  combatantsHelper = "0xc754d621239b5830264f8c8e302c21ffe48625fc";
-  territoryTreasury = "0x4b1da5984c89312f852c798154a171a5ddc07d43";
-  bankRegistry = "0xf213febd3889c5bf18086356e7eff79e2a9fe391";
-  bankFactory = "0x76af5869f1b902f7a16c128a1daa7734819ec327";
-  activityPoints = "0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2";
-  marketplace = "0x7ba7b9193883e944645fc41d4a16c9516c6c5dc1";
-  cosmetics = "0xb30b177b6c8c21370a72d7cada5f627519c91432";
-  globalEvent = "0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2";
-  blackMarketTrader = "0x4f9911214d811b5acdc4d1911067f614e81c808e";
-  usageBasedSessionModule = "0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7";
-  gameSubsidisationRegistry = "0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30";
-  petNFTReroll = "0x85b9e4e41998910d398553ba5690938094a56463";
-  orderbookV2 = "0xf114eff305cdac968ff276494ec69379170ed570";
-  subsidySigners = [
-    "0x6c980c2F2113a99EDC2625503fBEE96d38441f01",
-    "0x26a30b8Cc05A6773C5251A8A5Aa4E1f4965CDE5A",
-    "0xF62ACe4bE570834daaDDcd48CE1Be30845BC9aa1",
-    "0x6610F8bC65A4dB8A038F0e217ceD8c0d21658D02",
-    "0xF2C54Ebcf54AC6a429D7C4847063973D9D2c3B5c",
-  ];
-} else {
-  bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
-  worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
-  randomnessBeacon = "0x7695be7272f3d223a40fc3c0499053f81c17cb65";
-  dailyRewardsScheduler = "0x16ba02365efcb5dacc46fe743c46d37a93997575";
-  treasury = "0xdd744b66bb24a01a4ec62287f3d0d91fee37f8b1";
-  shop = "0xb3778f2c24d94e3c7cfe608388bd35bba9401caa";
-  royaltyReceiver = "0x5fce65360e0acdfcec0153bda8c412a7631d47a2";
-  adminAccess = "0xc06b7bb82b6312c1c2c2de3e375f04d97e80de57";
-  itemNFTLibrary = "0x324aaf9d7c8d6914615ed6eef05b8bed69a2aba2";
-  itemNFT = "0x8ee7d355f76fb5621ee89bca431ba0cd39fe14c5";
-  bazaar = "0xae4bd229721ff40c07162c1720e060a2a5c89ff6";
-  estforLibrary = "0x96977118842d6f209f9442e76d7de04d393480d8";
-  playerNFT = "0xbf5eed84c0cdff089c9dd6086ddf805d111ef35b";
-  quests = "0xd896af0dd1d3533d5d86d4be52df9546a97ddb4d";
-  clans = "0x84d9d334c5b64fcbcb17d6b853a0434818d052bb";
-  wishingWell = "0xb2570777de043adbc7bfcc4bfed747e2e44fbeea";
-  bank = "0x72598e7d7a6652ebb29026f83512bce1455999f6";
-  petNFTLibrary = "0xbF954C371371e9Ed098D47a3b97f6C5F3b39C867";
-  petNFT = "0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082";
-  playersLibrary = "0xfa7B7e2167BDd85Faf02B2d5E42b0601374E9edc";
-  playersImplQueueActions = "0xd844ae181bdf6e692f4471fb8ac1b662991da437";
-  playersImplProcessActions = "0xb477e10c218449938ce71f534acbe3844d48e3e2";
-  playersImplRewards = "0x64bb6d65b5e504b8850a504810d17097b44bbdbc";
-  playersImplMisc = "0xc2c39b301256279912586edda82adf793124b70a";
-  playersImplMisc1 = "0x0c5d8a7fb1df73f4a3fd4769f581dbe632b3c02f";
-  players = "0x4f60948bea953693b4dcd7ea414a2198c3646c97";
-  promotionsLibrary = "0xaf79ca769a02381daca6f7736c51e3ad01ac571c";
-  promotions = "0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab";
-  passiveActions = "0x0b577a40b8e69614bd2f6687349ba69c0d1f7113";
-  instantActions = "0x76928633cfbf043bca1f6b8ffe634f4c63dbd90d";
-  instantVRFActions = "0x007247ab8fbae2b07f5adf3e70a141459c89264e";
-  genericInstantVRFActionStrategy = "0x2e66bf22e21aee0986602dd2c7265a5470ec9962";
-  eggInstantVRFActionStrategy = "0xd9deebc6ca8b75f8e4de7b4e96a4d8b7e2b3607e";
-  bankRelay = "0xd6cdc1d365e505f0546361782c4336c829c39568";
-  pvpBattleground = "0xe91a6cdac47dfd546578273253bff1fddc350764";
-  raids = "0xbfd416e76519cf199dd95b82f6928b3a4b5ac995";
-  clanBattleLibrary = "0x58e99f6ed3bfb9e9311d9297e48310c3c8aea178";
-  lockedBankVaultsLibrary = "0x080ca5bb70759b993676a4dc88c2e36125d83661";
-  lockedBankVaults = "0x9451943d38ac8cde8a2a8026adb8b28ac089b2cb";
-  territories = "0xa2ca7daad4b86819c455fafc704d727a23c5a513";
-  combatantsHelper = "0x7fa2b4c19093e0777d72235ea28d302f53227fa0";
-  territoryTreasury = "0x5d1429f842891ea0ed80e856762b48bc117ac2a8";
-  bankRegistry = "0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6";
-  bankFactory = "0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c";
-  activityPoints = "0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a";
-  marketplace = "0x3935866043766b86f30593bd17a787cc0105f7e0";
-  cosmetics = "0x9ac94b923333406d1c8b390ab606f90d6526c187";
-  globalEvent = "0x8d61f3135a9f39b685b9765976e6a0f0572aeca5";
-  blackMarketTrader = "0xac619719cdcf1fc03438c7b9aff737993feae851";
-  usageBasedSessionModule = "0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e4";
-  gameSubsidisationRegistry = "0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0";
-  petNFTReroll = "0x2885167EA2386c272C22977456c3d4d8f7a12ff7";
-  orderbookV2 = "0xe2fbd6923dccec4f212e0a040806d099f744f07b";
-  subsidySigners = [
-    "0xd774bf717A0AfC12F511728Abe06a37e437923D2",
-    "0x2047f1aaEb79CbDC51c730D3dc121EE76E5e1F14",
-    "0x5B6283015D5eFCca3f268f4D805F961209BaCa70",
-    "0x1C88Ba0C339a87d7cd9826065A93079cA47D0e15",
-    "0x85A05274359dAAF8615b0362dcde9f1F2bf57f28",
-  ];
-}
+export const WISHING_WELL_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "wishingWell");
+export const PROMOTIONS_LIBRARY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "promotionsLibrary");
+export const PROMOTIONS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "promotions");
+export const QUESTS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "quests");
+export const CLANS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "clans");
+export const BANK_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "bank");
+export const BANK_REGISTRY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "bankRegistry");
+export const BANK_FACTORY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "bankFactory");
+export const BANK_RELAY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "bankRelay");
 
-export const BRIDGE_ADDRESS = bridge;
-export const WORLD_ACTIONS_ADDRESS = worldActions;
-export const RANDOMNESS_BEACON_ADDRESS = randomnessBeacon;
-export const DAILY_REWARDS_SCHEDULER_ADDRESS = dailyRewardsScheduler;
-export const TREASURY_ADDRESS = treasury;
-export const SHOP_ADDRESS = shop;
-export const ROYALTY_RECEIVER_ADDRESS = royaltyReceiver;
-export const ADMIN_ACCESS_ADDRESS = adminAccess;
-export const ITEM_NFT_LIBRARY_ADDRESS = itemNFTLibrary;
-export const ITEM_NFT_ADDRESS = itemNFT;
+export const ESTFOR_LIBRARY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "estforLibrary");
+export const PLAYER_NFT_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "playerNFT");
+export const PLAYERS_LIBRARY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "playersLibrary");
+export const PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "playersImplQueueActions");
+export const PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS = getContractAddress(
+  SELECTED_DEPLOYMENT,
+  "playersImplProcessActions"
+);
+export const PLAYERS_IMPL_REWARDS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "playersImplRewards");
+export const PLAYERS_IMPL_MISC_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "playersImplMisc");
+export const PLAYERS_IMPL_MISC1_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "playersImplMisc1");
+export const PLAYERS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "players");
 
-export const WISHING_WELL_ADDRESS = wishingWell;
-export const PROMOTIONS_LIBRARY_ADDRESS = promotionsLibrary;
-export const PROMOTIONS_ADDRESS = promotions;
-export const QUESTS_ADDRESS = quests;
-export const CLANS_ADDRESS = clans;
-export const BANK_ADDRESS = bank;
-export const BANK_REGISTRY_ADDRESS = bankRegistry;
-export const BANK_FACTORY_ADDRESS = bankFactory;
-export const BANK_RELAY_ADDRESS = bankRelay;
+export const INSTANT_ACTIONS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "instantActions");
+export const INSTANT_VRF_ACTIONS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "instantVRFActions");
+export const GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = getContractAddress(
+  SELECTED_DEPLOYMENT,
+  "genericInstantVRFActionStrategy"
+);
+export const EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = getContractAddress(
+  SELECTED_DEPLOYMENT,
+  "eggInstantVRFActionStrategy"
+);
 
-export const ESTFOR_LIBRARY_ADDRESS = estforLibrary;
-export const PLAYER_NFT_ADDRESS = playerNFT;
-export const PLAYERS_LIBRARY_ADDRESS = playersLibrary;
-export const PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS = playersImplQueueActions;
-export const PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS = playersImplProcessActions;
-export const PLAYERS_IMPL_REWARDS_ADDRESS = playersImplRewards;
-export const PLAYERS_IMPL_MISC_ADDRESS = playersImplMisc;
-export const PLAYERS_IMPL_MISC1_ADDRESS = playersImplMisc1;
-export const PLAYERS_ADDRESS = players;
+export const CLAN_BATTLE_LIBRARY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "clanBattleLibrary");
+export const LOCKED_BANK_VAULTS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "lockedBankVaults");
+export const LOCKED_BANK_VAULTS_LIBRARY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "lockedBankVaultsLibrary");
+export const TERRITORIES_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "territories");
+export const TERRITORY_TREASURY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "territoryTreasury");
+export const COMBATANTS_HELPER_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "combatantsHelper");
 
-export const INSTANT_ACTIONS_ADDRESS = instantActions;
-export const INSTANT_VRF_ACTIONS_ADDRESS = instantVRFActions;
-export const GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = genericInstantVRFActionStrategy;
-export const EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = eggInstantVRFActionStrategy;
+export const PET_NFT_LIBRARY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "petNFTLibrary");
+export const PET_NFT_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "petNFT");
+export const PASSIVE_ACTIONS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "passiveActions");
+export const BAZAAR_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "bazaar");
+export const PVP_BATTLEGROUND_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "pvpBattleground");
+export const RAIDS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "raids");
+export const ACTIVITY_POINTS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "activityPoints");
 
-export const CLAN_BATTLE_LIBRARY_ADDRESS = clanBattleLibrary;
-export const LOCKED_BANK_VAULTS_ADDRESS = lockedBankVaults;
-export const LOCKED_BANK_VAULTS_LIBRARY_ADDRESS = lockedBankVaultsLibrary;
-export const TERRITORIES_ADDRESS = territories;
-export const TERRITORY_TREASURY_ADDRESS = territoryTreasury;
-export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
+export const WFTM_ADDRESS = SELECTED_DEPLOYMENT.externals.wftm;
+export const BRUSH_ADDRESS = SELECTED_DEPLOYMENT.externals.brush;
+export const ROUTER_ADDRESS = SELECTED_DEPLOYMENT.externals.router;
+export const PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS = SELECTED_DEPLOYMENT.externals.paintSwapMarketplaceWhitelist;
+export const MARKETPLACE_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "marketplace");
+export const COSMETICS_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "cosmetics");
+export const USDC_ADDRESS = SELECTED_DEPLOYMENT.externals.usdc;
+export const GLOBAL_EVENT_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "globalEvent");
+export const BLACK_MARKET_TRADER_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "blackMarketTrader");
+export const USAGE_BASED_SESSION_MODULE_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "usageBasedSessionModule");
+export const GAME_SUBSIDISATION_REGISTRY_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "gameSubsidisationRegistry");
+export const PET_NFT_REROLL_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "petNFTReroll");
+export const ORDERBOOK_V2_ADDRESS = getContractAddress(SELECTED_DEPLOYMENT, "orderbookV2");
+export const SUBSIDY_SIGNERS = SELECTED_DEPLOYMENT.subsidySigners;
 
-export const PET_NFT_LIBRARY_ADDRESS = petNFTLibrary;
-export const PET_NFT_ADDRESS = petNFT;
-export const PASSIVE_ACTIONS_ADDRESS = passiveActions;
-export const BAZAAR_ADDRESS = bazaar;
-export const PVP_BATTLEGROUND_ADDRESS = pvpBattleground;
-export const RAIDS_ADDRESS = raids;
-export const ACTIVITY_POINTS_ADDRESS = activityPoints;
-
-export const WFTM_ADDRESS = wftm;
-export const BRUSH_ADDRESS = brush;
-export const ROUTER_ADDRESS = router;
-export const PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS = paintSwapMarketplaceWhitelist;
-export const MARKETPLACE_ADDRESS = marketplace;
-export const COSMETICS_ADDRESS = cosmetics;
-export const USDC_ADDRESS = usdc;
-export const GLOBAL_EVENT_ADDRESS = globalEvent;
-export const BLACK_MARKET_TRADER_ADDRESS = blackMarketTrader;
-export const USAGE_BASED_SESSION_MODULE_ADDRESS = usageBasedSessionModule;
-export const GAME_SUBSIDISATION_REGISTRY_ADDRESS = gameSubsidisationRegistry;
-export const PET_NFT_REROLL_ADDRESS = petNFTReroll;
-export const ORDERBOOK_V2_ADDRESS = orderbookV2;
-export const SUBSIDY_SIGNERS = subsidySigners;
-
-// VRF
-export const VRF_ADDRESS = vrf;
-
-export const DEV_ADDRESS = "0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9";
+export const VRF_ADDRESS = SELECTED_DEPLOYMENT.externals.vrf;
+export const DEV_ADDRESS = SELECTED_DEPLOYMENT.authority.address;

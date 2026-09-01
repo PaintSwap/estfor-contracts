@@ -19,6 +19,7 @@ import path from "path";
 import SafeApiKit from "@safe-global/api-kit";
 import Safe from "@safe-global/protocol-kit";
 import {MetaTransactionData, OperationType} from "@safe-global/types-kit";
+import {getDeploymentIsBeta} from "./deploymentRegistry";
 
 const upgradeToAndCallIface = new ethers.Interface([
   "function upgradeToAndCall(address newImplementation, bytes data) payable",
@@ -308,7 +309,7 @@ export async function generateUniqueBitPositions(
 // Delay function
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const isBeta = process.env.IS_BETA == "true";
+export const isBeta = getDeploymentIsBeta();
 
 // Needs to match that in rewards.sol
 export const TIER_1_DAILY_REWARD_START_XP = 0;
