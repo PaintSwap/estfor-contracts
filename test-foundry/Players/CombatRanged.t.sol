@@ -17,8 +17,8 @@ import {
     PendingQueuedActionState,
     Player
 } from "../../contracts/globals/players.sol";
-import {PlayersBase} from "../../contracts/Players/PlayersBase.sol";
-import {PlayersImplMisc1} from "../../contracts/Players/PlayersImplMisc1.sol";
+import {PlayersBase} from "../interfaces/PlayersBase.sol";
+import {PlayersImplMisc1} from "../interfaces/PlayersImplMisc1.sol";
 import {CombatStyleLibrary} from "../../contracts/libraries/CombatStyleLibrary.sol";
 import {NONE, BASIC_BOW, BRONZE_SWORD} from "../../contracts/globals/items.sol";
 

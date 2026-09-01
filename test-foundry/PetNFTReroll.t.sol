@@ -4,8 +4,8 @@ pragma solidity ^0.8.28;
 import {EstforTest} from "./utils/EstforTest.sol";
 
 import {ItemNFT} from "../contracts/ItemNFT.sol";
-import {PetNFT} from "../contracts/PetNFT.sol";
-import {PetNFTReroll} from "../contracts/PetNFTReroll.sol";
+import {PetNFT} from "./interfaces/PetNFT.sol";
+import {PetNFTReroll} from "./interfaces/PetNFTReroll.sol";
 import {Pet} from "../contracts/globals/pets.sol";
 import {PET_SHARD} from "../contracts/globals/items.sol";
 import {MockVRF} from "../contracts/test/MockVRF.sol";
@@ -24,11 +24,13 @@ contract PetNFTRerollTest is EstforTest {
 
     function setUp() public {
         mockVRF = new MockVRF();
-        PetNFTReroll implementation = new PetNFTReroll();
+        PetNFTReroll implementation = PetNFTReroll(_deployArtifact("contracts/PetNFTReroll.sol:PetNFTReroll:via-ir"));
         reroll = PetNFTReroll(
             _deployUUPS(
                 address(implementation),
-                abi.encodeCall(implementation.initialize, (address(this), ITEM_NFT, PET_NFT, address(mockVRF)))
+                abi.encodeCall(
+                    implementation.initialize, (address(this), address(ITEM_NFT), address(PET_NFT), address(mockVRF))
+                )
             )
         );
 

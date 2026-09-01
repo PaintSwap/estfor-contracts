@@ -1,6 +1,6 @@
 [profile.default]
-# Per-contract optimizer overrides were removed ahead of Sonic's Brio hardfork, which raises the
-# contract size limit (~48kb). All contracts now compile under the single default profile.
+# Sonic's Brio hardfork raises the contract size limit (~48kb), so all profiles share the same
+# optimizer settings. Only sources that exceed legacy-codegen stack limits use the via-ir profile.
 src = "contracts"
 test = "test-foundry"
 out = "out"
@@ -10,7 +10,32 @@ solc = "0.8.28"
 evm_version = "cancun"
 optimizer = true
 optimizer_runs = 9_999_999
-via_ir = true
+via_ir = false
+additional_compiler_profiles = [
+  { name = "via-ir", via_ir = true },
+]
+compilation_restrictions = [
+  { paths = "contracts/Bazaar/OrderBook.sol", via_ir = true },
+  { paths = "contracts/PetNFTLibrary.sol", via_ir = true },
+  { paths = "contracts/Clans/Clans.sol", via_ir = true },
+  { paths = "contracts/Players/PlayersLibrary.sol", via_ir = true },
+  { paths = "contracts/Clans/CombatantsHelper.sol", via_ir = true },
+  { paths = "contracts/Clans/LockedBankVaultsLibrary.sol", via_ir = true },
+  { paths = "contracts/Quests.sol", via_ir = true },
+  { paths = "contracts/PlayerNFT.sol", via_ir = true },
+  { paths = "contracts/PassiveActions.sol", via_ir = true },
+  { paths = "contracts/Session/UsageBasedSessionModule.sol", via_ir = true },
+  { paths = "contracts/test/LockedBankVaultsBattleResultDecoder.sol", via_ir = true },
+]
+libraries = [
+  "contracts/EstforLibrary.sol:EstforLibrary:0x0000000000000000000000000000000000001001",
+  "contracts/ItemNFTLibrary.sol:ItemNFTLibrary:0x0000000000000000000000000000000000001002",
+  "contracts/PetNFTLibrary.sol:PetNFTLibrary:0x0000000000000000000000000000000000001003",
+  "contracts/Players/PlayersLibrary.sol:PlayersLibrary:0x0000000000000000000000000000000000001004",
+  "contracts/PromotionsLibrary.sol:PromotionsLibrary:0x0000000000000000000000000000000000001005",
+  "contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary:0x0000000000000000000000000000000000001006",
+  "contracts/Clans/LockedBankVaultsLibrary.sol:LockedBankVaultsLibrary:0x0000000000000000000000000000000000001007",
+]
 
 # Required by openzeppelin-foundry-upgrades to run upgrade safety validations (the Foundry
 # equivalent of @openzeppelin/hardhat-upgrades' checks, which rely on Hardhat's outputSelection

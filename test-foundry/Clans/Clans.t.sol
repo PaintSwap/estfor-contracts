@@ -5,7 +5,7 @@ import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.so
 import {IERC721Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Clans} from "../../contracts/Clans/Clans.sol";
+import {Clans} from "../interfaces/Clans.sol";
 import {ClanRank} from "../../contracts/globals/clans.sol";
 import {TestERC1155NoRoyalty} from "../../contracts/test/TestERC1155NoRoyalty.sol";
 import {TestERC721} from "../../contracts/test/TestERC721.sol";

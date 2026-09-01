@@ -4,9 +4,9 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {WishingWell} from "../contracts/WishingWell.sol";
-import {Clans} from "../contracts/Clans/Clans.sol";
-import {IPlayersMisc1DelegateView} from "../contracts/interfaces/IPlayersDelegates.sol";
+import {WishingWell} from "./interfaces/WishingWell.sol";
+import {Clans} from "./interfaces/Clans.sol";
+import {PlayersImplMisc1 as IPlayersMisc1DelegateView} from "./interfaces/PlayersImplMisc1.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
 import {IActivityPoints} from "../contracts/ActivityPoints/interfaces/IActivityPoints.sol";
 import {Skill, Attire, CombatStats, BoostType} from "../contracts/globals/misc.sol";
@@ -75,20 +75,20 @@ contract WishingWellTest is FullGameStack {
     }
 
     function testInitializationParams() public {
-        WishingWell implementation = new WishingWell();
+        WishingWell implementation = WishingWell(_deployArtifact("contracts/WishingWell.sol:WishingWell:via-ir"));
         vm.store(address(implementation), INITIALIZABLE_STORAGE, bytes32(0));
         vm.expectEmit(address(implementation));
         emit WishingWell.ClanDonationThreshold(250 ether, CLAN_BOOSTER);
         implementation.initialize(
-            IBrushToken(address(brush)),
-            playerNFT,
+            address(brush),
+            address(playerNFT),
             address(treasury),
             address(randomnessBeacon),
-            clans,
+            address(clans),
             5 ether,
             1000 ether,
             250 ether,
-            IActivityPoints(address(activityPoints))
+            address(activityPoints)
         );
     }
 

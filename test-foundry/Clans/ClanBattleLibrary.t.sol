@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
-import {ClanBattleLibrary} from "../../contracts/Clans/ClanBattleLibrary.sol";
+import {EstforTest} from "../utils/EstforTest.sol";
+import {ClanBattleLibrary} from "../interfaces/ClanBattleLibrary.sol";
 import {Skill} from "../../contracts/globals/misc.sol";
 import {BattleResultEnum} from "../../contracts/globals/clans.sol";
 
@@ -27,7 +27,7 @@ contract ClanBattlePlayersStub {
   }
 }
 
-contract ClanBattleLibraryTest is Test {
+contract ClanBattleLibraryTest is EstforTest {
   uint256 private constant XP_LEVEL_2 = 84;
   uint256 private constant XP_LEVEL_3 = 174;
   uint256 private constant XP_LEVEL_4 = 270;
@@ -39,9 +39,12 @@ contract ClanBattleLibraryTest is Test {
   uint256 private constant XP_LEVEL_99 = 1_035_476;
 
   ClanBattlePlayersStub private players;
+  ClanBattleLibrary private clanBattleLibrary;
 
   function setUp() public {
     vm.warp(30 days);
+    clanBattleLibrary =
+      ClanBattleLibrary(_deployArtifact("contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary:via-ir"));
     players = new ClanBattlePlayersStub();
     for (uint256 i = 1; i <= 40; ++i) {
       players.setLastActiveTimestamp(i, block.timestamp);
@@ -98,7 +101,7 @@ contract ClanBattleLibraryTest is Test {
       uint64[] memory shuffledB
     )
   {
-    return ClanBattleLibrary.determineBattleOutcome(address(players), a, b, skills, words, extraA, extraB);
+    return clanBattleLibrary.determineBattleOutcome(address(players), a, b, skills, words, extraA, extraB);
   }
 
   function testBasicComparisonOfSkillLevel() public view {
@@ -287,7 +290,7 @@ contract ClanBattleLibraryTest is Test {
     uint256[] memory words = new uint256[](5);
     words[2] = 1;
     vm.expectRevert(ClanBattleLibrary.NotEnoughRandomWords.selector);
-    ClanBattleLibrary.determineBattleOutcome(
+    clanBattleLibrary.determineBattleOutcome(
       address(players),
       _members(17, 1),
       _members(17, 1),
@@ -300,7 +303,7 @@ contract ClanBattleLibraryTest is Test {
 
   function testRejectsTooManyAttackersOrDefenders() public {
     vm.expectRevert(ClanBattleLibrary.TooManyAttackers.selector);
-    ClanBattleLibrary.determineBattleOutcome(
+    clanBattleLibrary.determineBattleOutcome(
       address(players),
       _members(33, 1),
       _members(1, 1),
@@ -310,7 +313,7 @@ contract ClanBattleLibraryTest is Test {
       0
     );
     vm.expectRevert(ClanBattleLibrary.TooManyDefenders.selector);
-    ClanBattleLibrary.determineBattleOutcome(
+    clanBattleLibrary.determineBattleOutcome(
       address(players),
       _members(1, 1),
       _members(33, 1),

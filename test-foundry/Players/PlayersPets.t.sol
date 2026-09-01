@@ -2,9 +2,9 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {PetNFT} from "../../contracts/PetNFT.sol";
-import {PlayersBase} from "../../contracts/Players/PlayersBase.sol";
-import {PlayersLibrary} from "../../contracts/Players/PlayersLibrary.sol";
+import {PetNFT} from "../interfaces/PetNFT.sol";
+import {PlayersBase} from "../interfaces/PlayersBase.sol";
+import {PlayersLibrary} from "../interfaces/PlayersLibrary.sol";
 import {Skill, Attire, CombatStyle, CombatStats} from "../../contracts/globals/misc.sol";
 import {PetSkin, PetEnhancementType, Pet} from "../../contracts/globals/pets.sol";
 import {

@@ -3,8 +3,8 @@ pragma solidity ^0.8.28;
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
 import {Bank} from "../../contracts/Clans/Bank.sol";
-import {BankRelay} from "../../contracts/Clans/BankRelay.sol";
-import {Clans} from "../../contracts/Clans/Clans.sol";
+import {BankRelay} from "../interfaces/BankRelay.sol";
+import {Clans} from "../interfaces/Clans.sol";
 import {ClanRank} from "../../contracts/globals/clans.sol";
 import {BulkTransferInfo} from "../../contracts/globals/items.sol";
 import {EquipPosition, ItemInput} from "../../contracts/globals/players.sol";

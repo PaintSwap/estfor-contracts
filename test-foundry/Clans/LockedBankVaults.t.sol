@@ -4,13 +4,17 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Clans} from "../../contracts/Clans/Clans.sol";
+import {Clans} from "../interfaces/Clans.sol";
 import {ClanRank, ClanBattleInfo} from "../../contracts/globals/clans.sol";
 import {Skill} from "../../contracts/globals/misc.sol";
 import {ItemInput, EquipPosition} from "../../contracts/globals/players.sol";
 import {BoostType} from "../../contracts/globals/misc.sol";
-import {LockedBankVaults} from "../../contracts/Clans/LockedBankVaults.sol";
-import {LockedBankVaultsLibrary} from "../../contracts/Clans/LockedBankVaultsLibrary.sol";
+import {LockedBankVaults} from "../interfaces/LockedBankVaults.sol";
+import {LockedBankVaultsLibrary} from "../interfaces/LockedBankVaultsLibrary.sol";
+import {
+    ILockedBankVaultsBattleResultDecoder,
+    LockedBankVaultsBattleResultData
+} from "../../contracts/test/interfaces/LockedBankVaultsBattleResultDecoder.sol";
 
 contract LockedBankVaultsTest is FullGameStack {
     uint256 internal constant CLAN_ID = 1;
@@ -38,6 +42,7 @@ contract LockedBankVaultsTest is FullGameStack {
     uint256 internal kikiPlayerId;
     uint256 internal lucyPlayerId;
     uint256 internal ownerPlayerId;
+    ILockedBankVaultsBattleResultDecoder private battleResultDecoder;
 
     bytes32 internal constant BATTLE_RESULT_TOPIC = keccak256(
         "BattleResult(uint256,uint64[],uint64[],uint256[],uint256[],uint8[],uint8[],bool,uint256,uint256,uint256[],uint256,uint256,int256,int256,uint256)"
@@ -45,6 +50,11 @@ contract LockedBankVaultsTest is FullGameStack {
 
     function setUp() public {
         deployFullGame();
+        battleResultDecoder = ILockedBankVaultsBattleResultDecoder(
+            _deployArtifact(
+                "contracts/test/LockedBankVaultsBattleResultDecoder.sol:LockedBankVaultsBattleResultDecoder:via-ir"
+            )
+        );
         vm.deal(address(lockedBankVaults), 100 ether);
         vm.deal(address(this), 1000 ether);
         vm.deal(ALICE, 1000 ether);
@@ -527,7 +537,7 @@ contract LockedBankVaultsTest is FullGameStack {
             uint256 attackCost = lockedBankVaults.getAttackCost();
             vm.prank(ALICE);
             lockedBankVaults.attackVaults{value: attackCost}(CLAN_ID, bobClanId, SHARPENED_CLAW, playerId);
-            BattleResultData[] memory results = _fulfillBattleResults(i, 0, false);
+            LockedBankVaultsBattleResultData[] memory results = _fulfillBattleResults(i, 0, false);
             for (uint256 j; j < results.length; ++j) {
                 if (results[j].attackingRolls[0] > highestRoll) {
                     highestRoll = results[j].attackingRolls[0];
@@ -1713,75 +1723,22 @@ contract LockedBankVaultsTest is FullGameStack {
         lockedBankVaults.attackVaults{value: attackCost}(bobClanId, CLAN_ID, 0, bobPlayerId);
 
         // If the ClanBattleLibrary battle outcome function has not changed, this seed should give the expected result
-        BattleResultData[] memory results = _fulfillBattleResults(1, 2, true);
+        LockedBankVaultsBattleResultData[] memory results = _fulfillBattleResults(1, 2, true);
         assertEq(_toU256(results[results.length - 1].attackingPlayerIds), _uints(charliePlayerId, bobPlayerId));
         assertEq(_toU256(results[results.length - 1].defendingPlayerIds), _uints(ownerPlayerId, playerId));
     }
 
-    struct BattleResultData {
-        uint256 requestId;
-        uint64[] attackingPlayerIds;
-        uint64[] defendingPlayerIds;
-        uint256[] attackingRolls;
-        uint256[] defendingRolls;
-        uint8[] battleResults;
-        uint8[] randomSkills;
-        bool didAttackersWin;
-        uint256 attackingClanId;
-        uint256 defendingClanId;
-        uint256[] randomWords;
-        uint256 percentageToTake;
-        uint256 brushLost;
-        int256 attackingMMRDiff;
-        int256 defendingMMRDiff;
-        uint256 clanXPGainedWinner;
-    }
-
-    function _decodeBattleResult(Vm.Log memory log) private pure returns (BattleResultData memory result) {
-        (
-            result.requestId,
-            result.attackingPlayerIds,
-            result.defendingPlayerIds,
-            result.attackingRolls,
-            result.defendingRolls,
-            result.battleResults,
-            result.randomSkills,
-            result.didAttackersWin,
-            result.attackingClanId,
-            result.defendingClanId,
-            result.randomWords,
-            result.percentageToTake,
-            result.brushLost,
-            result.attackingMMRDiff,
-            result.defendingMMRDiff,
-            result.clanXPGainedWinner
-        ) =
-            abi.decode(
-                log.data,
-                (
-                    uint256,
-                    uint64[],
-                    uint64[],
-                    uint256[],
-                    uint256[],
-                    uint8[],
-                    uint8[],
-                    bool,
-                    uint256,
-                    uint256,
-                    uint256[],
-                    uint256,
-                    uint256,
-                    int256,
-                    int256,
-                    uint256
-                )
-            );
+    function _decodeBattleResult(Vm.Log memory log)
+        private
+        view
+        returns (LockedBankVaultsBattleResultData memory result)
+    {
+        return battleResultDecoder.decode(log.data);
     }
 
     function _fulfillBattleResults(uint256 requestId, uint256 seed, bool seeded)
         private
-        returns (BattleResultData[] memory results)
+        returns (LockedBankVaultsBattleResultData[] memory results)
     {
         vm.recordLogs();
         if (seeded) {
@@ -1796,7 +1753,7 @@ contract LockedBankVaultsTest is FullGameStack {
                 ++count;
             }
         }
-        results = new BattleResultData[](count);
+        results = new LockedBankVaultsBattleResultData[](count);
         uint256 index;
         for (uint256 i; i < logs.length; ++i) {
             if (logs[i].topics[0] == BATTLE_RESULT_TOPIC) {

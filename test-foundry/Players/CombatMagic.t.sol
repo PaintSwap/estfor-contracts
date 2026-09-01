@@ -19,8 +19,8 @@ import {
     Player
 } from "../../contracts/globals/players.sol";
 import {NONE, SHADOW_SCROLL} from "../../contracts/globals/items.sol";
-import {PlayersBase} from "../../contracts/Players/PlayersBase.sol";
-import {PlayersImplMisc1} from "../../contracts/Players/PlayersImplMisc1.sol";
+import {PlayersBase} from "../interfaces/PlayersBase.sol";
+import {PlayersImplMisc1} from "../interfaces/PlayersImplMisc1.sol";
 
 contract CombatMagicTest is CombatTestBase {
     uint16 private constant IRON_GAUNTLETS = 2_102;

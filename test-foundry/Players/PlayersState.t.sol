@@ -4,10 +4,10 @@ pragma solidity ^0.8.28;
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Players} from "../../contracts/Players/Players.sol";
-import {PlayersBase} from "../../contracts/Players/PlayersBase.sol";
-import {PlayersImplMisc1} from "../../contracts/Players/PlayersImplMisc1.sol";
-import {Quests} from "../../contracts/Quests.sol";
+import {Players} from "../interfaces/Players.sol";
+import {PlayersBase} from "../interfaces/PlayersBase.sol";
+import {PlayersImplMisc1} from "../interfaces/PlayersImplMisc1.sol";
+import {Quests} from "../interfaces/Quests.sol";
 import {
     Player,
     AvatarInfo,

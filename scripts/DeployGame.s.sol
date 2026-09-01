@@ -286,28 +286,7 @@ contract DeployGame is Script {
             "players",
             "out/Players.sol/Players.json",
             "",
-            _initializer(
-                "players",
-                _a(
-                    itemNFT,
-                    playerNFT,
-                    petNFT,
-                    worldActions,
-                    randomnessBeacon,
-                    dailyRewardsScheduler,
-                    adminAccess,
-                    quests,
-                    clans,
-                    wishingWell,
-                    playersImplQueueActions,
-                    playersImplProcessActions,
-                    playersImplRewards,
-                    playersImplMisc,
-                    playersImplMisc1,
-                    bridge,
-                    activityPoints
-                )
-            )
+            _initializer("players", _playersInitializerAddresses())
         );
         promotions = _uups(
             "promotions",
@@ -750,19 +729,30 @@ contract DeployGame is Script {
         }
         string memory json = vm.readFile(artifact);
         string memory object = vm.parseJsonString(json, ".bytecode.object");
-        object = _link(object, "contracts/EstforLibrary.sol:EstforLibrary", estforLibrary);
-        object = _link(object, "contracts/ItemNFTLibrary.sol:ItemNFTLibrary", itemNFTLibrary);
-        object = _link(object, "contracts/PetNFTLibrary.sol:PetNFTLibrary", petNFTLibrary);
-        object = _link(object, "contracts/Players/PlayersLibrary.sol:PlayersLibrary", playersLibrary);
-        object = _link(object, "contracts/PromotionsLibrary.sol:PromotionsLibrary", promotionsLibrary);
-        object = _link(object, "contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary", clanBattleLibrary);
+        object = _link(object, "contracts/EstforLibrary.sol:EstforLibrary", estforLibrary, address(0x1001));
+        object = _link(object, "contracts/ItemNFTLibrary.sol:ItemNFTLibrary", itemNFTLibrary, address(0x1002));
+        object = _link(object, "contracts/PetNFTLibrary.sol:PetNFTLibrary", petNFTLibrary, address(0x1003));
+        object = _link(object, "contracts/Players/PlayersLibrary.sol:PlayersLibrary", playersLibrary, address(0x1004));
+        object =
+            _link(object, "contracts/PromotionsLibrary.sol:PromotionsLibrary", promotionsLibrary, address(0x1005));
         object = _link(
-            object, "contracts/Clans/LockedBankVaultsLibrary.sol:LockedBankVaultsLibrary", lockedBankVaultsLibrary
+            object, "contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary", clanBattleLibrary, address(0x1006)
+        );
+        object = _link(
+            object,
+            "contracts/Clans/LockedBankVaultsLibrary.sol:LockedBankVaultsLibrary",
+            lockedBankVaultsLibrary,
+            address(0x1007)
         );
         return vm.parseBytes(object);
     }
 
-    function _link(string memory object, string memory fullyQualifiedName, address libraryAddress)
+    function _link(
+        string memory object,
+        string memory fullyQualifiedName,
+        address libraryAddress,
+        address configuredLibraryAddress
+    )
         private
         pure
         returns (string memory)
@@ -770,9 +760,14 @@ contract DeployGame is Script {
         if (libraryAddress == address(0)) return object;
         string memory hash = vm.toString(keccak256(bytes(fullyQualifiedName)));
         string memory placeholder = string.concat("__$", _slice(hash, 2, 36), "$__");
-        if (!_contains(bytes(object), bytes(placeholder))) return object;
         string memory replacement = _slice(vm.toString(libraryAddress), 2, 42);
-        return vm.replace(object, placeholder, replacement);
+        if (_contains(bytes(object), bytes(placeholder))) return vm.replace(object, placeholder, replacement);
+
+        // Foundry's selective-profile test configuration prelinks artifacts at fixed test addresses.
+        // Replace that address when this deployment script links the artifact for a real network.
+        string memory configured = _slice(vm.toString(configuredLibraryAddress), 2, 42);
+        if (_contains(bytes(object), bytes(configured))) return vm.replace(object, configured, replacement);
+        return object;
     }
 
     function _contains(bytes memory input, bytes memory needle) private pure returns (bool) {
@@ -1010,43 +1005,25 @@ contract DeployGame is Script {
         values[14] = o;
     }
 
-    function _a(
-        address a,
-        address b,
-        address c,
-        address d,
-        address e,
-        address f,
-        address g,
-        address h,
-        address i,
-        address j,
-        address k,
-        address l,
-        address m,
-        address n,
-        address o,
-        address p,
-        address q
-    ) private pure returns (address[] memory values) {
+    function _playersInitializerAddresses() private view returns (address[] memory values) {
         values = new address[](17);
-        values[0] = a;
-        values[1] = b;
-        values[2] = c;
-        values[3] = d;
-        values[4] = e;
-        values[5] = f;
-        values[6] = g;
-        values[7] = h;
-        values[8] = i;
-        values[9] = j;
-        values[10] = k;
-        values[11] = l;
-        values[12] = m;
-        values[13] = n;
-        values[14] = o;
-        values[15] = p;
-        values[16] = q;
+        values[0] = itemNFT;
+        values[1] = playerNFT;
+        values[2] = petNFT;
+        values[3] = worldActions;
+        values[4] = randomnessBeacon;
+        values[5] = dailyRewardsScheduler;
+        values[6] = adminAccess;
+        values[7] = quests;
+        values[8] = clans;
+        values[9] = wishingWell;
+        values[10] = playersImplQueueActions;
+        values[11] = playersImplProcessActions;
+        values[12] = playersImplRewards;
+        values[13] = playersImplMisc;
+        values[14] = playersImplMisc1;
+        values[15] = bridge;
+        values[16] = activityPoints;
     }
 
     function _bools(bool a, bool b) private pure returns (bool[] memory values) {

@@ -2,10 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {EstforTest} from "../utils/EstforTest.sol";
-import {CombatantsHelper} from "../../contracts/Clans/CombatantsHelper.sol";
-import {IClans} from "../../contracts/interfaces/IClans.sol";
-import {ICombatants} from "../../contracts/interfaces/ICombatants.sol";
-import {IPlayers} from "../../contracts/interfaces/IPlayers.sol";
+import {CombatantsHelper} from "../interfaces/CombatantsHelper.sol";
 import {ClanRank} from "../../contracts/globals/clans.sol";
 
 contract CombatantsPlayersStub {
@@ -79,19 +76,20 @@ contract CombatantsHelperTest is EstforTest {
     clans.setRank(CLAN_ID, PLAYER_ID, ClanRank.OWNER);
     clans.setRank(CLAN_ID, OTHER_PLAYER_ID, ClanRank.COMMONER);
 
-    CombatantsHelper implementation = new CombatantsHelper();
+    CombatantsHelper implementation =
+      CombatantsHelper(_deployArtifact("contracts/Clans/CombatantsHelper.sol:CombatantsHelper:via-ir"));
     combatantsHelper = CombatantsHelper(
       _deployUUPS(
         address(implementation),
         abi.encodeCall(
           implementation.initialize,
           (
-            IPlayers(address(players)),
-            IClans(address(clans)),
-            ICombatants(address(territories)),
-            ICombatants(address(lockedVaults)),
-            ICombatants(address(raids)),
-            _deployAdminAccess(_addresses(address(this)), new address[](0)),
+            address(players),
+            address(clans),
+            address(territories),
+            address(lockedVaults),
+            address(raids),
+            address(_deployAdminAccess(_addresses(address(this)), new address[](0))),
             true
           )
         )

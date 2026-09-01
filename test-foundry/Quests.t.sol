@@ -4,18 +4,14 @@ pragma solidity ^0.8.28;
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Quests, QUEST_PURSE_STRINGS} from "../contracts/Quests.sol";
+import {Quests} from "./interfaces/Quests.sol";
+import {QUEST_PURSE_STRINGS} from "../contracts/globals/quests.sol";
 import {QuestInput, Quest, PlayerQuest} from "../contracts/globals/quests.sol";
 import {ActionInput, ActionInfo, ActionQueueStrategy, QueuedActionInput} from "../contracts/globals/actions.sol";
-import {
-    ActionChoiceInput,
-    ItemInput,
-    EquipPosition,
-    PendingQueuedActionState
-} from "../contracts/globals/players.sol";
+import {ActionChoiceInput, ItemInput, EquipPosition, PendingQueuedActionState} from "../contracts/globals/players.sol";
 import {GuaranteedReward, RandomReward, XPThresholdReward} from "../contracts/globals/rewards.sol";
 import {Skill, CombatStyle, CombatStats, Equipment} from "../contracts/globals/misc.sol";
-import {IPlayersMisc1DelegateView} from "../contracts/interfaces/IPlayersDelegates.sol";
+import {PlayersImplMisc1 as IPlayersMisc1DelegateView} from "./interfaces/PlayersImplMisc1.sol";
 import {NONE, SKILL_BOOST} from "../contracts/globals/items.sol";
 
 contract QuestsTest is FullGameStack {

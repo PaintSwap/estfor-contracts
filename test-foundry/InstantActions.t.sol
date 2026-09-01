@@ -4,8 +4,8 @@ pragma solidity ^0.8.28;
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {InstantActions} from "../contracts/InstantActions.sol";
-import {Quests} from "../contracts/Quests.sol";
+import {InstantActions} from "./interfaces/InstantActions.sol";
+import {Quests} from "./interfaces/Quests.sol";
 import {Skill} from "../contracts/globals/misc.sol";
 import {QuestInput, QUEST_PURSE_STRINGS} from "../contracts/globals/quests.sol";
 

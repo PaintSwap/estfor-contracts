@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Clans} from "../contracts/Clans/Clans.sol";
+import {Clans} from "./interfaces/Clans.sol";
 import {UpgradeableBeacon} from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 
 contract FullGameStackTest is FullGameStack {
@@ -50,14 +50,8 @@ contract FullGameStackTest is FullGameStack {
         deployFullGame();
 
         Clans.Tier[] memory tiers = new Clans.Tier[](1);
-        tiers[0] = Clans.Tier({
-            id: 1,
-            maxMemberCapacity: 3,
-            maxBankCapacity: 3,
-            maxImageId: 16,
-            minimumAge: 0,
-            price: 0
-        });
+        tiers[0] =
+            Clans.Tier({id: 1, maxMemberCapacity: 3, maxBankCapacity: 3, maxImageId: 16, minimumAge: 0, price: 0});
         clans.addTiers(tiers);
         assertEq(clans.getTier(1).id, 1);
 

@@ -4,12 +4,16 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Territories} from "../../contracts/Clans/Territories.sol";
-import {Clans} from "../../contracts/Clans/Clans.sol";
-import {CombatantsHelper} from "../../contracts/Clans/CombatantsHelper.sol";
+import {Territories} from "../interfaces/Territories.sol";
+import {Clans} from "../interfaces/Clans.sol";
+import {CombatantsHelper} from "../interfaces/CombatantsHelper.sol";
 import {ClanRank, VaultClanInfo} from "../../contracts/globals/clans.sol";
 import {BoostType, Skill, CombatStats} from "../../contracts/globals/misc.sol";
 import {EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
+import {
+    ILockedBankVaultsBattleResultDecoder,
+    TerritoryBattleResultData
+} from "../../contracts/test/interfaces/LockedBankVaultsBattleResultDecoder.sol";
 
 contract TerritoriesTest is FullGameStack {
     uint256 private constant CLAN_ID = 1;
@@ -29,25 +33,15 @@ contract TerritoriesTest is FullGameStack {
     uint256 private charliePlayerId;
     uint256 private erinPlayerId;
     uint256 private nextClanId = 1;
-
-    struct BattleResultLog {
-        uint256 requestId;
-        uint64[] attackingPlayerIds;
-        uint64[] defendingPlayerIds;
-        uint256[] attackingRolls;
-        uint256[] defendingRolls;
-        uint8[] battleResults;
-        uint8[] randomSkills;
-        bool didAttackersWin;
-        uint256 attackingClanId;
-        uint256 defendingClanId;
-        uint256[] randomWords;
-        uint256 territoryId;
-        uint256 clanXPGainedWinner;
-    }
+    ILockedBankVaultsBattleResultDecoder private eventDecoder;
 
     function setUp() public {
         deployFullGame();
+        eventDecoder = ILockedBankVaultsBattleResultDecoder(
+            _deployArtifact(
+                "contracts/test/LockedBankVaultsBattleResultDecoder.sol:LockedBankVaultsBattleResultDecoder:via-ir"
+            )
+        );
         _fundAndUpgrade(ALICE, playerId);
         ownerPlayerId = _createAndUpgrade(address(this), "Owner");
         bobPlayerId = _createAndUpgrade(BOB, "Bob");
@@ -117,7 +111,7 @@ contract TerritoriesTest is FullGameStack {
         _assign(BOB, bobClanId, bobPlayerId, _ids(bobPlayerId));
         uint256 attackingTimestamp = block.timestamp;
         _attack(BOB, bobClanId, TERRITORY_ID, bobPlayerId);
-        BattleResultLog memory result = _fulfillBattle(2);
+        TerritoryBattleResultData memory result = _fulfillBattle(2);
 
         assertTrue(result.didAttackersWin);
         assertEq(result.attackingClanId, bobClanId);
@@ -136,7 +130,7 @@ contract TerritoriesTest is FullGameStack {
         _assign(BOB, bobClanId, bobPlayerId, _ids(bobPlayerId));
         uint256 attackingTimestamp = block.timestamp;
         _attack(BOB, bobClanId, TERRITORY_ID, bobPlayerId);
-        BattleResultLog memory result = _fulfillBattle(2);
+        TerritoryBattleResultData memory result = _fulfillBattle(2);
 
         assertFalse(result.didAttackersWin);
         assertEq(result.attackingClanId, bobClanId);
@@ -468,7 +462,7 @@ contract TerritoriesTest is FullGameStack {
 
         vm.recordLogs();
         mockVRF.fulfillSeeded(2, address(territories), 1);
-        BattleResultLog memory result = _getBattleResult(vm.getRecordedLogs());
+        TerritoryBattleResultData memory result = _getBattleResult(vm.getRecordedLogs());
         assertEq(result.attackingPlayerIds.length, 2);
         assertEq(result.attackingPlayerIds[0], charliePlayerId);
         assertEq(result.attackingPlayerIds[1], bobPlayerId);
@@ -589,49 +583,16 @@ contract TerritoriesTest is FullGameStack {
         territories.attackTerritory{value: attackCost}(clanId, TERRITORY_ID, leaderId);
     }
 
-    function _fulfillBattle(uint256 requestId) private returns (BattleResultLog memory result) {
+    function _fulfillBattle(uint256 requestId) private returns (TerritoryBattleResultData memory result) {
         vm.recordLogs();
         mockVRF.fulfill(requestId, address(territories));
         result = _getBattleResult(vm.getRecordedLogs());
     }
 
-    function _getBattleResult(Vm.Log[] memory logs) private pure returns (BattleResultLog memory result) {
+    function _getBattleResult(Vm.Log[] memory logs) private view returns (TerritoryBattleResultData memory result) {
         for (uint256 i; i < logs.length; ++i) {
             if (logs[i].topics[0] == BATTLE_RESULT_TOPIC) {
-                (
-                    result.requestId,
-                    result.attackingPlayerIds,
-                    result.defendingPlayerIds,
-                    result.attackingRolls,
-                    result.defendingRolls,
-                    result.battleResults,
-                    result.randomSkills,
-                    result.didAttackersWin,
-                    result.attackingClanId,
-                    result.defendingClanId,
-                    result.randomWords,
-                    result.territoryId,
-                    result.clanXPGainedWinner
-                ) =
-                    abi.decode(
-                        logs[i].data,
-                        (
-                            uint256,
-                            uint64[],
-                            uint64[],
-                            uint256[],
-                            uint256[],
-                            uint8[],
-                            uint8[],
-                            bool,
-                            uint256,
-                            uint256,
-                            uint256[],
-                            uint256,
-                            uint256
-                        )
-                    );
-                return result;
+                return eventDecoder.decodeTerritoryBattleResult(logs[i].data);
             }
         }
         revert("BattleResult not found");

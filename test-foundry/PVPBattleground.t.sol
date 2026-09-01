@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {PVPBattleground} from "../contracts/PVPBattleground.sol";
+import {PVPBattleground} from "./interfaces/PVPBattleground.sol";
 import {MockVRF} from "../contracts/test/MockVRF.sol";
 import {BattleResultEnum} from "../contracts/globals/clans.sol";
 import {Skill} from "../contracts/globals/misc.sol";

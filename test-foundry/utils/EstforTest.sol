@@ -4,7 +4,6 @@ pragma solidity ^0.8.28;
 import {Test} from "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 import {AdminAccess} from "../../contracts/AdminAccess.sol";
 import {DailyRewardsScheduler} from "../../contracts/DailyRewardsScheduler.sol";
@@ -13,12 +12,11 @@ import {RandomnessBeacon} from "../../contracts/RandomnessBeacon.sol";
 import {RoyaltyReceiver} from "../../contracts/RoyaltyReceiver.sol";
 import {Shop} from "../../contracts/Shop.sol";
 import {Treasury} from "../../contracts/Treasury.sol";
-import {OrderBook} from "../../contracts/Bazaar/OrderBook.sol";
+import {OrderBook} from "../interfaces/OrderBook.sol";
 import {IOrderBook} from "../../contracts/Bazaar/interfaces/IOrderBook.sol";
 import {GameSubsidisationRegistry} from "../../contracts/Session/GameSubsidisationRegistry.sol";
-import {UsageBasedSessionModule} from "../../contracts/Session/UsageBasedSessionModule.sol";
+import {UsageBasedSessionModule} from "../interfaces/UsageBasedSessionModule.sol";
 import {IBankFactory} from "../../contracts/interfaces/IBankFactory.sol";
-import {IGameSubsidisationRegistry} from "../../contracts/interfaces/IGameSubsidisationRegistry.sol";
 import {IPlayers} from "../../contracts/interfaces/IPlayers.sol";
 import {IBrushToken} from "../../contracts/interfaces/external/IBrushToken.sol";
 import {IOracleCB} from "../../contracts/interfaces/IOracleCB.sol";
@@ -50,6 +48,14 @@ abstract contract EstforTest is Test, ERC1155Holder {
     uint128 internal constant ORDERBOOK_TICK = 1;
     uint128 internal constant ORDERBOOK_MIN_QUANTITY = 1;
 
+    address private constant ESTFOR_LIBRARY = address(0x1001);
+    address private constant ITEM_NFT_LIBRARY = address(0x1002);
+    address private constant PET_NFT_LIBRARY = address(0x1003);
+    address private constant PLAYERS_LIBRARY = address(0x1004);
+    address private constant PROMOTIONS_LIBRARY = address(0x1005);
+    address private constant CLAN_BATTLE_LIBRARY = address(0x1006);
+    address private constant LOCKED_BANK_VAULTS_LIBRARY = address(0x1007);
+
     RandomnessBeacon internal randomnessBeacon;
     MockVRF internal mockVRF;
     MockBrushToken internal brush;
@@ -68,6 +74,39 @@ abstract contract EstforTest is Test, ERC1155Holder {
     GameSubsidisationRegistry internal gameSubsidisationRegistry;
     UsageBasedSessionModule internal usageBasedSessionModule;
 
+    bool private linkedLibrariesInstalled;
+
+    constructor() {
+        _installLinkedLibraries();
+    }
+
+    function _deployArtifact(string memory artifact) internal returns (address deployed) {
+        _installLinkedLibraries();
+        deployed = vm.deployCode(artifact);
+    }
+
+    function _deployArtifact(string memory artifact, bytes memory constructorArgs) internal returns (address deployed) {
+        _installLinkedLibraries();
+        deployed = vm.deployCode(artifact, constructorArgs);
+    }
+
+    function _installLinkedLibraries() internal {
+        if (linkedLibrariesInstalled) return;
+        linkedLibrariesInstalled = true;
+        vm.etch(ESTFOR_LIBRARY, vm.getDeployedCode("contracts/EstforLibrary.sol:EstforLibrary:via-ir"));
+        vm.etch(ITEM_NFT_LIBRARY, vm.getDeployedCode("contracts/ItemNFTLibrary.sol:ItemNFTLibrary:via-ir"));
+        vm.etch(PET_NFT_LIBRARY, vm.getDeployedCode("contracts/PetNFTLibrary.sol:PetNFTLibrary:via-ir"));
+        vm.etch(PLAYERS_LIBRARY, vm.getDeployedCode("contracts/Players/PlayersLibrary.sol:PlayersLibrary:via-ir"));
+        vm.etch(PROMOTIONS_LIBRARY, vm.getDeployedCode("contracts/PromotionsLibrary.sol:PromotionsLibrary:via-ir"));
+        vm.etch(
+            CLAN_BATTLE_LIBRARY, vm.getDeployedCode("contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary:via-ir")
+        );
+        vm.etch(
+            LOCKED_BANK_VAULTS_LIBRARY,
+            vm.getDeployedCode("contracts/Clans/LockedBankVaultsLibrary.sol:LockedBankVaultsLibrary:via-ir")
+        );
+    }
+
     function _deployUUPS(address implementation, bytes memory initializeData) internal returns (address proxy) {
         proxy = address(new ERC1967Proxy(implementation, initializeData));
     }
@@ -77,13 +116,11 @@ abstract contract EstforTest is Test, ERC1155Holder {
         mockVRF = new MockVRF();
         RandomnessBeacon implementation = new RandomnessBeacon();
         randomnessBeacon = RandomnessBeacon(
-            payable(
-                address(
+            payable(address(
                     new ERC1967Proxy(
                         address(implementation), abi.encodeCall(implementation.initialize, (address(mockVRF)))
                     )
-                )
-            )
+                ))
         );
         vm.deal(address(randomnessBeacon), 1 ether);
     }
@@ -99,8 +136,7 @@ abstract contract EstforTest is Test, ERC1155Holder {
         treasury = Treasury(
             address(
                 new ERC1967Proxy(
-                    address(implementation),
-                    abi.encodeCall(implementation.initialize, (IBrushToken(address(brush))))
+                    address(implementation), abi.encodeCall(implementation.initialize, (IBrushToken(address(brush))))
                 )
             )
         );
@@ -150,15 +186,13 @@ abstract contract EstforTest is Test, ERC1155Holder {
         MockRouter router = new MockRouter();
         RoyaltyReceiver royaltyReceiverImplementation = new RoyaltyReceiver();
         royaltyReceiver = RoyaltyReceiver(
-            payable(
-                _deployUUPS(
+            payable(_deployUUPS(
                     address(royaltyReceiverImplementation),
                     abi.encodeCall(
                         RoyaltyReceiver.initialize,
                         (ISolidlyRouter(address(router)), address(shop), DEV, IBrushToken(address(brush)), ALICE)
                     )
-                )
-            )
+                ))
         );
 
         adminAccess = AdminAccess(
@@ -186,20 +220,14 @@ abstract contract EstforTest is Test, ERC1155Holder {
         erc1155 = new TestERC1155(ROYALTY_RECIPIENT);
         mockItemNFT = new MockItemNFT();
 
-        OrderBook orderBookImplementation = new OrderBook();
+        OrderBook orderBookImplementation =
+            OrderBook(_deployArtifact("contracts/Bazaar/OrderBook.sol:OrderBook:via-ir"));
         orderBook = OrderBook(
             _deployUUPS(
                 address(orderBookImplementation),
                 abi.encodeCall(
                     OrderBook.initialize,
-                    (
-                        IERC1155(address(erc1155)),
-                        address(brush),
-                        DEV,
-                        uint16(30),
-                        uint8(30),
-                        ORDERBOOK_MAX_ORDERS_PER_PRICE
-                    )
+                    (address(erc1155), address(brush), DEV, uint16(30), uint8(30), ORDERBOOK_MAX_ORDERS_PER_PRICE)
                 )
             )
         );
@@ -231,17 +259,14 @@ abstract contract EstforTest is Test, ERC1155Holder {
             )
         );
 
-        UsageBasedSessionModule moduleImplementation = new UsageBasedSessionModule();
+        UsageBasedSessionModule moduleImplementation = UsageBasedSessionModule(
+            _deployArtifact("contracts/Session/UsageBasedSessionModule.sol:UsageBasedSessionModule:via-ir")
+        );
         usageBasedSessionModule = UsageBasedSessionModule(
-            payable(
-                _deployUUPS(
+            payable(_deployUUPS(
                     address(moduleImplementation),
-                    abi.encodeCall(
-                        moduleImplementation.initialize,
-                        (address(this), IGameSubsidisationRegistry(address(gameSubsidisationRegistry)))
-                    )
-                )
-            )
+                    abi.encodeCall(moduleImplementation.initialize, (address(this), address(gameSubsidisationRegistry)))
+                ))
         );
     }
 

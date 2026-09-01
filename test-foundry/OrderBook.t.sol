@@ -9,7 +9,7 @@ import {
 } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardTransientUpgradeable.sol";
 
 import {EstforTest} from "./utils/EstforTest.sol";
-import {OrderBook} from "../contracts/Bazaar/OrderBook.sol";
+import {OrderBook} from "./interfaces/OrderBook.sol";
 import {IOrderBook} from "../contracts/Bazaar/interfaces/IOrderBook.sol";
 import {TestERC721} from "../contracts/test/TestERC721.sol";
 import {TestERC1155NoRoyalty} from "../contracts/test/TestERC1155NoRoyalty.sol";
@@ -70,21 +70,14 @@ contract OrderBookTest is EstforTest {
     }
 
     function _deploy(uint16 devFee, uint8 burntFee, address dev) private returns (OrderBook deployed) {
-        OrderBook implementation = new OrderBook();
+        OrderBook implementation = _deployOrderBookImplementation();
         deployed = OrderBook(
             address(
                 new ERC1967Proxy(
                     address(implementation),
                     abi.encodeCall(
                         OrderBook.initialize,
-                        (
-                            IERC1155(address(erc1155)),
-                            address(brush),
-                            dev,
-                            devFee,
-                            burntFee,
-                            ORDERBOOK_MAX_ORDERS_PER_PRICE
-                        )
+                        (address(erc1155), address(brush), dev, devFee, burntFee, ORDERBOOK_MAX_ORDERS_PER_PRICE)
                     )
                 )
             )
@@ -101,13 +94,13 @@ contract OrderBookTest is EstforTest {
         _deploy(0, 30, address(0));
 
         TestERC721 erc721 = new TestERC721();
-        OrderBook implementation = new OrderBook();
+        OrderBook implementation = _deployOrderBookImplementation();
         vm.expectRevert(IOrderBook.NotERC1155.selector);
         new ERC1967Proxy(
             address(implementation),
             abi.encodeCall(
                 OrderBook.initialize,
-                (IERC1155(address(erc721)), address(brush), DEV, uint16(30), uint8(30), ORDERBOOK_MAX_ORDERS_PER_PRICE)
+                (address(erc721), address(brush), DEV, uint16(30), uint8(30), ORDERBOOK_MAX_ORDERS_PER_PRICE)
             )
         );
 
@@ -337,21 +330,14 @@ contract OrderBookTest is EstforTest {
 
     function testRoyaltyUpdateSupportsERC1155WithoutERC2981() public {
         TestERC1155NoRoyalty nft = new TestERC1155NoRoyalty();
-        OrderBook implementation = new OrderBook();
+        OrderBook implementation = _deployOrderBookImplementation();
         OrderBook withoutRoyalty = OrderBook(
             address(
                 new ERC1967Proxy(
                     address(implementation),
                     abi.encodeCall(
                         OrderBook.initialize,
-                        (
-                            IERC1155(address(nft)),
-                            address(brush),
-                            address(0),
-                            uint16(0),
-                            uint8(0),
-                            ORDERBOOK_MAX_ORDERS_PER_PRICE
-                        )
+                        (address(nft), address(brush), address(0), uint16(0), uint8(0), ORDERBOOK_MAX_ORDERS_PER_PRICE)
                     )
                 )
             )
@@ -507,7 +493,7 @@ contract OrderBookTest is EstforTest {
     }
 
     function testUpgradeRequiresOwner() public {
-        OrderBook newImplementation = new OrderBook();
+        OrderBook newImplementation = _deployOrderBookImplementation();
         vm.prank(ALICE);
         vm.expectRevert(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, ALICE));
         orderBook.upgradeToAndCall(address(newImplementation), "");
@@ -531,7 +517,7 @@ contract OrderBookTest is EstforTest {
 
     function testERC20CallbackCannotReenterWhileFundingBuyOrder() public {
         TestERC20Reentrancy reentrantToken = new TestERC20Reentrancy();
-        OrderBook implementation = new OrderBook();
+        OrderBook implementation = _deployOrderBookImplementation();
         OrderBook reentrantOrderBook = OrderBook(
             address(
                 new ERC1967Proxy(
@@ -539,7 +525,7 @@ contract OrderBookTest is EstforTest {
                     abi.encodeCall(
                         OrderBook.initialize,
                         (
-                            IERC1155(address(erc1155)),
+                            address(erc1155),
                             address(reentrantToken),
                             DEV,
                             uint16(30),
@@ -559,5 +545,9 @@ contract OrderBookTest is EstforTest {
 
         vm.expectRevert(ReentrancyGuardTransientUpgradeable.ReentrancyGuardReentrantCall.selector);
         reentrantOrderBook.limitOrders(_order(IOrderBook.OrderSide.Buy, PRICE, QUANTITY));
+    }
+
+    function _deployOrderBookImplementation() private returns (OrderBook) {
+        return OrderBook(_deployArtifact("contracts/Bazaar/OrderBook.sol:OrderBook:via-ir"));
     }
 }

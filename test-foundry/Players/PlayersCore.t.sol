@@ -4,9 +4,9 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Players} from "../../contracts/Players/Players.sol";
-import {PlayersBase} from "../../contracts/Players/PlayersBase.sol";
-import {IPlayersMisc1DelegateView} from "../../contracts/interfaces/IPlayersDelegates.sol";
+import {Players} from "../interfaces/Players.sol";
+import {PlayersBase} from "../interfaces/PlayersBase.sol";
+import {PlayersImplMisc1 as IPlayersMisc1DelegateView} from "../interfaces/PlayersImplMisc1.sol";
 import {Skill, Attire, CombatStyle, CombatStats} from "../../contracts/globals/misc.sol";
 import {
     ActionInput,
@@ -36,33 +36,8 @@ contract PlayersCoreTest is FullGameStack {
 
     function testCheckInitialized() public {
         vm.recordLogs();
-        Players implementation = new Players();
-        _deployUUPS(
-            address(implementation),
-            abi.encodeCall(
-                Players.initialize,
-                (
-                    itemNFT,
-                    playerNFT,
-                    petNFT,
-                    worldActions,
-                    randomnessBeacon,
-                    dailyRewardsScheduler,
-                    adminAccess,
-                    quests,
-                    clans,
-                    wishingWell,
-                    playersImplQueueActions,
-                    playersImplProcessActions,
-                    playersImplRewards,
-                    playersImplMisc,
-                    playersImplMisc1,
-                    address(bridge),
-                    activityPoints,
-                    true
-                )
-            )
-        );
+        Players implementation = Players(_deployArtifact("contracts/Players/Players.sol:Players:via-ir"));
+        _deployUUPS(address(implementation), _playersInitializer());
         Vm.Log[] memory logs = vm.getRecordedLogs();
         bytes32 topic = keccak256("SetCombatParams(uint256,uint256,uint256)");
         bool found;

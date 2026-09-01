@@ -7,7 +7,7 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC1155MetadataURI} from "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import {PetNFT} from "../contracts/PetNFT.sol";
+import {PetNFT} from "./interfaces/PetNFT.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
 import {Skill} from "../contracts/globals/misc.sol";
 import {PetSkin, PetEnhancementType} from "../contracts/globals/pets.sol";
@@ -341,23 +341,23 @@ contract PetNFTTest is FullGameStack {
     }
 
     function _deployPetNFT(bool beta) private returns (PetNFT target) {
-        PetNFT implementation = new PetNFT();
+        PetNFT implementation = PetNFT(_deployArtifact("contracts/PetNFT.sol:PetNFT:via-ir"));
         target = PetNFT(
             _deployUUPS(
                 address(implementation),
                 abi.encodeCall(
                     PetNFT.initialize,
                     (
-                        IBrushToken(address(brush)),
+                        address(brush),
                         address(royaltyReceiver),
                         "ipfs://",
                         DEV,
                         uint72(EDIT_NAME_COST),
                         address(treasury),
-                        randomnessBeacon,
+                        address(randomnessBeacon),
                         uint40(1),
                         address(bridge),
-                        adminAccess,
+                        address(adminAccess),
                         beta
                     )
                 )

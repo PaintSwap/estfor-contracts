@@ -4,10 +4,10 @@ pragma solidity ^0.8.28;
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-import {PlayerNFT} from "../contracts/PlayerNFT.sol";
+import {PlayerNFT} from "./interfaces/PlayerNFT.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
-import {PlayersBase} from "../contracts/Players/PlayersBase.sol";
-import {PlayersImplMisc1} from "../contracts/Players/PlayersImplMisc1.sol";
+import {PlayersBase} from "./interfaces/PlayersBase.sol";
+import {PlayersImplMisc1} from "./interfaces/PlayersImplMisc1.sol";
 import {Player, PlayerInfo, AvatarInfo} from "../contracts/globals/players.sol";
 import {Skill} from "../contracts/globals/misc.sol";
 import {
@@ -30,7 +30,7 @@ contract PlayerNFTTest is FullGameStack {
     }
 
     function testCheckInitializationParams() public {
-        PlayerNFT implementation = new PlayerNFT();
+        PlayerNFT implementation = PlayerNFT(_deployArtifact("contracts/PlayerNFT.sol:PlayerNFT:via-ir"));
         vm.expectEmit(false, false, false, true);
         emit PlayerNFT.EditNameCost(EDIT_COST);
         vm.expectEmit(false, false, false, true);
@@ -40,7 +40,7 @@ contract PlayerNFTTest is FullGameStack {
             abi.encodeCall(
                 PlayerNFT.initialize,
                 (
-                    IBrushToken(address(brush)),
+                    address(brush),
                     address(shop),
                     DEV,
                     address(royaltyReceiver),

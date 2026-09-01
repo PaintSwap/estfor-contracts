@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test} from "forge-std/Test.sol";
+import {EstforTest} from "./utils/EstforTest.sol";
 import {EstforLibrary} from "../contracts/EstforLibrary.sol";
 
-contract EstforLibraryTest is Test {
+contract EstforLibraryTest is EstforTest {
     string private constant UPPER_CASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     string private constant LOWER_CASE_LETTERS = "abcdefghijklmnopqrstuvwxyz";
     string private constant DIGITS = "0123456789";

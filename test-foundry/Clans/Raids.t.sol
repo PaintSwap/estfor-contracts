@@ -6,13 +6,17 @@ import {stdError} from "forge-std/StdError.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {Raids} from "../../contracts/Clans/Raids.sol";
-import {Clans} from "../../contracts/Clans/Clans.sol";
+import {Raids} from "../interfaces/Raids.sol";
+import {Clans} from "../interfaces/Clans.sol";
 import {Skill, CombatStats} from "../../contracts/globals/misc.sol";
 import {ClanRank} from "../../contracts/globals/clans.sol";
 import {ActionInput, ActionInfo, ACTIONCHOICE_MELEE_BASIC_SWORD} from "../../contracts/globals/actions.sol";
 import {ActionChoiceInput, EquipPosition, ItemInput} from "../../contracts/globals/players.sol";
 import {RAID_PASS, COMBAT_BASE} from "../../contracts/globals/items.sol";
+import {
+    ILockedBankVaultsBattleResultDecoder,
+    RaidBattleOutcomeData
+} from "../../contracts/test/interfaces/LockedBankVaultsBattleResultDecoder.sol";
 
 contract RaidsTest is FullGameStack {
     uint256 private constant CLAN_ID = 1;
@@ -21,9 +25,15 @@ contract RaidsTest is FullGameStack {
     bytes32 private constant OUTCOME_TOPIC = keccak256(
         "RaidBattleOutcome(uint256,uint256,uint256,uint256,uint256,uint16[],uint256,bool,uint256[],uint256[])"
     );
+    ILockedBankVaultsBattleResultDecoder private eventDecoder;
 
     function setUp() public {
         deployFullGame();
+        eventDecoder = ILockedBankVaultsBattleResultDecoder(
+            _deployArtifact(
+                "contracts/test/LockedBankVaultsBattleResultDecoder.sol:LockedBankVaultsBattleResultDecoder:via-ir"
+            )
+        );
         vm.deal(ALICE, 100 ether);
 
         Clans.Tier[] memory tiers = new Clans.Tier[](2);
@@ -129,7 +139,7 @@ contract RaidsTest is FullGameStack {
         uint256 attackCost = raids.getAttackCost();
         vm.prank(ALICE);
         raids.requestFightRaid{value: attackCost}(uint64(playerId), uint40(CLAN_ID), 1, 0);
-        Outcome memory out = _fulfillOutcome(2, 0, false);
+        RaidBattleOutcomeData memory out = _fulfillOutcome(2, 0, false);
         assertGe(out.raidId, 1);
         assertLe(out.raidId, 3);
         assertEq(out.clanId, CLAN_ID);
@@ -150,7 +160,7 @@ contract RaidsTest is FullGameStack {
         vm.expectEmit(false, false, false, true, address(raids));
         emit Raids.RequestFightRaid(playerId, uint56(CLAN_ID), 1, 2);
         _requestFight();
-        Outcome memory out = _fulfillOutcome(2, 100_000, true);
+        RaidBattleOutcomeData memory out = _fulfillOutcome(2, 100_000, true);
         assertGe(out.raidId, 1);
         assertLe(out.raidId, 3);
         assertEq(out.clanId, CLAN_ID);
@@ -169,7 +179,7 @@ contract RaidsTest is FullGameStack {
     function testCheckRandomRewards() public {
         _winningFightSetup(1);
         _requestFight();
-        Outcome memory out = _fulfillOutcome(2, 100_000, true);
+        RaidBattleOutcomeData memory out = _fulfillOutcome(2, 100_000, true);
         assertTrue(out.bossChoiceId != 1);
         assertTrue(out.defeatedRaid);
         assertGt(out.lootTokenIds.length, 0);
@@ -197,7 +207,7 @@ contract RaidsTest is FullGameStack {
         _mintBank(COOKED_MINNUS, 100_000);
         _spawn();
         _requestFight();
-        Outcome memory out = _fulfillOutcome(2, 0, false);
+        RaidBattleOutcomeData memory out = _fulfillOutcome(2, 0, false);
         assertTrue(out.defeatedRaid);
         assertGt(out.lootTokenIds.length, 0);
     }
@@ -268,43 +278,17 @@ contract RaidsTest is FullGameStack {
         raids.addBaseRaids(_uints(1), _baseRaids(raid));
     }
 
-    struct Outcome {
-        uint256 clanId;
-        uint256 raidId;
-        uint256 requestId;
-        uint256 regenerateId;
-        uint256 regenerateAmountUsed;
-        uint16[] choiceIds;
-        uint256 bossChoiceId;
-        bool defeatedRaid;
-        uint256[] lootTokenIds;
-        uint256[] lootTokenAmounts;
-    }
-
-    function _fulfillOutcome(uint256 requestId, uint256 seed, bool seeded) private returns (Outcome memory out) {
+    function _fulfillOutcome(uint256 requestId, uint256 seed, bool seeded)
+        private
+        returns (RaidBattleOutcomeData memory out)
+    {
         vm.recordLogs();
         if (seeded) mockVRF.fulfillSeeded(requestId, address(raids), seed);
         else mockVRF.fulfill(requestId, address(raids));
         Vm.Log[] memory logs = vm.getRecordedLogs();
         for (uint256 i; i < logs.length; ++i) {
             if (logs[i].topics[0] == OUTCOME_TOPIC) {
-                (
-                    out.clanId,
-                    out.raidId,
-                    out.requestId,
-                    out.regenerateId,
-                    out.regenerateAmountUsed,
-                    out.choiceIds,
-                    out.bossChoiceId,
-                    out.defeatedRaid,
-                    out.lootTokenIds,
-                    out.lootTokenAmounts
-                ) =
-                    abi.decode(
-                        logs[i].data,
-                        (uint256, uint256, uint256, uint256, uint256, uint16[], uint256, bool, uint256[], uint256[])
-                    );
-                return out;
+                return eventDecoder.decodeRaidOutcome(logs[i].data);
             }
         }
         fail("RaidBattleOutcome not found");

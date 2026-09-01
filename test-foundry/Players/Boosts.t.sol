@@ -4,12 +4,20 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {PlayersBase} from "../../contracts/Players/PlayersBase.sol";
-import {Clans} from "../../contracts/Clans/Clans.sol";
-import {WishingWell} from "../../contracts/WishingWell.sol";
-import {IPlayersMisc1DelegateView} from "../../contracts/interfaces/IPlayersDelegates.sol";
+import {PlayersBase} from "../interfaces/PlayersBase.sol";
+import {Clans} from "../interfaces/Clans.sol";
+import {WishingWell} from "../interfaces/WishingWell.sol";
+import {PlayersImplMisc1 as IPlayersMisc1DelegateView} from "../interfaces/PlayersImplMisc1.sol";
 import {Skill, CombatStyle, CombatStats, BoostType} from "../../contracts/globals/misc.sol";
-import {ActionInput, ActionInfo, ActionQueueStrategy, QueuedActionInput, GUAR_MUL, RATE_MUL, SPAWN_MUL} from "../../contracts/globals/actions.sol";
+import {
+    ActionInput,
+    ActionInfo,
+    ActionQueueStrategy,
+    QueuedActionInput,
+    GUAR_MUL,
+    RATE_MUL,
+    SPAWN_MUL
+} from "../../contracts/globals/actions.sol";
 import {
     ActionChoiceInput,
     BoostInfo,
@@ -98,7 +106,13 @@ contract BoostsTest is FullGameStack {
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 0);
 
@@ -119,14 +133,22 @@ contract BoostsTest is FullGameStack {
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 0);
 
         vm.warp(vm.getBlockTimestamp() + queuedAction.timespan + 2);
         vm.prank(ALICE);
         players.processActions(playerId);
-        assertEq(players.getPlayerXP(playerId, Skill.WOODCUTTING), queuedAction.timespan + (queuedAction.timespan * 10) / 100);
+        assertEq(
+            players.getPlayerXP(playerId, Skill.WOODCUTTING), queuedAction.timespan + (queuedAction.timespan * 10) / 100
+        );
         // Check the drops are as expected
         assertEq(itemNFT.balanceOf(ALICE, LOG), (queuedAction.timespan * rate) / (3600 * GUAR_MUL));
     }
@@ -162,7 +184,13 @@ contract BoostsTest is FullGameStack {
         // 10th consume is skipped while the stabilizer is held
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 2);
         vm.warp(vm.getBlockTimestamp() + 2);
@@ -172,7 +200,13 @@ contract BoostsTest is FullGameStack {
         // 11th consume burns again
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 1);
         assertEq(itemNFT.balanceOf(ALICE, BOOST_STABLILIZER_10), 1);
@@ -209,7 +243,13 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, BOOST_STABLILIZER_10, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
 
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 1);
@@ -225,7 +265,13 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, XP_BOOST, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         vm.warp(vm.getBlockTimestamp() + 86400);
         vm.prank(ALICE);
@@ -253,12 +299,16 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, XP_BOOST, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         vm.prank(ALICE);
-        players.startActions(
-            playerId, _queuedActions(queuedActionFinishAfterBoost), ActionQueueStrategy.OVERWRITE
-        );
+        players.startActions(playerId, _queuedActions(queuedActionFinishAfterBoost), ActionQueueStrategy.OVERWRITE);
         vm.warp(vm.getBlockTimestamp() + queuedActionFinishAfterBoost.timespan);
 
         PendingQueuedActionState memory state = players.getPendingQueuedActionState(ALICE, playerId);
@@ -273,7 +323,13 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, XP_BOOST, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         vm.warp(vm.getBlockTimestamp() + 120);
         bytes32 slotHash = keccak256(abi.encode(playerId, BOOSTS_STORAGE_SLOT));
@@ -294,7 +350,13 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, COMBAT_BOOST, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), COMBAT_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            COMBAT_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
 
         vm.warp(vm.getBlockTimestamp() + queuedAction.timespan);
@@ -318,7 +380,13 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, XP_BOOST, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         vm.warp(vm.getBlockTimestamp() + queuedAction.timespan);
         PendingQueuedActionState memory state = players.getPendingQueuedActionState(ALICE, playerId);
@@ -341,7 +409,13 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, XP_BOOST, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         vm.warp(vm.getBlockTimestamp() + queuedAction.timespan);
         PendingQueuedActionState memory state = players.getPendingQueuedActionState(ALICE, playerId);
@@ -495,7 +569,13 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, XP_BOOST, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
 
         // Currently only minted through donation thresholds
@@ -567,7 +647,8 @@ contract BoostsTest is FullGameStack {
         // Enter raffle again, the previous boost is moved to last with the time used up so far
         vm.expectEmit(address(players));
         emit PlayersBase.UpdateLastExtraBoost(
-            playerId, BoostInfo(uint40(donationTimestamp), uint24(extraBoostedTime), 50, LUCK_OF_THE_DRAW, BoostType.ANY_XP)
+            playerId,
+            BoostInfo(uint40(donationTimestamp), uint24(extraBoostedTime), 50, LUCK_OF_THE_DRAW, BoostType.ANY_XP)
         );
         vm.prank(ALICE);
         players.donate(playerId, raffleCost);
@@ -639,7 +720,10 @@ contract BoostsTest is FullGameStack {
         emit WishingWell.LastClanDonationThreshold(clanId, raffleCost, CLAN_BOOSTER_2);
         vm.expectEmit(address(players));
         emit PlayersBase.ConsumeClanBoostVial(
-            ALICE, playerId, clanId, BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 50, CLAN_BOOSTER, BoostType.ANY_XP)
+            ALICE,
+            playerId,
+            clanId,
+            BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 50, CLAN_BOOSTER, BoostType.ANY_XP)
         );
         vm.prank(ALICE);
         players.startActionsAdvanced(
@@ -648,14 +732,16 @@ contract BoostsTest is FullGameStack {
         uint256 nowTimestamp = vm.getBlockTimestamp();
 
         vm.warp(nowTimestamp + boostDuration / 2 + 1);
-        PendingQueuedActionState memory state = players.getPendingQueuedActionState(ALICE, playerId);
-        // Combat XP only accrues per monster killed, respawn time is 360 seconds (10 spawned per hour)
-        uint256 xpElapsedTime = 360;
-        uint256 meleeXP = xpElapsedTime + (xpElapsedTime * 50) / 100;
-        uint256 healthXP = meleeXP / 3;
-        assertEq(state.equipmentStates.length, 1);
-        assertEq(state.actionMetadatas.length, 1);
-        assertEq(state.actionMetadatas[0].xpGained, meleeXP + healthXP);
+        {
+            PendingQueuedActionState memory state = players.getPendingQueuedActionState(ALICE, playerId);
+            // Combat XP only accrues per monster killed, respawn time is 360 seconds (10 spawned per hour)
+            uint256 xpElapsedTime = 360;
+            uint256 meleeXP = xpElapsedTime + (xpElapsedTime * 50) / 100;
+            uint256 healthXP = meleeXP / 3;
+            assertEq(state.equipmentStates.length, 1);
+            assertEq(state.actionMetadatas.length, 1);
+            assertEq(state.actionMetadatas[0].xpGained, meleeXP + healthXP);
+        }
 
         // Change to the next booster. This is combat XP, so it should give the same overall boost
         // Add bob
@@ -669,7 +755,10 @@ contract BoostsTest is FullGameStack {
         emit WishingWell.LastClanDonationThreshold(clanId, raffleCost * 2, CLAN_BOOSTER_3);
         vm.expectEmit(address(players));
         emit PlayersBase.ConsumeClanBoostVial(
-            BOB, bobPlayerId, clanId, BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 50, CLAN_BOOSTER_2, BoostType.COMBAT_XP)
+            BOB,
+            bobPlayerId,
+            clanId,
+            BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 50, CLAN_BOOSTER_2, BoostType.COMBAT_XP)
         );
         vm.prank(BOB);
         players.donate(bobPlayerId, raffleCost);
@@ -678,43 +767,55 @@ contract BoostsTest is FullGameStack {
         uint256 extraBoostedTime = now1 - nowTimestamp - boostDuration / 2;
 
         vm.warp(nowTimestamp + boostDuration + extraBoostedTime);
+        _assertClanBoostOverride(clanId, now1, nowTimestamp, boostDuration, extraBoostedTime);
 
-        StandardBoostInfo memory clanBoost = _clanBoost(clanId);
-        assertEq(clanBoost.startTime, now1);
-        assertEq(clanBoost.duration, boostDuration);
-        assertEq(clanBoost.value, 50);
-        assertEq(clanBoost.itemTokenId, CLAN_BOOSTER_2);
-        assertEq(uint8(clanBoost.boostType), uint8(BoostType.COMBAT_XP));
-
-        assertEq(clanBoost.lastStartTime, nowTimestamp);
-        assertEq(clanBoost.lastDuration, boostDuration / 2 + extraBoostedTime);
-        assertEq(clanBoost.lastValue, 50);
-        assertEq(clanBoost.lastItemTokenId, CLAN_BOOSTER);
-        assertEq(uint8(clanBoost.lastBoostType), uint8(BoostType.ANY_XP));
-
-        state = players.getPendingQueuedActionState(ALICE, playerId);
-        xpElapsedTime = 720;
-        meleeXP = xpElapsedTime + (uint256(361) * 50) / 100 + (uint256(359) * 50) / 100;
-        healthXP = meleeXP / 3;
-        assertEq(state.equipmentStates.length, 1);
-        assertEq(state.actionMetadatas.length, 1);
-        assertEq(state.actionMetadatas[0].xpGained, meleeXP + healthXP);
+        {
+            PendingQueuedActionState memory state = players.getPendingQueuedActionState(ALICE, playerId);
+            uint256 xpElapsedTime = 720;
+            uint256 meleeXP = xpElapsedTime + (uint256(361) * 50) / 100 + (uint256(359) * 50) / 100;
+            uint256 healthXP = meleeXP / 3;
+            assertEq(state.equipmentStates.length, 1);
+            assertEq(state.actionMetadatas.length, 1);
+            assertEq(state.actionMetadatas[0].xpGained, meleeXP + healthXP);
+        }
 
         // The new boost should be valid from the current time and not include anymore of the old one. So 1.5 boostDuration's worth
         vm.warp(nowTimestamp + boostDuration + boostDuration + extraBoostedTime);
 
-        state = players.getPendingQueuedActionState(ALICE, playerId);
-        xpElapsedTime = 1440;
-        meleeXP = xpElapsedTime + (uint256(361) * 50) / 100 + (720 * 50) / 100;
-        healthXP = meleeXP / 3;
-        assertEq(state.equipmentStates.length, 1);
-        assertEq(state.actionMetadatas.length, 1);
-        assertEq(state.actionMetadatas[0].xpGained, meleeXP + healthXP);
+        {
+            PendingQueuedActionState memory state = players.getPendingQueuedActionState(ALICE, playerId);
+            uint256 xpElapsedTime = 1440;
+            uint256 meleeXP = xpElapsedTime + (uint256(361) * 50) / 100 + (720 * 50) / 100;
+            uint256 healthXP = meleeXP / 3;
+            assertEq(state.equipmentStates.length, 1);
+            assertEq(state.actionMetadatas.length, 1);
+            assertEq(state.actionMetadatas[0].xpGained, meleeXP + healthXP);
 
-        vm.prank(ALICE);
-        players.processActions(playerId);
-        assertEq(players.getPlayerXP(playerId, Skill.MELEE), meleeXP);
-        assertEq(players.getPlayerXP(playerId, Skill.HEALTH), healthXP);
+            vm.prank(ALICE);
+            players.processActions(playerId);
+            assertEq(players.getPlayerXP(playerId, Skill.MELEE), meleeXP);
+            assertEq(players.getPlayerXP(playerId, Skill.HEALTH), healthXP);
+        }
+    }
+
+    function _assertClanBoostOverride(
+        uint256 clanId,
+        uint256 startTime,
+        uint256 lastStartTime,
+        uint256 boostDuration,
+        uint256 extraBoostedTime
+    ) private view {
+        StandardBoostInfo memory clanBoost = _clanBoost(clanId);
+        assertEq(clanBoost.startTime, startTime);
+        assertEq(clanBoost.duration, boostDuration);
+        assertEq(clanBoost.value, 50);
+        assertEq(clanBoost.itemTokenId, CLAN_BOOSTER_2);
+        assertEq(uint8(clanBoost.boostType), uint8(BoostType.COMBAT_XP));
+        assertEq(clanBoost.lastStartTime, lastStartTime);
+        assertEq(clanBoost.lastDuration, boostDuration / 2 + extraBoostedTime);
+        assertEq(clanBoost.lastValue, 50);
+        assertEq(clanBoost.lastItemTokenId, CLAN_BOOSTER);
+        assertEq(uint8(clanBoost.lastBoostType), uint8(BoostType.ANY_XP));
     }
 
     function testGlobalBoostOverrideWithOverlappingBoosts() public {
@@ -723,7 +824,9 @@ contract BoostsTest is FullGameStack {
         uint24 secondBoostDuration = 360;
 
         _addBoostItem(PRAY_TO_THE_BEARDIE, EquipPosition.GLOBAL_BOOST_VIAL, BoostType.ANY_XP, 50, firstBoostDuration);
-        _addBoostItem(PRAY_TO_THE_BEARDIE_2, EquipPosition.GLOBAL_BOOST_VIAL, BoostType.COMBAT_XP, 30, secondBoostDuration);
+        _addBoostItem(
+            PRAY_TO_THE_BEARDIE_2, EquipPosition.GLOBAL_BOOST_VIAL, BoostType.COMBAT_XP, 30, secondBoostDuration
+        );
         _addBoostItem(LUCK_OF_THE_DRAW, EquipPosition.EXTRA_BOOST_VIAL, BoostType.ANY_XP, 0, 720);
 
         (QueuedActionInput memory queuedAction,) = _setupBasicMeleeCombat();
@@ -736,7 +839,9 @@ contract BoostsTest is FullGameStack {
         emit WishingWell.LastGlobalDonationThreshold(nextGlobalThreshold, PRAY_TO_THE_BEARDIE_2);
         vm.expectEmit(address(players));
         emit PlayersBase.ConsumeGlobalBoostVial(
-            ALICE, playerId, BoostInfo(uint40(vm.getBlockTimestamp()), firstBoostDuration, 50, PRAY_TO_THE_BEARDIE, BoostType.ANY_XP)
+            ALICE,
+            playerId,
+            BoostInfo(uint40(vm.getBlockTimestamp()), firstBoostDuration, 50, PRAY_TO_THE_BEARDIE, BoostType.ANY_XP)
         );
         vm.prank(ALICE);
         players.startActionsAdvanced(
@@ -752,7 +857,11 @@ contract BoostsTest is FullGameStack {
         emit WishingWell.LastGlobalDonationThreshold(nextGlobalThreshold * 2, PRAY_TO_THE_BEARDIE_3);
         vm.expectEmit(address(players));
         emit PlayersBase.ConsumeGlobalBoostVial(
-            ALICE, 0, BoostInfo(uint40(vm.getBlockTimestamp()), secondBoostDuration, 30, PRAY_TO_THE_BEARDIE_2, BoostType.COMBAT_XP)
+            ALICE,
+            0,
+            BoostInfo(
+                uint40(vm.getBlockTimestamp()), secondBoostDuration, 30, PRAY_TO_THE_BEARDIE_2, BoostType.COMBAT_XP
+            )
         );
         vm.prank(ALICE);
         players.donate(0, nextGlobalThreshold);
@@ -781,7 +890,9 @@ contract BoostsTest is FullGameStack {
     function testGlobalBoostOverrideCurrentIsNonCombatAndLastIsCombatOnlyUsesLast() public {
         uint24 boostDuration = 720;
         _addBoostItem(PRAY_TO_THE_BEARDIE, EquipPosition.GLOBAL_BOOST_VIAL, BoostType.ANY_XP, 50, boostDuration);
-        _addBoostItem(PRAY_TO_THE_BEARDIE_2, EquipPosition.GLOBAL_BOOST_VIAL, BoostType.NON_COMBAT_XP, 30, boostDuration);
+        _addBoostItem(
+            PRAY_TO_THE_BEARDIE_2, EquipPosition.GLOBAL_BOOST_VIAL, BoostType.NON_COMBAT_XP, 30, boostDuration
+        );
         _addBoostItem(PRAY_TO_THE_BEARDIE_3, EquipPosition.GLOBAL_BOOST_VIAL, BoostType.COMBAT_XP, 10, boostDuration);
         _addBoostItem(LUCK_OF_THE_DRAW, EquipPosition.EXTRA_BOOST_VIAL, BoostType.ANY_XP, 0, boostDuration);
 
@@ -795,7 +906,9 @@ contract BoostsTest is FullGameStack {
         emit WishingWell.LastGlobalDonationThreshold(nextGlobalThreshold, PRAY_TO_THE_BEARDIE_2);
         vm.expectEmit(address(players));
         emit PlayersBase.ConsumeGlobalBoostVial(
-            ALICE, playerId, BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 50, PRAY_TO_THE_BEARDIE, BoostType.ANY_XP)
+            ALICE,
+            playerId,
+            BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 50, PRAY_TO_THE_BEARDIE, BoostType.ANY_XP)
         );
         vm.prank(ALICE);
         players.startActionsAdvanced(
@@ -817,7 +930,9 @@ contract BoostsTest is FullGameStack {
         emit WishingWell.LastGlobalDonationThreshold(nextGlobalThreshold * 2, PRAY_TO_THE_BEARDIE_3);
         vm.expectEmit(address(players));
         emit PlayersBase.ConsumeGlobalBoostVial(
-            ALICE, 0, BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 30, PRAY_TO_THE_BEARDIE_2, BoostType.NON_COMBAT_XP)
+            ALICE,
+            0,
+            BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 30, PRAY_TO_THE_BEARDIE_2, BoostType.NON_COMBAT_XP)
         );
         vm.prank(ALICE);
         players.donate(0, nextGlobalThreshold);
@@ -854,7 +969,9 @@ contract BoostsTest is FullGameStack {
         emit WishingWell.LastGlobalDonationThreshold(nextGlobalThreshold * 3, PRAY_TO_THE_BEARDIE);
         vm.expectEmit(address(players));
         emit PlayersBase.ConsumeGlobalBoostVial(
-            ALICE, 0, BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 10, PRAY_TO_THE_BEARDIE_3, BoostType.COMBAT_XP)
+            ALICE,
+            0,
+            BoostInfo(uint40(vm.getBlockTimestamp()), boostDuration, 10, PRAY_TO_THE_BEARDIE_3, BoostType.COMBAT_XP)
         );
         vm.prank(ALICE);
         players.donate(0, nextGlobalThreshold);
@@ -890,20 +1007,38 @@ contract BoostsTest is FullGameStack {
         itemNFT.mintBatch(ALICE, _uint256s(XP_BOOST, GATHERING_BOOST), _uint256s(2, 2));
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         vm.warp(vm.getBlockTimestamp() + 3600);
 
         // Change to gathering boost
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), GATHERING_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.APPEND
+            playerId,
+            _queuedActions(queuedAction),
+            GATHERING_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.APPEND
         );
         vm.warp(vm.getBlockTimestamp() + 3600 * 6);
         // Back to XP boost
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.APPEND
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.APPEND
         );
         vm.warp(vm.getBlockTimestamp() + 3600);
         vm.prank(ALICE);
@@ -929,7 +1064,13 @@ contract BoostsTest is FullGameStack {
 
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction, queuedAction), XP_BOOST, 0, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction, queuedAction),
+            XP_BOOST,
+            0,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 0);
 
@@ -960,10 +1101,18 @@ contract BoostsTest is FullGameStack {
         vm.warp(vm.getBlockTimestamp() + 1800);
 
         vm.expectEmit(address(players));
-        emit PlayersBase.UpdateLastBoost(playerId, BoostInfo(uint40(nowTimestamp), 1800, 10, XP_BOOST, BoostType.ANY_XP));
+        emit PlayersBase.UpdateLastBoost(
+            playerId, BoostInfo(uint40(nowTimestamp), 1800, 10, XP_BOOST, BoostType.ANY_XP)
+        );
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.KEEP_LAST_IN_PROGRESS
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.KEEP_LAST_IN_PROGRESS
         );
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 0);
 
@@ -1000,7 +1149,13 @@ contract BoostsTest is FullGameStack {
 
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         uint256 nowTimestamp = vm.getBlockTimestamp();
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 1);
@@ -1008,7 +1163,13 @@ contract BoostsTest is FullGameStack {
 
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.KEEP_LAST_IN_PROGRESS
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.KEEP_LAST_IN_PROGRESS
         );
         uint256 now1 = vm.getBlockTimestamp();
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 0);
@@ -1039,7 +1200,13 @@ contract BoostsTest is FullGameStack {
         // Queue another one should update the last boost again and re-use unused boost from before without error
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), XP_BOOST, 0, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.KEEP_LAST_IN_PROGRESS
+            playerId,
+            _queuedActions(queuedAction),
+            XP_BOOST,
+            0,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.KEEP_LAST_IN_PROGRESS
         );
         playerBoost = players.getActiveBoost(playerId);
         assertEq(playerBoost.startTime, nowTimestamp + queuedAction.timespan);
@@ -1056,7 +1223,13 @@ contract BoostsTest is FullGameStack {
         assertEq(itemNFT.balanceOf(ALICE, GATHERING_BOOST), 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), GATHERING_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            GATHERING_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, GATHERING_BOOST), 0);
 
@@ -1080,7 +1253,13 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, GATHERING_BOOST, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), GATHERING_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            GATHERING_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
 
         vm.warp(vm.getBlockTimestamp() + queuedAction.timespan);
@@ -1107,7 +1286,13 @@ contract BoostsTest is FullGameStack {
         assertEq(itemNFT.balanceOf(ALICE, GATHERING_BOOST), 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), GATHERING_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            GATHERING_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, GATHERING_BOOST), 0);
 
@@ -1179,7 +1364,13 @@ contract BoostsTest is FullGameStack {
 
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), GATHERING_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            GATHERING_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, GATHERING_BOOST), 0);
     }
@@ -1202,7 +1393,13 @@ contract BoostsTest is FullGameStack {
         // Start first boost
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), GATHERING_BOOST, BOOST_START_NOW, NONE, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            GATHERING_BOOST,
+            BOOST_START_NOW,
+            NONE,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         uint256 nowTimestamp = vm.getBlockTimestamp();
 
@@ -1277,7 +1474,13 @@ contract BoostsTest is FullGameStack {
         assertEq(itemNFT.balanceOf(ALICE, GATHERING_BOOST), 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), GATHERING_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            GATHERING_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, GATHERING_BOOST), 0);
 
@@ -1310,7 +1513,13 @@ contract BoostsTest is FullGameStack {
 
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), GATHERING_BOOST, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            GATHERING_BOOST,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
 
         vm.warp(vm.getBlockTimestamp() + queuedAction.timespan);
@@ -1321,7 +1530,8 @@ contract BoostsTest is FullGameStack {
         uint256 outputBalance = itemNFT.balanceOf(ALICE, ANCIENT_SCROLL);
         assertEq(
             outputBalance,
-            (queuedAction.timespan * rate * 255) / (3600 * RATE_MUL) + (3600 * 10 * rate * 255) / (100 * RATE_MUL * 3600)
+            (queuedAction.timespan * rate * 255) / (3600 * RATE_MUL) + (3600 * 10 * rate * 255)
+                / (100 * RATE_MUL * 3600)
         );
         assertGt(outputBalance, 65_535);
     }
@@ -1373,7 +1583,13 @@ contract BoostsTest is FullGameStack {
         // Now start the action again fully encapsulating it and check you don't die
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction), POTION_005_SMALL_MELEE, BOOST_START_NOW, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction),
+            POTION_005_SMALL_MELEE,
+            BOOST_START_NOW,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
 
         // Combat boost should have an affect, check that you didn't die
@@ -1393,13 +1609,25 @@ contract BoostsTest is FullGameStack {
         uint8 boostStartReverseIndex = 0; // Starts at the second action
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction, queuedAction), XP_BOOST, boostStartReverseIndex, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction, queuedAction),
+            XP_BOOST,
+            boostStartReverseIndex,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 0);
         itemNFT.mint(ALICE, XP_BOOST, 1);
         vm.prank(ALICE);
         players.startActionsAdvanced(
-            playerId, _queuedActions(queuedAction, queuedAction), XP_BOOST, boostStartReverseIndex, 0, NO_DONATION_AMOUNT, ActionQueueStrategy.OVERWRITE
+            playerId,
+            _queuedActions(queuedAction, queuedAction),
+            XP_BOOST,
+            boostStartReverseIndex,
+            0,
+            NO_DONATION_AMOUNT,
+            ActionQueueStrategy.OVERWRITE
         );
         assertEq(itemNFT.balanceOf(ALICE, XP_BOOST), 1);
     }
@@ -1615,10 +1843,10 @@ contract BoostsTest is FullGameStack {
         itemNFT.addItems(items);
     }
 
-    function _setupBasicCooking(
-        uint8 successPercent,
-        uint256 minLevel
-    ) private returns (QueuedActionInput memory queuedAction, uint256 rate, uint16 choiceId) {
+    function _setupBasicCooking(uint8 successPercent, uint256 minLevel)
+        private
+        returns (QueuedActionInput memory queuedAction, uint256 rate, uint16 choiceId)
+    {
         rate = 100 * RATE_MUL; // per hour
 
         ActionInput[] memory actions = new ActionInput[](1);
@@ -1659,10 +1887,10 @@ contract BoostsTest is FullGameStack {
         itemNFT.mint(ALICE, RAW_MINNUS, 1000);
     }
 
-    function _setupBasicAlchemy(
-        uint256 rate,
-        uint256 outputAmount
-    ) private returns (QueuedActionInput memory queuedAction, uint256) {
+    function _setupBasicAlchemy(uint256 rate, uint256 outputAmount)
+        private
+        returns (QueuedActionInput memory queuedAction, uint256)
+    {
         ActionInput[] memory actions = new ActionInput[](1);
         actions[0].actionId = 1;
         actions[0].info = _actionInfo(Skill.ALCHEMY, 0, 0, true, NONE, NONE);
@@ -1691,10 +1919,10 @@ contract BoostsTest is FullGameStack {
         itemNFT.addItems(items);
     }
 
-    function _setupBasicFarming(
-        uint256 rate,
-        uint256 outputAmount
-    ) private returns (QueuedActionInput memory queuedAction, uint256) {
+    function _setupBasicFarming(uint256 rate, uint256 outputAmount)
+        private
+        returns (QueuedActionInput memory queuedAction, uint256)
+    {
         ActionInput[] memory actions = new ActionInput[](1);
         actions[0].actionId = 1;
         actions[0].info = _actionInfo(Skill.FARMING, 0, 0, true, NONE, NONE);

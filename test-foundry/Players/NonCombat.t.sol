@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
-import {PlayersBase} from "../../contracts/Players/PlayersBase.sol";
+import {PlayersBase} from "../interfaces/PlayersBase.sol";
 import {Skill, Attire, CombatStyle, BoostType, Equipment} from "../../contracts/globals/misc.sol";
 import {
     ActionInput,

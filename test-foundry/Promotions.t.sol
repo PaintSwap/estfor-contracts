@@ -5,9 +5,9 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
-import {Promotions} from "../contracts/Promotions.sol";
+import {Promotions} from "./interfaces/Promotions.sol";
 import {PromotionsLibrary} from "../contracts/PromotionsLibrary.sol";
-import {Quests} from "../contracts/Quests.sol";
+import {Quests} from "./interfaces/Quests.sol";
 import {Promotion, PromotionInfoInput, PromotionMintStatus} from "../contracts/globals/promotions.sol";
 import {Equipment, Skill} from "../contracts/globals/misc.sol";
 import {QuestInput, QUEST_PURSE_STRINGS} from "../contracts/globals/quests.sol";

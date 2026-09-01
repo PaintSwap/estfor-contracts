@@ -7,7 +7,7 @@ import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
 import {Cosmetics} from "../contracts/Cosmetics.sol";
-import {PlayerNFT} from "../contracts/PlayerNFT.sol";
+import {PlayerNFT} from "./interfaces/PlayerNFT.sol";
 import {Skill, Attire, CombatStats} from "../contracts/globals/misc.sol";
 import {
     AvatarInfo,

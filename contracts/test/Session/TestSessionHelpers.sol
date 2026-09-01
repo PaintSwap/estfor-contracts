@@ -2,8 +2,12 @@
 pragma solidity ^0.8.28;
 
 import {Enum} from "../../interfaces/external/Enum.sol";
-import {UsageBasedSessionModule} from "../../Session/UsageBasedSessionModule.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+
+interface ITestUsageBasedSessionModule {
+  function enableSession(address sessionKey, uint48 duration) external;
+  function revokeSession() external;
+}
 
 /// @notice Minimal Safe-compatible mock that can enable sessions and forward calls
 contract TestSessionSafe is ERC1155Holder {
@@ -13,12 +17,12 @@ contract TestSessionSafe is ERC1155Holder {
     owner = _owner;
   }
 
-  function callEnableSession(UsageBasedSessionModule module, address sessionKey, uint48 duration) external {
+  function callEnableSession(ITestUsageBasedSessionModule module, address sessionKey, uint48 duration) external {
     require(msg.sender == owner, "Not owner");
     module.enableSession(sessionKey, duration);
   }
 
-  function callRevokeSession(UsageBasedSessionModule module) external {
+  function callRevokeSession(ITestUsageBasedSessionModule module) external {
     require(msg.sender == owner, "Not owner");
     module.revokeSession();
   }
