@@ -17,6 +17,9 @@ import {
   EXTERNAL_NAMES,
   getDeploymentRegistryPath,
 } from "./deploymentRegistry";
+import {buildShopPlan} from "./shopReconciliation";
+import type {ShopOperation, ShopPlan, ShopPlanOptions} from "./shopReconciliation";
+import type {ShopSimulationResult} from "./shopSimulation";
 
 export const EIP1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
 export const EIP1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50";
@@ -73,14 +76,16 @@ export interface DeploymentPlan {
   observationBlock: {number: number; hash: string};
   inputs: {
     registryHash: string;
-    sourceDataHash: null;
+    sourceDataHash: string;
     gitRevision: string;
     openZeppelinManifestHash: string;
   };
   contracts: ContractInventory[];
   externals: Array<CodeInventory & {name: string}>;
   domains: Array<{name: string; policy: "managed" | "observed" | "unmanaged"; reason: string}>;
-  operations: [];
+  shop: ShopPlan;
+  operations: ShopOperation[];
+  simulation: ShopSimulationResult | {status: "blocked"; reasons: string[]} | null;
   findings: Finding[];
   summary: {
     contracts: number;
@@ -115,7 +120,7 @@ const DOMAINS: DeploymentPlan["domains"] = [
     policy: "unmanaged",
     reason: "Complete current key discovery and action deletion are unavailable",
   },
-  {name: "shop", policy: "unmanaged", reason: "Shop reconciliation starts in Phase 3"},
+  {name: "shop", policy: "managed", reason: "Buyable prices and unsellable flags are reconciled exactly"},
   {name: "clan-tiers", policy: "unmanaged", reason: "Removal and complete current key discovery are unavailable"},
   {name: "instant-actions", policy: "unmanaged", reason: "Complete current key discovery is not implemented"},
   {name: "instant-vrf-actions", policy: "unmanaged", reason: "Complete current key discovery is not implemented"},
@@ -353,7 +358,8 @@ async function inventoryContract(
 export async function buildDeploymentPlan(
   provider: JsonRpcProvider,
   deployment: DeploymentRegistry,
-  requestedBlock?: number
+  requestedBlock?: number,
+  shopOptions: ShopPlanOptions = {}
 ): Promise<DeploymentPlan> {
   const network = await provider.getNetwork();
   if (network.chainId !== BigInt(deployment.chainId))
@@ -417,6 +423,10 @@ export async function buildDeploymentPlan(
       findings.push({severity: "error", code: "EXTERNAL_NO_CODE", subject: name, message: `No code at ${address}`});
     externals.push({name, ...codeInventory(address, code)});
   }
+  const shop = await buildShopPlan(provider, deployment, block.number, shopOptions);
+  for (const reason of shop.blockedReasons) {
+    findings.push({severity: "error", code: "SHOP_CHANGE_BLOCKED", subject: "shop", message: reason});
+  }
 
   const classifications: Record<string, number> = {};
   for (const contract of contracts) {
@@ -435,14 +445,16 @@ export async function buildDeploymentPlan(
     observationBlock: {number: block.number, hash: block.hash},
     inputs: {
       registryHash: sha256(readFileSync(getDeploymentRegistryPath(deployment.deploymentId))),
-      sourceDataHash: null,
+      sourceDataHash: sha256(canonical(shop.desired)),
       gitRevision: execFileSync("git", ["rev-parse", "HEAD"], {encoding: "utf8"}).trim(),
       openZeppelinManifestHash: sha256(manifestRaw),
     },
     contracts,
     externals,
     domains: DOMAINS,
-    operations: [],
+    shop,
+    operations: shop.operations,
+    simulation: null,
     findings,
     summary: {
       contracts: contracts.length,
@@ -470,7 +482,8 @@ export function renderPlanMarkdown(plan: DeploymentPlan): string {
     `- Observation block: ${plan.observationBlock.number} (${plan.observationBlock.hash})`,
     `- Plan hash: \`${plan.planHash}\``,
     `- Findings: ${plan.summary.errors} errors, ${plan.summary.warnings} warnings`,
-    `- Operations: ${plan.operations.length} (Phase 2 is read-only)`,
+    `- Operations: ${plan.operations.length} (read-only; simulated only)`,
+    `- Simulation: ${plan.simulation?.status ?? "not run"}`,
     "",
     "## Implementation classifications",
     "",
@@ -488,6 +501,22 @@ export function renderPlanMarkdown(plan: DeploymentPlan): string {
           (finding) =>
             `- **${finding.severity.toUpperCase()} ${finding.code}** (${finding.subject}): ${finding.message}`
         )),
+    "",
+    "## Shop reconciliation",
+    "",
+    `- Membership: ${plan.shop.membershipSource}`,
+    `- Buyable items: ${plan.shop.buyableItems.add.length} add, ${plan.shop.buyableItems.update.length} update, ${plan.shop.buyableItems.remove.length} remove, ${plan.shop.buyableItems.noOp.length} no-op`,
+    `- Unsellable flags: ${plan.shop.unsellableItems.add.length} add, ${plan.shop.unsellableItems.remove.length} remove, ${plan.shop.unsellableItems.noOp.length} no-op`,
+    `- Change limits: ${plan.shop.limits.changedItems}/${plan.shop.limits.maxChangedItems} items, ${plan.shop.limits.removals}/${plan.shop.limits.maxRemovals} removals, ${plan.shop.limits.aggregatePriceChange}/${plan.shop.limits.maxAggregatePriceChange} aggregate price change`,
+    "",
+    "### Removals",
+    "",
+    ...(plan.shop.buyableItems.remove.length === 0 && plan.shop.unsellableItems.remove.length === 0
+      ? ["No removals."]
+      : [
+          ...plan.shop.buyableItems.remove.map(({tokenId, price}) => `- Buyable item ${tokenId} at ${price}`),
+          ...plan.shop.unsellableItems.remove.map((tokenId) => `- Unsellable flag ${tokenId}`),
+        ]),
     "",
     "## Contracts",
     "",

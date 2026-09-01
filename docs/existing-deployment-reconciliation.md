@@ -480,6 +480,8 @@ Acceptance:
 
 ### Phase 3: Shop read-only tracer bullet
 
+Status: implemented on 2026-09-01.
+
 1. Refactor canonical data preparation so fresh deploy and reconciliation consume the same Shop data function.
 2. Read all desired Shop prices and unsellable flags.
 3. Implement event-derived membership with bounded `uint16` scanning as bootstrap/audit fallback.
@@ -494,6 +496,16 @@ Acceptance:
 - applying on Anvil and planning again gives an empty Shop plan;
 - rerunning after each partial batch emits only remaining changes; and
 - wrong-profile removal volume is blocked.
+
+The Shop adapter now shares `getShopData(profile)` with fresh deployment preparation. It reconstructs buyable and
+unsellable membership from bounded event queries, reads only buyable price and the `unsellable` flag, and supports a
+complete `uint16` scan as an automatic bootstrap fallback or explicit audit. Plans contain stable add, update, remove,
+and no-op classifications plus dependency-ordered calldata. Removals require `--allow-removals`; defaults cap a plan at
+100 changed IDs, 10 removals, and 10,000 BRUSH of aggregate price movement. These defaults can be overridden with
+`--max-shop-changes`, `--max-shop-removals`, and `--max-shop-value-change` (wei). Unblocked operations are preflighted
+at the observation block, executed from the tracked Safe on an ephemeral Anvil fork pinned to that block, and followed
+by verification of every managed ID. `--audit-shop-membership` also compares event membership with the full bounded
+scan. The command remains read-only and rejects `--apply` and `--resume` until Phase 4.
 
 ### Phase 4: Safe proposal execution
 

@@ -4,7 +4,9 @@ import {mkdirSync, writeFileSync} from "fs";
 import {resolve} from "path";
 import {JsonRpcProvider} from "ethers";
 import {loadDeploymentRegistry} from "./deploymentRegistry";
-import {buildDeploymentPlan, renderPlanMarkdown} from "./deploymentInventory";
+import {buildDeploymentPlan, hashPlan, renderPlanMarkdown} from "./deploymentInventory";
+import {DEFAULT_SHOP_LIMITS} from "./shopReconciliation";
+import {simulateShopPlan} from "./shopSimulation";
 
 function option(name: string): string | undefined {
   const index = process.argv.indexOf(name);
@@ -14,9 +16,17 @@ function option(name: string): string | undefined {
   return value;
 }
 
+function integerOption(name: string, defaultValue: number): number {
+  const value = option(name);
+  if (value === undefined) return defaultValue;
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) throw new Error(`${name} must be a non-negative integer`);
+  return parsed;
+}
+
 async function main() {
   if (process.argv.includes("--apply") || process.argv.includes("--resume")) {
-    throw new Error("Phase 2 is read-only; --apply and --resume are not supported");
+    throw new Error("Phase 3 is read-only; --apply and --resume are not supported");
   }
   const deploymentId = option("--deployment");
   if (!deploymentId) throw new Error("--deployment is required (for example, sonic-live or sonic-beta)");
@@ -32,7 +42,27 @@ async function main() {
   if (build.error) throw build.error;
   if (build.status !== 0) throw new Error(`forge build failed with status ${build.status}`);
   const provider = new JsonRpcProvider(rpcUrl, deployment.chainId, {staticNetwork: true});
-  const plan = await buildDeploymentPlan(provider, deployment, block);
+  const plan = await buildDeploymentPlan(provider, deployment, block, {
+    allowRemovals: process.argv.includes("--allow-removals"),
+    maxChangedItems: integerOption("--max-shop-changes", DEFAULT_SHOP_LIMITS.maxChangedItems),
+    maxRemovals: integerOption("--max-shop-removals", DEFAULT_SHOP_LIMITS.maxRemovals),
+    maxAggregatePriceChange: BigInt(option("--max-shop-value-change") ?? DEFAULT_SHOP_LIMITS.maxAggregatePriceChange),
+    auditMembership: process.argv.includes("--audit-shop-membership"),
+  });
+  if (plan.shop.blockedReasons.length === 0) {
+    plan.simulation = await simulateShopPlan(
+      provider,
+      rpcUrl,
+      deployment.chainId,
+      plan.observationBlock.number,
+      plan.observationBlock.hash,
+      plan.shop
+    );
+  } else {
+    plan.simulation = {status: "blocked", reasons: plan.shop.blockedReasons};
+  }
+  const {planHash: _oldPlanHash, ...withoutHash} = plan;
+  plan.planHash = hashPlan(withoutHash);
   const outputRoot = resolve(
     option("--output") ??
       `runs/${deploymentId}/${plan.observationBlock.number}-${plan.observationBlock.hash.slice(2, 10)}`
@@ -45,7 +75,9 @@ async function main() {
 
   console.log(`Wrote ${jsonPath}`);
   console.log(`Wrote ${markdownPath}`);
-  console.log(`Plan ${plan.planHash}: ${plan.summary.errors} errors, ${plan.summary.warnings} warnings, 0 operations`);
+  console.log(
+    `Plan ${plan.planHash}: ${plan.summary.errors} errors, ${plan.summary.warnings} warnings, ${plan.operations.length} operations, simulation ${plan.simulation.status}`
+  );
   if (plan.summary.errors !== 0) process.exitCode = 2;
 }
 
