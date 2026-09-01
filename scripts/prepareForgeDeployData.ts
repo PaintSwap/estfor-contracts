@@ -773,6 +773,16 @@ const LIBRARY_ADDRESS_KEYS: Record<string, string> = {
   "contracts/Clans/LockedBankVaultsLibrary.sol:LockedBankVaultsLibrary": "lockedBankVaultsLibrary",
 };
 
+const CONFIGURED_LIBRARY_ADDRESSES: Record<string, string> = {
+  estforLibrary: "0000000000000000000000000000000000001001",
+  itemNFTLibrary: "0000000000000000000000000000000000001002",
+  petNFTLibrary: "0000000000000000000000000000000000001003",
+  playersLibrary: "0000000000000000000000000000000000001004",
+  promotionsLibrary: "0000000000000000000000000000000000001005",
+  clanBattleLibrary: "0000000000000000000000000000000000001006",
+  lockedBankVaultsLibrary: "0000000000000000000000000000000000001007",
+};
+
 function prepareLinkedBytecode(deploymentPath: string): void {
   const addresses = JSON.parse(readFileSync(deploymentPath, "utf8")) as Record<string, string>;
 
@@ -794,6 +804,15 @@ function prepareLinkedBytecode(deploymentPath: string): void {
           object = `${object.slice(0, offset)}${address}${object.slice(offset + reference.length * 2)}`;
         }
       }
+    }
+
+    for (const [addressKey, configuredAddress] of Object.entries(CONFIGURED_LIBRARY_ADDRESSES)) {
+      if (!object.includes(configuredAddress)) continue;
+      const address = addresses[addressKey]?.slice(2).toLowerCase();
+      if (!address || address.length !== 40) {
+        throw new Error(`Missing deployed address for linked library ${addressKey}`);
+      }
+      object = object.split(configuredAddress).join(address);
     }
 
     if (object.includes("__$")) throw new Error(`Unresolved library link in ${artifactPath}`);

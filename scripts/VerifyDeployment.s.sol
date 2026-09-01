@@ -8,6 +8,7 @@ import {console2} from "forge-std/console2.sol";
 contract VerifyDeployment is Script {
     bytes32 private constant IMPLEMENTATION_SLOT = bytes32(uint256(keccak256("eip1967.proxy.implementation")) - 1);
     bytes32 private constant ACTIVITY_POINT_CALLER = keccak256("ACTIVITY_POINT_CALLER");
+    uint256 private constant MAX_RUNTIME_CODE_SIZE = 49_152;
 
     string private deploymentJson;
     string private manifestJson;
@@ -44,7 +45,12 @@ contract VerifyDeployment is Script {
             if (keyHash == keccak256("chainId") || keyHash == keccak256("owner") || keyHash == keccak256("isBeta")) {
                 continue;
             }
-            require(_load(keys[i]).code.length != 0, string.concat("no bytecode at ", keys[i]));
+            address recordedContract = _load(keys[i]);
+            require(recordedContract.code.length != 0, string.concat("no bytecode at ", keys[i]));
+            require(
+                recordedContract.code.length <= MAX_RUNTIME_CODE_SIZE,
+                string.concat("runtime bytecode exceeds Brio limit at ", keys[i])
+            );
         }
     }
 

@@ -72,7 +72,7 @@ run_deploy_phase() {
       --rpc-url "$RPC_URL" \
       --broadcast \
       --non-interactive \
-      --code-size-limit 49152 \
+      --code-size-limit 65536 \
       --gas-estimate-multiplier 150
 
   if [[ $phase -le 4 ]]; then
