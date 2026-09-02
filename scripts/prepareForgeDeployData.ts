@@ -1,8 +1,8 @@
-import {existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync} from "fs";
-import {join} from "path";
-import {Interface, getBytes, parseEther} from "ethers";
-import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {ACTIVITY_TICKET2, SONIC_GEM_TICKET2, whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
+import {existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync} from "fs"
+import {join} from "path"
+import {Interface, getBytes, parseEther} from "ethers"
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions"
+import {ACTIVITY_TICKET2, SONIC_GEM_TICKET2, whitelistedAdmins} from "@paintswap/estfor-definitions/constants"
 
 import {
   allActionChoicesAlchemy,
@@ -16,7 +16,7 @@ import {
   allActionChoicesMelee,
   allActionChoicesRanged,
   allActionChoicesSmithing,
-} from "./data/actionChoices";
+} from "./data/actionChoices"
 import {
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsCooking,
@@ -29,69 +29,69 @@ import {
   allActionChoiceIdsMelee,
   allActionChoiceIdsRanged,
   allActionChoiceIdsSmithing,
-} from "./data/actionChoiceIds";
-import {allActions} from "./data/actions";
-import {avatarIds, avatarInfos} from "./data/avatars";
-import {allClanTiers, allClanTiersBeta} from "./data/clans";
-import {cosmeticInfos, cosmeticTokenIds} from "./data/cosmetics";
-import {allDailyRewards, allWeeklyRewards} from "./data/dailyRewards";
-import {allFullAttireBonuses} from "./data/fullAttireBonuses";
-import {allInstantActions} from "./data/instantActions";
-import {allInstantVRFActions} from "./data/instantVRFActions";
-import {allItems} from "./data/items";
-import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
-import {allPassiveActions} from "./data/passiveActions";
-import {allBasePets} from "./data/pets";
-import {allQuests, allQuestsMinRequirements} from "./data/quests";
-import {allBaseRaidIds, allBaseRaids} from "./data/raids";
-import {getShopData} from "./data/shop";
-import {allBattleSkills, allMinimumMMRs, allTerritories} from "./data/territories";
-import {allXPThresholdRewards} from "./data/xpThresholdRewards";
+} from "./data/actionChoiceIds"
+import {allActions} from "./data/actions"
+import {avatarIds, avatarInfos} from "./data/avatars"
+import {allClanTiers, allClanTiersBeta} from "./data/clans"
+import {cosmeticInfos, cosmeticTokenIds} from "./data/cosmetics"
+import {allDailyRewards, allWeeklyRewards} from "./data/dailyRewards"
+import {allFullAttireBonuses} from "./data/fullAttireBonuses"
+import {allInstantActions} from "./data/instantActions"
+import {allInstantVRFActions} from "./data/instantVRFActions"
+import {allItems} from "./data/items"
+import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos"
+import {allPassiveActions} from "./data/passiveActions"
+import {allBasePets} from "./data/pets"
+import {allQuests, allQuestsMinRequirements} from "./data/quests"
+import {allBaseRaidIds, allBaseRaids} from "./data/raids"
+import {getShopData} from "./data/shop"
+import {allBattleSkills, allMinimumMMRs, allTerritories} from "./data/territories"
+import {allXPThresholdRewards} from "./data/xpThresholdRewards"
 
-const OUTPUT_DIR = process.env.DEPLOY_DATA_DIR || ".forge-deploy-data";
-const DEV = "0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9";
-const PROMOTIONAL_ADMIN = "0xe9fb52d7611e502d93af381ac493981b42d91974";
-const CHUNK_SIZE = 100;
-const PET_CHUNK_SIZE = 20;
+const OUTPUT_DIR = process.env.DEPLOY_DATA_DIR || ".forge-deploy-data"
+const DEV = "0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9"
+const PROMOTIONAL_ADMIN = "0xe9fb52d7611e502d93af381ac493981b42d91974"
+const CHUNK_SIZE = 100
+const PET_CHUNK_SIZE = 20
 
 function envBoolean(name: string, defaultValue: boolean): boolean {
-  const value = process.env[name];
-  if (value === undefined) return defaultValue;
-  if (value === "true") return true;
-  if (value === "false") return false;
-  throw new Error(`${name} must be "true" or "false"`);
+  const value = process.env[name]
+  if (value === undefined) return defaultValue
+  if (value === "true") return true
+  if (value === "false") return false
+  throw new Error(`${name} must be "true" or "false"`)
 }
 
-const IS_BETA = envBoolean("IS_BETA", false);
-const ADD_TEST_DATA = envBoolean("ADD_TEST_DATA", false);
-if (ADD_TEST_DATA && !IS_BETA) throw new Error("ADD_TEST_DATA requires IS_BETA=true");
+const IS_BETA = envBoolean("IS_BETA", false)
+const ADD_TEST_DATA = envBoolean("ADD_TEST_DATA", false)
+if (ADD_TEST_DATA && !IS_BETA) throw new Error("ADD_TEST_DATA requires IS_BETA=true")
 
-const clanTiers = IS_BETA ? allClanTiersBeta : allClanTiers;
-const {buyableItems: shopItems, unsellableItemIds} = getShopData(IS_BETA ? "beta" : "live");
+const clanTiers = IS_BETA ? allClanTiersBeta : allClanTiers
+const {buyableItems: shopItems, unsellableItemIds} = getShopData(IS_BETA ? "beta" : "live")
 const itemsBaseUri = IS_BETA
   ? "ipfs://bafybeibh3pzpeovube6h5gojythns2edu47qpnfvc5ssqmtv3ojqph7r4e/"
-  : "ipfs://bafybeig6rmsasqsuuivh2qltd5wujirbaaxeyahyfl6pbo77gidrkg6zim/";
+  : "ipfs://bafybeig6rmsasqsuuivh2qltd5wujirbaaxeyahyfl6pbo77gidrkg6zim/"
 const heroImageBaseUri = IS_BETA
   ? "ipfs://QmVeDAUVj4F4F84WZpuP9pDdKNvcLFSWUV5rhTKMiN99EH/"
-  : "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
+  : "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/"
 const petImageBaseUri = IS_BETA
   ? "ipfs://QmVKb8HiZaLBYD7xiCECkjZ8pj8h4VxX2754hZZUCbmWGq/"
-  : "ipfs://QmYawZvUvkEzF8vjqja24oSSmZv3t6asTpMJBzQJRDGXPs/";
+  : "ipfs://QmYawZvUvkEzF8vjqja24oSSmZv3t6asTpMJBzQJRDGXPs/"
 
-type LinkReference = {start: number; length: number};
+type LinkReference = {start: number; length: number}
 type JsonArtifact = {
-  abi: object[];
+  abi: object[]
   bytecode: {
-    object: string;
-    linkReferences: Record<string, Record<string, LinkReference[]>>;
-  };
-};
+    object: string
+    linkReferences: Record<string, Record<string, LinkReference[]>>
+  }
+}
 type Manifest = {
-  configuration: {isBeta: boolean; addTestData: boolean};
-  calls: Record<string, number>;
-  entries: Record<string, number>;
-  representative: Record<string, number>;
-};
+  configuration: {isBeta: boolean; addTestData: boolean}
+  calls: Record<string, number>
+  entries: Record<string, number>
+  representative: Record<string, number>
+}
 
 const manifest: Manifest = {
   configuration: {isBeta: IS_BETA, addTestData: ADD_TEST_DATA},
@@ -117,32 +117,32 @@ const manifest: Manifest = {
     shopItemId: shopItems[0].tokenId,
     unsellableItemId: EstforConstants.INFUSED_ORICHALCUM_HELMET,
   },
-};
+}
 
 function artifact(contractName: string): JsonArtifact {
   for (const directory of readdirSync("out")) {
-    const path = join("out", directory, `${contractName}.json`);
+    const path = join("out", directory, `${contractName}.json`)
     if (existsSync(path)) {
-      return require(join(process.cwd(), path)) as JsonArtifact;
+      return require(join(process.cwd(), path)) as JsonArtifact
     }
   }
-  throw new Error(`Foundry artifact not found for ${contractName}; run forge build first`);
+  throw new Error(`Foundry artifact not found for ${contractName}; run forge build first`)
 }
 
 function encode(contractName: string, functionName: string, args: unknown[]): string {
-  return new Interface(artifact(contractName).abi).encodeFunctionData(functionName, args);
+  return new Interface(artifact(contractName).abi).encodeFunctionData(functionName, args)
 }
 
 function writeBytes(relativePath: string, value: string): void {
-  const path = join(OUTPUT_DIR, relativePath);
-  mkdirSync(join(path, ".."), {recursive: true});
-  writeFileSync(path, Buffer.from(getBytes(value)));
+  const path = join(OUTPUT_DIR, relativePath)
+  mkdirSync(join(path, ".."), {recursive: true})
+  writeFileSync(path, Buffer.from(getBytes(value)))
 }
 
 function writeCall(category: string, contractName: string, functionName: string, args: unknown[]): void {
-  const index = manifest.calls[category] || 0;
-  writeBytes(join("seed", `${category}-${index}.bin`), encode(contractName, functionName, args));
-  manifest.calls[category] = index + 1;
+  const index = manifest.calls[category] || 0
+  writeBytes(join("seed", `${category}-${index}.bin`), encode(contractName, functionName, args))
+  manifest.calls[category] = index + 1
 }
 
 function writeChunks(
@@ -153,43 +153,43 @@ function writeChunks(
   chunkSize = CHUNK_SIZE
 ): void {
   for (let i = 0; i < values.length; i += chunkSize) {
-    writeCall(category, contractName, functionName, [values.slice(i, i + chunkSize)]);
+    writeCall(category, contractName, functionName, [values.slice(i, i + chunkSize)])
   }
-  manifest.entries[category] = values.length;
+  manifest.entries[category] = values.length
 }
 
 // Runtime addresses are represented by conspicuous ABI address words. DeployGame replaces
 // placeholder(n) with the nth address supplied for that initializer.
 function placeholder(index: number): string {
-  return `0xf0000000000000000000000000000000000000${index.toString(16).padStart(2, "0")}`;
+  return `0xf0000000000000000000000000000000000000${index.toString(16).padStart(2, "0")}`
 }
 
 function writeInitializer(name: string, contractName: string, args: unknown[]): void {
-  writeBytes(join("init", `${name}.bin`), encode(contractName, "initialize", args));
+  writeBytes(join("init", `${name}.bin`), encode(contractName, "initialize", args))
 }
 
 function prepareInitializers(): void {
-  writeInitializer("bridge", "Bridge", [30112]);
-  writeInitializer("worldActions", "WorldActions", []);
-  writeInitializer("randomnessBeacon", "RandomnessBeacon", [placeholder(1)]);
-  writeInitializer("dailyRewardsScheduler", "DailyRewardsScheduler", [placeholder(1)]);
-  writeInitializer("treasury", "Treasury", [placeholder(1)]);
-  writeInitializer("shop", "Shop", [placeholder(1), placeholder(2), DEV, 500, 48 * 3600]);
+  writeInitializer("bridge", "Bridge", [30112])
+  writeInitializer("worldActions", "WorldActions", [])
+  writeInitializer("randomnessBeacon", "RandomnessBeacon", [placeholder(1)])
+  writeInitializer("dailyRewardsScheduler", "DailyRewardsScheduler", [placeholder(1)])
+  writeInitializer("treasury", "Treasury", [placeholder(1)])
+  writeInitializer("shop", "Shop", [placeholder(1), placeholder(2), DEV, 500, 48 * 3600])
   writeInitializer("royaltyReceiver", "RoyaltyReceiver", [
     placeholder(1),
     placeholder(2),
     DEV,
     placeholder(3),
     placeholder(4),
-  ]);
+  ])
 
-  const admins = whitelistedAdmins.slice();
-  admins.push(placeholder(1));
-  writeInitializer("adminAccess", "AdminAccess", [admins, [PROMOTIONAL_ADMIN]]);
-  writeInitializer("itemNFT", "ItemNFT", [placeholder(1), itemsBaseUri, placeholder(2), IS_BETA]);
-  writeInitializer("activityPoints", "ActivityPoints", [placeholder(1), ACTIVITY_TICKET2, SONIC_GEM_TICKET2]);
-  writeInitializer("orderBook", "OrderBook", [placeholder(1), placeholder(2), DEV, 30, 30, 100]);
-  writeInitializer("marketplace", "Marketplace", [placeholder(1), placeholder(2)]);
+  const admins = whitelistedAdmins.slice()
+  admins.push(placeholder(1))
+  writeInitializer("adminAccess", "AdminAccess", [admins, [PROMOTIONAL_ADMIN]])
+  writeInitializer("itemNFT", "ItemNFT", [placeholder(1), itemsBaseUri, placeholder(2), IS_BETA])
+  writeInitializer("activityPoints", "ActivityPoints", [placeholder(1), ACTIVITY_TICKET2, SONIC_GEM_TICKET2])
+  writeInitializer("orderBook", "OrderBook", [placeholder(1), placeholder(2), DEV, 30, 30, 100])
+  writeInitializer("marketplace", "Marketplace", [placeholder(1), placeholder(2)])
   writeInitializer("playerNFT", "PlayerNFT", [
     placeholder(1),
     placeholder(2),
@@ -201,16 +201,16 @@ function prepareInitializers(): void {
     200_000,
     IS_BETA,
     placeholder(4),
-  ]);
-  writeInitializer("cosmetics", "Cosmetics", [placeholder(1), placeholder(2), placeholder(3)]);
-  writeInitializer("blackMarketTrader", "BlackMarketTrader", [placeholder(1), placeholder(2), placeholder(3)]);
+  ])
+  writeInitializer("cosmetics", "Cosmetics", [placeholder(1), placeholder(2), placeholder(3)])
+  writeInitializer("blackMarketTrader", "BlackMarketTrader", [placeholder(1), placeholder(2), placeholder(3)])
   writeInitializer("quests", "Quests", [
     placeholder(1),
     placeholder(2),
     placeholder(3),
     [placeholder(4), placeholder(5)],
     placeholder(6),
-  ]);
+  ])
   writeInitializer("clans", "Clans", [
     placeholder(1),
     placeholder(2),
@@ -222,7 +222,7 @@ function prepareInitializers(): void {
     30_000,
     placeholder(5),
     placeholder(6),
-  ]);
+  ])
   writeInitializer("wishingWell", "WishingWell", [
     placeholder(1),
     placeholder(2),
@@ -233,7 +233,7 @@ function prepareInitializers(): void {
     parseEther(IS_BETA ? "1000" : "100000"),
     parseEther(IS_BETA ? "50" : "2500"),
     placeholder(6),
-  ]);
+  ])
   writeInitializer("petNFT", "PetNFT", [
     placeholder(1),
     placeholder(2),
@@ -246,8 +246,8 @@ function prepareInitializers(): void {
     placeholder(5),
     placeholder(6),
     IS_BETA,
-  ]);
-  writeInitializer("petNFTReroll", "PetNFTReroll", [placeholder(1), placeholder(2), placeholder(3), placeholder(4)]);
+  ])
+  writeInitializer("petNFTReroll", "PetNFTReroll", [placeholder(1), placeholder(2), placeholder(3), placeholder(4)])
   writeInitializer("players", "Players", [
     placeholder(1),
     placeholder(2),
@@ -267,7 +267,7 @@ function prepareInitializers(): void {
     placeholder(16),
     placeholder(17),
     IS_BETA,
-  ]);
+  ])
   writeInitializer("promotions", "Promotions", [
     placeholder(1),
     placeholder(2),
@@ -280,21 +280,16 @@ function prepareInitializers(): void {
     DEV,
     placeholder(9),
     IS_BETA,
-  ]);
-  writeInitializer("globalEvents", "GlobalEvents", [placeholder(1), placeholder(2), placeholder(3)]);
+  ])
+  writeInitializer("globalEvents", "GlobalEvents", [placeholder(1), placeholder(2), placeholder(3)])
   writeInitializer("passiveActions", "PassiveActions", [
     placeholder(1),
     placeholder(2),
     placeholder(3),
     placeholder(4),
     placeholder(5),
-  ]);
-  writeInitializer("instantActions", "InstantActions", [
-    placeholder(1),
-    placeholder(2),
-    placeholder(3),
-    placeholder(4),
-  ]);
+  ])
+  writeInitializer("instantActions", "InstantActions", [placeholder(1), placeholder(2), placeholder(3), placeholder(4)])
   writeInitializer("instantVRFActions", "InstantVRFActions", [
     placeholder(1),
     placeholder(2),
@@ -303,10 +298,10 @@ function prepareInitializers(): void {
     placeholder(5),
     64,
     placeholder(6),
-  ]);
-  writeInitializer("genericInstantVRFActionStrategy", "GenericInstantVRFActionStrategy", [placeholder(1)]);
-  writeInitializer("eggInstantVRFActionStrategy", "EggInstantVRFActionStrategy", [placeholder(1)]);
-  writeInitializer("bankRelay", "BankRelay", [placeholder(1)]);
+  ])
+  writeInitializer("genericInstantVRFActionStrategy", "GenericInstantVRFActionStrategy", [placeholder(1)])
+  writeInitializer("eggInstantVRFActionStrategy", "EggInstantVRFActionStrategy", [placeholder(1)])
+  writeInitializer("bankRelay", "BankRelay", [placeholder(1)])
   writeInitializer("pvpBattleground", "PVPBattleground", [
     placeholder(1),
     placeholder(2),
@@ -317,7 +312,7 @@ function prepareInitializers(): void {
     10 * 60,
     placeholder(6),
     IS_BETA,
-  ]);
+  ])
 
   const raidCombatActionIds = [
     EstforConstants.ACTION_COMBAT_NATUOW,
@@ -348,7 +343,7 @@ function prepareInitializers(): void {
     EstforConstants.ACTION_COMBAT_BLAZING_MONTANITE,
     EstforConstants.ACTION_COMBAT_MONTANITE_ICE_TITAN,
     EstforConstants.ACTION_COMBAT_MONTANITE_FIRE_TITAN,
-  ];
+  ]
   writeInitializer("raids", "Raids", [
     placeholder(1),
     placeholder(2),
@@ -361,7 +356,7 @@ function prepareInitializers(): void {
     20,
     raidCombatActionIds,
     IS_BETA,
-  ]);
+  ])
   writeInitializer("lockedBankVaults", "LockedBankVaults", [
     placeholder(1),
     placeholder(2),
@@ -379,7 +374,7 @@ function prepareInitializers(): void {
     placeholder(8),
     placeholder(9),
     IS_BETA,
-  ]);
+  ])
   writeInitializer("territories", "Territories", [
     allTerritories,
     placeholder(1),
@@ -394,7 +389,7 @@ function prepareInitializers(): void {
     placeholder(7),
     placeholder(8),
     IS_BETA,
-  ]);
+  ])
   writeInitializer("combatantsHelper", "CombatantsHelper", [
     placeholder(1),
     placeholder(2),
@@ -403,9 +398,9 @@ function prepareInitializers(): void {
     placeholder(5),
     placeholder(6),
     IS_BETA,
-  ]);
-  writeInitializer("gameSubsidisationRegistry", "GameSubsidisationRegistry", [placeholder(1)]);
-  writeInitializer("usageBasedSessionModule", "UsageBasedSessionModule", [placeholder(1), placeholder(2)]);
+  ])
+  writeInitializer("gameSubsidisationRegistry", "GameSubsidisationRegistry", [placeholder(1)])
+  writeInitializer("usageBasedSessionModule", "UsageBasedSessionModule", [placeholder(1), placeholder(2)])
   writeInitializer("territoryTreasury", "TerritoryTreasury", [
     placeholder(1),
     placeholder(2),
@@ -413,8 +408,8 @@ function prepareInitializers(): void {
     DEV,
     placeholder(4),
     IS_BETA ? 600 : 13_500,
-  ]);
-  writeInitializer("bankRegistry", "BankRegistry", []);
+  ])
+  writeInitializer("bankRegistry", "BankRegistry", [])
   writeInitializer("bankFactory", "BankFactory", [
     placeholder(1),
     placeholder(2),
@@ -425,71 +420,71 @@ function prepareInitializers(): void {
     placeholder(7),
     placeholder(8),
     placeholder(9),
-  ]);
+  ])
 }
 
 function prepareSeedCalls(): void {
-  writeCall("avatars", "PlayerNFT", "setAvatars", [avatarIds, avatarInfos]);
-  manifest.entries.avatars = avatarIds.length;
-  writeCall("cosmetics", "Cosmetics", "setCosmetics", [cosmeticTokenIds, cosmeticInfos]);
-  manifest.entries.cosmetics = cosmeticTokenIds.length;
-  writeCall("xpThresholdRewards", "Players", "addXPThresholdRewards", [allXPThresholdRewards]);
-  manifest.entries.xpThresholdRewards = allXPThresholdRewards.length;
-  writeChunks("items", "ItemNFT", "addItems", allItems);
-  writeCall("quests", "Quests", "addQuests", [allQuests, allQuestsMinRequirements]);
-  manifest.entries.quests = allQuests.length;
+  writeCall("avatars", "PlayerNFT", "setAvatars", [avatarIds, avatarInfos])
+  manifest.entries.avatars = avatarIds.length
+  writeCall("cosmetics", "Cosmetics", "setCosmetics", [cosmeticTokenIds, cosmeticInfos])
+  manifest.entries.cosmetics = cosmeticTokenIds.length
+  writeCall("xpThresholdRewards", "Players", "addXPThresholdRewards", [allXPThresholdRewards])
+  manifest.entries.xpThresholdRewards = allXPThresholdRewards.length
+  writeChunks("items", "ItemNFT", "addItems", allItems)
+  writeCall("quests", "Quests", "addQuests", [allQuests, allQuestsMinRequirements])
+  manifest.entries.quests = allQuests.length
 
   for (let i = 0; i < allOrderBookTokenIdInfos.length; i += CHUNK_SIZE) {
-    const chunk = allOrderBookTokenIdInfos.slice(i, i + CHUNK_SIZE);
+    const chunk = allOrderBookTokenIdInfos.slice(i, i + CHUNK_SIZE)
     writeCall("orderbook", "OrderBook", "setTokenIdInfos", [
       chunk.map((info) => info.tokenId),
       chunk.map((info) => ({tick: info.tick, minQuantity: info.minQuantity})),
-    ]);
+    ])
   }
-  manifest.entries.orderbook = allOrderBookTokenIdInfos.length;
+  manifest.entries.orderbook = allOrderBookTokenIdInfos.length
 
-  writeCall("fullAttireBonuses", "Players", "addFullAttireBonuses", [allFullAttireBonuses]);
-  manifest.entries.fullAttireBonuses = allFullAttireBonuses.length;
+  writeCall("fullAttireBonuses", "Players", "addFullAttireBonuses", [allFullAttireBonuses])
+  manifest.entries.fullAttireBonuses = allFullAttireBonuses.length
   allDailyRewards.forEach((rewards, index) =>
     writeCall("dailyRewards", "DailyRewardsScheduler", "setDailyRewardPool", [index + 1, rewards])
-  );
-  manifest.entries.dailyRewards = allDailyRewards.reduce((total, rewards) => total + rewards.length, 0);
+  )
+  manifest.entries.dailyRewards = allDailyRewards.reduce((total, rewards) => total + rewards.length, 0)
   allWeeklyRewards.forEach((rewards, index) =>
     writeCall("weeklyRewards", "DailyRewardsScheduler", "setWeeklyRewardPool", [index + 1, rewards])
-  );
-  manifest.entries.weeklyRewards = allWeeklyRewards.reduce((total, rewards) => total + rewards.length, 0);
-  writeChunks("actions", "WorldActions", "addActions", allActions);
+  )
+  manifest.entries.weeklyRewards = allWeeklyRewards.reduce((total, rewards) => total + rewards.length, 0)
+  writeChunks("actions", "WorldActions", "addActions", allActions)
 
   writeCall("actionChoices", "WorldActions", "addBulkActionChoices", [
     [EstforConstants.ACTION_FIREMAKING_ITEM, EstforConstants.ACTION_SMITHING_ITEM, EstforConstants.ACTION_COOKING_ITEM],
     [allActionChoiceIdsFiremaking, allActionChoiceIdsSmithing, allActionChoiceIdsCooking],
     [allActionChoicesFiremaking, allActionChoicesSmithing, allActionChoicesCooking],
-  ]);
+  ])
   writeCall("actionChoices", "WorldActions", "addActionChoices", [
     EstforConstants.ACTION_CRAFTING_ITEM,
     allActionChoiceIdsCrafting,
     allActionChoicesCrafting,
-  ]);
+  ])
   writeCall("actionChoices", "WorldActions", "addActionChoices", [
     EstforConstants.ACTION_FLETCHING_ITEM,
     allActionChoiceIdsFletching,
     allActionChoicesFletching,
-  ]);
+  ])
   writeCall("actionChoices", "WorldActions", "addBulkActionChoices", [
     [EstforConstants.ACTION_ALCHEMY_ITEM, EstforConstants.ACTION_FORGING_ITEM],
     [allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
     [allActionChoicesAlchemy, allActionChoicesForging],
-  ]);
+  ])
   writeCall("actionChoices", "WorldActions", "addBulkActionChoices", [
     [EstforConstants.ACTION_FARMING_ITEM],
     [allActionChoiceIdsFarming],
     [allActionChoicesFarming],
-  ]);
+  ])
   writeCall("actionChoices", "WorldActions", "addBulkActionChoices", [
     [EstforConstants.NONE, EstforConstants.NONE, EstforConstants.NONE],
     [allActionChoiceIdsMelee, allActionChoiceIdsRanged, allActionChoiceIdsMagic],
     [allActionChoicesMelee, allActionChoicesRanged, allActionChoicesMagic],
-  ]);
+  ])
   manifest.entries.actionChoices =
     allActionChoiceIdsFiremaking.length +
     allActionChoiceIdsSmithing.length +
@@ -501,36 +496,36 @@ function prepareSeedCalls(): void {
     allActionChoiceIdsFarming.length +
     allActionChoiceIdsMelee.length +
     allActionChoiceIdsRanged.length +
-    allActionChoiceIdsMagic.length;
+    allActionChoiceIdsMagic.length
 
-  writeCall("shopItems", "Shop", "addBuyableItems", [shopItems]);
-  manifest.entries.shopItems = shopItems.length;
-  writeCall("clanTiers", "Clans", "addTiers", [clanTiers]);
-  manifest.entries.clanTiers = clanTiers.length;
-  const availableInstantActions = allInstantActions.filter((action) => action.isAvailable);
-  writeChunks("instantActions", "InstantActions", "addActions", availableInstantActions);
-  writeChunks("instantVRFActions", "InstantVRFActions", "addActions", allInstantVRFActions);
-  writeCall("passiveActions", "PassiveActions", "addActions", [allPassiveActions]);
-  manifest.entries.passiveActions = allPassiveActions.length;
-  writeChunks("basePets", "PetNFT", "addBasePets", allBasePets, PET_CHUNK_SIZE);
-  writeCall("baseRaids", "Raids", "addBaseRaids", [allBaseRaidIds, allBaseRaids]);
-  manifest.entries.baseRaids = allBaseRaidIds.length;
+  writeCall("shopItems", "Shop", "addBuyableItems", [shopItems])
+  manifest.entries.shopItems = shopItems.length
+  writeCall("clanTiers", "Clans", "addTiers", [clanTiers])
+  manifest.entries.clanTiers = clanTiers.length
+  const availableInstantActions = allInstantActions.filter((action) => action.isAvailable)
+  writeChunks("instantActions", "InstantActions", "addActions", availableInstantActions)
+  writeChunks("instantVRFActions", "InstantVRFActions", "addActions", allInstantVRFActions)
+  writeCall("passiveActions", "PassiveActions", "addActions", [allPassiveActions])
+  manifest.entries.passiveActions = allPassiveActions.length
+  writeChunks("basePets", "PetNFT", "addBasePets", allBasePets, PET_CHUNK_SIZE)
+  writeCall("baseRaids", "Raids", "addBaseRaids", [allBaseRaidIds, allBaseRaids])
+  manifest.entries.baseRaids = allBaseRaidIds.length
 
-  writeCall("unsellableItems", "Shop", "addUnsellableItems", [unsellableItemIds]);
-  manifest.entries.unsellableItems = unsellableItemIds.length;
+  writeCall("unsellableItems", "Shop", "addUnsellableItems", [unsellableItemIds])
+  manifest.entries.unsellableItems = unsellableItemIds.length
 
   writeCall("territoryMinimumMMRs", "Territories", "setMinimumMMRs", [
     allTerritories.map((territory) => territory.territoryId),
     allMinimumMMRs,
-  ]);
-  manifest.entries.territories = allTerritories.length;
-  manifest.entries.instantActions = availableInstantActions.length;
-  manifest.entries.instantVRFActions = allInstantVRFActions.length;
-  manifest.entries.basePets = allBasePets.length;
+  ])
+  manifest.entries.territories = allTerritories.length
+  manifest.entries.instantActions = availableInstantActions.length
+  manifest.entries.instantVRFActions = allInstantVRFActions.length
+  manifest.entries.basePets = allBasePets.length
 }
 
 function writeTestCall(name: string, contractName: string, functionName: string, args: unknown[]): void {
-  writeBytes(join("test", `${name}.bin`), encode(contractName, functionName, args));
+  writeBytes(join("test", `${name}.bin`), encode(contractName, functionName, args))
 }
 
 function prepareTestDataCalls(): void {
@@ -543,7 +538,7 @@ function prepareTestDataCalls(): void {
     feet: 0,
     ring: 0,
     reserved1: 0,
-  };
+  }
   const woodcutting = {
     attire: noAttire,
     actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
@@ -554,7 +549,7 @@ function prepareTestDataCalls(): void {
     timespan: 3600,
     combatStyle: EstforTypes.CombatStyle.NONE,
     petId: EstforConstants.NONE,
-  };
+  }
   const firemaking = {
     attire: noAttire,
     actionId: EstforConstants.ACTION_FIREMAKING_ITEM,
@@ -565,7 +560,7 @@ function prepareTestDataCalls(): void {
     timespan: 3600,
     combatStyle: EstforTypes.CombatStyle.NONE,
     petId: EstforConstants.NONE,
-  };
+  }
   const combat = {
     attire: {...noAttire, head: EstforConstants.BRONZE_HELMET},
     actionId: EstforConstants.ACTION_COMBAT_NATUOW,
@@ -576,39 +571,39 @@ function prepareTestDataCalls(): void {
     timespan: 7200,
     combatStyle: EstforTypes.CombatStyle.ATTACK,
     petId: EstforConstants.NONE,
-  };
+  }
 
-  writeTestCall("mintOwner", "PlayerNFT", "mint", [1, "0xSamWitch", "", "", "", false, true]);
+  writeTestCall("mintOwner", "PlayerNFT", "mint", [1, "0xSamWitch", "", "", "", false, true])
   writeTestCall("startWoodcutting", "Players", "startActions", [
     200_000,
     [woodcutting],
     EstforTypes.ActionQueueStrategy.OVERWRITE,
-  ]);
-  writeTestCall("processActions", "Players", "processActions", [200_000]);
+  ])
+  writeTestCall("processActions", "Players", "processActions", [200_000])
   writeTestCall("startFiremaking", "Players", "startActions", [
     200_000,
     [firemaking],
     EstforTypes.ActionQueueStrategy.OVERWRITE,
-  ]);
-  writeTestCall("mintBronzeHelmet", "ItemNFT", "mint", [placeholder(1), EstforConstants.BRONZE_HELMET, 1]);
+  ])
+  writeTestCall("mintBronzeHelmet", "ItemNFT", "mint", [placeholder(1), EstforConstants.BRONZE_HELMET, 1])
   writeTestCall("startCombat", "Players", "startActions", [
     200_000,
     [combat],
     EstforTypes.ActionQueueStrategy.OVERWRITE,
-  ]);
-  writeTestCall("approveShop", "IBrushToken", "approve", [placeholder(1), parseEther("100")]);
-  writeTestCall("buyFromShop", "Shop", "buy", [placeholder(1), EstforConstants.MAGIC_FIRE_STARTER, 1]);
-  writeTestCall("fundShop", "IBrushToken", "transfer", [placeholder(1), 100_000]);
+  ])
+  writeTestCall("approveShop", "IBrushToken", "approve", [placeholder(1), parseEther("100")])
+  writeTestCall("buyFromShop", "Shop", "buy", [placeholder(1), EstforConstants.MAGIC_FIRE_STARTER, 1])
+  writeTestCall("fundShop", "IBrushToken", "transfer", [placeholder(1), 100_000])
   writeTestCall("mintShopInventory", "ItemNFT", "mintBatch", [
     placeholder(1),
     [EstforConstants.MAGIC_FIRE_STARTER, EstforConstants.TITANIUM_ARMOR],
     [500, 1],
-  ]);
-  writeTestCall("sellTooEarly", "Shop", "sell", [EstforConstants.TITANIUM_ARMOR, 1, 1]);
-  writeTestCall("sellToShop", "Shop", "sell", [EstforConstants.MAGIC_FIRE_STARTER, 1, 1]);
-  writeTestCall("activateQuest", "Players", "activateQuest", [200_000, EstforConstants.QUEST_BURN_BAN]);
-  writeTestCall("deactivateQuest", "Players", "deactivateQuest", [200_000]);
-  writeTestCall("approveClans", "IBrushToken", "approve", [placeholder(1), parseEther("1000")]);
+  ])
+  writeTestCall("sellTooEarly", "Shop", "sell", [EstforConstants.TITANIUM_ARMOR, 1, 1])
+  writeTestCall("sellToShop", "Shop", "sell", [EstforConstants.MAGIC_FIRE_STARTER, 1, 1])
+  writeTestCall("activateQuest", "Players", "activateQuest", [200_000, EstforConstants.QUEST_BURN_BAN])
+  writeTestCall("deactivateQuest", "Players", "deactivateQuest", [200_000])
+  writeTestCall("approveClans", "IBrushToken", "approve", [placeholder(1), parseEther("1000")])
   writeTestCall("createClan", "Clans", "createClan", [
     200_000,
     "Sam test clan",
@@ -617,24 +612,24 @@ function prepareTestDataCalls(): void {
     "0xSonicLabs",
     2,
     1,
-  ]);
+  ])
   writeTestCall("transferToBank", "ItemNFT", "safeTransferFrom", [
     placeholder(1),
     placeholder(2),
     EstforConstants.BRONZE_HELMET,
     1,
     "0x",
-  ]);
-  writeTestCall("mintAlice", "PlayerNFT", "mint", [1, "Alice", "", "", "", false, true]);
-  writeTestCall("inviteAlice", "Clans", "inviteMembers", [30_000, [200_001], 200_000]);
-  writeTestCall("acceptInvite", "Clans", "acceptInvite", [30_000, 200_001, 0]);
-  writeTestCall("leaveClan", "Clans", "changeRank", [30_000, 200_001, 0, 200_001]);
-  writeTestCall("requestToJoin", "Clans", "requestToJoin", [30_000, 200_001, 0]);
-  writeTestCall("deleteInvitesAsPlayer", "Clans", "deleteInvitesAsPlayer", [[30_000], 200_001]);
-  writeTestCall("deleteInvitesAsClan", "Clans", "deleteInvitesAsClan", [30_000, [200_001], 200_000]);
+  ])
+  writeTestCall("mintAlice", "PlayerNFT", "mint", [1, "Alice", "", "", "", false, true])
+  writeTestCall("inviteAlice", "Clans", "inviteMembers", [30_000, [200_001], 200_000])
+  writeTestCall("acceptInvite", "Clans", "acceptInvite", [30_000, 200_001, 0])
+  writeTestCall("leaveClan", "Clans", "changeRank", [30_000, 200_001, 0, 200_001])
+  writeTestCall("requestToJoin", "Clans", "requestToJoin", [30_000, 200_001, 0])
+  writeTestCall("deleteInvitesAsPlayer", "Clans", "deleteInvitesAsPlayer", [[30_000], 200_001])
+  writeTestCall("deleteInvitesAsClan", "Clans", "deleteInvitesAsClan", [30_000, [200_001], 200_000])
 
-  const fireStarterInfo = allOrderBookTokenIdInfos.find((info) => info.tokenId === EstforConstants.MAGIC_FIRE_STARTER);
-  if (!fireStarterInfo) throw new Error("Missing orderbook data for MAGIC_FIRE_STARTER");
+  const fireStarterInfo = allOrderBookTokenIdInfos.find((info) => info.tokenId === EstforConstants.MAGIC_FIRE_STARTER)
+  if (!fireStarterInfo) throw new Error("Missing orderbook data for MAGIC_FIRE_STARTER")
   writeTestCall("limitOrder", "OrderBook", "limitOrders", [
     [
       {
@@ -644,10 +639,10 @@ function prepareTestDataCalls(): void {
         quantity: 1,
       },
     ],
-  ]);
-  writeTestCall("buyBrush", "Quests", "buyBrush", [placeholder(1), 1, true]);
-  writeTestCall("approveQuests", "IBrushToken", "approve", [placeholder(1), parseEther("1")]);
-  writeTestCall("sellBrush", "Quests", "sellBrush", [placeholder(1), parseEther("0.001"), 0, false]);
+  ])
+  writeTestCall("buyBrush", "Quests", "buyBrush", [placeholder(1), 1, true])
+  writeTestCall("approveQuests", "IBrushToken", "approve", [placeholder(1), parseEther("1")])
+  writeTestCall("sellBrush", "Quests", "sellBrush", [placeholder(1), parseEther("0.001"), 0, false])
 }
 
 const DEPLOYMENT_ARTIFACTS = [
@@ -698,7 +693,7 @@ const DEPLOYMENT_ARTIFACTS = [
   "out/UsageBasedSessionModule.sol/UsageBasedSessionModule.json",
   "out/WishingWell.sol/WishingWell.json",
   "out/WorldActions.sol/WorldActions.json",
-] as const;
+] as const
 
 const LIBRARY_ADDRESS_KEYS: Record<string, string> = {
   "contracts/EstforLibrary.sol:EstforLibrary": "estforLibrary",
@@ -708,7 +703,7 @@ const LIBRARY_ADDRESS_KEYS: Record<string, string> = {
   "contracts/PromotionsLibrary.sol:PromotionsLibrary": "promotionsLibrary",
   "contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary": "clanBattleLibrary",
   "contracts/Clans/LockedBankVaultsLibrary.sol:LockedBankVaultsLibrary": "lockedBankVaultsLibrary",
-};
+}
 
 const CONFIGURED_LIBRARY_ADDRESSES: Record<string, string> = {
   estforLibrary: "0000000000000000000000000000000000001001",
@@ -718,55 +713,55 @@ const CONFIGURED_LIBRARY_ADDRESSES: Record<string, string> = {
   promotionsLibrary: "0000000000000000000000000000000000001005",
   clanBattleLibrary: "0000000000000000000000000000000000001006",
   lockedBankVaultsLibrary: "0000000000000000000000000000000000001007",
-};
+}
 
 function prepareLinkedBytecode(deploymentPath: string): void {
-  const addresses = JSON.parse(readFileSync(deploymentPath, "utf8")) as Record<string, string>;
+  const addresses = JSON.parse(readFileSync(deploymentPath, "utf8")) as Record<string, string>
 
   for (const artifactPath of DEPLOYMENT_ARTIFACTS) {
-    const foundryArtifact = JSON.parse(readFileSync(artifactPath, "utf8")) as JsonArtifact;
-    let object = foundryArtifact.bytecode.object.slice(2);
+    const foundryArtifact = JSON.parse(readFileSync(artifactPath, "utf8")) as JsonArtifact
+    let object = foundryArtifact.bytecode.object.slice(2)
 
     for (const [sourceName, libraries] of Object.entries(foundryArtifact.bytecode.linkReferences)) {
       for (const [libraryName, references] of Object.entries(libraries)) {
-        const fullyQualifiedName = `${sourceName}:${libraryName}`;
-        const addressKey = LIBRARY_ADDRESS_KEYS[fullyQualifiedName];
-        const address = addresses[addressKey]?.slice(2).toLowerCase();
+        const fullyQualifiedName = `${sourceName}:${libraryName}`
+        const addressKey = LIBRARY_ADDRESS_KEYS[fullyQualifiedName]
+        const address = addresses[addressKey]?.slice(2).toLowerCase()
         if (!address || address.length !== 40) {
-          throw new Error(`Missing deployed address for linked library ${fullyQualifiedName}`);
+          throw new Error(`Missing deployed address for linked library ${fullyQualifiedName}`)
         }
         for (const reference of references) {
-          if (reference.length !== 20) throw new Error(`Unexpected link length for ${fullyQualifiedName}`);
-          const offset = reference.start * 2;
-          object = `${object.slice(0, offset)}${address}${object.slice(offset + reference.length * 2)}`;
+          if (reference.length !== 20) throw new Error(`Unexpected link length for ${fullyQualifiedName}`)
+          const offset = reference.start * 2
+          object = `${object.slice(0, offset)}${address}${object.slice(offset + reference.length * 2)}`
         }
       }
     }
 
     for (const [addressKey, configuredAddress] of Object.entries(CONFIGURED_LIBRARY_ADDRESSES)) {
-      if (!object.includes(configuredAddress)) continue;
-      const address = addresses[addressKey]?.slice(2).toLowerCase();
+      if (!object.includes(configuredAddress)) continue
+      const address = addresses[addressKey]?.slice(2).toLowerCase()
       if (!address || address.length !== 40) {
-        throw new Error(`Missing deployed address for linked library ${addressKey}`);
+        throw new Error(`Missing deployed address for linked library ${addressKey}`)
       }
-      object = object.split(configuredAddress).join(address);
+      object = object.split(configuredAddress).join(address)
     }
 
-    if (object.includes("__$")) throw new Error(`Unresolved library link in ${artifactPath}`);
-    writeBytes(join("bytecode", `${artifactPath}.bin`), `0x${object}`);
+    if (object.includes("__$")) throw new Error(`Unresolved library link in ${artifactPath}`)
+    writeBytes(join("bytecode", `${artifactPath}.bin`), `0x${object}`)
   }
 }
 
-rmSync(OUTPUT_DIR, {recursive: true, force: true});
-mkdirSync(OUTPUT_DIR, {recursive: true});
-prepareInitializers();
-prepareSeedCalls();
-if (ADD_TEST_DATA) prepareTestDataCalls();
-if (process.env.DEPLOYMENT_INPUT) prepareLinkedBytecode(process.env.DEPLOYMENT_INPUT);
-writeFileSync(join(OUTPUT_DIR, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+rmSync(OUTPUT_DIR, {recursive: true, force: true})
+mkdirSync(OUTPUT_DIR, {recursive: true})
+prepareInitializers()
+prepareSeedCalls()
+if (ADD_TEST_DATA) prepareTestDataCalls()
+if (process.env.DEPLOYMENT_INPUT) prepareLinkedBytecode(process.env.DEPLOYMENT_INPUT)
+writeFileSync(join(OUTPUT_DIR, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`)
 console.log(
   `Prepared ${Object.values(manifest.calls).reduce(
     (total, count) => total + count,
     0
   )} Forge seed calls in ${OUTPUT_DIR}`
-);
+)

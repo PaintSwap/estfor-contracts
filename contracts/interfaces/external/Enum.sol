@@ -6,8 +6,8 @@ pragma solidity >=0.7.0 <0.9.0;
  * @author Richard Meissner - @rmeissner
  */
 abstract contract Enum {
-    enum Operation {
-        Call,
-        DelegateCall
-    }
+  enum Operation {
+    Call,
+    DelegateCall
+  }
 }

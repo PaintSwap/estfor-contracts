@@ -1,14 +1,14 @@
-import {ethers} from "hardhat";
-import {INSTANT_ACTIONS_ADDRESS} from "./contractAddresses";
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {allInstantActions} from "./data/instantActions";
-import {getChainId} from "./utils";
+import {ethers} from "hardhat"
+import {INSTANT_ACTIONS_ADDRESS} from "./contractAddresses"
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {allInstantActions} from "./data/instantActions"
+import {getChainId} from "./utils"
 
 async function main() {
-  const [owner] = await ethers.getSigners();
-  console.log(`Edit instant actions using account: ${owner.address} on chain id ${await getChainId(owner)}`);
+  const [owner] = await ethers.getSigners()
+  console.log(`Edit instant actions using account: ${owner.address} on chain id ${await getChainId(owner)}`)
 
-  const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
+  const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS)
 
   const actionIds = new Set([
     EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_1,
@@ -110,23 +110,23 @@ async function main() {
     EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_5,
     EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_5,
     EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_5,
-    EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_5
-  ]);
+    EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_5,
+  ])
 
   const actions = allInstantActions.filter((action) => {
     if (action) {
-      return actionIds.has(action.actionId);
+      return actionIds.has(action.actionId)
     }
-  });
+  })
 
   if (actions.length !== actionIds.size) {
-    console.log("Cannot find all instant actions");
+    console.log("Cannot find all instant actions")
   } else {
-    await instantActions.editActions(actions);
+    await instantActions.editActions(actions)
   }
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

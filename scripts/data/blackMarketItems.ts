@@ -1,14 +1,14 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {parseEther} from "ethers";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {parseEther} from "ethers"
 
 export type ShopItem = {
-  price: bigint;
-  tokenId: number;
-  amountPerPurchase: number;
-  currentStock: number;
-  stock: number;
-  isActive: boolean;
-};
+  price: bigint
+  tokenId: number
+  amountPerPurchase: number
+  currentStock: number
+  stock: number
+  isActive: boolean
+}
 
 export const allBlackMarketItems: ShopItem[] = [
   {
@@ -163,4 +163,4 @@ export const allBlackMarketItems: ShopItem[] = [
     stock: 0,
     isActive: false,
   },
-];
+]

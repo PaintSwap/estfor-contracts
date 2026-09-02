@@ -1,6 +1,6 @@
-import {readFileSync, readdirSync} from "fs";
-import {join, resolve} from "path";
-import {isAddress} from "ethers";
+import {readFileSync, readdirSync} from "fs"
+import {join, resolve} from "path"
+import {isAddress} from "ethers"
 
 export const CONTRACT_NAMES = [
   "bridge",
@@ -56,63 +56,63 @@ export const CONTRACT_NAMES = [
   "gameSubsidisationRegistry",
   "petNFTReroll",
   "orderbookV2",
-] as const;
+] as const
 
-export const EXTERNAL_NAMES = ["brush", "wftm", "vrf", "router", "paintSwapMarketplaceWhitelist", "usdc"] as const;
+export const EXTERNAL_NAMES = ["brush", "wftm", "vrf", "router", "paintSwapMarketplaceWhitelist", "usdc"] as const
 
-export type ContractName = (typeof CONTRACT_NAMES)[number];
-export type ExternalName = (typeof EXTERNAL_NAMES)[number];
-export type DeploymentProfile = "live" | "beta";
-export type ContractKind = "uups" | "beacon" | "library" | "implementation";
+export type ContractName = (typeof CONTRACT_NAMES)[number]
+export type ExternalName = (typeof EXTERNAL_NAMES)[number]
+export type DeploymentProfile = "live" | "beta"
+export type ContractKind = "uups" | "beacon" | "library" | "implementation"
 
 export interface DeploymentContract {
-  kind: ContractKind;
-  address: string;
+  kind: ContractKind
+  address: string
 }
 
 export interface DeploymentRegistry {
-  schemaVersion: 1;
-  deploymentId: string;
-  chainId: number;
-  deploymentBlock: number;
-  networkFingerprint: {genesisHash: string};
-  profile: DeploymentProfile;
-  authority: {type: "safe"; address: string};
-  contracts: Record<ContractName, DeploymentContract>;
-  externals: Record<ExternalName, string>;
-  subsidySigners: string[];
+  schemaVersion: 1
+  deploymentId: string
+  chainId: number
+  deploymentBlock: number
+  networkFingerprint: {genesisHash: string}
+  profile: DeploymentProfile
+  authority: {type: "safe"; address: string}
+  contracts: Record<ContractName, DeploymentContract>
+  externals: Record<ExternalName, string>
+  subsidySigners: string[]
 }
 
-const DEPLOYMENTS_ROOT = resolve(__dirname, "../deployments");
-const DEPLOYMENT_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const HASH_PATTERN = /^0x[0-9a-fA-F]{64}$/;
+const DEPLOYMENTS_ROOT = resolve(__dirname, "../deployments")
+const DEPLOYMENT_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const HASH_PATTERN = /^0x[0-9a-fA-F]{64}$/
 
 function requireObject(value: unknown, label: string): Record<string, unknown> {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error(`${label} must be an object`);
+    throw new Error(`${label} must be an object`)
   }
-  return value as Record<string, unknown>;
+  return value as Record<string, unknown>
 }
 
 function requireString(value: unknown, label: string): string {
-  if (typeof value !== "string" || value.length === 0) throw new Error(`${label} must be a non-empty string`);
-  return value;
+  if (typeof value !== "string" || value.length === 0) throw new Error(`${label} must be a non-empty string`)
+  return value
 }
 
 function requireInteger(value: unknown, label: string): number {
-  if (!Number.isSafeInteger(value) || Number(value) < 0) throw new Error(`${label} must be a non-negative integer`);
-  return Number(value);
+  if (!Number.isSafeInteger(value) || Number(value) < 0) throw new Error(`${label} must be a non-negative integer`)
+  return Number(value)
 }
 
 function requireAddress(value: unknown, label: string): string {
-  const address = requireString(value, label);
-  if (!isAddress(address)) throw new Error(`${label} must be an Ethereum address`);
-  return address;
+  const address = requireString(value, label)
+  if (!isAddress(address)) throw new Error(`${label} must be an Ethereum address`)
+  return address
 }
 
 function findDeploymentFile(deploymentId: string, deploymentsRoot: string): string {
   if (!DEPLOYMENT_ID_PATTERN.test(deploymentId)) {
-    throw new Error(`Invalid deployment ID "${deploymentId}"`);
+    throw new Error(`Invalid deployment ID "${deploymentId}"`)
   }
 
   const matches = readdirSync(deploymentsRoot, {withFileTypes: true})
@@ -120,75 +120,75 @@ function findDeploymentFile(deploymentId: string, deploymentsRoot: string): stri
     .map((entry) => join(deploymentsRoot, entry.name, `${deploymentId}.json`))
     .filter((path) => {
       try {
-        readFileSync(path);
-        return true;
+        readFileSync(path)
+        return true
       } catch {
-        return false;
+        return false
       }
-    });
+    })
 
-  if (matches.length === 0) throw new Error(`Unknown deployment "${deploymentId}"`);
-  if (matches.length > 1) throw new Error(`Deployment ID "${deploymentId}" is not unique`);
-  return matches[0];
+  if (matches.length === 0) throw new Error(`Unknown deployment "${deploymentId}"`)
+  if (matches.length > 1) throw new Error(`Deployment ID "${deploymentId}" is not unique`)
+  return matches[0]
 }
 
 export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?: string): DeploymentRegistry {
-  const registry = requireObject(value, "deployment registry");
-  if (registry.schemaVersion !== 1) throw new Error("deployment registry schemaVersion must be 1");
+  const registry = requireObject(value, "deployment registry")
+  if (registry.schemaVersion !== 1) throw new Error("deployment registry schemaVersion must be 1")
 
-  const deploymentId = requireString(registry.deploymentId, "deploymentId");
-  if (!DEPLOYMENT_ID_PATTERN.test(deploymentId)) throw new Error(`Invalid deployment ID "${deploymentId}"`);
+  const deploymentId = requireString(registry.deploymentId, "deploymentId")
+  if (!DEPLOYMENT_ID_PATTERN.test(deploymentId)) throw new Error(`Invalid deployment ID "${deploymentId}"`)
   if (expectedDeploymentId !== undefined && deploymentId !== expectedDeploymentId) {
-    throw new Error(`Deployment file contains "${deploymentId}", expected "${expectedDeploymentId}"`);
+    throw new Error(`Deployment file contains "${deploymentId}", expected "${expectedDeploymentId}"`)
   }
 
-  const chainId = requireInteger(registry.chainId, "chainId");
-  if (chainId === 0) throw new Error("chainId must be greater than zero");
-  const deploymentBlock = requireInteger(registry.deploymentBlock, "deploymentBlock");
+  const chainId = requireInteger(registry.chainId, "chainId")
+  if (chainId === 0) throw new Error("chainId must be greater than zero")
+  const deploymentBlock = requireInteger(registry.deploymentBlock, "deploymentBlock")
 
-  const networkFingerprint = requireObject(registry.networkFingerprint, "networkFingerprint");
-  const genesisHash = requireString(networkFingerprint.genesisHash, "networkFingerprint.genesisHash");
-  if (!HASH_PATTERN.test(genesisHash)) throw new Error("networkFingerprint.genesisHash must be a block hash");
+  const networkFingerprint = requireObject(registry.networkFingerprint, "networkFingerprint")
+  const genesisHash = requireString(networkFingerprint.genesisHash, "networkFingerprint.genesisHash")
+  if (!HASH_PATTERN.test(genesisHash)) throw new Error("networkFingerprint.genesisHash must be a block hash")
 
   if (registry.profile !== "live" && registry.profile !== "beta") {
-    throw new Error('profile must be "live" or "beta"');
+    throw new Error('profile must be "live" or "beta"')
   }
 
-  const authority = requireObject(registry.authority, "authority");
-  if (authority.type !== "safe") throw new Error('authority.type must be "safe"');
-  const authorityAddress = requireAddress(authority.address, "authority.address");
+  const authority = requireObject(registry.authority, "authority")
+  if (authority.type !== "safe") throw new Error('authority.type must be "safe"')
+  const authorityAddress = requireAddress(authority.address, "authority.address")
 
-  const rawContracts = requireObject(registry.contracts, "contracts");
-  const contracts = {} as Record<ContractName, DeploymentContract>;
+  const rawContracts = requireObject(registry.contracts, "contracts")
+  const contracts = {} as Record<ContractName, DeploymentContract>
   for (const name of CONTRACT_NAMES) {
-    const rawContract = requireObject(rawContracts[name], `contracts.${name}`);
+    const rawContract = requireObject(rawContracts[name], `contracts.${name}`)
     if (!(["uups", "beacon", "library", "implementation"] as unknown[]).includes(rawContract.kind)) {
-      throw new Error(`contracts.${name}.kind is invalid`);
+      throw new Error(`contracts.${name}.kind is invalid`)
     }
     contracts[name] = {
       kind: rawContract.kind as ContractKind,
       address: requireAddress(rawContract.address, `contracts.${name}.address`),
-    };
+    }
   }
   const unknownContracts = Object.keys(rawContracts).filter(
     (name) => !(CONTRACT_NAMES as readonly string[]).includes(name)
-  );
-  if (unknownContracts.length !== 0) throw new Error(`Unknown contracts: ${unknownContracts.join(", ")}`);
+  )
+  if (unknownContracts.length !== 0) throw new Error(`Unknown contracts: ${unknownContracts.join(", ")}`)
 
-  const rawExternals = requireObject(registry.externals, "externals");
-  const externals = {} as Record<ExternalName, string>;
+  const rawExternals = requireObject(registry.externals, "externals")
+  const externals = {} as Record<ExternalName, string>
   for (const name of EXTERNAL_NAMES) {
-    externals[name] = requireAddress(rawExternals[name], `externals.${name}`);
+    externals[name] = requireAddress(rawExternals[name], `externals.${name}`)
   }
   const unknownExternals = Object.keys(rawExternals).filter(
     (name) => !(EXTERNAL_NAMES as readonly string[]).includes(name)
-  );
-  if (unknownExternals.length !== 0) throw new Error(`Unknown externals: ${unknownExternals.join(", ")}`);
+  )
+  if (unknownExternals.length !== 0) throw new Error(`Unknown externals: ${unknownExternals.join(", ")}`)
 
-  if (!Array.isArray(registry.subsidySigners)) throw new Error("subsidySigners must be an array");
+  if (!Array.isArray(registry.subsidySigners)) throw new Error("subsidySigners must be an array")
   const subsidySigners = registry.subsidySigners.map((address, index) =>
     requireAddress(address, `subsidySigners[${index}]`)
-  );
+  )
 
   return {
     schemaVersion: 1,
@@ -201,34 +201,34 @@ export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?
     contracts,
     externals,
     subsidySigners,
-  };
+  }
 }
 
 export function loadDeploymentRegistry(deploymentId: string, deploymentsRoot = DEPLOYMENTS_ROOT): DeploymentRegistry {
-  const file = findDeploymentFile(deploymentId, deploymentsRoot);
-  return validateDeploymentRegistry(JSON.parse(readFileSync(file, "utf8")), deploymentId);
+  const file = findDeploymentFile(deploymentId, deploymentsRoot)
+  return validateDeploymentRegistry(JSON.parse(readFileSync(file, "utf8")), deploymentId)
 }
 
 export function getDeploymentRegistryPath(deploymentId: string, deploymentsRoot = DEPLOYMENTS_ROOT): string {
-  return findDeploymentFile(deploymentId, deploymentsRoot);
+  return findDeploymentFile(deploymentId, deploymentsRoot)
 }
 
 export function getSelectedDeploymentId(environment: NodeJS.ProcessEnv = process.env): string {
-  const deploymentId = environment.DEPLOYMENT_ID;
-  if (!deploymentId) throw new Error("DEPLOYMENT_ID is required (for example, sonic-live or sonic-beta)");
-  return deploymentId;
+  const deploymentId = environment.DEPLOYMENT_ID
+  if (!deploymentId) throw new Error("DEPLOYMENT_ID is required (for example, sonic-live or sonic-beta)")
+  return deploymentId
 }
 
 export function loadSelectedDeployment(environment: NodeJS.ProcessEnv = process.env): DeploymentRegistry {
-  return loadDeploymentRegistry(getSelectedDeploymentId(environment));
+  return loadDeploymentRegistry(getSelectedDeploymentId(environment))
 }
 
 export function getDeploymentIsBeta(environment: NodeJS.ProcessEnv = process.env): boolean {
   return environment.DEPLOYMENT_ID
     ? loadDeploymentRegistry(environment.DEPLOYMENT_ID).profile === "beta"
-    : environment.IS_BETA === "true";
+    : environment.IS_BETA === "true"
 }
 
 export function getContractAddress(deployment: DeploymentRegistry, name: ContractName): string {
-  return deployment.contracts[name].address;
+  return deployment.contracts[name].address
 }

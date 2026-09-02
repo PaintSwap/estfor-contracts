@@ -1,4 +1,4 @@
-import {EstforConstants, NONE} from "@paintswap/estfor-definitions";
+import {EstforConstants, NONE} from "@paintswap/estfor-definitions"
 import {
   ADAMANTINE_ORE,
   COAL_ORE,
@@ -10,29 +10,29 @@ import {
   NATUOW_HIDE,
   NATUOW_LEATHER,
   RUBY,
-} from "@paintswap/estfor-definitions/constants";
-import {Skill} from "@paintswap/estfor-definitions/types";
+} from "@paintswap/estfor-definitions/constants"
+import {Skill} from "@paintswap/estfor-definitions/types"
 
 export type QuestInput = {
-  questId: number;
-  dependentQuestId: number;
-  actionId1: number;
-  actionNum1: number;
-  actionId2: number;
-  actionNum2: number;
-  actionChoiceId: number;
-  actionChoiceNum: number;
-  skillReward: number;
-  skillXPGained: number;
-  rewardItemTokenId1: number;
-  rewardAmount1: number;
-  rewardItemTokenId2: number;
-  rewardAmount2: number;
-  burnItemTokenId: number;
-  burnAmount: number;
-  isFullModeOnly: boolean;
-  worldLocation: number;
-};
+  questId: number
+  dependentQuestId: number
+  actionId1: number
+  actionNum1: number
+  actionId2: number
+  actionNum2: number
+  actionChoiceId: number
+  actionChoiceNum: number
+  skillReward: number
+  skillXPGained: number
+  rewardItemTokenId1: number
+  rewardAmount1: number
+  rewardItemTokenId2: number
+  rewardAmount2: number
+  burnItemTokenId: number
+  burnAmount: number
+  isFullModeOnly: boolean
+  worldLocation: number
+}
 
 export const allQuests: QuestInput[] = [
   {
@@ -1337,20 +1337,20 @@ export const allQuests: QuestInput[] = [
     isFullModeOnly: true,
     worldLocation: 0,
   },
-];
+]
 
 type MinRequirement = {
-  skill: Skill;
-  xp: number;
-};
+  skill: Skill
+  xp: number
+}
 
-export type MinRequirementArray = [MinRequirement, MinRequirement, MinRequirement];
+export type MinRequirementArray = [MinRequirement, MinRequirement, MinRequirement]
 
 export const defaultMinRequirements: [MinRequirement, MinRequirement, MinRequirement] = [
   {skill: Skill.NONE, xp: 0},
   {skill: Skill.NONE, xp: 0},
   {skill: Skill.NONE, xp: 0},
-];
+]
 
 export const allQuestsMinRequirements: MinRequirementArray[] = [
   defaultMinRequirements,
@@ -1430,4 +1430,4 @@ export const allQuestsMinRequirements: MinRequirementArray[] = [
   defaultMinRequirements,
   defaultMinRequirements,
   defaultMinRequirements,
-];
+]

@@ -42,10 +42,7 @@ contract Cosmetics is UUPSUpgradeable, OwnableUpgradeable {
     _;
   }
 
-  function applyCosmetic(
-    uint256 playerId,
-    uint16 itemTokenId
-  ) external isOwnerOfPlayer(playerId) {
+  function applyCosmetic(uint256 playerId, uint16 itemTokenId) external isOwnerOfPlayer(playerId) {
     CosmeticInfo memory cosmeticInfo = _cosmetics[itemTokenId];
     require(cosmeticInfo.itemTokenId != 0, NotEquippableCosmetic());
     require(_equippedCosmetics[playerId][cosmeticInfo.cosmeticPosition] == 0, CosmeticSlotOccupied());
@@ -61,10 +58,7 @@ contract Cosmetics is UUPSUpgradeable, OwnableUpgradeable {
     emit CosmeticApplied(playerId, itemTokenId, cosmeticInfo.cosmeticPosition);
   }
 
-  function removeCosmetic(
-    uint256 playerId,
-    EquipPosition slot
-  ) external isOwnerOfPlayer(playerId) {
+  function removeCosmetic(uint256 playerId, EquipPosition slot) external isOwnerOfPlayer(playerId) {
     uint16 equippedCosmeticTokenId = _equippedCosmetics[playerId][slot];
     require(equippedCosmeticTokenId != 0, NoCosmeticEquipped());
 

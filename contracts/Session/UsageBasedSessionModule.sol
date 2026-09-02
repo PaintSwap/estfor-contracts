@@ -14,13 +14,21 @@ import {IUsageBasedSessionModule} from "../interfaces/IUsageBasedSessionModule.s
 
 /// @title UsageBasedSessionModule
 /// @notice A module for Gnosis Safe that allows for session keys with rate-limited actions
-contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712Upgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable, IUsageBasedSessionModule {
+contract UsageBasedSessionModule is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  EIP712Upgradeable,
+  ReentrancyGuardUpgradeable,
+  PausableUpgradeable,
+  IUsageBasedSessionModule
+{
   uint48 public constant override MAX_SESSION_DURATION = 30 days;
   uint256 public constant override MAX_BATCH_SIZE = 50;
   uint16 public constant override DEFAULT_SESSION_OPS_PER_DAY = 5;
-  bytes32 private constant SESSION_TYPEHASH = keccak256(
-    "UsageBasedSession(address safe,address target,bytes data,uint256 value,uint256 nonce,uint48 sessionDeadline)"
-  );
+  bytes32 private constant SESSION_TYPEHASH =
+    keccak256(
+      "UsageBasedSession(address safe,address target,bytes data,uint256 value,uint256 nonce,uint48 sessionDeadline)"
+    );
   uint256 private constant FEEM_PROJECT_ID = 15;
 
   struct GroupUsage {
@@ -143,7 +151,15 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
    * via eth_call runs the actual execution path with the full block gas budget and
    * returns the true gas consumed, which the relayer then uses as the gas limit.
    */
-  function simulateBatch(ExecuteParams[] calldata params) external override nonReentrant whenNotPaused returns (uint256 gasUsed, uint256 successCount, bytes[] memory errors) {
+  function simulateBatch(
+    ExecuteParams[] calldata params
+  )
+    external
+    override
+    nonReentrant
+    whenNotPaused
+    returns (uint256 gasUsed, uint256 successCount, bytes[] memory errors)
+  {
     require(_whitelistedSigners[msg.sender], UnauthorizedSigner());
     require(params.length > 0, NoBatchItems());
     require(params.length <= MAX_BATCH_SIZE, BatchTooLarge());
@@ -161,13 +177,19 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
 
   /**
    * @notice Helper to allow try/catch within executeBatch via an external call
-  */
+   */
   function executeSingle(ExecuteParams calldata params) external override {
     require(msg.sender == address(this), OnlyInternal());
     _execute(params.safe, params.target, params.data, params.value, params.signature);
   }
 
-  function _execute(address safe, address target, bytes calldata data, uint256 value, bytes calldata signature) internal {
+  function _execute(
+    address safe,
+    address target,
+    bytes calldata data,
+    uint256 value,
+    bytes calldata signature
+  ) internal {
     require(data.length >= 4, InvalidCallData());
 
     // 1. Basic Session Check
@@ -196,17 +218,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
 
     uint256 currentNonce = user.nonce;
     bytes32 digest = _hashTypedDataV4(
-      keccak256(
-        abi.encode(
-          SESSION_TYPEHASH,
-          safe,
-          target,
-          keccak256(data),
-          value,
-          currentNonce,
-          session.deadline
-        )
-      )
+      keccak256(abi.encode(SESSION_TYPEHASH, safe, target, keccak256(data), value, currentNonce, session.deadline))
     );
     require(ECDSA.recover(digest, signature) == session.sessionKey, InvalidSignature());
 
@@ -266,8 +278,8 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   }
 
   function registerFeeM() external override {
-    (bool _success,) = address(0xDC2B0D2Dd2b7759D97D50db4eabDC36973110830).call(
-        abi.encodeWithSignature("selfRegister(uint256)", FEEM_PROJECT_ID)
+    (bool _success, ) = address(0xDC2B0D2Dd2b7759D97D50db4eabDC36973110830).call(
+      abi.encodeWithSignature("selfRegister(uint256)", FEEM_PROJECT_ID)
     );
     require(_success, "FeeM registration failed");
   }

@@ -1,5 +1,5 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {BoostType, EquipPosition, ItemInput, Skill} from "@paintswap/estfor-definitions/types";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {BoostType, EquipPosition, ItemInput, Skill} from "@paintswap/estfor-definitions/types"
 export const allItems: ItemInput[] = [
   {
     combatStats: {
@@ -20899,4 +20899,4 @@ export const allItems: ItemInput[] = [
     isCollectionItem: false,
     isQuestItem: false,
   },
-];
+]

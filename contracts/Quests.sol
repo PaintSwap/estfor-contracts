@@ -87,11 +87,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     _activityPoints = IActivityPoints(activityPoints);
   }
 
-  function allFixedQuests(uint256 questId) external override view returns (Quest memory) {
+  function allFixedQuests(uint256 questId) external view override returns (Quest memory) {
     return _allFixedQuests[questId];
   }
 
-  function activeQuests(uint256 playerId) external override view returns (PlayerQuest memory) {
+  function activeQuests(uint256 playerId) external view override returns (PlayerQuest memory) {
     return _activeQuests[playerId];
   }
 
@@ -217,7 +217,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     uint256 playerId,
     uint256 minimumBrushBack,
     bool useExactETH
-  ) external override payable onlyPlayers returns (bool success) {
+  ) external payable override onlyPlayers returns (bool success) {
     PlayerQuest storage playerQuest = _activeQuests[playerId];
     require(playerQuest.questId == QUEST_PURSE_STRINGS, InvalidActiveQuest());
     _questCompleted(from, playerId, playerQuest.questId);
@@ -234,7 +234,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     address to,
     uint256 minimumBrushExpected,
     bool useExactETH
-  ) public override payable returns (uint256[] memory amounts) {
+  ) public payable override returns (uint256[] memory amounts) {
     require(msg.value != 0, InvalidFTMAmount());
 
     uint256 deadline = block.timestamp + 10 minutes;
@@ -605,15 +605,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
   }
 
-  function isQuestCompleted(uint256 playerId, uint256 questId) external override view returns (bool) {
+  function isQuestCompleted(uint256 playerId, uint256 questId) external view override returns (bool) {
     return _questsCompleted[playerId].get(questId);
   }
 
-  function getActiveQuestId(uint256 playerId) external override view returns (uint256) {
+  function getActiveQuestId(uint256 playerId) external view override returns (uint256) {
     return _activeQuests[playerId].questId;
   }
 
-  function getActiveQuestBurnedItemTokenId(uint256 playerId) external override view returns (uint256) {
+  function getActiveQuestBurnedItemTokenId(uint256 playerId) external view override returns (uint256) {
     uint256 questId = _activeQuests[playerId].questId;
     if (questId == 0) {
       return NONE;
@@ -624,7 +624,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
   function getQuestCompletedRewards(
     uint256 questId
-  ) public override view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, Skill skillGained, uint32 xpGained) {
+  )
+    public
+    view
+    override
+    returns (uint256[] memory itemTokenIds, uint256[] memory amounts, Skill skillGained, uint32 xpGained)
+  {
     Quest storage quest = _allFixedQuests[questId];
     // length can be 0, 1 or 2
     uint256 mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;

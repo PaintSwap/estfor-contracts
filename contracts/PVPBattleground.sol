@@ -27,7 +27,7 @@ import {PlayersLibrary} from "./Players/PlayersLibrary.sol";
 contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, IPVPBattleground {
   using SafeCast for uint256;
 
-  uint256 private constant NUM_WORDS = 3;  
+  uint256 private constant NUM_WORDS = 3;
   address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
   IPlayers private _players;
@@ -231,8 +231,8 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
     uint256 extraRollsB
   )
     public
-    override
     view
+    override
     returns (BattleResultEnum[] memory battleResults, uint256[] memory rollsA, uint256[] memory rollsB, bool didAWin)
   {
     require(randomWords.length >= 2, NotEnoughRandomWords());
@@ -291,7 +291,9 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
     return _calculateRequestPriceNative(_expectedGasLimitFulfill);
   }
 
-  function getPendingAttack(uint256 pendingAttackId) external view override returns (PendingAttack memory pendingAttack) {
+  function getPendingAttack(
+    uint256 pendingAttackId
+  ) external view override returns (PendingAttack memory pendingAttack) {
     return _pendingAttacks[pendingAttackId];
   }
 

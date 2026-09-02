@@ -1311,12 +1311,12 @@
         "type": "address"
       },
       {
-        "internalType": "contract PlayerNFT",
+        "internalType": "address",
         "name": "playerNFT",
         "type": "address"
       },
       {
-        "internalType": "contract Quests",
+        "internalType": "address",
         "name": "quests",
         "type": "address"
       },

@@ -60,16 +60,17 @@ interface IPlayers is IPlayersBase {
   function setActivePlayer(uint256 playerId) external;
   function donate(uint256 playerId, uint256 amount) external;
   function dailyClaimedRewards(uint256 playerId) external view returns (bool[7] memory claimed);
-  function validateActions(address owner, uint256 playerId, QueuedActionInput[] calldata queuedActions)
-    external
-    view
-    returns (bool[] memory successes, bytes[] memory reasons);
+  function validateActions(
+    address owner,
+    uint256 playerId,
+    QueuedActionInput[] calldata queuedActions
+  ) external view returns (bool[] memory successes, bytes[] memory reasons);
   function getPendingRandomRewards(uint256 playerId) external view returns (PendingRandomReward[] memory);
   function getActionQueue(uint256 playerId) external view returns (QueuedAction[] memory);
-  function getPendingQueuedActionState(address playerOwner, uint256 playerId)
-    external
-    view
-    returns (PendingQueuedActionState memory);
+  function getPendingQueuedActionState(
+    address playerOwner,
+    uint256 playerId
+  ) external view returns (PendingQueuedActionState memory);
   function getActivePlayerInfo(address playerOwner) external view returns (ActivePlayerInfo memory);
   function setImpls(
     address implQueueActions,

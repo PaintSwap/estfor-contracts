@@ -1,6 +1,6 @@
-import {EquipPosition} from "@paintswap/estfor-definitions/types";
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {CosmeticInfo} from "../utils";
+import {EquipPosition} from "@paintswap/estfor-definitions/types"
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {CosmeticInfo} from "../utils"
 
 export const cosmeticTokenIds: number[] = [
   EstforConstants.AVATAR_001_CHIMP,
@@ -9,7 +9,7 @@ export const cosmeticTokenIds: number[] = [
   EstforConstants.TITLE_WQ1_TOP5,
   EstforConstants.TITLE_WQ1_TOP50,
   EstforConstants.TITLE_WQ1_ALL,
-];
+]
 
 export const cosmeticInfos: CosmeticInfo[] = [
   {
@@ -42,4 +42,4 @@ export const cosmeticInfos: CosmeticInfo[] = [
     cosmeticPosition: EquipPosition.TITLE,
     avatarId: 0,
   },
-];
+]

@@ -53,6 +53,11 @@
   },
   {
     "inputs": [],
+    "name": "InvalidStateReadRange",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ItemCannotBeBought",
     "type": "error"
   },
@@ -725,6 +730,19 @@
   },
   {
     "inputs": [],
+    "name": "MAX_STATE_READ_LENGTH",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "UPGRADE_INTERFACE_VERSION",
     "outputs": [
       {
@@ -876,6 +894,47 @@
         "internalType": "uint24",
         "name": "",
         "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "startTokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "endTokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getShopItemStates",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "tokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "unsellable",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct Shop.ShopItemState[]",
+        "name": "",
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",

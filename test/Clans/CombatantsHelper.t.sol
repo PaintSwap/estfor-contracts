@@ -2,10 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {EstforTest} from "../utils/EstforTest.sol";
-import {
-  ICombatantsHelper,
-  ICombatantsHelper as CombatantsHelper
-} from "../../contracts/interfaces/ICombatantsHelper.sol";
+import {ICombatantsHelper, ICombatantsHelper as CombatantsHelper} from "../../contracts/interfaces/ICombatantsHelper.sol";
 import {IPlayers} from "../../contracts/interfaces/IPlayers.sol";
 import {IClans} from "../../contracts/interfaces/IClans.sol";
 import {ICombatants} from "../../contracts/interfaces/ICombatants.sol";
@@ -83,8 +80,9 @@ contract CombatantsHelperTest is EstforTest {
     clans.setRank(CLAN_ID, PLAYER_ID, ClanRank.OWNER);
     clans.setRank(CLAN_ID, OTHER_PLAYER_ID, ClanRank.COMMONER);
 
-    CombatantsHelper implementation =
-      CombatantsHelper(_deployArtifact("contracts/Clans/CombatantsHelper.sol:CombatantsHelper:via-ir"));
+    CombatantsHelper implementation = CombatantsHelper(
+      _deployArtifact("contracts/Clans/CombatantsHelper.sol:CombatantsHelper:via-ir")
+    );
     combatantsHelper = CombatantsHelper(
       _deployUUPS(
         address(implementation),

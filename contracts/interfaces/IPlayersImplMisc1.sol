@@ -10,6 +10,12 @@ interface IPlayersImplMisc1 is IPlayersBase {
   function getGlobalBoost() external view returns (StandardBoostInfo memory);
   function getPackedXP(uint256 playerId) external view returns (PackedXP memory);
   function getPlayer(uint256 playerId) external view returns (Player memory);
-  function uri(string calldata playerName, string calldata avatarName, string calldata avatarDescription, string calldata imageURI, uint256 playerId) external view returns (string memory);
+  function uri(
+    string calldata playerName,
+    string calldata avatarName,
+    string calldata avatarDescription,
+    string calldata imageURI,
+    uint256 playerId
+  ) external view returns (string memory);
   error InvalidXPSkill();
 }

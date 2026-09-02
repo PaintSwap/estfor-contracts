@@ -177,7 +177,12 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     uint40 currentRaid = _nextRaidId;
     require(raidId < currentRaid && raidId >= currentRaid - NUM_WORDS, RaidDoesNotExist());
 
-    uint256 requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, DAO_MULTISIG_ADDRESS, msg.value);
+    uint256 requestId = _requestRandomnessPayInNative(
+      _expectedGasLimitFulfill,
+      NUM_WORDS,
+      DAO_MULTISIG_ADDRESS,
+      msg.value
+    );
 
     _requestIdToPendingRaidAttack[requestId].raidId = raidId;
     _requestIdToPendingRaidAttack[requestId].clanId = clanId;

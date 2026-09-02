@@ -1,7 +1,7 @@
-import {ethers} from "hardhat";
-import {ACTIVITY_POINTS_ADDRESS} from "./contractAddresses";
-import {getChainId} from "./utils";
-import {ActivityPoints} from "../typechain-types";
+import {ethers} from "hardhat"
+import {ACTIVITY_POINTS_ADDRESS} from "./contractAddresses"
+import {getChainId} from "./utils"
+import {ActivityPoints} from "../typechain-types"
 
 // must match contract!!!
 enum ActivityType {
@@ -32,7 +32,7 @@ enum ActivityType {
   clans_evt_clancreated, // _isClanActivityType
   lockedbankvaults_evt_attackvaults, // _isClanActivityType
   territories_evt_attackterritory, // _isClanActivityType
-  territories_evt_claimunoccupiedterritory // _isClanActivityType
+  territories_evt_claimunoccupiedterritory, // _isClanActivityType
 }
 
 // must match contract!!!
@@ -41,18 +41,18 @@ enum CalculationType {
   discrete,
   log2,
   log10,
-  linear
+  linear,
 }
 
 async function main() {
-  const [owner] = await ethers.getSigners();
+  const [owner] = await ethers.getSigners()
   console.log(
     `Updating activity points calculationsat address ${ACTIVITY_POINTS_ADDRESS} with the account: ${
       owner.address
     } on chain id ${await getChainId(owner)}`
-  );
+  )
 
-  const activityPoints = await ethers.getContractAt("ActivityPoints", ACTIVITY_POINTS_ADDRESS);
+  const activityPoints = await ethers.getContractAt("ActivityPoints", ACTIVITY_POINTS_ADDRESS)
 
   // ActivityType activityType,
   // CalculationType calculation,
@@ -81,11 +81,11 @@ async function main() {
     [ActivityType.clans_evt_clancreated, CalculationType.discrete, 300, 0, 0, 300],
     [ActivityType.lockedbankvaults_evt_attackvaults, CalculationType.discrete, 50, 0, 0, 250],
     [ActivityType.territories_evt_attackterritory, CalculationType.discrete, 250, 0, 0, 250],
-    [ActivityType.territories_evt_claimunoccupiedterritory, CalculationType.discrete, 100, 0, 0, 100]
-  ];
+    [ActivityType.territories_evt_claimunoccupiedterritory, CalculationType.discrete, 100, 0, 0, 100],
+  ]
 
   for (const [activityType, calculation, base, multiplier, divider, maxPointsPerDay] of calculations) {
-    console.log(`Setting activity points for ${ActivityType[activityType]}`);
+    console.log(`Setting activity points for ${ActivityType[activityType]}`)
     const tx = await activityPoints.addPointsCalculation(
       activityType,
       calculation,
@@ -93,14 +93,14 @@ async function main() {
       multiplier,
       divider,
       maxPointsPerDay
-    );
-    await tx.wait();
+    )
+    await tx.wait()
   }
 
-  console.log("Done");
+  console.log("Done")
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

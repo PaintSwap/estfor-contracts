@@ -1,10 +1,10 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import type {DeploymentProfile} from "../deploymentRegistry";
-import {allShopItems, allShopItemsBeta, ShopItem} from "./shopItems";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import type {DeploymentProfile} from "../deploymentRegistry"
+import {allShopItems, allShopItemsBeta, ShopItem} from "./shopItems"
 
 export interface ShopData {
-  buyableItems: ShopItem[];
-  unsellableItemIds: number[];
+  buyableItems: ShopItem[]
+  unsellableItemIds: number[]
 }
 
 const unsellableItemIds = [
@@ -69,11 +69,11 @@ const unsellableItemIds = [
   EstforConstants.BOOK_007_ORICHALCUM_INFUSED,
   EstforConstants.CROSSBOW_007_ORICHALCUM_INFUSED,
   EstforConstants.DAGGER_007_ORICHALCUM_INFUSED,
-];
+]
 
 export function getShopData(profile: DeploymentProfile): ShopData {
   return {
     buyableItems: (profile === "beta" ? allShopItemsBeta : allShopItems).map((item) => ({...item})),
     unsellableItemIds: [...unsellableItemIds],
-  };
+  }
 }

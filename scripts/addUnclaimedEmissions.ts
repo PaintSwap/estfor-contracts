@@ -1,21 +1,21 @@
-import {ethers} from "hardhat";
-import {BRUSH_ADDRESS, TERRITORIES_ADDRESS} from "./contractAddresses";
-import {getChainId} from "./utils";
+import {ethers} from "hardhat"
+import {BRUSH_ADDRESS, TERRITORIES_ADDRESS} from "./contractAddresses"
+import {getChainId} from "./utils"
 
 async function main() {
-  const [owner] = await ethers.getSigners();
-  console.log(`Sent some brush to the territories: ${owner.address} on chain id ${await getChainId(owner)}`);
-  const territories = await ethers.getContractAt("Territories", TERRITORIES_ADDRESS);
+  const [owner] = await ethers.getSigners()
+  console.log(`Sent some brush to the territories: ${owner.address} on chain id ${await getChainId(owner)}`)
+  const territories = await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)
 
-  const brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
-  let tx = await brush.approve(TERRITORIES_ADDRESS, ethers.parseEther("100000"));
-  await tx.wait();
+  const brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS)
+  let tx = await brush.approve(TERRITORIES_ADDRESS, ethers.parseEther("100000"))
+  await tx.wait()
 
-  tx = await territories.addUnclaimedEmissions(ethers.parseEther("100"));
-  await tx.wait();
+  tx = await territories.addUnclaimedEmissions(ethers.parseEther("100"))
+  await tx.wait()
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

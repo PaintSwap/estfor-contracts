@@ -465,7 +465,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct PetNFT.BasePetInput[]",
+        "internalType": "struct IPetNFT.BasePetInput[]",
         "name": "basePetInputs",
         "type": "tuple[]"
       }
@@ -698,7 +698,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct PetNFT.BasePetInput[]",
+        "internalType": "struct IPetNFT.BasePetInput[]",
         "name": "basePetInputs",
         "type": "tuple[]"
       }
@@ -1300,7 +1300,7 @@
             "type": "uint16"
           }
         ],
-        "internalType": "struct PetNFT.BasePetInput[]",
+        "internalType": "struct IPetNFT.BasePetInput[]",
         "name": "basePetInputs",
         "type": "tuple[]"
       }
@@ -1507,7 +1507,7 @@
             "type": "uint16"
           }
         ],
-        "internalType": "struct PetNFT.BasePetInput[]",
+        "internalType": "struct IPetNFT.BasePetInput[]",
         "name": "basePetInputs",
         "type": "tuple[]"
       }

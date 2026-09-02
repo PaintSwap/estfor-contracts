@@ -321,37 +321,37 @@
   {
     "inputs": [
       {
-        "internalType": "contract PetNFT",
+        "internalType": "address",
         "name": "petNFT",
         "type": "address"
       },
       {
-        "internalType": "contract ItemNFT",
+        "internalType": "address",
         "name": "itemNFT",
         "type": "address"
       },
       {
-        "internalType": "contract PlayerNFT",
+        "internalType": "address",
         "name": "playerNFT",
         "type": "address"
       },
       {
-        "internalType": "contract Players",
+        "internalType": "address",
         "name": "players",
         "type": "address"
       },
       {
-        "internalType": "contract Clans",
+        "internalType": "address",
         "name": "clans",
         "type": "address"
       },
       {
-        "internalType": "contract Quests",
+        "internalType": "address",
         "name": "quests",
         "type": "address"
       },
       {
-        "internalType": "contract PassiveActions",
+        "internalType": "address",
         "name": "passiveActions",
         "type": "address"
       }

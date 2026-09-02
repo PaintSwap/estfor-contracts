@@ -1,5 +1,5 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {deployments, ethers, run, upgrades} from "hardhat";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {deployments, ethers, run, upgrades} from "hardhat"
 import {
   BankFactory,
   Clans,
@@ -47,7 +47,7 @@ import {
   UsageBasedSessionModule,
   BlackMarketTrader,
   PetNFTReroll,
-} from "../typechain-types";
+} from "../typechain-types"
 import {
   deployMockPaintSwapContracts,
   deployPlayerImplementations,
@@ -56,9 +56,9 @@ import {
   isDevNetwork,
   setDailyAndWeeklyRewards,
   verifyContracts,
-} from "./utils";
-import {allItems} from "./data/items";
-import {allActions} from "./data/actions";
+} from "./utils"
+import {allItems} from "./data/items"
+import {allActions} from "./data/actions"
 import {
   allActionChoicesFiremaking,
   allActionChoicesCooking,
@@ -71,7 +71,7 @@ import {
   allActionChoicesFletching,
   allActionChoicesForging,
   allActionChoicesFarming,
-} from "./data/actionChoices";
+} from "./data/actionChoices"
 import {
   allActionChoiceIdsFiremaking,
   allActionChoiceIdsCooking,
@@ -84,7 +84,7 @@ import {
   allActionChoiceIdsFletching,
   allActionChoiceIdsForging,
   allActionChoiceIdsFarming,
-} from "./data/actionChoiceIds";
+} from "./data/actionChoiceIds"
 import {
   BRUSH_ADDRESS,
   DEV_ADDRESS,
@@ -93,207 +93,207 @@ import {
   VRF_ADDRESS,
   WFTM_ADDRESS,
   USDC_ADDRESS,
-} from "./contractAddresses";
-import {addTestData} from "./addTestData";
-import {ACTIVITY_TICKET2, SONIC_GEM_TICKET2, whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
-import {allShopItems, allShopItemsBeta} from "./data/shopItems";
-import {allFullAttireBonuses} from "./data/fullAttireBonuses";
-import {allXPThresholdRewards} from "./data/xpThresholdRewards";
-import {avatarIds, avatarInfos} from "./data/avatars";
-import {cosmeticTokenIds, cosmeticInfos} from "./data/cosmetics";
-import {allQuestsMinRequirements, allQuests} from "./data/quests";
-import {allClanTiers, allClanTiersBeta} from "./data/clans";
-import {allInstantActions} from "./data/instantActions";
-import {allTerritories, allBattleSkills, allMinimumMMRs} from "./data/territories";
-import {allInstantVRFActions} from "./data/instantVRFActions";
-import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
-import {allBasePets} from "./data/pets";
-import {ContractFactory, parseEther} from "ethers";
-import {allPassiveActions} from "./data/passiveActions";
-import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
-import {allBaseRaidIds, allBaseRaids} from "./data/raids";
+} from "./contractAddresses"
+import {addTestData} from "./addTestData"
+import {ACTIVITY_TICKET2, SONIC_GEM_TICKET2, whitelistedAdmins} from "@paintswap/estfor-definitions/constants"
+import {allShopItems, allShopItemsBeta} from "./data/shopItems"
+import {allFullAttireBonuses} from "./data/fullAttireBonuses"
+import {allXPThresholdRewards} from "./data/xpThresholdRewards"
+import {avatarIds, avatarInfos} from "./data/avatars"
+import {cosmeticTokenIds, cosmeticInfos} from "./data/cosmetics"
+import {allQuestsMinRequirements, allQuests} from "./data/quests"
+import {allClanTiers, allClanTiersBeta} from "./data/clans"
+import {allInstantActions} from "./data/instantActions"
+import {allTerritories, allBattleSkills, allMinimumMMRs} from "./data/territories"
+import {allInstantVRFActions} from "./data/instantVRFActions"
+import {InstantVRFActionType} from "@paintswap/estfor-definitions/types"
+import {allBasePets} from "./data/pets"
+import {ContractFactory, parseEther} from "ethers"
+import {allPassiveActions} from "./data/passiveActions"
+import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos"
+import {allBaseRaidIds, allBaseRaids} from "./data/raids"
 
 async function main() {
-  const [owner] = await ethers.getSigners();
-  console.log(`Deploying contracts with the account: ${owner.address} on chain: ${await getChainId(owner)}`);
+  const [owner] = await ethers.getSigners()
+  console.log(`Deploying contracts with the account: ${owner.address} on chain: ${await getChainId(owner)}`)
 
-  const network = await ethers.provider.getNetwork();
-  let brush: MockBrushToken;
-  let usdc: MockUSDCToken;
-  let wftm: WrappedNative;
-  let vrf: MockVRF;
-  let router: SolidlyExtendedRouter | MockRouter;
-  let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
-  let tx;
-  let lzEndpoint;
-  let buyBrush = true;
+  const network = await ethers.provider.getNetwork()
+  let brush: MockBrushToken
+  let usdc: MockUSDCToken
+  let wftm: WrappedNative
+  let vrf: MockVRF
+  let router: SolidlyExtendedRouter | MockRouter
+  let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist
+  let tx
+  let lzEndpoint
+  let buyBrush = true
   {
     if (isDevNetwork(network)) {
-      brush = await ethers.deployContract("MockBrushToken");
-      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
-      await brush.mint(owner, parseEther("10000000"));
-      console.log("Minted brush");
-      wftm = await ethers.deployContract("WrappedNative");
-      console.log("Minted WFTM");
-      vrf = await ethers.deployContract("MockVRF");
-      console.log("Minted MockVRF");
-      router = await ethers.deployContract("MockRouter");
-      console.log("Minted SolidlyExtendedRouter");
-      ({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts());
-      usdc = await ethers.deployContract("MockUSDCToken");
-      console.log("Minted MockUSDCToken");
-      await usdc.mint(owner, parseEther("10000000"));
+      brush = await ethers.deployContract("MockBrushToken")
+      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`)
+      await brush.mint(owner, parseEther("10000000"))
+      console.log("Minted brush")
+      wftm = await ethers.deployContract("WrappedNative")
+      console.log("Minted WFTM")
+      vrf = await ethers.deployContract("MockVRF")
+      console.log("Minted MockVRF")
+      router = await ethers.deployContract("MockRouter")
+      console.log("Minted SolidlyExtendedRouter")
+      ;({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts())
+      usdc = await ethers.deployContract("MockUSDCToken")
+      console.log("Minted MockUSDCToken")
+      await usdc.mint(owner, parseEther("10000000"))
 
-      const EndpointV2MockArtifact = await deployments.getArtifact("EndpointV2Mock");
-      const EndpointV2Mock = new ContractFactory(EndpointV2MockArtifact.abi, EndpointV2MockArtifact.bytecode, owner);
-      const endpointId = 30112; // fantom
-      lzEndpoint = await (await EndpointV2Mock.deploy(endpointId, owner)).getAddress();
-      console.log("Deployed mock lzEndpoint");
+      const EndpointV2MockArtifact = await deployments.getArtifact("EndpointV2Mock")
+      const EndpointV2Mock = new ContractFactory(EndpointV2MockArtifact.abi, EndpointV2MockArtifact.bytecode, owner)
+      const endpointId = 30112 // fantom
+      lzEndpoint = await (await EndpointV2Mock.deploy(endpointId, owner)).getAddress()
+      console.log("Deployed mock lzEndpoint")
     } else if (network.chainId == 57054n) {
       // Sonic blaze testnet.
-      brush = await ethers.deployContract("MockBrushToken");
-      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
+      brush = await ethers.deployContract("MockBrushToken")
+      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`)
       // brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS); // When you have one
 
-      tx = await brush.mint(owner, parseEther("10000000000000"), {gasLimit: 400_000});
-      console.log("Minted brush");
-      await tx.wait();
-      tx = await brush.transfer("0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC", ethers.parseEther("100000"));
-      console.log("Send brush to an account");
-      await tx.wait();
+      tx = await brush.mint(owner, parseEther("10000000000000"), {gasLimit: 400_000})
+      console.log("Minted brush")
+      await tx.wait()
+      tx = await brush.transfer("0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC", ethers.parseEther("100000"))
+      console.log("Send brush to an account")
+      await tx.wait()
 
-      wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
+      wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS)
 
-      vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS);
-      console.log("attached wftm and vrf");
-      router = await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS);
-      console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
+      vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS)
+      console.log("attached wftm and vrf")
+      router = await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS)
+      console.log(`router = "${(await router.getAddress()).toLowerCase()}"`)
 
-      lzEndpoint = "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff";
-      buyBrush = false;
-      ({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts());
+      lzEndpoint = "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff"
+      buyBrush = false
+      ;({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts())
 
-      usdc = await ethers.deployContract("MockUSDCToken");
-      console.log("Minted MockUSDCToken");
-      await usdc.mint(owner, parseEther("10000000"));
+      usdc = await ethers.deployContract("MockUSDCToken")
+      console.log("Minted MockUSDCToken")
+      await usdc.mint(owner, parseEther("10000000"))
     } else if (network.chainId == 146n) {
-      brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
-      wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
-      vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS);
-      console.log("attached wftm and vrf");
-      router = await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS);
+      brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS)
+      wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS)
+      vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS)
+      console.log("attached wftm and vrf")
+      router = await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS)
       paintSwapMarketplaceWhitelist = await ethers.getContractAt(
         "MockPaintSwapMarketplaceWhitelist",
         PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS
-      );
-      lzEndpoint = "0x6F475642a6e85809B1c36Fa62763669b1b48DD5B";
-      usdc = await ethers.getContractAt("MockUSDCToken", USDC_ADDRESS);
+      )
+      lzEndpoint = "0x6F475642a6e85809B1c36Fa62763669b1b48DD5B"
+      usdc = await ethers.getContractAt("MockUSDCToken", USDC_ADDRESS)
     } else if (network.chainId == 250n) {
       // Fantom mainnet
-      brush = await ethers.getContractAt("MockBrushToken", "0x85dec8c4B2680793661bCA91a8F129607571863d");
-      usdc = await ethers.deployContract("MockUSDCToken");
-      wftm = await ethers.getContractAt("WrappedNative", "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83");
-      vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS);
-      router = await ethers.getContractAt("MockRouter", "0x2aa07920e4ecb4ea8c801d9dfece63875623b285");
+      brush = await ethers.getContractAt("MockBrushToken", "0x85dec8c4B2680793661bCA91a8F129607571863d")
+      usdc = await ethers.deployContract("MockUSDCToken")
+      wftm = await ethers.getContractAt("WrappedNative", "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83")
+      vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS)
+      router = await ethers.getContractAt("MockRouter", "0x2aa07920e4ecb4ea8c801d9dfece63875623b285")
       paintSwapMarketplaceWhitelist = await ethers.getContractAt(
         "MockPaintSwapMarketplaceWhitelist",
         "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
-      );
-      lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c";
+      )
+      lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c"
     } else {
-      throw Error("Not a supported network");
+      throw Error("Not a supported network")
     }
   }
 
-  console.log(`brush = "${(await brush.getAddress()).toLowerCase()}"`);
-  console.log(`wftm = "${(await wftm.getAddress()).toLowerCase()}"`);
-  console.log(`vrf = "${(await vrf.getAddress()).toLowerCase()}"`);
-  console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
-  console.log(`paintSwapMarketplaceWhitelist = "${(await paintSwapMarketplaceWhitelist.getAddress()).toLowerCase()}"`);
-  console.log(`usdc = "${(await usdc.getAddress()).toLowerCase()}"`);
+  console.log(`brush = "${(await brush.getAddress()).toLowerCase()}"`)
+  console.log(`wftm = "${(await wftm.getAddress()).toLowerCase()}"`)
+  console.log(`vrf = "${(await vrf.getAddress()).toLowerCase()}"`)
+  console.log(`router = "${(await router.getAddress()).toLowerCase()}"`)
+  console.log(`paintSwapMarketplaceWhitelist = "${(await paintSwapMarketplaceWhitelist.getAddress()).toLowerCase()}"`)
+  console.log(`usdc = "${(await usdc.getAddress()).toLowerCase()}"`)
 
-  const timeout = 600 * 1000; // 10 minutes
+  const timeout = 600 * 1000 // 10 minutes
 
-  let itemsBaseUri: string;
-  let heroImageBaseUri: string;
-  let petImageBaseUri: string;
-  let editNameBrushPrice: bigint;
-  let editPetNameBrushPrice: bigint;
-  let upgradePlayerBrushPrice: bigint;
-  let raffleEntryCost: bigint;
-  let startGlobalDonationThresholdRewards: bigint;
-  let clanDonationThresholdRewardIncrement: bigint;
-  let mmrAttackDistance;
+  let itemsBaseUri: string
+  let heroImageBaseUri: string
+  let petImageBaseUri: string
+  let editNameBrushPrice: bigint
+  let editPetNameBrushPrice: bigint
+  let upgradePlayerBrushPrice: bigint
+  let raffleEntryCost: bigint
+  let startGlobalDonationThresholdRewards: bigint
+  let clanDonationThresholdRewardIncrement: bigint
+  let mmrAttackDistance
 
   if (!isBeta) {
     // prod version
-    itemsBaseUri = "ipfs://bafybeig6rmsasqsuuivh2qltd5wujirbaaxeyahyfl6pbo77gidrkg6zim/";
-    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
-    petImageBaseUri = "ipfs://QmYawZvUvkEzF8vjqja24oSSmZv3t6asTpMJBzQJRDGXPs/";
-    editNameBrushPrice = parseEther("200");
-    editPetNameBrushPrice = parseEther("1");
-    upgradePlayerBrushPrice = parseEther("400");
-    raffleEntryCost = parseEther("7");
-    startGlobalDonationThresholdRewards = parseEther("100000");
-    clanDonationThresholdRewardIncrement = parseEther("2500");
-    mmrAttackDistance = 3;
+    itemsBaseUri = "ipfs://bafybeig6rmsasqsuuivh2qltd5wujirbaaxeyahyfl6pbo77gidrkg6zim/"
+    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/"
+    petImageBaseUri = "ipfs://QmYawZvUvkEzF8vjqja24oSSmZv3t6asTpMJBzQJRDGXPs/"
+    editNameBrushPrice = parseEther("200")
+    editPetNameBrushPrice = parseEther("1")
+    upgradePlayerBrushPrice = parseEther("400")
+    raffleEntryCost = parseEther("7")
+    startGlobalDonationThresholdRewards = parseEther("100000")
+    clanDonationThresholdRewardIncrement = parseEther("2500")
+    mmrAttackDistance = 3
   } else {
-    itemsBaseUri = "ipfs://bafybeibh3pzpeovube6h5gojythns2edu47qpnfvc5ssqmtv3ojqph7r4e/";
-    heroImageBaseUri = "ipfs://QmVeDAUVj4F4F84WZpuP9pDdKNvcLFSWUV5rhTKMiN99EH/";
-    petImageBaseUri = "ipfs://QmVKb8HiZaLBYD7xiCECkjZ8pj8h4VxX2754hZZUCbmWGq/";
-    editNameBrushPrice = parseEther("1");
-    editPetNameBrushPrice = parseEther("1");
-    upgradePlayerBrushPrice = parseEther("1");
-    raffleEntryCost = parseEther("5");
-    startGlobalDonationThresholdRewards = parseEther("1000");
-    clanDonationThresholdRewardIncrement = parseEther("50");
-    mmrAttackDistance = 1;
+    itemsBaseUri = "ipfs://bafybeibh3pzpeovube6h5gojythns2edu47qpnfvc5ssqmtv3ojqph7r4e/"
+    heroImageBaseUri = "ipfs://QmVeDAUVj4F4F84WZpuP9pDdKNvcLFSWUV5rhTKMiN99EH/"
+    petImageBaseUri = "ipfs://QmVKb8HiZaLBYD7xiCECkjZ8pj8h4VxX2754hZZUCbmWGq/"
+    editNameBrushPrice = parseEther("1")
+    editPetNameBrushPrice = parseEther("1")
+    upgradePlayerBrushPrice = parseEther("1")
+    raffleEntryCost = parseEther("5")
+    startGlobalDonationThresholdRewards = parseEther("1000")
+    clanDonationThresholdRewardIncrement = parseEther("50")
+    mmrAttackDistance = 1
   }
 
-  const initialMMR = 500;
-  const maxActionAmount = 64;
-  const minItemQuantityBeforeSellsAllowed = 500n;
-  const sellingCutoffDuration = 48 * 3600; // 48 hours
-  const startPlayerId = 200_000;
-  const startClanId = 30_000;
-  const startPetId = 20_000;
-  const srcEid = 30112; // Fantom
+  const initialMMR = 500
+  const maxActionAmount = 64
+  const minItemQuantityBeforeSellsAllowed = 500n
+  const sellingCutoffDuration = 48 * 3600 // 48 hours
+  const startPlayerId = 200_000
+  const startClanId = 30_000
+  const startPetId = 20_000
+  const srcEid = 30112 // Fantom
 
-  const Bridge = await ethers.getContractFactory("Bridge");
+  const Bridge = await ethers.getContractFactory("Bridge")
   const bridge = (await upgrades.deployProxy(Bridge, [srcEid], {
     kind: "uups",
     constructorArgs: [lzEndpoint],
     timeout,
     unsafeAllow: ["delegatecall", "constructor", "state-variable-immutable"],
-  })) as unknown as Bridge;
-  console.log(`bridge = "${(await bridge.getAddress()).toLowerCase()}"`);
+  })) as unknown as Bridge
+  console.log(`bridge = "${(await bridge.getAddress()).toLowerCase()}"`)
 
-  const WorldActions = await ethers.getContractFactory("WorldActions");
+  const WorldActions = await ethers.getContractFactory("WorldActions")
   const worldActions = (await upgrades.deployProxy(WorldActions, [], {
     kind: "uups",
     timeout,
-  })) as unknown as WorldActions;
-  await worldActions.waitForDeployment();
+  })) as unknown as WorldActions
+  await worldActions.waitForDeployment()
 
-  console.log(`worldActions = "${(await worldActions.getAddress()).toLowerCase()}"`);
+  console.log(`worldActions = "${(await worldActions.getAddress()).toLowerCase()}"`)
 
-  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon")
   const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await vrf.getAddress()], {
     kind: "uups",
     timeout,
-  })) as unknown as RandomnessBeacon;
-  await randomnessBeacon.waitForDeployment();
+  })) as unknown as RandomnessBeacon
+  await randomnessBeacon.waitForDeployment()
 
-  console.log(`randomnessBeacon = "${(await randomnessBeacon.getAddress()).toLowerCase()}"`);
+  console.log(`randomnessBeacon = "${(await randomnessBeacon.getAddress()).toLowerCase()}"`)
 
   tx = await owner.sendTransaction({
     to: await randomnessBeacon.getAddress(),
     value: ethers.parseEther("10"),
-  });
-  await tx.wait();
-  console.log("Sent 10 S to randomness beacon", tx.hash);
+  })
+  await tx.wait()
+  console.log("Sent 10 S to randomness beacon", tx.hash)
 
-  const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
+  const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler")
   const dailyRewardsScheduler = (await upgrades.deployProxy(
     DailyRewardsScheduler,
     [await randomnessBeacon.getAddress()],
@@ -301,21 +301,21 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as DailyRewardsScheduler;
-  await dailyRewardsScheduler.waitForDeployment();
+  )) as unknown as DailyRewardsScheduler
+  await dailyRewardsScheduler.waitForDeployment()
 
-  console.log(`dailyRewardsScheduler = "${(await dailyRewardsScheduler.getAddress()).toLowerCase()}"`);
+  console.log(`dailyRewardsScheduler = "${(await dailyRewardsScheduler.getAddress()).toLowerCase()}"`)
 
-  const Treasury = await ethers.getContractFactory("Treasury");
+  const Treasury = await ethers.getContractFactory("Treasury")
   const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {
     kind: "uups",
     timeout,
-  })) as unknown as Treasury;
-  await treasury.waitForDeployment();
+  })) as unknown as Treasury
+  await treasury.waitForDeployment()
 
-  console.log(`treasury = "${(await treasury.getAddress()).toLowerCase()}"`);
+  console.log(`treasury = "${(await treasury.getAddress()).toLowerCase()}"`)
 
-  const Shop = await ethers.getContractFactory("Shop");
+  const Shop = await ethers.getContractFactory("Shop")
   const shop = (await upgrades.deployProxy(
     Shop,
     [
@@ -329,12 +329,12 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as Shop;
-  await shop.waitForDeployment();
+  )) as unknown as Shop
+  await shop.waitForDeployment()
 
-  console.log(`shop = "${(await shop.getAddress()).toLowerCase()}"`);
+  console.log(`shop = "${(await shop.getAddress()).toLowerCase()}"`)
 
-  const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
+  const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver")
   const royaltyReceiver = (await upgrades.deployProxy(
     RoyaltyReceiver,
     [
@@ -348,31 +348,31 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as RoyaltyReceiver;
-  await royaltyReceiver.waitForDeployment();
-  console.log(`royaltyReceiver = "${(await royaltyReceiver.getAddress()).toLowerCase()}"`);
+  )) as unknown as RoyaltyReceiver
+  await royaltyReceiver.waitForDeployment()
+  console.log(`royaltyReceiver = "${(await royaltyReceiver.getAddress()).toLowerCase()}"`)
 
-  const admins = whitelistedAdmins.map((el) => ethers.getAddress(el));
+  const admins = whitelistedAdmins.map((el) => ethers.getAddress(el))
   if (!admins.includes(owner.address)) {
-    admins.push(owner.address);
+    admins.push(owner.address)
   }
 
-  const promotionalAdmins = ["0xe9fb52d7611e502d93af381ac493981b42d91974"];
-  const AdminAccess = await ethers.getContractFactory("AdminAccess");
+  const promotionalAdmins = ["0xe9fb52d7611e502d93af381ac493981b42d91974"]
+  const AdminAccess = await ethers.getContractFactory("AdminAccess")
   const adminAccess = (await upgrades.deployProxy(AdminAccess, [admins, promotionalAdmins], {
     kind: "uups",
     timeout,
-  })) as unknown as AdminAccess;
-  await adminAccess.waitForDeployment();
-  console.log(`adminAccess = "${(await adminAccess.getAddress()).toLowerCase()}"`);
+  })) as unknown as AdminAccess
+  await adminAccess.waitForDeployment()
+  console.log(`adminAccess = "${(await adminAccess.getAddress()).toLowerCase()}"`)
 
   // Create NFT contract which contains all items
-  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
-  await itemNFTLibrary.waitForDeployment();
-  console.log(`itemNFTLibrary = "${(await itemNFTLibrary.getAddress()).toLowerCase()}"`);
+  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary")
+  await itemNFTLibrary.waitForDeployment()
+  console.log(`itemNFTLibrary = "${(await itemNFTLibrary.getAddress()).toLowerCase()}"`)
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {
     libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
-  });
+  })
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
     [await royaltyReceiver.getAddress(), itemsBaseUri, await adminAccess.getAddress(), isBeta],
@@ -381,25 +381,25 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout,
     }
-  )) as unknown as ItemNFT;
-  await itemNFT.waitForDeployment();
+  )) as unknown as ItemNFT
+  await itemNFT.waitForDeployment()
 
-  console.log(`itemNFT = "${(await itemNFT.getAddress()).toLowerCase()}"`);
+  console.log(`itemNFT = "${(await itemNFT.getAddress()).toLowerCase()}"`)
 
-  const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
+  const ActivityPoints = await ethers.getContractFactory("ActivityPoints")
   const activityPoints = (await upgrades.deployProxy(
     ActivityPoints,
     [await itemNFT.getAddress(), ACTIVITY_TICKET2, SONIC_GEM_TICKET2],
     {
       kind: "uups",
     }
-  )) as unknown as ActivityPoints;
-  const ACTIVITY_POINTS_ADDRESS = await activityPoints.getAddress();
-  console.log("Deployed activity points", ACTIVITY_POINTS_ADDRESS);
-  await activityPoints.waitForDeployment();
+  )) as unknown as ActivityPoints
+  const ACTIVITY_POINTS_ADDRESS = await activityPoints.getAddress()
+  console.log("Deployed activity points", ACTIVITY_POINTS_ADDRESS)
+  await activityPoints.waitForDeployment()
 
-  const maxOrdersPerPrice = 100;
-  const OrderBook = await ethers.getContractFactory("OrderBook");
+  const maxOrdersPerPrice = 100
+  const OrderBook = await ethers.getContractFactory("OrderBook")
   const orderBook = (await upgrades.deployProxy(
     OrderBook,
     [await itemNFT.getAddress(), await brush.getAddress(), DEV_ADDRESS, 30, 30, maxOrdersPerPrice],
@@ -407,26 +407,26 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as OrderBook;
-  await orderBook.waitForDeployment();
-  console.log(`bazaar = "${(await orderBook.getAddress()).toLocaleLowerCase()}"`);
+  )) as unknown as OrderBook
+  await orderBook.waitForDeployment()
+  console.log(`bazaar = "${(await orderBook.getAddress()).toLocaleLowerCase()}"`)
 
   // Create NFT contract which contains all the players
-  const estforLibrary = await ethers.deployContract("EstforLibrary");
-  await estforLibrary.waitForDeployment();
-  console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
+  const estforLibrary = await ethers.deployContract("EstforLibrary")
+  await estforLibrary.waitForDeployment()
+  console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`)
 
-  const Marketplace = await ethers.getContractFactory("Marketplace");
+  const Marketplace = await ethers.getContractFactory("Marketplace")
   const marketplace = (await upgrades.deployProxy(Marketplace, [
     await brush.getAddress(),
     owner.address,
-  ])) as unknown as Marketplace;
-  await marketplace.waitForDeployment();
-  console.log(`marketplace = "${(await marketplace.getAddress()).toLowerCase()}"`);
+  ])) as unknown as Marketplace
+  await marketplace.waitForDeployment()
+  console.log(`marketplace = "${(await marketplace.getAddress()).toLowerCase()}"`)
 
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()},
-  });
+  })
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
     [
@@ -446,30 +446,30 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout,
     }
-  )) as unknown as PlayerNFT;
-  await playerNFT.waitForDeployment();
-  console.log(`playerNFT = "${(await playerNFT.getAddress()).toLowerCase()}"`);
+  )) as unknown as PlayerNFT
+  await playerNFT.waitForDeployment()
+  console.log(`playerNFT = "${(await playerNFT.getAddress()).toLowerCase()}"`)
 
-  const Cosmetics = await ethers.getContractFactory("Cosmetics");
+  const Cosmetics = await ethers.getContractFactory("Cosmetics")
   const cosmetics = (await upgrades.deployProxy(Cosmetics, [
     owner.address,
     await itemNFT.getAddress(),
     await playerNFT.getAddress(),
-  ])) as unknown as Cosmetics;
-  await cosmetics.waitForDeployment();
-  console.log(`cosmetics = "${(await cosmetics.getAddress()).toLowerCase()}"`);
+  ])) as unknown as Cosmetics
+  await cosmetics.waitForDeployment()
+  console.log(`cosmetics = "${(await cosmetics.getAddress()).toLowerCase()}"`)
 
-  const BlackMarketTrader = await ethers.getContractFactory("BlackMarketTrader");
+  const BlackMarketTrader = await ethers.getContractFactory("BlackMarketTrader")
   const blackMarketTrader = (await upgrades.deployProxy(BlackMarketTrader, [
     owner.address,
     await itemNFT.getAddress(),
     await vrf.getAddress(),
-  ])) as unknown as BlackMarketTrader;
-  await blackMarketTrader.waitForDeployment();
-  console.log(`blackMarketTrader = "${(await blackMarketTrader.getAddress()).toLowerCase()}"`);
+  ])) as unknown as BlackMarketTrader
+  await blackMarketTrader.waitForDeployment()
+  console.log(`blackMarketTrader = "${(await blackMarketTrader.getAddress()).toLowerCase()}"`)
 
-  const buyPath: [string, string] = [await wftm.getAddress(), await brush.getAddress()];
-  const Quests = await ethers.getContractFactory("Quests");
+  const buyPath: [string, string] = [await wftm.getAddress(), await brush.getAddress()]
+  const Quests = await ethers.getContractFactory("Quests")
   const quests = (await upgrades.deployProxy(
     Quests,
     [
@@ -483,13 +483,13 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as Quests;
-  await quests.waitForDeployment();
-  console.log(`quests = "${(await quests.getAddress()).toLowerCase()}"`);
+  )) as unknown as Quests
+  await quests.waitForDeployment()
+  console.log(`quests = "${(await quests.getAddress()).toLowerCase()}"`)
 
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()},
-  });
+  })
   const clans = (await upgrades.deployProxy(
     Clans,
     [
@@ -509,11 +509,11 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout,
     }
-  )) as unknown as Clans;
-  await clans.waitForDeployment();
-  console.log(`clans = "${(await clans.getAddress()).toLowerCase()}"`);
+  )) as unknown as Clans
+  await clans.waitForDeployment()
+  console.log(`clans = "${(await clans.getAddress()).toLowerCase()}"`)
 
-  const WishingWell = await ethers.getContractFactory("WishingWell");
+  const WishingWell = await ethers.getContractFactory("WishingWell")
   const wishingWell = await upgrades.deployProxy(
     WishingWell,
     [
@@ -531,21 +531,21 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  );
-  await wishingWell.waitForDeployment();
-  console.log(`wishingWell = "${(await wishingWell.getAddress()).toLowerCase()}"`);
+  )
+  await wishingWell.waitForDeployment()
+  console.log(`wishingWell = "${(await wishingWell.getAddress()).toLowerCase()}"`)
 
-  const Bank = await ethers.getContractFactory("Bank");
-  const bank = (await upgrades.deployBeacon(Bank)) as unknown as Bank;
-  await bank.waitForDeployment();
-  console.log(`bank = "${(await bank.getAddress()).toLowerCase()}"`);
+  const Bank = await ethers.getContractFactory("Bank")
+  const bank = (await upgrades.deployBeacon(Bank)) as unknown as Bank
+  await bank.waitForDeployment()
+  console.log(`bank = "${(await bank.getAddress()).toLowerCase()}"`)
 
-  const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
-  console.log(`petNFTLibrary = "${(await petNFTLibrary.getAddress()).toLowerCase()}"`);
+  const petNFTLibrary = await ethers.deployContract("PetNFTLibrary")
+  console.log(`petNFTLibrary = "${(await petNFTLibrary.getAddress()).toLowerCase()}"`)
 
   const PetNFT = await ethers.getContractFactory("PetNFT", {
     libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
-  });
+  })
   const petNFT = (await upgrades.deployProxy(
     PetNFT,
     [
@@ -566,30 +566,30 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout,
     }
-  )) as unknown as PetNFT;
-  await petNFT.waitForDeployment();
-  console.log(`petNFT = "${(await petNFT.getAddress()).toLowerCase()}"`);
+  )) as unknown as PetNFT
+  await petNFT.waitForDeployment()
+  console.log(`petNFT = "${(await petNFT.getAddress()).toLowerCase()}"`)
 
-  const PetNFTReroll = await ethers.getContractFactory("PetNFTReroll");
+  const PetNFTReroll = await ethers.getContractFactory("PetNFTReroll")
   const petNFTReroll = (await upgrades.deployProxy(
     PetNFTReroll,
     [owner.address, await itemNFT.getAddress(), await petNFT.getAddress(), await vrf.getAddress()],
     {
       kind: "uups",
     }
-  )) as unknown as PetNFTReroll;
-  await petNFTReroll.waitForDeployment();
-  console.log(`petNFTReroll = "${(await petNFTReroll.getAddress()).toLowerCase()}"`);
+  )) as unknown as PetNFTReroll
+  await petNFTReroll.waitForDeployment()
+  console.log(`petNFTReroll = "${(await petNFTReroll.getAddress()).toLowerCase()}"`)
 
-  const playersLibrary = await ethers.deployContract("PlayersLibrary");
-  await playersLibrary.waitForDeployment();
-  console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
+  const playersLibrary = await ethers.deployContract("PlayersLibrary")
+  await playersLibrary.waitForDeployment()
+  console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`)
 
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(await playersLibrary.getAddress());
+    await deployPlayerImplementations(await playersLibrary.getAddress())
 
   // This contains all the player data
-  const Players = await ethers.getContractFactory("Players");
+  const Players = await ethers.getContractFactory("Players")
   const players = (await upgrades.deployProxy(
     Players,
     [
@@ -617,17 +617,17 @@ async function main() {
       unsafeAllow: ["delegatecall"],
       timeout,
     }
-  )) as unknown as Players;
-  await players.waitForDeployment();
-  console.log(`players = "${(await players.getAddress()).toLowerCase()}"`);
+  )) as unknown as Players
+  await players.waitForDeployment()
+  console.log(`players = "${(await players.getAddress()).toLowerCase()}"`)
 
-  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
-  await promotionsLibrary.waitForDeployment();
-  console.log(`promotionsLibrary = "${(await promotionsLibrary.getAddress()).toLowerCase()}"`);
+  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary")
+  await promotionsLibrary.waitForDeployment()
+  console.log(`promotionsLibrary = "${(await promotionsLibrary.getAddress()).toLowerCase()}"`)
 
   const Promotions = await ethers.getContractFactory("Promotions", {
     libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()},
-  });
+  })
   const promotions = (await upgrades.deployProxy(
     Promotions,
     [
@@ -648,20 +648,20 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout,
     }
-  )) as unknown as Promotions;
-  await promotions.waitForDeployment();
-  console.log(`promotions = "${(await promotions.getAddress()).toLowerCase()}"`);
+  )) as unknown as Promotions
+  await promotions.waitForDeployment()
+  console.log(`promotions = "${(await promotions.getAddress()).toLowerCase()}"`)
 
-  const GlobalEvents = await ethers.getContractFactory("GlobalEvents");
+  const GlobalEvents = await ethers.getContractFactory("GlobalEvents")
   const globalEvents = (await upgrades.deployProxy(GlobalEvents, [
     owner.address,
     await players.getAddress(),
     await itemNFT.getAddress(),
-  ])) as unknown as GlobalEvents;
-  await globalEvents.waitForDeployment();
-  console.log(`globalEvents = "${(await globalEvents.getAddress()).toLowerCase()}"`);
+  ])) as unknown as GlobalEvents
+  await globalEvents.waitForDeployment()
+  console.log(`globalEvents = "${(await globalEvents.getAddress()).toLowerCase()}"`)
 
-  const PassiveActions = await ethers.getContractFactory("PassiveActions");
+  const PassiveActions = await ethers.getContractFactory("PassiveActions")
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
     [
@@ -675,11 +675,11 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as PassiveActions;
-  await passiveActions.waitForDeployment();
-  console.log(`passiveActions = "${(await passiveActions.getAddress()).toLowerCase()}"`);
+  )) as unknown as PassiveActions
+  await passiveActions.waitForDeployment()
+  console.log(`passiveActions = "${(await passiveActions.getAddress()).toLowerCase()}"`)
 
-  const InstantActions = await ethers.getContractFactory("InstantActions");
+  const InstantActions = await ethers.getContractFactory("InstantActions")
   const instantActions = (await upgrades.deployProxy(
     InstantActions,
     [await players.getAddress(), await itemNFT.getAddress(), await quests.getAddress(), ACTIVITY_POINTS_ADDRESS],
@@ -687,11 +687,11 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as InstantActions;
-  await instantActions.waitForDeployment();
-  console.log(`instantActions = "${(await instantActions.getAddress()).toLowerCase()}"`);
+  )) as unknown as InstantActions
+  await instantActions.waitForDeployment()
+  console.log(`instantActions = "${(await instantActions.getAddress()).toLowerCase()}"`)
 
-  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
+  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions")
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
     [
@@ -707,43 +707,43 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as InstantVRFActions;
-  await instantVRFActions.waitForDeployment();
-  console.log(`instantVRFActions = "${(await instantVRFActions.getAddress()).toLowerCase()}"`);
+  )) as unknown as InstantVRFActions
+  await instantVRFActions.waitForDeployment()
+  console.log(`instantVRFActions = "${(await instantVRFActions.getAddress()).toLowerCase()}"`)
 
-  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy")
   const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
     GenericInstantVRFActionStrategy,
     [await instantVRFActions.getAddress()],
     {
       kind: "uups",
     }
-  )) as unknown as GenericInstantVRFActionStrategy;
-  await genericInstantVRFActionStrategy.waitForDeployment();
+  )) as unknown as GenericInstantVRFActionStrategy
+  await genericInstantVRFActionStrategy.waitForDeployment()
   console.log(
     `genericInstantVRFActionStrategy = "${(await genericInstantVRFActionStrategy.getAddress()).toLowerCase()}"`
-  );
+  )
 
-  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
+  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy")
   const eggInstantVRFActionStrategy = (await upgrades.deployProxy(
     EggInstantVRFActionStrategy,
     [await instantVRFActions.getAddress()],
     {
       kind: "uups",
     }
-  )) as unknown as EggInstantVRFActionStrategy;
-  await eggInstantVRFActionStrategy.waitForDeployment();
-  console.log(`eggInstantVRFActionStrategy = "${(await eggInstantVRFActionStrategy.getAddress()).toLowerCase()}"`);
+  )) as unknown as EggInstantVRFActionStrategy
+  await eggInstantVRFActionStrategy.waitForDeployment()
+  console.log(`eggInstantVRFActionStrategy = "${(await eggInstantVRFActionStrategy.getAddress()).toLowerCase()}"`)
 
-  const BankRelay = await ethers.getContractFactory("BankRelay");
+  const BankRelay = await ethers.getContractFactory("BankRelay")
   const bankRelay = (await upgrades.deployProxy(BankRelay, [await clans.getAddress()], {
     kind: "uups",
-  })) as unknown as BankRelay;
-  await bankRelay.waitForDeployment();
-  console.log(`bankRelay = "${(await bankRelay.getAddress()).toLowerCase()}"`);
+  })) as unknown as BankRelay
+  await bankRelay.waitForDeployment()
+  console.log(`bankRelay = "${(await bankRelay.getAddress()).toLowerCase()}"`)
 
-  const pvpAttackingCooldown = 10 * 60; // 10 minutes
-  const PVPBattleground = await ethers.getContractFactory("PVPBattleground");
+  const pvpAttackingCooldown = 10 * 60 // 10 minutes
+  const PVPBattleground = await ethers.getContractFactory("PVPBattleground")
   const pvpBattleground = (await upgrades.deployProxy(
     PVPBattleground,
     [
@@ -761,12 +761,12 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as PVPBattleground;
-  await pvpBattleground.waitForDeployment();
-  console.log(`pvpBattleground = "${(await pvpBattleground.getAddress()).toLowerCase()}"`);
+  )) as unknown as PVPBattleground
+  await pvpBattleground.waitForDeployment()
+  console.log(`pvpBattleground = "${(await pvpBattleground.getAddress()).toLowerCase()}"`)
 
-  const spawnRaidCooldown = 8 * 3600; // 8 hours
-  const maxRaidCombatants = 20;
+  const spawnRaidCooldown = 8 * 3600 // 8 hours
+  const maxRaidCombatants = 20
   const raidCombatActionIds = [
     EstforConstants.ACTION_COMBAT_NATUOW,
     EstforConstants.ACTION_COMBAT_GROG_TOAD,
@@ -796,12 +796,12 @@ async function main() {
     EstforConstants.ACTION_COMBAT_BLAZING_MONTANITE,
     EstforConstants.ACTION_COMBAT_MONTANITE_ICE_TITAN,
     EstforConstants.ACTION_COMBAT_MONTANITE_FIRE_TITAN,
-  ];
+  ]
   const Raids = await ethers.getContractFactory("Raids", {
     libraries: {
       PlayersLibrary: await playersLibrary.getAddress(),
     },
-  });
+  })
   const raids = (await upgrades.deployProxy(
     Raids,
     [
@@ -822,33 +822,33 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout,
     }
-  )) as unknown as Raids;
-  await raids.waitForDeployment();
-  console.log(`raids = "${(await raids.getAddress()).toLowerCase()}"`);
+  )) as unknown as Raids
+  await raids.waitForDeployment()
+  console.log(`raids = "${(await raids.getAddress()).toLowerCase()}"`)
 
   tx = await owner.sendTransaction({
     to: await raids.getAddress(),
     value: ethers.parseEther("10"),
-  });
-  await tx.wait();
-  console.log("Sent 10 S to raids", tx.hash);
+  })
+  await tx.wait()
+  console.log("Sent 10 S to raids", tx.hash)
 
-  const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
-  console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
+  const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary
+  console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`)
 
-  const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
-  console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
+  const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary")
+  console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`)
 
-  const lockedFundsPeriod = 7 * 86400; // 7 days
-  const maxClanComabtantsLockedBankVaults = 20;
-  const maxLockedVaults = 100;
+  const lockedFundsPeriod = 7 * 86400 // 7 days
+  const maxClanComabtantsLockedBankVaults = 20
+  const maxLockedVaults = 100
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {
       EstforLibrary: await estforLibrary.getAddress(),
       LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
       ClanBattleLibrary: await clanBattleLibrary.getAddress(),
     },
-  });
+  })
   const lockedBankVaults = (await upgrades.deployProxy(
     LockedBankVaults,
     [
@@ -874,13 +874,13 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout,
     }
-  )) as unknown as LockedBankVaults;
-  await lockedBankVaults.waitForDeployment();
-  console.log(`lockedBankVaults = "${(await lockedBankVaults.getAddress()).toLowerCase()}"`);
+  )) as unknown as LockedBankVaults
+  await lockedBankVaults.waitForDeployment()
+  console.log(`lockedBankVaults = "${(await lockedBankVaults.getAddress()).toLowerCase()}"`)
 
-  const maxClanCombatantsTerritories = 20;
-  const attackingCooldownTerritories = 24 * 3600; // 1 day
-  const Territories = await ethers.getContractFactory("Territories");
+  const maxClanCombatantsTerritories = 20
+  const attackingCooldownTerritories = 24 * 3600 // 1 day
+  const Territories = await ethers.getContractFactory("Territories")
   const territories = (await upgrades.deployProxy(
     Territories,
     [
@@ -903,13 +903,13 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout,
     }
-  )) as unknown as Territories;
-  await territories.waitForDeployment();
-  console.log(`territories = "${(await territories.getAddress()).toLowerCase()}"`);
+  )) as unknown as Territories
+  await territories.waitForDeployment()
+  console.log(`territories = "${(await territories.getAddress()).toLowerCase()}"`)
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()},
-  });
+  })
   const combatantsHelper = (await upgrades.deployProxy(
     CombatantsHelper,
     [
@@ -926,20 +926,20 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout,
     }
-  )) as unknown as CombatantsHelper;
-  await combatantsHelper.waitForDeployment();
-  console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
+  )) as unknown as CombatantsHelper
+  await combatantsHelper.waitForDeployment()
+  console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`)
 
   // add Safe session module
-  const GameSubsidisationRegistry = await ethers.getContractFactory("GameSubsidisationRegistry");
+  const GameSubsidisationRegistry = await ethers.getContractFactory("GameSubsidisationRegistry")
   const gameSubsidisationRegistry = (await upgrades.deployProxy(GameSubsidisationRegistry, [owner.address], {
     kind: "uups",
     timeout,
-  })) as unknown as GameSubsidisationRegistry;
-  await gameSubsidisationRegistry.waitForDeployment();
-  console.log(`gameSubsidisationRegistry = "${(await gameSubsidisationRegistry.getAddress()).toLowerCase()}"`);
+  })) as unknown as GameSubsidisationRegistry
+  await gameSubsidisationRegistry.waitForDeployment()
+  console.log(`gameSubsidisationRegistry = "${(await gameSubsidisationRegistry.getAddress()).toLowerCase()}"`)
 
-  const UsageBasedSessionModule = await ethers.getContractFactory("UsageBasedSessionModule");
+  const UsageBasedSessionModule = await ethers.getContractFactory("UsageBasedSessionModule")
   const usageBasedSessionModule = (await upgrades.deployProxy(
     UsageBasedSessionModule,
     [owner.address, await gameSubsidisationRegistry.getAddress()],
@@ -947,18 +947,18 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as UsageBasedSessionModule;
-  await usageBasedSessionModule.waitForDeployment();
-  console.log(`usageBasedSessionModule = "${(await usageBasedSessionModule.getAddress()).toLowerCase()}"`);
+  )) as unknown as UsageBasedSessionModule
+  await usageBasedSessionModule.waitForDeployment()
+  console.log(`usageBasedSessionModule = "${(await usageBasedSessionModule.getAddress()).toLowerCase()}"`)
 
   await upgrades.upgradeProxy(await clans.getAddress(), Clans, {
     call: {fn: "initializeV2", args: [await combatantsHelper.getAddress()]},
     unsafeAllow: ["external-library-linking"],
     kind: "uups",
-  });
+  })
 
-  const minHarvestInterval = isBeta ? 600n : BigInt(3.75 * 3600); // 10 mins on beta & 3 hours 45 minutes on prod
-  const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
+  const minHarvestInterval = isBeta ? 600n : BigInt(3.75 * 3600) // 10 mins on beta & 3 hours 45 minutes on prod
+  const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury")
   const territoryTreasury = await upgrades.deployProxy(TerritoryTreasury, [
     await territories.getAddress(),
     await brush.getAddress(),
@@ -966,19 +966,19 @@ async function main() {
     DEV_ADDRESS,
     await treasury.getAddress(),
     minHarvestInterval,
-  ]);
-  await territoryTreasury.waitForDeployment();
-  console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`);
+  ])
+  await territoryTreasury.waitForDeployment()
+  console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`)
 
-  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const BankRegistry = await ethers.getContractFactory("BankRegistry")
   const bankRegistry = (await upgrades.deployProxy(BankRegistry, [], {
     kind: "uups",
     timeout,
-  })) as unknown as BankRegistry;
-  await bankRegistry.waitForDeployment();
-  console.log(`bankRegistry = "${(await bankRegistry.getAddress()).toLowerCase()}"`);
+  })) as unknown as BankRegistry
+  await bankRegistry.waitForDeployment()
+  console.log(`bankRegistry = "${(await bankRegistry.getAddress()).toLowerCase()}"`)
 
-  const BankFactory = await ethers.getContractFactory("BankFactory");
+  const BankFactory = await ethers.getContractFactory("BankFactory")
   const bankFactory = (await upgrades.deployProxy(
     BankFactory,
     [
@@ -996,21 +996,21 @@ async function main() {
       kind: "uups",
       timeout,
     }
-  )) as unknown as BankFactory;
-  await bankFactory.waitForDeployment();
-  console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
+  )) as unknown as BankFactory
+  await bankFactory.waitForDeployment()
+  console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`)
 
   // Set the force item depositors to allow minting to clan bank
-  await bankRegistry.setForceItemDepositors([ACTIVITY_POINTS_ADDRESS, await raids.getAddress()], [true, true]);
-  console.log("BankRegistry setForceItemDepositors: activity points, raids");
+  await bankRegistry.setForceItemDepositors([ACTIVITY_POINTS_ADDRESS, await raids.getAddress()], [true, true])
+  console.log("BankRegistry setForceItemDepositors: activity points, raids")
 
   // Approve the activity points contract to mint on itemNFT
-  await itemNFT.setApproved([activityPoints], true);
-  console.log("itemNFT setApproved for activity points");
+  await itemNFT.setApproved([activityPoints], true)
+  console.log("itemNFT setApproved for activity points")
 
-  tx = await shop.setActivityPoints(ACTIVITY_POINTS_ADDRESS);
-  await tx.wait();
-  console.log("shop setActivityPoints address");
+  tx = await shop.setActivityPoints(ACTIVITY_POINTS_ADDRESS)
+  await tx.wait()
+  console.log("shop setActivityPoints address")
 
   // Set the activity points contract on all other contracts
   const activityPointsCallers = [
@@ -1024,10 +1024,10 @@ async function main() {
     await lockedBankVaults.getAddress(),
     await territories.getAddress(),
     await players.getAddress(),
-  ];
-  tx = await activityPoints.addCallers(activityPointsCallers);
-  await tx.wait();
-  console.log("activityPoints addCallers for calling contract addresses");
+  ]
+  tx = await activityPoints.addCallers(activityPointsCallers)
+  await tx.wait()
+  console.log("activityPoints addCallers for calling contract addresses")
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 146n) {
@@ -1071,104 +1071,104 @@ async function main() {
         await bankFactory.getAddress(),
         await bankRelay.getAddress(),
         await cosmetics.getAddress(),
-      ];
-      console.log("Verifying contracts...");
-      await verifyContracts(addresses);
+      ]
+      console.log("Verifying contracts...")
+      await verifyContracts(addresses)
     } catch (e) {
-      console.log("Error verifying contracts", e);
+      console.log("Error verifying contracts", e)
     }
 
     try {
       await run("verify:verify", {
         address: await bridge.getAddress(),
         constructorArguments: [lzEndpoint],
-      });
+      })
     } catch (e) {
-      console.error(`Failed to verify contract at address ${await bridge.getAddress()}`);
+      console.error(`Failed to verify contract at address ${await bridge.getAddress()}`)
     }
   } else {
-    console.log("Skipping verifying contracts");
+    console.log("Skipping verifying contracts")
   }
 
-  tx = await randomnessBeacon.initializeAddresses(wishingWell, dailyRewardsScheduler);
-  await tx.wait();
-  console.log("world initializeAddress");
-  tx = await randomnessBeacon.initializeRandomWords();
-  await tx.wait();
-  console.log("worldActions initializeRandomWords");
-  tx = await playerNFT.setPlayers(players);
-  await tx.wait();
-  console.log("playerNFT setPlayers");
-  tx = await quests.setPlayers(players);
-  await tx.wait();
-  console.log("quests setPlayers");
-  tx = await wishingWell.setPlayers(players);
-  await tx.wait();
-  console.log("wishingWell setPlayers");
+  tx = await randomnessBeacon.initializeAddresses(wishingWell, dailyRewardsScheduler)
+  await tx.wait()
+  console.log("world initializeAddress")
+  tx = await randomnessBeacon.initializeRandomWords()
+  await tx.wait()
+  console.log("worldActions initializeRandomWords")
+  tx = await playerNFT.setPlayers(players)
+  await tx.wait()
+  console.log("playerNFT setPlayers")
+  tx = await quests.setPlayers(players)
+  await tx.wait()
+  console.log("quests setPlayers")
+  tx = await wishingWell.setPlayers(players)
+  await tx.wait()
+  console.log("wishingWell setPlayers")
 
-  tx = await petNFT.initializeAddresses(instantVRFActions, players, territories);
-  await tx.wait();
-  console.log("petNFT initializeAddresses");
+  tx = await petNFT.initializeAddresses(instantVRFActions, players, territories)
+  await tx.wait()
+  console.log("petNFT initializeAddresses")
 
-  tx = await clans.initializeAddresses(players, bankFactory, territories, lockedBankVaults, raids);
-  await tx.wait();
-  console.log("clans initializeAddresses");
+  tx = await clans.initializeAddresses(players, bankFactory, territories, lockedBankVaults, raids)
+  await tx.wait()
+  console.log("clans initializeAddresses")
 
-  tx = await bridge.initializeAddresses(petNFT, itemNFT, playerNFT, players, clans, quests, passiveActions);
-  await tx.wait();
-  console.log("bridge initializeAddresses");
+  tx = await bridge.initializeAddresses(petNFT, itemNFT, playerNFT, players, clans, quests, passiveActions)
+  await tx.wait()
+  console.log("bridge initializeAddresses")
 
-  tx = await playerNFT.setBrushDistributionPercentages(25, 50, 25);
-  await tx.wait();
-  console.log("playerNFT.setBrushDistributionPercentages");
+  tx = await playerNFT.setBrushDistributionPercentages(25, 50, 25)
+  await tx.wait()
+  console.log("playerNFT.setBrushDistributionPercentages")
 
-  tx = await petNFT.setBrushDistributionPercentages(25, 50, 25);
-  await tx.wait();
-  console.log("petNFT.setBrushDistributionPercentages");
+  tx = await petNFT.setBrushDistributionPercentages(25, 50, 25)
+  await tx.wait()
+  console.log("petNFT.setBrushDistributionPercentages")
 
-  tx = await shop.setBrushDistributionPercentages(25, 50, 25);
-  await tx.wait();
-  console.log("shop.setBrushDistributionPercentages");
+  tx = await shop.setBrushDistributionPercentages(25, 50, 25)
+  await tx.wait()
+  console.log("shop.setBrushDistributionPercentages")
 
-  tx = await promotions.setBrushDistributionPercentages(25, 50, 25);
-  await tx.wait();
-  console.log("promotions.setBrushDistributionPercentages");
+  tx = await promotions.setBrushDistributionPercentages(25, 50, 25)
+  await tx.wait()
+  console.log("promotions.setBrushDistributionPercentages")
 
-  tx = await lockedBankVaults.setBrushDistributionPercentages(25, 50, 25);
-  await tx.wait();
-  console.log("lockedBankVaults.setBrushDistributionPercentages");
+  tx = await lockedBankVaults.setBrushDistributionPercentages(25, 50, 25)
+  await tx.wait()
+  console.log("lockedBankVaults.setBrushDistributionPercentages")
 
-  tx = await clans.setBrushDistributionPercentages(25, 50, 25);
-  await tx.wait();
-  console.log("clans.setBrushDistributionPercentages");
+  tx = await clans.setBrushDistributionPercentages(25, 50, 25)
+  await tx.wait()
+  console.log("clans.setBrushDistributionPercentages")
 
-  tx = await shop.setItemNFT(itemNFT);
-  await tx.wait();
-  console.log("shop.setItemNFT");
+  tx = await shop.setItemNFT(itemNFT)
+  await tx.wait()
+  console.log("shop.setItemNFT")
 
-  tx = await itemNFT.initializeAddresses(bankFactory, players);
-  await tx.wait();
-  console.log("itemNFT.initializeAddresses");
+  tx = await itemNFT.initializeAddresses(bankFactory, players)
+  await tx.wait()
+  console.log("itemNFT.initializeAddresses")
 
-  tx = await playerNFT.setCosmeticsAddress(cosmetics);
-  await tx.wait();
-  console.log("playerNFT.setCosmeticsAddress");
+  tx = await playerNFT.setCosmeticsAddress(cosmetics)
+  await tx.wait()
+  console.log("playerNFT.setCosmeticsAddress")
 
-  tx = await playerNFT.setMarketplaceAddress(marketplace);
-  await tx.wait();
-  console.log("playerNFT.setMarketplaceAddress");
+  tx = await playerNFT.setMarketplaceAddress(marketplace)
+  await tx.wait()
+  console.log("playerNFT.setMarketplaceAddress")
 
-  tx = await petNFT.setMarketplaceAddress(marketplace);
-  await tx.wait();
-  console.log("petNFT.setMarketplaceAddress");
+  tx = await petNFT.setMarketplaceAddress(marketplace)
+  await tx.wait()
+  console.log("petNFT.setMarketplaceAddress")
 
-  tx = await petNFT.setApprovalForAll(marketplace, true);
-  await tx.wait();
-  console.log("petNFT.setApprovalForAll for marketplace");
+  tx = await petNFT.setApprovalForAll(marketplace, true)
+  await tx.wait()
+  console.log("petNFT.setApprovalForAll for marketplace")
 
-  tx = await playerNFT.setApprovalForAll(marketplace, true);
-  await tx.wait();
-  console.log("playerNFT.setApprovalForAll for marketplace");
+  tx = await playerNFT.setApprovalForAll(marketplace, true)
+  await tx.wait()
+  console.log("playerNFT.setApprovalForAll for marketplace")
 
   tx = await itemNFT.setApproved(
     [
@@ -1189,64 +1189,64 @@ async function main() {
       petNFTReroll,
     ],
     true
-  );
-  await tx.wait();
-  console.log("itemNFT.setApproved");
+  )
+  await tx.wait()
+  console.log("itemNFT.setApproved")
 
-  tx = await itemNFT.setApprovedBurners([petNFTReroll], true);
-  await tx.wait();
-  console.log("itemNFT.setApprovedBurners");
+  tx = await itemNFT.setApprovedBurners([petNFTReroll], true)
+  await tx.wait()
+  console.log("itemNFT.setApprovedBurners")
 
-  tx = await petNFT.setApprovedMinters([petNFTReroll], true);
-  await tx.wait();
-  console.log("petNFT.setApprovedMinters");
+  tx = await petNFT.setApprovedMinters([petNFTReroll], true)
+  await tx.wait()
+  console.log("petNFT.setApprovedMinters")
 
-  tx = await petNFT.setApprovedBurners([petNFTReroll], true);
-  await tx.wait();
-  console.log("petNFT.setApprovedBurners");
+  tx = await petNFT.setApprovedBurners([petNFTReroll], true)
+  await tx.wait()
+  console.log("petNFT.setApprovedBurners")
 
-  tx = await raids.initializeAddresses(combatantsHelper, bankFactory);
-  await tx.wait();
-  console.log("raids.initializeAddresses");
+  tx = await raids.initializeAddresses(combatantsHelper, bankFactory)
+  await tx.wait()
+  console.log("raids.initializeAddresses")
 
-  tx = await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
-  await tx.wait();
-  console.log("lockedBankVaults.initializeAddresses");
+  tx = await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory)
+  await tx.wait()
+  console.log("lockedBankVaults.initializeAddresses")
 
-  tx = await territories.setCombatantsHelper(combatantsHelper);
-  await tx.wait();
-  console.log("territories.setCombatantsHelper");
+  tx = await territories.setCombatantsHelper(combatantsHelper)
+  await tx.wait()
+  console.log("territories.setCombatantsHelper")
 
   const territoryIds = allTerritories.map((territory) => {
-    return territory.territoryId;
-  });
+    return territory.territoryId
+  })
 
-  tx = await territories.setMinimumMMRs(territoryIds, allMinimumMMRs);
-  await tx.wait();
-  console.log("territories.setMinimumMMRs");
+  tx = await territories.setMinimumMMRs(territoryIds, allMinimumMMRs)
+  await tx.wait()
+  console.log("territories.setMinimumMMRs")
 
-  const treasuryAccounts = [await shop.getAddress(), await territoryTreasury.getAddress(), ethers.ZeroAddress];
-  const treasuryPercentages = [2, 30, 68];
-  tx = await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
-  await tx.wait();
-  console.log("treasury.setFundAllocationPercentages");
+  const treasuryAccounts = [await shop.getAddress(), await territoryTreasury.getAddress(), ethers.ZeroAddress]
+  const treasuryPercentages = [2, 30, 68]
+  tx = await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages)
+  await tx.wait()
+  console.log("treasury.setFundAllocationPercentages")
 
-  await treasury.setSpenders([territoryTreasury, shop], true);
-  await tx.wait();
-  console.log("treasury.setSpenders");
+  await treasury.setSpenders([territoryTreasury, shop], true)
+  await tx.wait()
+  console.log("treasury.setSpenders")
 
-  tx = await bankRelay.setBankFactory(bankFactory);
-  await tx.wait();
-  console.log("bankRelay.setBankFactory");
+  tx = await bankRelay.setBankFactory(bankFactory)
+  await tx.wait()
+  console.log("bankRelay.setBankFactory")
 
   // Disable PVP and raids for now
-  tx = await pvpBattleground.setPreventAttacks(true);
-  await tx.wait();
-  console.log("pvpBattleground.setPreventAttacks");
+  tx = await pvpBattleground.setPreventAttacks(true)
+  await tx.wait()
+  console.log("pvpBattleground.setPreventAttacks")
 
-  tx = await raids.setPreventRaids(true);
-  await tx.wait();
-  console.log("raids.setPreventRaids");
+  tx = await raids.setPreventRaids(true)
+  await tx.wait()
+  console.log("raids.setPreventRaids")
 
   tx = await instantVRFActions.addStrategies(
     [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING, InstantVRFActionType.EGG],
@@ -1255,182 +1255,182 @@ async function main() {
       await genericInstantVRFActionStrategy.getAddress(),
       await eggInstantVRFActionStrategy.getAddress(),
     ]
-  );
-  await tx.wait();
-  console.log("instantVRFActions.addStrategies");
+  )
+  await tx.wait()
+  console.log("instantVRFActions.addStrategies")
 
-  tx = await players.setDailyRewardsEnabled(true);
-  await tx.wait();
-  console.log("Set daily rewards enabled");
+  tx = await players.setDailyRewardsEnabled(true)
+  await tx.wait()
+  console.log("Set daily rewards enabled")
 
-  tx = await playerNFT.setAvatars(avatarIds, avatarInfos);
-  await tx.wait();
-  console.log("Add avatars");
+  tx = await playerNFT.setAvatars(avatarIds, avatarInfos)
+  await tx.wait()
+  console.log("Add avatars")
 
-  tx = await cosmetics.setCosmetics(cosmeticTokenIds, cosmeticInfos);
-  await tx.wait();
-  console.log("Add cosmetics");
+  tx = await cosmetics.setCosmetics(cosmeticTokenIds, cosmeticInfos)
+  await tx.wait()
+  console.log("Add cosmetics")
 
-  tx = await shop.setSupporterPackToken(usdc);
-  await tx.wait();
-  console.log("Set supporter pack token");
+  tx = await shop.setSupporterPackToken(usdc)
+  await tx.wait()
+  console.log("Set supporter pack token")
 
-  tx = await players.addXPThresholdRewards(allXPThresholdRewards);
-  await tx.wait();
-  console.log("Add xp threshold rewards");
+  tx = await players.addXPThresholdRewards(allXPThresholdRewards)
+  await tx.wait()
+  console.log("Add xp threshold rewards")
 
-  const chunkSize = 100;
+  const chunkSize = 100
   for (let i = 0; i < allItems.length; i += chunkSize) {
-    const chunk = allItems.slice(i, i + chunkSize);
-    tx = await itemNFT.addItems(chunk);
-    await tx.wait();
-    console.log("Add items chunk ", i);
+    const chunk = allItems.slice(i, i + chunkSize)
+    tx = await itemNFT.addItems(chunk)
+    await tx.wait()
+    console.log("Add items chunk ", i)
   }
 
   // Add quests. Make sure this is called before actions etc as they could be prerequisites
-  tx = await quests.addQuests(allQuests, allQuestsMinRequirements);
-  await tx.wait();
-  console.log("Add quests");
+  tx = await quests.addQuests(allQuests, allQuestsMinRequirements)
+  await tx.wait()
+  console.log("Add quests")
 
   for (let i = 0; i < allOrderBookTokenIdInfos.length; i += chunkSize) {
-    const tokenIds: number[] = [];
-    const tokenIdInfos: {tick: string; minQuantity: string}[] = [];
-    const chunk = allOrderBookTokenIdInfos.slice(i, i + chunkSize);
+    const tokenIds: number[] = []
+    const tokenIdInfos: {tick: string; minQuantity: string}[] = []
+    const chunk = allOrderBookTokenIdInfos.slice(i, i + chunkSize)
     chunk.forEach((tokenIdInfo) => {
-      tokenIds.push(tokenIdInfo.tokenId);
+      tokenIds.push(tokenIdInfo.tokenId)
       tokenIdInfos.push({
         tick: tokenIdInfo.tick,
         minQuantity: tokenIdInfo.minQuantity,
-      });
-    });
-    const tx = await orderBook.setTokenIdInfos(tokenIds, tokenIdInfos);
-    await tx.wait();
-    console.log("orderBook.setTokenIdInfos");
+      })
+    })
+    const tx = await orderBook.setTokenIdInfos(tokenIds, tokenIdInfos)
+    await tx.wait()
+    console.log("orderBook.setTokenIdInfos")
   }
 
-  tx = await players.addFullAttireBonuses(allFullAttireBonuses);
-  await tx.wait();
-  console.log("Add full attire bonuses");
+  tx = await players.addFullAttireBonuses(allFullAttireBonuses)
+  await tx.wait()
+  console.log("Add full attire bonuses")
 
-  await setDailyAndWeeklyRewards(dailyRewardsScheduler);
-  console.log("Set daily and weekly rewards");
+  await setDailyAndWeeklyRewards(dailyRewardsScheduler)
+  console.log("Set daily and weekly rewards")
 
   for (let i = 0; i < allActions.length; i += chunkSize) {
-    const chunk = allActions.slice(i, i + chunkSize);
-    tx = await worldActions.addActions(chunk);
-    await tx.wait();
-    console.log("Add actions chunk ", i);
+    const chunk = allActions.slice(i, i + chunkSize)
+    tx = await worldActions.addActions(chunk)
+    await tx.wait()
+    console.log("Add actions chunk ", i)
   }
 
   // TODO: Bridge & quests remove later
-  tx = await players.setXPModifiers([bridge, quests], true);
-  await tx.wait();
-  console.log("players.setXPModifiers");
+  tx = await players.setXPModifiers([bridge, quests], true)
+  await tx.wait()
+  console.log("players.setXPModifiers")
 
-  tx = await clans.setXPModifiers([lockedBankVaults, territories, wishingWell], true);
-  await tx.wait();
-  console.log("clans.setXPModifiers");
+  tx = await clans.setXPModifiers([lockedBankVaults, territories, wishingWell], true)
+  await tx.wait()
+  console.log("clans.setXPModifiers")
 
-  const fireMakingActionId = EstforConstants.ACTION_FIREMAKING_ITEM;
-  const smithingActionId = EstforConstants.ACTION_SMITHING_ITEM;
-  const cookingActionId = EstforConstants.ACTION_COOKING_ITEM;
-  const craftingActionId = EstforConstants.ACTION_CRAFTING_ITEM;
-  const fletchingActionId = EstforConstants.ACTION_FLETCHING_ITEM;
-  const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
-  const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
-  const farmingActionId = EstforConstants.ACTION_FARMING_ITEM;
-  const genericCombatActionId = EstforConstants.NONE;
+  const fireMakingActionId = EstforConstants.ACTION_FIREMAKING_ITEM
+  const smithingActionId = EstforConstants.ACTION_SMITHING_ITEM
+  const cookingActionId = EstforConstants.ACTION_COOKING_ITEM
+  const craftingActionId = EstforConstants.ACTION_CRAFTING_ITEM
+  const fletchingActionId = EstforConstants.ACTION_FLETCHING_ITEM
+  const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM
+  const forgingActionId = EstforConstants.ACTION_FORGING_ITEM
+  const farmingActionId = EstforConstants.ACTION_FARMING_ITEM
+  const genericCombatActionId = EstforConstants.NONE
 
   tx = await worldActions.addBulkActionChoices(
     [fireMakingActionId, smithingActionId, cookingActionId],
     [allActionChoiceIdsFiremaking, allActionChoiceIdsSmithing, allActionChoiceIdsCooking],
     [allActionChoicesFiremaking, allActionChoicesSmithing, allActionChoicesCooking]
-  );
-  await tx.wait();
-  console.log("Add action choices1");
+  )
+  await tx.wait()
+  console.log("Add action choices1")
 
   // Add new ones here for gas reasons
-  tx = await worldActions.addActionChoices(craftingActionId, allActionChoiceIdsCrafting, allActionChoicesCrafting);
-  await tx.wait();
-  console.log("Add action choices2");
+  tx = await worldActions.addActionChoices(craftingActionId, allActionChoiceIdsCrafting, allActionChoicesCrafting)
+  await tx.wait()
+  console.log("Add action choices2")
 
-  tx = await worldActions.addActionChoices(fletchingActionId, allActionChoiceIdsFletching, allActionChoicesFletching);
-  await tx.wait();
-  console.log("Add action choices3");
+  tx = await worldActions.addActionChoices(fletchingActionId, allActionChoiceIdsFletching, allActionChoicesFletching)
+  await tx.wait()
+  console.log("Add action choices3")
 
   tx = await worldActions.addBulkActionChoices(
     [alchemyActionId, forgingActionId],
     [allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
     [allActionChoicesAlchemy, allActionChoicesForging]
-  );
+  )
 
-  await tx.wait();
-  console.log("Add action choices4");
+  await tx.wait()
+  console.log("Add action choices4")
 
   // Add new ones here for gas reasons
   tx = await worldActions.addBulkActionChoices(
     [farmingActionId],
     [allActionChoiceIdsFarming],
     [allActionChoicesFarming]
-  );
+  )
 
-  await tx.wait();
-  console.log("Add action choices5");
+  await tx.wait()
+  console.log("Add action choices5")
 
   tx = await worldActions.addBulkActionChoices(
     [genericCombatActionId, genericCombatActionId, genericCombatActionId],
     [allActionChoiceIdsMelee, allActionChoiceIdsRanged, allActionChoiceIdsMagic],
     [allActionChoicesMelee, allActionChoicesRanged, allActionChoicesMagic]
-  );
+  )
 
-  await tx.wait();
-  console.log("Add combat action choices");
+  await tx.wait()
+  console.log("Add combat action choices")
 
   // Add shop items
-  tx = await shop.addBuyableItems(isBeta ? allShopItemsBeta : allShopItems);
-  await tx.wait();
-  console.log("Add shopping items");
+  tx = await shop.addBuyableItems(isBeta ? allShopItemsBeta : allShopItems)
+  await tx.wait()
+  console.log("Add shopping items")
 
   // Add clan tiers
-  tx = await clans.addTiers(isBeta ? allClanTiersBeta : allClanTiers);
-  await tx.wait();
-  console.log("Add clan tiers");
+  tx = await clans.addTiers(isBeta ? allClanTiersBeta : allClanTiers)
+  await tx.wait()
+  console.log("Add clan tiers")
 
   // Add instant actions
-  const _allInstantActions = allInstantActions.filter((action) => action.isAvailable);
+  const _allInstantActions = allInstantActions.filter((action) => action.isAvailable)
   for (let i = 0; i < _allInstantActions.length; i += chunkSize) {
-    const chunk = _allInstantActions.slice(i, i + chunkSize);
-    tx = await instantActions.addActions(chunk);
-    await tx.wait();
-    console.log("Add instant actions chunk ", i);
+    const chunk = _allInstantActions.slice(i, i + chunkSize)
+    tx = await instantActions.addActions(chunk)
+    await tx.wait()
+    console.log("Add instant actions chunk ", i)
   }
 
   // Add instant vrf actions
   for (let i = 0; i < allInstantVRFActions.length; i += chunkSize) {
-    const chunk = allInstantVRFActions.slice(i, i + chunkSize);
-    tx = await instantVRFActions.addActions(chunk);
-    await tx.wait();
-    console.log("Add instant vrf actions chunk ", i);
+    const chunk = allInstantVRFActions.slice(i, i + chunkSize)
+    tx = await instantVRFActions.addActions(chunk)
+    await tx.wait()
+    console.log("Add instant vrf actions chunk ", i)
   }
 
   // Add passive actions
-  tx = await passiveActions.addActions(allPassiveActions);
-  await tx.wait();
-  console.log("Add passive actions");
+  tx = await passiveActions.addActions(allPassiveActions)
+  await tx.wait()
+  console.log("Add passive actions")
 
   // Add base pets
-  const basePetChunkSize = 20;
+  const basePetChunkSize = 20
   for (let i = 0; i < allBasePets.length; i += basePetChunkSize) {
-    const chunk = allBasePets.slice(i, i + basePetChunkSize);
-    tx = await petNFT.addBasePets(chunk);
-    await tx.wait();
-    console.log("Add base pets chunk ", i);
+    const chunk = allBasePets.slice(i, i + basePetChunkSize)
+    tx = await petNFT.addBasePets(chunk)
+    await tx.wait()
+    console.log("Add base pets chunk ", i)
   }
 
   // Add base raids
-  tx = await raids.addBaseRaids(allBaseRaidIds, allBaseRaids);
-  await tx.wait();
-  console.log("Add base raids");
+  tx = await raids.addBaseRaids(allBaseRaidIds, allBaseRaids)
+  await tx.wait()
+  console.log("Add base raids")
 
   // Add unsellable items
   const items = [
@@ -1495,15 +1495,15 @@ async function main() {
     EstforConstants.BOOK_007_ORICHALCUM_INFUSED,
     EstforConstants.CROSSBOW_007_ORICHALCUM_INFUSED,
     EstforConstants.DAGGER_007_ORICHALCUM_INFUSED,
-  ];
+  ]
 
-  tx = await shop.addUnsellableItems(items);
-  await tx.wait();
-  console.log("Add unsellable items");
+  tx = await shop.addUnsellableItems(items)
+  await tx.wait()
+  console.log("Add unsellable items")
 
-  tx = await adminAccess.addPromotionalAdmins(["0xe9fb52d7611e502d93af381ac493981b42d91974"]);
-  await tx.wait();
-  console.log("Add promotional admins");
+  tx = await adminAccess.addPromotionalAdmins(["0xe9fb52d7611e502d93af381ac493981b42d91974"])
+  await tx.wait()
+  console.log("Add promotional admins")
 
   // Add test data for the game
   if (isBeta) {
@@ -1512,8 +1512,8 @@ async function main() {
       "0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC",
       "0xa801864d0D24686B15682261aa05D4e1e6e5BD94",
       "0x6dC225F7f21ACB842761b8df52AE46208705c942",
-    ]);
-    await tx.wait();
+    ])
+    await tx.wait()
 
     await addTestData(
       itemNFT,
@@ -1529,11 +1529,11 @@ async function main() {
       quests,
       startClanId,
       buyBrush
-    );
+    )
   }
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

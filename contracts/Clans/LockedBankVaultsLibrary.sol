@@ -176,7 +176,11 @@ library LockedBankVaultsLibrary {
       defendingClanId
     );
 
-    (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndicesMemory(modifiedSortedClansByMMR, clanId, defendingClanId);
+    (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndicesMemory(
+      modifiedSortedClansByMMR,
+      clanId,
+      defendingClanId
+    );
     if (clanIndex == type(uint256).max) {
       (modifiedSortedClansByMMR, clanIndex) = _insertMMRArrayInMemory(
         modifiedSortedClansByMMR,
@@ -399,7 +403,9 @@ library LockedBankVaultsLibrary {
     );
 
     // Prevent 1 man clan boosting large clan by attacking and losing to them repeatedly
-    bool defenderMMRShouldChange = clanInfos[attackingClanId].playerIds.length >= (clanInfos[defendingClanId].playerIds.length / 2) + 1 || clanInfos[defendingClanId].playerIds.length == 0;
+    bool defenderMMRShouldChange = clanInfos[attackingClanId].playerIds.length >=
+      (clanInfos[defendingClanId].playerIds.length / 2) + 1 ||
+      clanInfos[defendingClanId].playerIds.length == 0;
     if (!defenderMMRShouldChange) {
       newDefendingMMR = defendingMMR;
     }
@@ -640,7 +646,9 @@ library LockedBankVaultsLibrary {
     uint256 index;
     for (uint256 i = 0; i < length; ++i) {
       uint256 clanId = _getClanId(sortedClansByMMR[i]);
-      if (clanInfos[clanId].playerIds.length >= minRosterSize || clanId == attackingClanId || clanId == defendingClanId) {
+      if (
+        clanInfos[clanId].playerIds.length >= minRosterSize || clanId == attackingClanId || clanId == defendingClanId
+      ) {
         filteredClans[index++] = sortedClansByMMR[i];
       }
     }

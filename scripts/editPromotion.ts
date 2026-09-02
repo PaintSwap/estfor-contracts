@@ -1,14 +1,14 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ethers} from "hardhat";
-import {PROMOTIONS_ADDRESS} from "./contractAddresses";
-import {Promotion} from "@paintswap/estfor-definitions/types";
-import {getChainId} from "./utils";
-import {parseEther} from "ethers";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {ethers} from "hardhat"
+import {PROMOTIONS_ADDRESS} from "./contractAddresses"
+import {Promotion} from "@paintswap/estfor-definitions/types"
+import {getChainId} from "./utils"
+import {parseEther} from "ethers"
 
 async function main() {
-  const [owner] = await ethers.getSigners();
-  console.log(`Edit a promotion using account: ${owner.address} on chain id: ${await getChainId(owner)}`);
-  const promotions = await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS);
+  const [owner] = await ethers.getSigners()
+  console.log(`Edit a promotion using account: ${owner.address} on chain id: ${await getChainId(owner)}`)
+  const promotions = await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS)
   /*
   // Edit old haloween promotion to use the new structure just cause.
   let tx = await promotions.editPromotion({
@@ -49,8 +49,8 @@ async function main() {
   await tx.wait();
   console.log("edit first one"); */
 
-  const startTime = 1701417600; // Fri dec 1st 08:00 UTC
-  const numDays = 22;
+  const startTime = 1701417600 // Fri dec 1st 08:00 UTC
+  const numDays = 22
   await promotions.editPromotions([
     {
       promotion: Promotion.HALLOWEEN_2024,
@@ -81,12 +81,12 @@ async function main() {
       guaranteedAmounts: [5],
       randomItemTokenIds: [],
       randomAmounts: [],
-      questPrerequisiteId: 0
-    }
-  ]);
+      questPrerequisiteId: 0,
+    },
+  ])
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

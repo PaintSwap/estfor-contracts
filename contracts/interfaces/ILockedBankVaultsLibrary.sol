@@ -4,10 +4,13 @@ pragma solidity ^0.8.28;
 import "../globals/all.sol";
 
 interface ILockedBankVaultsLibrary {
-  function getNewMMRs(uint256 kA, uint256 kD, uint16 attackingMMR, uint16 defendingMMR, bool didAttackersWin)
-    external
-    pure
-    returns (uint16 newAttackerMMR, uint16 newDefenderMMR);
+  function getNewMMRs(
+    uint256 kA,
+    uint256 kD,
+    uint16 attackingMMR,
+    uint16 defendingMMR,
+    bool didAttackersWin
+  ) external pure returns (uint16 newAttackerMMR, uint16 newDefenderMMR);
 
   function isWithinRange(
     uint32[] calldata clanIds,

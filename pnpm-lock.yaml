@@ -142,9 +142,6 @@ importers:
       solhint:
         specifier: ^5.0.3
         version: 5.2.0(typescript@5.9.3)
-      solhint-plugin-prettier:
-        specifier: ^0.1.0
-        version: 0.1.0(prettier-plugin-solidity@1.4.3(prettier@2.8.8))(prettier@2.8.8)
       solidity-coverage:
         specifier: ^0.8.13
         version: 0.8.16(hardhat@2.27.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
@@ -1041,12 +1038,6 @@ packages:
     resolution:
       {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: ">=12"}
-
-  "@prettier/sync@0.3.0":
-    resolution:
-      {integrity: sha512-3dcmCyAxIcxy036h1I7MQU/uEEBq8oLwf1CE3xeze+MPlgkdlb/+w6rGR/1dhp6Hqi17fRS6nvwnOzkESxEkOw==}
-    peerDependencies:
-      prettier: ^3.0.0
 
   "@safe-global/api-kit@4.0.1":
     resolution:
@@ -3750,11 +3741,6 @@ packages:
       {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: ">= 0.8.0"}
 
-  prettier-linter-helpers@1.0.0:
-    resolution:
-      {integrity: sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==}
-    engines: {node: ">=6.0.0"}
-
   prettier-plugin-solidity@1.4.3:
     resolution:
       {integrity: sha512-Mrr/iiR9f9IaeGRMZY2ApumXcn/C5Gs3S7B7hWB3gigBFML06C0yEyW86oLp0eqiA0qg+46FaChgLPJCj/pIlg==}
@@ -4124,13 +4110,6 @@ packages:
       {integrity: sha512-yiPQNVf5rBFHwN6SIf3TUUvVAFKcQqmSUFeq+fb6pNRCo0ZCgpYOZDi3BVoezCPIAcKrVYd/qXlBLUP9wVrZ9g==}
     engines: {node: ">=10.0.0"}
     hasBin: true
-
-  solhint-plugin-prettier@0.1.0:
-    resolution:
-      {integrity: sha512-SDOTSM6tZxZ6hamrzl3GUgzF77FM6jZplgL2plFBclj/OjKP8Z3eIPojKU73gRr0MvOS8ACZILn8a5g0VTz/Gw==}
-    peerDependencies:
-      prettier: ^3.0.0
-      prettier-plugin-solidity: ^1.0.0
 
   solhint@5.0.5:
     resolution:
@@ -5936,10 +5915,6 @@ snapshots:
       "@pnpm/config.env-replace": 1.1.0
       "@pnpm/network.ca-file": 1.0.2
       config-chain: 1.1.13
-
-  "@prettier/sync@0.3.0(prettier@2.8.8)":
-    dependencies:
-      prettier: 2.8.8
 
   "@safe-global/api-kit@4.0.1(typescript@5.9.3)(zod@3.25.76)":
     dependencies:
@@ -8480,10 +8455,6 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-linter-helpers@1.0.0:
-    dependencies:
-      fast-diff: 1.3.0
-
   prettier-plugin-solidity@1.4.3(prettier@2.8.8):
     dependencies:
       "@solidity-parser/parser": 0.20.2
@@ -8828,13 +8799,6 @@ snapshots:
       tmp: 0.0.33
     transitivePeerDependencies:
       - debug
-
-  solhint-plugin-prettier@0.1.0(prettier-plugin-solidity@1.4.3(prettier@2.8.8))(prettier@2.8.8):
-    dependencies:
-      "@prettier/sync": 0.3.0(prettier@2.8.8)
-      prettier: 2.8.8
-      prettier-linter-helpers: 1.0.0
-      prettier-plugin-solidity: 1.4.3(prettier@2.8.8)
 
   solhint@5.0.5(typescript@5.9.3):
     dependencies:

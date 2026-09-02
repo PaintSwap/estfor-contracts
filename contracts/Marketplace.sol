@@ -33,8 +33,8 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
   }
 
   function list(
-    address nftContract, 
-    uint256 tokenId, 
+    address nftContract,
+    uint256 tokenId,
     uint96 price,
     uint96 amount
   ) external returns (uint256 listingId) {
@@ -45,9 +45,7 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
 
     // 2. Generate Deterministic ID
     // We use abi.encodePacked because the types are fixed-length (saves gas over abi.encode)
-    listingId = uint256(
-      keccak256(abi.encodePacked(msg.sender, nftContract, tokenId))
-    );
+    listingId = uint256(keccak256(abi.encodePacked(msg.sender, nftContract, tokenId)));
 
     // 3. Storage Reference
     IMarketplace.Listing storage listing = _listings[listingId];
@@ -75,7 +73,7 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
     // 3. Validation
     require(actualSeller != address(0), ListingDoesNotExist());
     require(price == expectedPrice, InvalidPrice());
-    
+
     // 4. CEI Pattern: Delete the listing BEFORE transferring funds/NFT
     // This provides the gas refund and prevents re-entrancy issues
     delete _listings[listingId];
@@ -91,18 +89,12 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
         sellerReceives = price - uint96(royaltyAmount);
       }
     }
-    
+
     _brush.transferFrom(msg.sender, actualSeller, sellerReceives);
 
     // 6. NFT Transfer
     // The Marketplace must be an approved operator for the seller
-    IMarketplaceNFT(nftContract).safeTransferFrom(
-      actualSeller,
-      to,
-      tokenId,
-      amount,
-      ""
-    );
+    IMarketplaceNFT(nftContract).safeTransferFrom(actualSeller, to, tokenId, amount, "");
 
     emit Sold(listingId, msg.sender, actualSeller, price, amount);
   }
@@ -116,9 +108,7 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
   }
 
   function contractCancel(address seller, address nftContract, uint256 tokenId) external {
-    uint256 listingId = uint256(
-      keccak256(abi.encodePacked(seller, nftContract, tokenId))
-    );
+    uint256 listingId = uint256(keccak256(abi.encodePacked(seller, nftContract, tokenId)));
     IMarketplace.Listing storage listing = _listings[listingId];
     if (listing.seller == address(0)) return; // Prevents double deletes (no error)
     require(listing.nftContract == msg.sender, NotNFTContract());

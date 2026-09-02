@@ -20,7 +20,13 @@ import {BloomFilter} from "./libraries/BloomFilter.sol";
 import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IMarketplaceNFT, IPlayerNFT {
+contract PlayerNFT is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  SamWitchERC1155UpgradeableSinglePerToken,
+  IMarketplaceNFT,
+  IPlayerNFT
+{
   using BloomFilter for BloomFilter.Filter;
 
   uint256 private constant EVOLVED_OFFSET = 10000;
@@ -192,22 +198,14 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     if (_playerInfos[playerId].upgradedTimestamp > 0) {
       newAvatarId += uint24(EVOLVED_OFFSET);
     }
-    _players.applyAvatarToPlayer(
-      owner,
-      playerId,
-      _avatars[newAvatarId].startSkills
-    );
+    _players.applyAvatarToPlayer(owner, playerId, _avatars[newAvatarId].startSkills);
     emit EditAvatar(playerId, newAvatarId);
   }
 
   // Unequip avatar cosmetic and reapply original avatar skills. Should require a payment to stop skill swap abuse
   function unapplyAvatarFromPlayer(address owner, uint256 playerId) external onlyCosmetics {
     uint24 avatarId = _playerInfos[playerId].avatarId;
-    _players.applyAvatarToPlayer(
-      owner,
-      playerId,
-      _avatars[avatarId].startSkills
-    );
+    _players.applyAvatarToPlayer(owner, playerId, _avatars[avatarId].startSkills);
     _paySender(owner, _editNameCost); // Charge the edit cost for unequipping
     emit EditAvatar(playerId, avatarId);
   }
@@ -326,7 +324,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
       IPlayers players = _players;
       for (uint256 i = 0; i < ids.length; ++i) {
         uint256 playerId = ids[i];
-        players.clearEverythingBeforeTokenTransfer(from, playerId);        
+        players.clearEverythingBeforeTokenTransfer(from, playerId);
         if (to == address(0)) {
           // Burning
           string memory oldName = EstforLibrary.toLower(_names[playerId]);
@@ -364,12 +362,9 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     return _playerInfos[tokenId].avatarId != 0;
   }
 
-  function ownerOf(uint256 tokenId)
-    public
-    view
-    override(IPlayerNFT, SamWitchERC1155UpgradeableSinglePerToken)
-    returns (address)
-  {
+  function ownerOf(
+    uint256 tokenId
+  ) public view override(IPlayerNFT, SamWitchERC1155UpgradeableSinglePerToken) returns (address) {
     return super.ownerOf(tokenId);
   }
 

@@ -1,13 +1,13 @@
-import {parseEther} from "ethers";
+import {parseEther} from "ethers"
 
 export type Tier = {
-  id: number; // id of the tier, starts at 1
-  maxMemberCapacity: number; // How many members the clan can have
-  maxBankCapacity: number; // How many items the clan can have in the bank
-  maxImageId: number;
-  price: bigint; // Price to update the tier from the base tier
-  minimumAge: number; // How old the clan must be before it can be upgraded to this tier
-};
+  id: number // id of the tier, starts at 1
+  maxMemberCapacity: number // How many members the clan can have
+  maxBankCapacity: number // How many items the clan can have in the bank
+  maxImageId: number
+  price: bigint // Price to update the tier from the base tier
+  minimumAge: number // How old the clan must be before it can be upgraded to this tier
+}
 export const allClanTiers: Tier[] = [
   {
     id: 1,
@@ -33,11 +33,11 @@ export const allClanTiers: Tier[] = [
     price: parseEther("3000"),
     minimumAge: 0,
   },
-];
+]
 
 export const allClanTiersBeta: Tier[] = allClanTiers.map((tier) => {
   return {
     ...tier,
     price: tier.price / 10n,
-  };
-});
+  }
+})

@@ -1,4 +1,4 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
+import {EstforConstants} from "@paintswap/estfor-definitions"
 export const allActionChoiceIdsFiremaking: number[] = [
   EstforConstants.ACTIONCHOICE_FIREMAKING_LOG,
   EstforConstants.ACTIONCHOICE_FIREMAKING_OAK,
@@ -18,7 +18,7 @@ export const allActionChoiceIdsFiremaking: number[] = [
   EstforConstants.ACTIONCHOICE_FIREMAKING_CHARCOAL_ASH_LOG,
   EstforConstants.ACTIONCHOICE_FIREMAKING_CHARCOAL_ENCHANTED_LOG,
   EstforConstants.ACTIONCHOICE_FIREMAKING_CHARCOAL_LIVING_LOG,
-];
+]
 export const allActionChoiceIdsSmithing: number[] = [
   EstforConstants.ACTIONCHOICE_SMITHING_BRONZE_BAR,
   EstforConstants.ACTIONCHOICE_SMITHING_IRON_BAR,
@@ -93,7 +93,7 @@ export const allActionChoiceIdsSmithing: number[] = [
   EstforConstants.ACTIONCHOICE_SMITHING_RHUN_CLEDYR_FRAGMENT,
   EstforConstants.ACTIONCHOICE_SMITHING_ITANUS_CLEDYR_FRAGMENT,
   EstforConstants.ACTIONCHOICE_SMITHING_ORCALITH_CLEDYR_FRAGMENT,
-];
+]
 export const allActionChoiceIdsCooking: number[] = [
   EstforConstants.ACTIONCHOICE_COOKING_MINNUS,
   EstforConstants.ACTIONCHOICE_COOKING_BLEKK,
@@ -121,8 +121,8 @@ export const allActionChoiceIdsCooking: number[] = [
   EstforConstants.ACTIONCHOICE_COOKING_VIPER_BASS,
   EstforConstants.ACTIONCHOICE_COOKING_WATER_SERPENT,
   EstforConstants.ACTIONCHOICE_COOKING_WHISKFIN,
-];
-export const allActionChoiceIdsMelee: number[] = [EstforConstants.ACTIONCHOICE_MELEE_MONSTER];
+]
+export const allActionChoiceIdsMelee: number[] = [EstforConstants.ACTIONCHOICE_MELEE_MONSTER]
 export const allActionChoiceIdsMagic: number[] = [
   EstforConstants.ACTIONCHOICE_MAGIC_SHADOW_BLAST,
   EstforConstants.ACTIONCHOICE_MAGIC_NATURES_FURY,
@@ -154,7 +154,7 @@ export const allActionChoiceIdsMagic: number[] = [
   EstforConstants.ACTIONCHOICE_MAGIC_BLIZZARD,
   EstforConstants.ACTIONCHOICE_MAGIC_STARFALL,
   EstforConstants.ACTIONCHOICE_MAGIC_CHRONO_FREEZE,
-];
+]
 export const allActionChoiceIdsCrafting: number[] = [
   EstforConstants.ACTIONCHOICE_CRAFTING_SAPPHIRE_AMULET,
   EstforConstants.ACTIONCHOICE_CRAFTING_EMERALD_AMULET,
@@ -268,7 +268,7 @@ export const allActionChoiceIdsCrafting: number[] = [
   EstforConstants.ACTIONCHOICE_CRAFTING_SINLORIONS_WYSGRIF_FRAGMENT,
   EstforConstants.ACTIONCHOICE_CRAFTING_HUDOLWYRS_WYSGRIF_FRAGMENT,
   EstforConstants.ACTIONCHOICE_CRAFTING_ODLARIONS_WYSGRIF_FRAGMENT,
-];
+]
 export const allActionChoiceIdsAlchemy: number[] = [
   EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER_FROM_LOG,
   EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER_FROM_OAK,
@@ -330,7 +330,7 @@ export const allActionChoiceIdsAlchemy: number[] = [
   EstforConstants.ACTIONCHOICE_ALCHEMY_FOOLS_BERRY_EXTRACT,
   EstforConstants.ACTIONCHOICE_ALCHEMY_LUMELILA_TOXIN,
   EstforConstants.ACTIONCHOICE_ALCHEMY_WQ_I_III,
-];
+]
 export const allActionChoiceIdsFletching: number[] = [
   EstforConstants.ACTIONCHOICE_FLETCHING_ARROW_SHAFT_FROM_LOG,
   EstforConstants.ACTIONCHOICE_FLETCHING_ARROW_SHAFT_FROM_OAK,
@@ -361,7 +361,7 @@ export const allActionChoiceIdsFletching: number[] = [
   EstforConstants.ACTIONCHOICE_FLETCHING_RHUN_KIEL_FRAGMENT,
   EstforConstants.ACTIONCHOICE_FLETCHING_VINGET_KIEL_FRAGMENT,
   EstforConstants.ACTIONCHOICE_FLETCHING_DEUION_KIEL_FRAGMENT,
-];
+]
 export const allActionChoiceIdsRanged: number[] = [
   EstforConstants.ACTIONCHOICE_RANGED_BASIC_BOW,
   EstforConstants.ACTIONCHOICE_RANGED_BONE_BOW,
@@ -433,7 +433,7 @@ export const allActionChoiceIdsRanged: number[] = [
   EstforConstants.ACTIONCHOICE_RANGED_GLITTER_BOW_LUMELILA_TOXIN,
   EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_FOOLS_BERRY_EXTRACT,
   EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_LUMELILA_TOXIN,
-];
+]
 export const allActionChoiceIdsForging: number[] = [
   EstforConstants.ACTIONCHOICE_FORGING_MERGE_TINY_ELIXIUM,
   EstforConstants.ACTIONCHOICE_FORGING_MERGE_SMALL_ELIXIUM,
@@ -468,7 +468,7 @@ export const allActionChoiceIdsForging: number[] = [
   EstforConstants.ACTIONCHOICE_FORGING_ODLARIONS_WYSGRIF,
   EstforConstants.ACTIONCHOICE_FORGING_DEUION_KIEL,
   EstforConstants.ACTIONCHOICE_FORGING_WQ_I_V,
-];
+]
 export const allActionChoiceIdsFarming: number[] = [
   EstforConstants.ACTIONCHOICE_FARMING_CULTIVATE_SMALL_WILD_SEED,
   EstforConstants.ACTIONCHOICE_FARMING_CULTIVATE_SMALL_UNKNOWN_SEED,
@@ -482,4 +482,4 @@ export const allActionChoiceIdsFarming: number[] = [
   EstforConstants.ACTIONCHOICE_FARMING_CULTIVATE_LARGE_MYSTERIOUS_SEED,
   EstforConstants.ACTIONCHOICE_FARMING_CULTIVATE_LARGE_OBSCURE_SEED,
   EstforConstants.ACTIONCHOICE_FARMING_CULTIVATE_LARGE_ANCIENT_SEED,
-];
+]

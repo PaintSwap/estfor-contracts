@@ -1,4 +1,4 @@
-import {ethers, upgrades} from "hardhat";
+import {ethers, upgrades} from "hardhat"
 import {
   ESTFOR_LIBRARY_ADDRESS,
   RANDOMNESS_BEACON_ADDRESS,
@@ -13,46 +13,46 @@ import {
   VRF_ADDRESS,
   SHOP_ADDRESS,
   CLANS_ADDRESS,
-  PLAYERS_ADDRESS
-} from "./contractAddresses";
+  PLAYERS_ADDRESS,
+} from "./contractAddresses"
 import {
   isBeta,
   verifyContracts,
   initialiseSafe,
   getSafeUpgradeTransaction,
   sendTransactionSetToSafe,
-  deployPlayerImplementations
-} from "./utils";
-import {OperationType} from "@safe-global/types-kit";
+  deployPlayerImplementations,
+} from "./utils"
+import {OperationType} from "@safe-global/types-kit"
 
 async function main() {
-  const [owner, , proposer] = await ethers.getSigners();
-  const network = await ethers.provider.getNetwork();
-  const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
+  const [owner, , proposer] = await ethers.getSigners()
+  const network = await ethers.provider.getNetwork()
+  const {useSafe, apiKit, protocolKit} = await initialiseSafe(network)
   console.log(
     `Integrating the Paintswap VRF and updating the contracts with the account: ${proposer.address} on chain ${network.chainId}`
-  );
+  )
 
-  const timeout = 600 * 1000; // 10 minutes
+  const timeout = 600 * 1000 // 10 minutes
 
   const genericUpgradeInterface = new ethers.Interface([
     "function initializeV2(address combatantsHelperAddress)",
     "function initializeV3(address vrfAddress)",
-    "function initializeV4()"
-  ]);
+    "function initializeV4()",
+  ])
 
-  const upgradeTransactionSet = [];
+  const upgradeTransactionSet = []
 
-  const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
-  console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
+  const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS)
+  console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`)
 
-  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon", proposer);
+  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon", proposer)
   const randomnessBeacon = (await upgrades.prepareUpgrade(RANDOMNESS_BEACON_ADDRESS, RandomnessBeacon, {
     kind: "uups",
     timeout,
-    unsafeSkipStorageCheck: true
-  })) as string;
-  console.log(`randomnessBeacon = "${randomnessBeacon}"`);
+    unsafeSkipStorageCheck: true,
+  })) as string
+  console.log(`randomnessBeacon = "${randomnessBeacon}"`)
 
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
@@ -60,22 +60,22 @@ async function main() {
       randomnessBeacon,
       genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
     )
-  );
+  )
 
-  const Shop = await ethers.getContractFactory("Shop", proposer);
+  const Shop = await ethers.getContractFactory("Shop", proposer)
   const shop = (await upgrades.prepareUpgrade(SHOP_ADDRESS, Shop, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-    timeout
-  })) as string;
-  console.log(`Shop new implementation = "${shop}"`);
-  upgradeTransactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop));
+    timeout,
+  })) as string
+  console.log(`Shop new implementation = "${shop}"`)
+  upgradeTransactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop))
 
-  const playersLibrary = await ethers.getContractAt("PlayersLibrary", PLAYERS_LIBRARY_ADDRESS);
+  const playersLibrary = await ethers.getContractAt("PlayersLibrary", PLAYERS_LIBRARY_ADDRESS)
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(await playersLibrary.getAddress(), proposer);
+    await deployPlayerImplementations(await playersLibrary.getAddress(), proposer)
 
-  const playersIface = new ethers.Interface(["function setImpls(address,address,address,address,address)"]);
+  const playersIface = new ethers.Interface(["function setImpls(address,address,address,address,address)"])
   upgradeTransactionSet.push({
     to: ethers.getAddress(PLAYERS_ADDRESS),
     value: "0",
@@ -84,19 +84,19 @@ async function main() {
       await playersImplProcessActions.getAddress(),
       await playersImplRewards.getAddress(),
       await playersImplMisc.getAddress(),
-      await playersImplMisc1.getAddress()
+      await playersImplMisc1.getAddress(),
     ]),
-    operation: OperationType.Call
-  });
+    operation: OperationType.Call,
+  })
 
   // // Instant VRF actions
-  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions", proposer);
+  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions", proposer)
   const instantVRFActions = (await upgrades.prepareUpgrade(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
     kind: "uups",
     timeout,
-    unsafeSkipStorageCheck: true
-  })) as string;
-  console.log(`instantVRFActions = "${instantVRFActions}"`);
+    unsafeSkipStorageCheck: true,
+  })) as string
+  console.log(`instantVRFActions = "${instantVRFActions}"`)
 
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
@@ -104,15 +104,15 @@ async function main() {
       instantVRFActions,
       genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
     )
-  );
+  )
 
-  const PVPBattleground = await ethers.getContractFactory("PVPBattleground", proposer);
+  const PVPBattleground = await ethers.getContractFactory("PVPBattleground", proposer)
   const pvpBattleground = (await upgrades.prepareUpgrade(PVP_BATTLEGROUND_ADDRESS, PVPBattleground, {
     kind: "uups",
     timeout,
-    unsafeSkipStorageCheck: true
-  })) as string;
-  console.log(`pvpBattleground = "${pvpBattleground}"`);
+    unsafeSkipStorageCheck: true,
+  })) as string
+  console.log(`pvpBattleground = "${pvpBattleground}"`)
 
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
@@ -120,23 +120,23 @@ async function main() {
       pvpBattleground,
       genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
     )
-  );
+  )
 
   // ClanBattleLibrary
-  const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", proposer);
-  console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
+  const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", proposer)
+  console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`)
 
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()},
-    signer: proposer
-  });
+    signer: proposer,
+  })
   const clans = (await upgrades.prepareUpgrade(CLANS_ADDRESS, Clans, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    unsafeSkipStorageCheck: true
-  })) as string;
-  console.log(`Clans implementation deployed to ${clans}`);
+    unsafeSkipStorageCheck: true,
+  })) as string
+  console.log(`Clans implementation deployed to ${clans}`)
 
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
@@ -144,27 +144,27 @@ async function main() {
       clans,
       genericUpgradeInterface.encodeFunctionData("initializeV2", [COMBATANTS_HELPER_ADDRESS])
     )
-  );
+  )
 
   // LockedBankVaults
-  const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary", proposer);
-  console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
+  const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary", proposer)
+  console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`)
 
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {
       EstforLibrary: await estforLibrary.getAddress(),
       LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
-      ClanBattleLibrary: await clanBattleLibrary.getAddress()
+      ClanBattleLibrary: await clanBattleLibrary.getAddress(),
     },
-    signer: proposer
-  });
+    signer: proposer,
+  })
   const lockedBankVaults = (await upgrades.prepareUpgrade(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    unsafeSkipStorageCheck: true
-  })) as string;
-  console.log(`lockedBankVaults = ${lockedBankVaults}`);
+    unsafeSkipStorageCheck: true,
+  })) as string
+  console.log(`lockedBankVaults = ${lockedBankVaults}`)
 
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
@@ -172,15 +172,15 @@ async function main() {
       lockedBankVaults,
       genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
     )
-  );
+  )
 
-  const Territories = await ethers.getContractFactory("Territories", proposer);
+  const Territories = await ethers.getContractFactory("Territories", proposer)
   const territories = (await upgrades.prepareUpgrade(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
     timeout,
-    unsafeSkipStorageCheck: true
-  })) as string;
-  console.log(`territories = ${territories}`);
+    unsafeSkipStorageCheck: true,
+  })) as string
+  console.log(`territories = ${territories}`)
 
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
@@ -188,18 +188,18 @@ async function main() {
       territories,
       genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
     )
-  );
+  )
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()},
-    signer: proposer
-  });
+    signer: proposer,
+  })
   const combatantsHelper = (await upgrades.prepareUpgrade(COMBATANTS_HELPER_ADDRESS, CombatantsHelper, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-    timeout
-  })) as string;
-  console.log(`combatantsHelper = ${combatantsHelper}`);
+    timeout,
+  })) as string
+  console.log(`combatantsHelper = ${combatantsHelper}`)
 
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
@@ -207,19 +207,19 @@ async function main() {
       combatantsHelper,
       genericUpgradeInterface.encodeFunctionData("initializeV4", [])
     )
-  );
+  )
 
   const Raids = await ethers.getContractFactory("Raids", {
     libraries: {PlayersLibrary: await playersLibrary.getAddress()},
-    signer: proposer
-  });
+    signer: proposer,
+  })
   const raids = (await upgrades.prepareUpgrade(RAIDS_ADDRESS, Raids, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    unsafeSkipStorageCheck: true
-  })) as string;
-  console.log(`raids = ${raids}`);
+    unsafeSkipStorageCheck: true,
+  })) as string
+  console.log(`raids = ${raids}`)
 
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
@@ -227,7 +227,7 @@ async function main() {
       raids,
       genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
     )
-  );
+  )
 
   // Sending 10 S to the RandomnessBeacon & Raids
   // let tx = await owner.sendTransaction({
@@ -244,7 +244,7 @@ async function main() {
   // await tx.wait();
   // console.log("Sent 10 S to raids", tx.hash);
 
-  await sendTransactionSetToSafe(network, protocolKit, apiKit, upgradeTransactionSet, proposer);
+  await sendTransactionSetToSafe(network, protocolKit, apiKit, upgradeTransactionSet, proposer)
 
   if (network.chainId == 146n) {
     // await verifyContracts([await randomnessBeacon.getAddress()]);
@@ -260,6 +260,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

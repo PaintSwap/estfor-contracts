@@ -1,4 +1,4 @@
-import {ethers, upgrades} from "hardhat";
+import {ethers, upgrades} from "hardhat"
 import {
   ITEM_NFT_ADDRESS,
   RANDOMNESS_BEACON_ADDRESS,
@@ -11,33 +11,33 @@ import {
   SHOP_ADDRESS,
   QUESTS_ADDRESS,
   INSTANT_ACTIONS_ADDRESS,
-  WORLD_ACTIONS_ADDRESS
-} from "./contractAddresses";
-import {deployPlayerImplementations, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
-import {Players, WorldActions} from "../typechain-types";
-import {allXPThresholdRewards} from "./data/xpThresholdRewards";
-import {ActionChoiceInput, Skill} from "@paintswap/estfor-definitions/types";
-import {allInstantActions} from "./data/instantActions";
-import {allActionChoiceIdsAlchemy, allActionChoiceIdsForging} from "./data/actionChoiceIds";
-import {allActionChoicesAlchemy, allActionChoicesForging} from "./data/actionChoices";
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {allActions} from "./data/actions";
-import {avatarIds, avatarInfos} from "./data/avatars";
-import {allItems} from "./data/items";
-import {allShopItems} from "./data/shopItems";
-import {QuestInput, allQuests, allQuestsMinRequirements, defaultMinRequirements} from "./data/quests";
-import {parseEther} from "ethers";
+  WORLD_ACTIONS_ADDRESS,
+} from "./contractAddresses"
+import {deployPlayerImplementations, setDailyAndWeeklyRewards, verifyContracts} from "./utils"
+import {Players, WorldActions} from "../typechain-types"
+import {allXPThresholdRewards} from "./data/xpThresholdRewards"
+import {ActionChoiceInput, Skill} from "@paintswap/estfor-definitions/types"
+import {allInstantActions} from "./data/instantActions"
+import {allActionChoiceIdsAlchemy, allActionChoiceIdsForging} from "./data/actionChoiceIds"
+import {allActionChoicesAlchemy, allActionChoicesForging} from "./data/actionChoices"
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {allActions} from "./data/actions"
+import {avatarIds, avatarInfos} from "./data/avatars"
+import {allItems} from "./data/items"
+import {allShopItems} from "./data/shopItems"
+import {QuestInput, allQuests, allQuestsMinRequirements, defaultMinRequirements} from "./data/quests"
+import {parseEther} from "ethers"
 
 async function main() {
-  const [owner] = await ethers.getSigners();
-  console.log(`Large upgrade using account: ${owner.address}`);
+  const [owner] = await ethers.getSigners()
+  console.log(`Large upgrade using account: ${owner.address}`)
 
   //  const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  const network = await ethers.provider.getNetwork()
+  console.log(`ChainId: ${network.chainId}`)
 
-  const timeout = 600 * 1000; // 10 minutes
+  const timeout = 600 * 1000 // 10 minutes
 
   /* Overhaul upgrade #1
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
@@ -206,44 +206,44 @@ async function main() {
 */
 
   // Overhaul upgrade #3
-  const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
-  const playersLibrary = await ethers.deployContract("PlayersLibrary");
-  console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
+  const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS)
+  const playersLibrary = await ethers.deployContract("PlayersLibrary")
+  console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`)
 
-  const Players = await ethers.getContractFactory("Players");
+  const Players = await ethers.getContractFactory("Players")
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
-    timeout
-  })) as unknown as Players;
+    timeout,
+  })) as unknown as Players
 
-  console.log("Deployed Players");
+  console.log("Deployed Players")
 
   // Update player impls
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(await playersLibrary.getAddress());
+    await deployPlayerImplementations(await playersLibrary.getAddress())
   let tx = await players.setImpls(
     await playersImplQueueActions.getAddress(),
     await playersImplProcessActions.getAddress(),
     await playersImplRewards.getAddress(),
     await playersImplMisc.getAddress(),
     await playersImplMisc1.getAddress()
-  );
-  await tx.wait();
-  console.log("setImpls");
+  )
+  await tx.wait()
+  console.log("setImpls")
 
   // ItemNFT
-  const itemNFTLibrary = await ethers.getContractAt("ItemNFTLibrary", ITEM_NFT_LIBRARY_ADDRESS);
+  const itemNFTLibrary = await ethers.getContractAt("ItemNFTLibrary", ITEM_NFT_LIBRARY_ADDRESS)
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {
-    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
-  });
+    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
+  })
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-    timeout
-  });
-  await itemNFT.waitForDeployment();
-  console.log("itemNFT deployed");
+    timeout,
+  })
+  await itemNFT.waitForDeployment()
+  console.log("itemNFT deployed")
 
   const items = allItems.filter(
     (item) =>
@@ -253,51 +253,51 @@ async function main() {
       item.tokenId === EstforConstants.LARGE_ELIXIUM ||
       item.tokenId === EstforConstants.EXTRA_LARGE_ELIXIUM ||
       item.tokenId === EstforConstants.FLUX
-  );
+  )
 
   if (items.length !== 6) {
-    console.log("Cannot find all items");
+    console.log("Cannot find all items")
   } else {
-    tx = await itemNFT.addItems(items);
-    await tx.wait();
+    tx = await itemNFT.addItems(items)
+    await tx.wait()
   }
-  console.log("Add items");
+  console.log("Add items")
 
   // Update player upgrade cost
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress()}
-  });
+    libraries: {EstforLibrary: await estforLibrary.getAddress()},
+  })
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     unsafeSkipStorageCheck: true,
-    timeout
-  });
-  await playerNFT.waitForDeployment();
-  tx = await playerNFT.setUpgradeCost(parseEther("1400")); // 30% discount
-  await tx.wait();
+    timeout,
+  })
+  await playerNFT.waitForDeployment()
+  tx = await playerNFT.setUpgradeCost(parseEther("1400")) // 30% discount
+  await tx.wait()
 
-  const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
-  tx = await instantActions.addActions(allInstantActions);
-  await tx.wait();
+  const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS)
+  tx = await instantActions.addActions(allInstantActions)
+  await tx.wait()
 
-  const WorldActions = await ethers.getContractFactory("WorldActions");
+  const WorldActions = await ethers.getContractFactory("WorldActions")
   const worldActions = (await upgrades.upgradeProxy(WORLD_ACTIONS_ADDRESS, WorldActions, {
     kind: "uups",
-    timeout
-  })) as unknown as WorldActions;
+    timeout,
+  })) as unknown as WorldActions
 
-  console.log("world upgraded");
+  console.log("world upgraded")
 
   // Add new forging action
-  let actions = allActions.filter((action) => action.actionId === EstforConstants.ACTION_FORGING_ITEM);
+  let actions = allActions.filter((action) => action.actionId === EstforConstants.ACTION_FORGING_ITEM)
   if (actions.length !== 1) {
-    console.log("Cannot find actions");
-    process.exit(1);
+    console.log("Cannot find actions")
+    process.exit(1)
   } else {
-    await worldActions.addActions(actions);
+    await worldActions.addActions(actions)
   }
-  console.log("Add forging action");
+  console.log("Add forging action")
 
   // Edit some combat action random reward drops
   actions = allActions.filter(
@@ -307,11 +307,11 @@ async function main() {
       action.actionId === EstforConstants.ACTION_COMBAT_QRAKUR ||
       action.actionId === EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON ||
       action.actionId === EstforConstants.ACTION_COMBAT_ERKAD
-  );
+  )
 
-  tx = await worldActions.editActions(actions);
-  await tx.wait();
-  console.log("editActions");
+  tx = await worldActions.editActions(actions)
+  await tx.wait()
+  console.log("editActions")
 
   const newActionChoiceIdsAlchemy = [
     EstforConstants.ACTIONCHOICE_ALCHEMY_COPPER_ORE,
@@ -339,55 +339,55 @@ async function main() {
     EstforConstants.ACTIONCHOICE_ALCHEMY_ASH_LOG,
     EstforConstants.ACTIONCHOICE_ALCHEMY_ENCHANTED_LOG,
     EstforConstants.ACTIONCHOICE_ALCHEMY_LIVING_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER
-  ];
+    EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER,
+  ]
 
-  const newActionChoicesAlchemy: ActionChoiceInput[] = [];
+  const newActionChoicesAlchemy: ActionChoiceInput[] = []
   allActionChoiceIdsAlchemy.forEach((actionChoiceId, index) => {
     if (newActionChoiceIdsAlchemy.includes(actionChoiceId)) {
-      newActionChoicesAlchemy.push(allActionChoicesAlchemy[index]);
+      newActionChoicesAlchemy.push(allActionChoicesAlchemy[index])
     }
-  });
+  })
 
-  const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
-  const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
+  const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM
+  const forgingActionId = EstforConstants.ACTION_FORGING_ITEM
   tx = await worldActions.addBulkActionChoices(
     [alchemyActionId, forgingActionId],
     [newActionChoiceIdsAlchemy, allActionChoiceIdsForging],
     [newActionChoicesAlchemy, allActionChoicesForging]
-  );
-  await tx.wait();
+  )
+  await tx.wait()
 
-  console.log("Set new action choices");
+  console.log("Set new action choices")
 
-  tx = await playerNFT.setAvatars(avatarIds, avatarInfos);
-  await tx.wait();
-  console.log("set avatars");
+  tx = await playerNFT.setAvatars(avatarIds, avatarInfos)
+  await tx.wait()
+  console.log("set avatars")
 
   // Update shop with new flux item
-  const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
-  tx = await shop.addBuyableItems(allShopItems.filter((shopItem) => shopItem.tokenId == EstforConstants.FLUX));
-  await tx.wait();
-  console.log("Add flux");
+  const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS)
+  tx = await shop.addBuyableItems(allShopItems.filter((shopItem) => shopItem.tokenId == EstforConstants.FLUX))
+  await tx.wait()
+  console.log("Add flux")
 
   // Quests
-  const Quests = await ethers.getContractFactory("Quests");
+  const Quests = await ethers.getContractFactory("Quests")
   const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
     kind: "uups",
     timeout,
-    unsafeSkipStorageCheck: true
-  });
-  await quests.waitForDeployment();
-  console.log("Deployed quests");
+    unsafeSkipStorageCheck: true,
+  })
+  await quests.waitForDeployment()
+  console.log("Deployed quests")
 
   // Add the new quest
-  const quest = allQuests.find((q) => q.questId === EstforConstants.QUEST_SO_FLETCH) as QuestInput;
-  tx = await quests.addQuests([quest], [defaultMinRequirements]);
-  await tx.wait();
-  console.log("Add new quests");
+  const quest = allQuests.find((q) => q.questId === EstforConstants.QUEST_SO_FLETCH) as QuestInput
+  tx = await quests.addQuests([quest], [defaultMinRequirements])
+  await tx.wait()
+  console.log("Add new quests")
   // Edit them all to fix up the second storage slot bit location
-  tx = await quests.editQuests(allQuests, allQuestsMinRequirements);
-  await tx.wait();
+  tx = await quests.editQuests(allQuests, allQuestsMinRequirements)
+  await tx.wait()
 
   // verify all the contracts
   await verifyContracts([
@@ -401,11 +401,11 @@ async function main() {
     await estforLibrary.getAddress(),
     await playersLibrary.getAddress(),
     await worldActions.getAddress(),
-    await instantActions.getAddress()
-  ]);
+    await instantActions.getAddress(),
+  ])
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

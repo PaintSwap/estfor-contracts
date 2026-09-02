@@ -310,7 +310,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Territories.TerritoryInput[]",
+        "internalType": "struct ITerritories.TerritoryInput[]",
         "name": "territories",
         "type": "tuple[]"
       }
@@ -599,7 +599,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Territories.TerritoryInput[]",
+        "internalType": "struct ITerritories.TerritoryInput[]",
         "name": "territories",
         "type": "tuple[]"
       }
@@ -885,7 +885,7 @@
             "type": "uint16"
           }
         ],
-        "internalType": "struct Territories.TerritoryInput[]",
+        "internalType": "struct ITerritories.TerritoryInput[]",
         "name": "territories",
         "type": "tuple[]"
       }
@@ -1028,7 +1028,7 @@
             "type": "uint16"
           }
         ],
-        "internalType": "struct Territories.TerritoryInput[]",
+        "internalType": "struct ITerritories.TerritoryInput[]",
         "name": "territories",
         "type": "tuple[]"
       }
@@ -1099,7 +1099,7 @@
             "type": "uint64[]"
           }
         ],
-        "internalType": "struct Territories.ClanInfo",
+        "internalType": "struct ITerritories.ClanInfo",
         "name": "clanInfo",
         "type": "tuple"
       }
@@ -1158,7 +1158,7 @@
             "type": "uint40"
           }
         ],
-        "internalType": "struct Territories.PendingAttack",
+        "internalType": "struct ITerritories.PendingAttack",
         "name": "pendingAttack",
         "type": "tuple"
       }
@@ -1209,7 +1209,7 @@
             "type": "uint16"
           }
         ],
-        "internalType": "struct Territories.Territory",
+        "internalType": "struct ITerritories.Territory",
         "name": "territory",
         "type": "tuple"
       }
@@ -1254,7 +1254,7 @@
             "type": "uint16"
           }
         ],
-        "internalType": "struct Territories.Territory[]",
+        "internalType": "struct ITerritories.Territory[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -1308,7 +1308,7 @@
             "type": "uint16"
           }
         ],
-        "internalType": "struct Territories.TerritoryInput[]",
+        "internalType": "struct ITerritories.TerritoryInput[]",
         "name": "territories",
         "type": "tuple[]"
       },
@@ -1328,7 +1328,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract LockedBankVaults",
+        "internalType": "contract ILockedBankVaults",
         "name": "lockedBankVaults",
         "type": "address"
       },

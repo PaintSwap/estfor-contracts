@@ -113,6 +113,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "skill",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidSkillId",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "LengthMismatch",
     "type": "error"
@@ -272,13 +283,13 @@
             "type": "bool"
           },
           {
-            "internalType": "enum InstantActions.InstantActionType",
+            "internalType": "enum IInstantActions.InstantActionType",
             "name": "actionType",
             "type": "uint8"
           }
         ],
         "indexed": false,
-        "internalType": "struct InstantActions.InstantActionInput[]",
+        "internalType": "struct IInstantActions.InstantActionInput[]",
         "name": "instantActionInputs",
         "type": "tuple[]"
       }
@@ -298,7 +309,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "from",
+        "name": "from_",
         "type": "address"
       },
       {
@@ -339,7 +350,7 @@
       },
       {
         "indexed": false,
-        "internalType": "enum InstantActions.InstantActionType",
+        "internalType": "enum IInstantActions.InstantActionType",
         "name": "actionType",
         "type": "uint8"
       }
@@ -403,13 +414,13 @@
             "type": "bool"
           },
           {
-            "internalType": "enum InstantActions.InstantActionType",
+            "internalType": "enum IInstantActions.InstantActionType",
             "name": "actionType",
             "type": "uint8"
           }
         ],
         "indexed": false,
-        "internalType": "struct InstantActions.InstantActionInput[]",
+        "internalType": "struct IInstantActions.InstantActionInput[]",
         "name": "instantActionInputs",
         "type": "tuple[]"
       }
@@ -454,7 +465,7 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "enum InstantActions.InstantActionType[]",
+        "internalType": "enum IInstantActions.InstantActionType[]",
         "name": "actionTypes",
         "type": "uint8[]"
       },
@@ -549,12 +560,12 @@
             "type": "bool"
           },
           {
-            "internalType": "enum InstantActions.InstantActionType",
+            "internalType": "enum IInstantActions.InstantActionType",
             "name": "actionType",
             "type": "uint8"
           }
         ],
-        "internalType": "struct InstantActions.InstantActionInput[]",
+        "internalType": "struct IInstantActions.InstantActionInput[]",
         "name": "instantActionInputs",
         "type": "tuple[]"
       }
@@ -582,7 +593,7 @@
         "type": "uint256[]"
       },
       {
-        "internalType": "enum InstantActions.InstantActionType",
+        "internalType": "enum IInstantActions.InstantActionType",
         "name": "actionType",
         "type": "uint8"
       }
@@ -647,12 +658,12 @@
             "type": "bool"
           },
           {
-            "internalType": "enum InstantActions.InstantActionType",
+            "internalType": "enum IInstantActions.InstantActionType",
             "name": "actionType",
             "type": "uint8"
           }
         ],
-        "internalType": "struct InstantActions.InstantActionInput[]",
+        "internalType": "struct IInstantActions.InstantActionInput[]",
         "name": "instantActionInputs",
         "type": "tuple[]"
       }
@@ -665,7 +676,7 @@
   {
     "inputs": [
       {
-        "internalType": "enum InstantActions.InstantActionType",
+        "internalType": "enum IInstantActions.InstantActionType",
         "name": "actionType",
         "type": "uint8"
       },
@@ -765,7 +776,7 @@
             "type": "uint24"
           }
         ],
-        "internalType": "struct InstantActions.InstantAction",
+        "internalType": "struct IInstantActions.InstantAction",
         "name": "",
         "type": "tuple"
       }
@@ -791,7 +802,7 @@
         "type": "uint256[]"
       },
       {
-        "internalType": "enum InstantActions.InstantActionType",
+        "internalType": "enum IInstantActions.InstantActionType",
         "name": "actionType",
         "type": "uint8"
       }
@@ -821,7 +832,7 @@
             "type": "uint256[]"
           }
         ],
-        "internalType": "struct InstantActions.InstantActionState",
+        "internalType": "struct IInstantActions.InstantActionState",
         "name": "instantActionState",
         "type": "tuple"
       }
@@ -842,7 +853,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract Quests",
+        "internalType": "contract IQuests",
         "name": "quests",
         "type": "address"
       },
@@ -886,7 +897,7 @@
   {
     "inputs": [
       {
-        "internalType": "enum InstantActions.InstantActionType[]",
+        "internalType": "enum IInstantActions.InstantActionType[]",
         "name": "actionTypes",
         "type": "uint8[]"
       },

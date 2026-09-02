@@ -1,5 +1,5 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {InstantActionInput, Skill, InstantActionType} from "@paintswap/estfor-definitions/types";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {InstantActionInput, Skill, InstantActionType} from "@paintswap/estfor-definitions/types"
 export const allInstantActions: InstantActionInput[] = [
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_HELMET,
@@ -5006,4 +5006,4 @@ export const allInstantActions: InstantActionInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]

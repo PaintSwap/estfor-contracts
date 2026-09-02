@@ -43,8 +43,7 @@ contract ClanBattleLibraryTest is EstforTest {
 
   function setUp() public {
     vm.warp(30 days);
-    clanBattleLibrary =
-      IClanBattleLibrary(_deployArtifact("contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary"));
+    clanBattleLibrary = IClanBattleLibrary(_deployArtifact("contracts/Clans/ClanBattleLibrary.sol:ClanBattleLibrary"));
     players = new ClanBattlePlayersStub();
     for (uint256 i = 1; i <= 40; ++i) {
       players.setLastActiveTimestamp(i, block.timestamp);

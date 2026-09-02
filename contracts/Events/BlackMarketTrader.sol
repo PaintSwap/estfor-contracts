@@ -8,15 +8,11 @@ import {ItemNFT} from "../ItemNFT.sol";
 
 import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
 
-contract BlackMarketTrader is
-  UUPSUpgradeable,
-  OwnableUpgradeable,
-  PaintswapVRFConsumerUpgradeable
-{
+contract BlackMarketTrader is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable {
   error ItemDoesNotExist();
   error ShopItemAlreadyExists();
   error ShopItemDoesNotExist();
-  error PriceCannotBeZero();  
+  error PriceCannotBeZero();
   error ItemCannotBeBought();
   error ShopClosed();
   error RequestDoesNotExist();
@@ -62,7 +58,7 @@ contract BlackMarketTrader is
 
   uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 140_000;
   address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
-  
+
   ItemNFT private _itemNFT;
 
   mapping(uint256 globalEventId => ShopCollection) private _shopCollections;
@@ -73,11 +69,7 @@ contract BlackMarketTrader is
     _disableInitializers();
   }
 
-  function initialize(
-    address owner,
-    ItemNFT itemNFT,
-    address paintswapVRFConsumer
-  ) external initializer {
+  function initialize(address owner, ItemNFT itemNFT, address paintswapVRFConsumer) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(owner);
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
@@ -254,8 +246,7 @@ contract BlackMarketTrader is
     }
     emit AddShopItems(items, globalEventId);
   }
-  
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
-
 }

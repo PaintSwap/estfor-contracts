@@ -46,7 +46,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable, IPromotions {
   mapping(address user => BitMaps.BitMap) private _userPromotionsClaimed;
   mapping(uint256 playerId => BitMaps.BitMap) private _playerPromotionsClaimed;
 
-  uint256 public override constant FINAL_PROMOTION_DAY_INDEX = 31;
+  uint256 public constant override FINAL_PROMOTION_DAY_INDEX = 31;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -330,7 +330,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable, IPromotions {
     }
   }
 
-  function getActivePromotion(uint256 promotionId) external override view returns (PromotionInfo memory) {
+  function getActivePromotion(uint256 promotionId) external view override returns (PromotionInfo memory) {
     return _activePromotions[Promotion(promotionId)];
   }
 
@@ -338,7 +338,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable, IPromotions {
     uint256 playerId,
     Promotion promotion,
     uint256 day
-  ) external override view returns (uint8) {
+  ) external view override returns (uint8) {
     return _multidayPlayerPromotionsCompleted[playerId][promotion][day];
   }
 
@@ -591,7 +591,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable, IPromotions {
   }
 
   // Takes into account the current day for multiday promotions unless outside the range in which case checks the final day bonus.
-  function hasCompletedPromotion(uint256 playerId, Promotion promotion) external override view returns (bool) {
+  function hasCompletedPromotion(uint256 playerId, Promotion promotion) external view override returns (bool) {
     PromotionInfo memory promotionInfo = _activePromotions[promotion];
     if (promotionInfo.isMultiday) {
       if (block.timestamp < promotionInfo.startTime) {
@@ -608,7 +608,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable, IPromotions {
     return _singlePlayerPromotionsCompleted[playerId].get(uint256(promotion));
   }
 
-  function hasClaimedAny(uint256 playerId, Promotion promotion) public override view returns (bool) {
+  function hasClaimedAny(uint256 playerId, Promotion promotion) public view override returns (bool) {
     PromotionInfo storage promotionInfo = _activePromotions[promotion];
     if (promotionInfo.isMultiday) {
       bool anyClaimed;
@@ -622,7 +622,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable, IPromotions {
     return _singlePlayerPromotionsCompleted[playerId].get(uint256(promotion));
   }
 
-  function testClearPlayerPromotions(uint256 playerId, Promotion[] calldata promotions) external override isAdminAndBeta {
+  function testClearPlayerPromotions(
+    uint256 playerId,
+    Promotion[] calldata promotions
+  ) external override isAdminAndBeta {
     for (uint256 i; i < promotions.length; ++i) {
       _singlePlayerPromotionsCompleted[playerId].unset(uint256(promotions[i]));
       delete _multidayPlayerPromotionsCompleted[playerId][promotions[i]];
@@ -667,7 +670,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable, IPromotions {
   function setDevAddress(address dev) external override onlyOwner {
     _dev = dev;
   }
-  
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

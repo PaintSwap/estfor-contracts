@@ -290,7 +290,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "from",
+        "name": "from_",
         "type": "address"
       },
       {
@@ -333,7 +333,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "from",
+        "name": "from_",
         "type": "address"
       },
       {
@@ -750,7 +750,7 @@
             "type": "bytes1"
           }
         ],
-        "internalType": "struct InstantVRFActions.InstantVRFAction",
+        "internalType": "struct IInstantVRFActions.InstantVRFAction",
         "name": "",
         "type": "tuple"
       }
@@ -780,7 +780,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract Players",
+        "internalType": "address",
         "name": "players",
         "type": "address"
       },
@@ -790,12 +790,12 @@
         "type": "address"
       },
       {
-        "internalType": "contract PetNFT",
+        "internalType": "address",
         "name": "petNFT",
         "type": "address"
       },
       {
-        "internalType": "contract Quests",
+        "internalType": "address",
         "name": "quests",
         "type": "address"
       },
@@ -958,7 +958,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract PetNFT",
+        "internalType": "address",
         "name": "petNFT",
         "type": "address"
       }

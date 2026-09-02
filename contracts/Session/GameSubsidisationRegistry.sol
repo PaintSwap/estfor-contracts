@@ -28,7 +28,10 @@ contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGame
     return _groupDailyLimits[_groupId];
   }
 
-  function getGroupAndLimit(address _contract, bytes4 _selector) external view override returns (uint256 groupId, uint256 limit) {
+  function getGroupAndLimit(
+    address _contract,
+    bytes4 _selector
+  ) external view override returns (uint256 groupId, uint256 limit) {
     groupId = _functionToLimitGroup[_contract][_selector];
     limit = _groupDailyLimits[groupId];
   }
@@ -60,8 +63,8 @@ contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGame
   }
 
   function registerFeeM() external {
-    (bool _success,) = address(0xDC2B0D2Dd2b7759D97D50db4eabDC36973110830).call(
-        abi.encodeWithSignature("selfRegister(uint256)", FEEM_PROJECT_ID)
+    (bool _success, ) = address(0xDC2B0D2Dd2b7759D97D50db4eabDC36973110830).call(
+      abi.encodeWithSignature("selfRegister(uint256)", FEEM_PROJECT_ID)
     );
     require(_success, "FeeM registration failed");
   }

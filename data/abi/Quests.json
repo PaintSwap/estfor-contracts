@@ -232,7 +232,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "from",
+        "name": "from_",
         "type": "address"
       },
       {
@@ -366,7 +366,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Quests.MinimumRequirement[3][]",
+        "internalType": "struct IQuests.MinimumRequirement[3][]",
         "name": "minimumRequirements",
         "type": "tuple[3][]"
       }
@@ -508,7 +508,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Quests.MinimumRequirement[3][]",
+        "internalType": "struct IQuests.MinimumRequirement[3][]",
         "name": "minimumRequirements",
         "type": "tuple[3][]"
       }
@@ -554,7 +554,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "from",
+        "name": "from_",
         "type": "address"
       },
       {
@@ -579,7 +579,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "from",
+        "name": "from_",
         "type": "address"
       },
       {
@@ -888,7 +888,7 @@
             "type": "uint64"
           }
         ],
-        "internalType": "struct Quests.MinimumRequirement[3][]",
+        "internalType": "struct IQuests.MinimumRequirement[3][]",
         "name": "minimumRequirements",
         "type": "tuple[3][]"
       }
@@ -1197,7 +1197,7 @@
             "type": "uint64"
           }
         ],
-        "internalType": "struct Quests.MinimumRequirement[3][]",
+        "internalType": "struct IQuests.MinimumRequirement[3][]",
         "name": "minimumRequirements",
         "type": "tuple[3][]"
       }

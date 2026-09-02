@@ -1,5 +1,5 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {PassiveActionInput, Skill} from "@paintswap/estfor-definitions/types";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {PassiveActionInput, Skill} from "@paintswap/estfor-definitions/types"
 export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER1,
@@ -925,4 +925,4 @@ export const allPassiveActions: PassiveActionInput[] = [
     ],
     randomRewards: [],
   },
-];
+]

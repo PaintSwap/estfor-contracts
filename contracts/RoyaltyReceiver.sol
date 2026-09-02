@@ -55,7 +55,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   function setDevAddress(address dev) external onlyOwner {
     _dev = dev;
   }
-  
+
   receive() external payable {
     uint256 deadline = block.timestamp + DEADLINE_DURATION;
 

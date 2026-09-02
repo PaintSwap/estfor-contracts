@@ -1,5 +1,5 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ActionInput, Skill} from "@paintswap/estfor-definitions/types";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {ActionInput, Skill} from "@paintswap/estfor-definitions/types"
 export const allActions: ActionInput[] = [
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
@@ -4795,4 +4795,4 @@ export const allActions: ActionInput[] = [
       health: 0,
     },
   },
-];
+]

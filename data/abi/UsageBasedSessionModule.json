@@ -632,7 +632,7 @@
             "type": "bytes"
           }
         ],
-        "internalType": "struct UsageBasedSessionModule.ExecuteParams[]",
+        "internalType": "struct IUsageBasedSessionModule.ExecuteParams[]",
         "name": "params",
         "type": "tuple[]"
       }
@@ -672,7 +672,7 @@
             "type": "bytes"
           }
         ],
-        "internalType": "struct UsageBasedSessionModule.ExecuteParams",
+        "internalType": "struct IUsageBasedSessionModule.ExecuteParams",
         "name": "params",
         "type": "tuple"
       }
@@ -728,7 +728,7 @@
             "type": "uint16"
           }
         ],
-        "internalType": "struct UsageBasedSessionModule.Session",
+        "internalType": "struct IUsageBasedSessionModule.Session",
         "name": "",
         "type": "tuple"
       }
@@ -921,7 +921,7 @@
             "type": "bytes"
           }
         ],
-        "internalType": "struct UsageBasedSessionModule.ExecuteParams[]",
+        "internalType": "struct IUsageBasedSessionModule.ExecuteParams[]",
         "name": "params",
         "type": "tuple[]"
       }

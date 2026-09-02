@@ -63,10 +63,12 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable, IBankRelay {
    * @param ids The array of item IDs to withdraw.
    * @param amounts The array of item quantities to withdraw.
    */
-  function withdrawItems(address to, uint256 playerId, uint256[] calldata ids, uint256[] calldata amounts)
-    external
-    override
-  {
+  function withdrawItems(
+    address to,
+    uint256 playerId,
+    uint256[] calldata ids,
+    uint256[] calldata amounts
+  ) external override {
     withdrawItemsAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), to, playerId, ids, amounts);
   }
 
@@ -145,10 +147,12 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable, IBankRelay {
    * @param token The address of the token being deposited.
    * @param amount The amount of tokens to deposit.
    */
-  function depositTokenAtBank(address payable clanBankAddress, uint256 playerId, address token, uint256 amount)
-    public
-    override
-  {
+  function depositTokenAtBank(
+    address payable clanBankAddress,
+    uint256 playerId,
+    address token,
+    uint256 amount
+  ) public override {
     Bank(clanBankAddress).depositToken(_msgSender(), _msgSender(), playerId, token, amount);
   }
 
@@ -189,10 +193,13 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable, IBankRelay {
    * @param token The token address
    * @param amount The amount to withdraw
    */
-  function withdrawToken(uint256 playerId, address to, uint256 toPlayerId, address token, uint256 amount)
-    external
-    override
-  {
+  function withdrawToken(
+    uint256 playerId,
+    address to,
+    uint256 toPlayerId,
+    address token,
+    uint256 amount
+  ) external override {
     withdrawTokenAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, to, toPlayerId, token, amount);
   }
 
@@ -321,10 +328,12 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable, IBankRelay {
    * @param playerId The player id
    * @param amount The amount to withdraw
    */
-  function withdrawFTMAtBank(address payable clanBankAddress, address to, uint256 playerId, uint256 amount)
-    public
-    override
-  {
+  function withdrawFTMAtBank(
+    address payable clanBankAddress,
+    address to,
+    uint256 playerId,
+    uint256 amount
+  ) public override {
     Bank(clanBankAddress).withdrawFTM(_msgSender(), to, playerId, amount);
   }
 

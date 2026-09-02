@@ -1,22 +1,22 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ethers} from "hardhat";
-import {PROMOTIONS_ADDRESS} from "./contractAddresses";
-import {Promotion} from "@paintswap/estfor-definitions/types";
-import {initialiseSafe, sendTransactionSetToSafe} from "./utils";
-import {OperationType, MetaTransactionData} from "@safe-global/types-kit";
-import {Promotions__factory} from "../typechain-types";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {ethers} from "hardhat"
+import {PROMOTIONS_ADDRESS} from "./contractAddresses"
+import {Promotion} from "@paintswap/estfor-definitions/types"
+import {initialiseSafe, sendTransactionSetToSafe} from "./utils"
+import {OperationType, MetaTransactionData} from "@safe-global/types-kit"
+import {Promotions__factory} from "../typechain-types"
 
 async function main() {
-  const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
-  const network = await ethers.provider.getNetwork();
-  const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
-  console.log(`Add promotion using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`);
+  const [owner, , proposer] = await ethers.getSigners() // 0 is old deployer, 2 is proposer for Safe (new deployer)
+  const network = await ethers.provider.getNetwork()
+  const {useSafe, apiKit, protocolKit} = await initialiseSafe(network)
+  console.log(`Add promotion using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`)
 
-  const promotions = await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS);
+  const promotions = await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS)
 
   // live value = const startTime = 1787616000;
-  const startTime = 1787616000;
-  const numDays = 21;
+  const startTime = 1787616000
+  const numDays = 21
   const promos = [
     {
       promotion: Promotion.ANNIV3_2026,
@@ -49,25 +49,25 @@ async function main() {
       randomAmounts: [],
       questPrerequisiteId: 0,
     },
-  ];
+  ]
 
   if (useSafe) {
-    const transactionSet: MetaTransactionData[] = [];
-    const iface = Promotions__factory.createInterface();
+    const transactionSet: MetaTransactionData[] = []
+    const iface = Promotions__factory.createInterface()
 
     transactionSet.push({
       to: ethers.getAddress(PROMOTIONS_ADDRESS),
       value: "0",
       data: iface.encodeFunctionData("addPromotions", [promos]),
       operation: OperationType.Call,
-    });
-    await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
+    })
+    await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer)
   } else {
-    await promotions.connect(owner).addPromotions(promos);
+    await promotions.connect(owner).addPromotions(promos)
   }
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

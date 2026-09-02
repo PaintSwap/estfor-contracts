@@ -341,54 +341,56 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IWishingWell {
   }
 
   // Scans the last 3 unclaimed winners to see if this playerId belongs there.
-  function getUnclaimedLotteryWinnings(uint256 playerId) external override view returns (LotteryWinnerInfo memory winner) {
+  function getUnclaimedLotteryWinnings(
+    uint256 playerId
+  ) external view override returns (LotteryWinnerInfo memory winner) {
     uint256 _lotteryId = _awaitingClaim(playerId);
     if (_lotteryId != 0) {
       winner = _winners[_lotteryId];
     }
   }
 
-  function getTotalDonated() external override view returns (uint256) {
+  function getTotalDonated() external view override returns (uint256) {
     return uint256(_totalDonated) * 1 ether;
   }
 
-  function getClanTotalDonated(uint256 clanId) external override view returns (uint256) {
+  function getClanTotalDonated(uint256 clanId) external view override returns (uint256) {
     return uint256(_clanDonationInfo[clanId].totalDonated) * 1 ether;
   }
 
-  function getNextGlobalThreshold() external override view returns (uint256) {
+  function getNextGlobalThreshold() external view override returns (uint256) {
     return uint256(_lastGlobalThreshold + _globalThresholdIncrement) * 1 ether;
   }
 
-  function getNextClanThreshold(uint256 clanId) external override view returns (uint256) {
+  function getNextClanThreshold(uint256 clanId) external view override returns (uint256) {
     return (uint256(_clanDonationInfo[clanId].lastThreshold) + _clanThresholdIncrement) * 1 ether;
   }
 
-  function getRaffleEntryCost() external override view returns (uint256) {
+  function getRaffleEntryCost() external view override returns (uint256) {
     return uint256(_raffleEntryCost) * 1 ether;
   }
 
-  function hasClaimedReward(uint256 lotteryId) external override view returns (bool) {
+  function hasClaimedReward(uint256 lotteryId) external view override returns (bool) {
     return _claimedRewards.get(lotteryId);
   }
 
-  function hasPlayerEntered(uint256 lotteryId, uint256 playerId) external override view returns (bool) {
+  function hasPlayerEntered(uint256 lotteryId, uint256 playerId) external view override returns (bool) {
     return _playersEntered[lotteryId].get(playerId);
   }
 
-  function getLastLotteryId() external override view returns (uint256) {
+  function getLastLotteryId() external view override returns (uint256) {
     return uint256(_lastLotteryId);
   }
 
-  function getWinner(uint256 lotteryId) external override view returns (LotteryWinnerInfo memory) {
+  function getWinner(uint256 lotteryId) external view override returns (LotteryWinnerInfo memory) {
     return _winners[lotteryId];
   }
 
-  function getClanDonationInfo(uint256 clanId) external override view returns (ClanInfo memory) {
+  function getClanDonationInfo(uint256 clanId) external view override returns (ClanInfo memory) {
     return _clanDonationInfo[clanId];
   }
 
-  function getLastUnclaimedWinner(uint256 index) external override view returns (uint256) {
+  function getLastUnclaimedWinner(uint256 index) external view override returns (uint256) {
     return uint256(_lastUnclaimedWinners[index]);
   }
 

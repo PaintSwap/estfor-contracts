@@ -1,36 +1,36 @@
-import {ethers} from "hardhat";
-import {ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {ethers} from "hardhat"
+import {ITEM_NFT_ADDRESS} from "./contractAddresses"
 
-import {allItems} from "./data/items";
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {getChainId} from "./utils";
+import {allItems} from "./data/items"
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {getChainId} from "./utils"
 
 async function main() {
-  const [owner] = await ethers.getSigners();
-  console.log(`Mint items using account: ${owner.address} on chain id ${await getChainId(owner)}`);
+  const [owner] = await ethers.getSigners()
+  console.log(`Mint items using account: ${owner.address} on chain id ${await getChainId(owner)}`)
 
-  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)
 
-  const chunkSize = 100;
+  const chunkSize = 100
   for (let i = 0; i < allItems.length; i += chunkSize) {
-    const tokenIds: number[] = [];
-    const amounts: number[] = [];
-    const chunk = allItems.slice(i, i + chunkSize);
+    const tokenIds: number[] = []
+    const amounts: number[] = []
+    const chunk = allItems.slice(i, i + chunkSize)
     chunk.forEach((item) => {
       // Ignore any boosts which can have special features like clan/global boosts
       if (item.boostType != EstforConstants.NONE) {
-        return;
+        return
       }
-      tokenIds.push(item.tokenId);
-      amounts.push(100);
-    });
-    const tx = await itemNFT.mintBatch("0xa801864d0D24686B15682261aa05D4e1e6e5BD94", tokenIds, amounts);
-    await tx.wait();
-    console.log(`Minted items: ${i}`);
+      tokenIds.push(item.tokenId)
+      amounts.push(100)
+    })
+    const tx = await itemNFT.mintBatch("0xa801864d0D24686B15682261aa05D4e1e6e5BD94", tokenIds, amounts)
+    await tx.wait()
+    console.log(`Minted items: ${i}`)
   }
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

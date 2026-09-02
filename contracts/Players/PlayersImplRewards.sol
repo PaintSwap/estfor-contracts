@@ -976,7 +976,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersImplRewards {
     Pet memory pet = _petNFT.getPet(petId);
     // Check pet is still owned by the player and was assigned before the action started
     if (pet.owner != from || pet.lastAssignmentTimestamp > actionStartTime) {
-      return 0; 
+      return 0;
     }
     // Check if pet's skill enhancement matches the action skill and is not a combat skill
     if (pet.skillEnhancement1 == skill && !isCombat) {

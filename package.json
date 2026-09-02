@@ -55,7 +55,6 @@
     "pretty-quick": "^4.0.0",
     "sol2uml": "^2.5.20",
     "solhint": "^5.0.3",
-    "solhint-plugin-prettier": "^0.1.0",
     "solidity-coverage": "^0.8.13",
     "ts-node": "^10.9.2",
     "typechain": "^8.3.2",
@@ -63,8 +62,9 @@
   },
   "scripts": {
     "console": "npx hardhat console",
-    "lint": "npx solhint ./contracts/*",
+    "lint": "solhint \"contracts/**/*.sol\"",
     "compile": "npx hardhat compile",
+    "typecheck": "pnpm compile && tsc --noEmit",
     "test": "forge test",
     "clean": "npx hardhat clean",
     "verifyContracts": "npx hardhat run scripts/verifyContracts.ts",
@@ -136,7 +136,6 @@
     "setExpectedGasLimitFulfill": "npx hardhat run scripts/setExpectedGasLimitFulfill.ts",
     "setGasLimitTerritories": "npx hardhat run scripts/setGasLimitTerritories.ts",
     "setGasLimitLockedVaults": "npx hardhat run scripts/setGasLimitLockedVaults.ts",
-    "setBazaar": "npx hardhat run scripts/setBazaar.ts",
     "setUpgradeAndEditNameCost": "npx hardhat run scripts/setUpgradeAndEditNameCost.ts",
     "setItemsBaseURI": "npx hardhat run scripts/setItemsBaseURI.ts",
     "setPetsImageBaseURI": "npx hardhat run scripts/setPetsImageBaseURI.ts",
@@ -163,7 +162,8 @@
     "requestRandomWords": "npx hardhat run scripts/requestRandomWords.ts",
     "forceMMRUpdate": "npx hardhat run scripts/forceMMRUpdate.ts",
     "bulkTransfer": "npx hardhat run scripts/bulkTransfer.ts",
-    "prettier": "node_modules/.bin/prettier --write contracts/**/*.sol scripts/**/*ts",
+    "format": "prettier --write \"{contracts,test,scripts,data,deployments,.openzeppelin}/**/*.{sol,ts,json}\" \"*.{sol,ts,json}\"",
+    "format:check": "prettier --check \"{contracts,test,scripts,data,deployments,.openzeppelin}/**/*.{sol,ts,json}\" \"*.{sol,ts,json}\"",
     "precommit": "pretty-quick --staged",
     "prepare": "husky install .husky"
   }

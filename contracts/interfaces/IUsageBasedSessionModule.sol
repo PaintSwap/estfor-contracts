@@ -61,9 +61,9 @@ interface IUsageBasedSessionModule {
   function enableSession(address sessionKey, uint48 duration) external;
   function revokeSession() external;
   function executeBatch(ExecuteParams[] calldata params) external;
-  function simulateBatch(ExecuteParams[] calldata params)
-    external
-    returns (uint256 gasUsed, uint256 successCount, bytes[] memory errors);
+  function simulateBatch(
+    ExecuteParams[] calldata params
+  ) external returns (uint256 gasUsed, uint256 successCount, bytes[] memory errors);
   function executeSingle(ExecuteParams calldata params) external;
   function setWhitelistedSigner(address[] calldata signers, bool whitelisted) external;
   function withdrawETH(address to, uint256 amount) external;

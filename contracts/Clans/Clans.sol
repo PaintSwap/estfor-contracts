@@ -253,7 +253,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     emit ClanEdited(clanId, playerId, clanInfo, imageId);
   }
 
-  function deleteInvitesAsPlayer(uint256[] calldata clanIds, uint256 playerId) external override isOwnerOfPlayer(playerId) {
+  function deleteInvitesAsPlayer(
+    uint256[] calldata clanIds,
+    uint256 playerId
+  ) external override isOwnerOfPlayer(playerId) {
     require(clanIds.length != 0, NoInvitesToDelete());
 
     for (uint256 i = 0; i < clanIds.length; ++i) {
@@ -736,11 +739,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     player.rank = ClanRank.COMMONER;
   }
 
-  function getClanIdFromPlayer(uint256 playerId) external override view returns (uint256) {
+  function getClanIdFromPlayer(uint256 playerId) external view override returns (uint256) {
     return _playerInfo[playerId].clanId;
   }
 
-  function getClanNameOfPlayer(uint256 playerId) external override view returns (string memory) {
+  function getClanNameOfPlayer(uint256 playerId) external view override returns (string memory) {
     uint256 clanId = _playerInfo[playerId].clanId;
     return _clans[clanId].name;
   }
@@ -749,27 +752,27 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     return _playerInfo[playerId].clanId == clanId && _playerInfo[playerId].rank >= ClanRank.TREASURER;
   }
 
-  function isClanMember(uint256 clanId, uint256 playerId) external override view returns (bool) {
+  function isClanMember(uint256 clanId, uint256 playerId) external view override returns (bool) {
     return _playerInfo[playerId].clanId == clanId;
   }
 
-  function isMemberOfAnyClan(uint256 playerId) public override view returns (bool) {
+  function isMemberOfAnyClan(uint256 playerId) public view override returns (bool) {
     return _playerInfo[playerId].clanId != 0;
   }
 
-  function getClanTierMembership(uint256 playerId) external override view returns (uint8) {
+  function getClanTierMembership(uint256 playerId) external view override returns (uint8) {
     return _clans[_playerInfo[playerId].clanId].tierId;
   }
 
-  function getClanId(uint256 playerId) external override view returns (uint256) {
+  function getClanId(uint256 playerId) external view override returns (uint256) {
     return _playerInfo[playerId].clanId;
   }
 
-  function getMMR(uint256 clanId) external override view returns (uint16 mmr) {
+  function getMMR(uint256 clanId) external view override returns (uint16 mmr) {
     mmr = _clans[clanId].mmr;
   }
 
-  function hasInviteRequest(uint256 clanId, uint256 playerId) external override view returns (bool) {
+  function hasInviteRequest(uint256 clanId, uint256 playerId) external view override returns (bool) {
     return _clans[clanId].inviteRequests[playerId];
   }
 
@@ -783,34 +786,35 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     return tier.maxMemberCapacity;
   }
 
-  function getRank(uint256 clanId, uint256 playerId) external override view returns (ClanRank rank) {
+  function getRank(uint256 clanId, uint256 playerId) external view override returns (ClanRank rank) {
     if (_playerInfo[playerId].clanId == clanId) {
       return _playerInfo[playerId].rank;
     }
     return ClanRank.NONE;
   }
 
-  function getEditNameCost() external override view returns (uint80) {
+  function getEditNameCost() external view override returns (uint80) {
     return _editNameCost;
   }
 
-  function getPlayerInfo(uint256 playerId) external override view returns (PlayerInfo memory) {
+  function getPlayerInfo(uint256 playerId) external view override returns (PlayerInfo memory) {
     return _playerInfo[playerId];
   }
 
-  function getLowercaseNames(string calldata name) external override view returns (bool) {
+  function getLowercaseNames(string calldata name) external view override returns (bool) {
     return _lowercaseNames[name];
   }
 
-  function getTier(uint256 tierId) external override view returns (Tier memory) {
+  function getTier(uint256 tierId) external view override returns (Tier memory) {
     return _tiers[tierId];
   }
 
   function getClan(
     uint256 clanId
   )
-    external override
+    external
     view
+    override
     returns (
       uint64 ownerPlayerId,
       uint16 imageId,
@@ -906,7 +910,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
   function setDevAddress(address dev) external override onlyOwner {
     _dev = dev;
   }
-  
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

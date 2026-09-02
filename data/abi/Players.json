@@ -2890,52 +2890,52 @@
   {
     "inputs": [
       {
-        "internalType": "contract ItemNFT",
+        "internalType": "address",
         "name": "itemNFT",
         "type": "address"
       },
       {
-        "internalType": "contract PlayerNFT",
+        "internalType": "address",
         "name": "playerNFT",
         "type": "address"
       },
       {
-        "internalType": "contract PetNFT",
+        "internalType": "address",
         "name": "petNFT",
         "type": "address"
       },
       {
-        "internalType": "contract IWorldActions",
+        "internalType": "address",
         "name": "worldActions",
         "type": "address"
       },
       {
-        "internalType": "contract RandomnessBeacon",
+        "internalType": "address",
         "name": "randomnessBeacon",
         "type": "address"
       },
       {
-        "internalType": "contract DailyRewardsScheduler",
+        "internalType": "address",
         "name": "dailyRewardsScheduler",
         "type": "address"
       },
       {
-        "internalType": "contract AdminAccess",
+        "internalType": "address",
         "name": "adminAccess",
         "type": "address"
       },
       {
-        "internalType": "contract Quests",
+        "internalType": "address",
         "name": "quests",
         "type": "address"
       },
       {
-        "internalType": "contract Clans",
+        "internalType": "address",
         "name": "clans",
         "type": "address"
       },
       {
-        "internalType": "contract WishingWell",
+        "internalType": "address",
         "name": "wishingWell",
         "type": "address"
       },
@@ -2970,7 +2970,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract IActivityPoints",
+        "internalType": "address",
         "name": "activityPoints",
         "type": "address"
       },

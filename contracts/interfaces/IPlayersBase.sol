@@ -16,15 +16,35 @@ interface IPlayersBase {
   }
 
   event ClearAll(address from, uint256 playerId);
-  event SetActionQueue(address from, uint256 playerId, QueuedAction[] queuedActions, Attire[] attire, uint256 startTime);
+  event SetActionQueue(
+    address from,
+    uint256 playerId,
+    QueuedAction[] queuedActions,
+    Attire[] attire,
+    uint256 startTime
+  );
   event AddXP(address from, uint256 playerId, Skill skill, uint256 points);
   event ConsumeBoostVial(address from, uint256 playerId, BoostInfo playerBoostInfo);
   event ConsumeExtraBoostVial(address from, uint256 playerId, BoostInfo playerBoostInfo);
   event ConsumeGlobalBoostVial(address from, uint256 playerId, BoostInfo globalBoost);
   event ConsumeClanBoostVial(address from, uint256 playerId, uint256 clanId, BoostInfo clanBoost);
   event SetActivePlayer(address account, uint256 oldPlayerId, uint256 newPlayerId);
-  event AddPendingRandomReward(address from, uint256 playerId, uint256 queueId, uint256 startTime, uint256 elapsed, uint256 rolls);
-  event PendingRandomRewardsClaimed(address from, uint256 playerId, uint256 numRemoved, uint256[] itemTokenIds, uint256[] amounts, uint256[] queueIds);
+  event AddPendingRandomReward(
+    address from,
+    uint256 playerId,
+    uint256 queueId,
+    uint256 startTime,
+    uint256 elapsed,
+    uint256 rolls
+  );
+  event PendingRandomRewardsClaimed(
+    address from,
+    uint256 playerId,
+    uint256 numRemoved,
+    uint256[] itemTokenIds,
+    uint256[] amounts,
+    uint256[] queueIds
+  );
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
   event AdminEditThresholdReward(XPThresholdReward xpThresholdReward);
   event BoostFinished(uint256 playerId);
@@ -33,7 +53,14 @@ interface IPlayersBase {
   event UpdateLastBoost(uint256 playerId, BoostInfo boostInfo);
   event UpdateLastExtraBoost(uint256 playerId, BoostInfo boostInfo);
   event Died(address from, uint256 playerId, uint256 queueId);
-  event QuestRewardConsumes(address from, uint256 playerId, uint256[] rewardItemTokenIds, uint256[] rewardAmounts, uint256[] consumedItemTokenIds, uint256[] consumedAmounts);
+  event QuestRewardConsumes(
+    address from,
+    uint256 playerId,
+    uint256[] rewardItemTokenIds,
+    uint256[] rewardAmounts,
+    uint256[] consumedItemTokenIds,
+    uint256[] consumedAmounts
+  );
   event Rewards(address from, uint256 playerId, uint256 queueId, uint256[] itemTokenIds, uint256[] amounts);
   event DailyReward(address from, uint256 playerId, uint256 itemTokenId, uint256 amount);
   event WeeklyReward(address from, uint256 playerId, uint256 itemTokenId, uint256 amount);

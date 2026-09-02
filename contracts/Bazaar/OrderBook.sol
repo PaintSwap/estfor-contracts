@@ -427,11 +427,21 @@ contract OrderBook is
       uint72 storedPrice = _toStoredPrice(price, tick);
 
       if (side == OrderSide.Buy) {
-        uint256 quantity = _cancelOrdersSide(orderIds[i], storedPrice, _bidsAtPrice[tokenId][storedPrice], _bids[tokenId]);
+        uint256 quantity = _cancelOrdersSide(
+          orderIds[i],
+          storedPrice,
+          _bidsAtPrice[tokenId][storedPrice],
+          _bids[tokenId]
+        );
         // Send the remaining token back to them
         coinsFromUs += quantity * price;
       } else {
-        uint256 quantity = _cancelOrdersSide(orderIds[i], storedPrice, _asksAtPrice[tokenId][storedPrice], _asks[tokenId]);
+        uint256 quantity = _cancelOrdersSide(
+          orderIds[i],
+          storedPrice,
+          _asksAtPrice[tokenId][storedPrice],
+          _asks[tokenId]
+        );
         // Send the remaining NFTs back to them
         nftIdsFromUs[nftsFromUs] = tokenId;
         nftAmountsFromUs[nftsFromUs] = quantity;
@@ -797,14 +807,7 @@ contract OrderBook is
     // Add the rest to the order book if has the minimum required, in order to keep order books healthy
     if (quantityRemaining >= tokenIdInfo.minQuantity) {
       quantityAddedToBook = quantityRemaining;
-      _addToBook(
-        newOrderId,
-        tick,
-        limitOrder.side,
-        limitOrder.tokenId,
-        storedPrice,
-        quantityAddedToBook
-      );
+      _addToBook(newOrderId, tick, limitOrder.side, limitOrder.tokenId, storedPrice, quantityAddedToBook);
     } else if (quantityRemaining != 0) {
       failedQuantity = quantityRemaining;
       emit FailedToAddToBook(_msgSender(), limitOrder.side, limitOrder.tokenId, limitOrder.price, failedQuantity);
@@ -896,7 +899,7 @@ contract OrderBook is
       amount: 0
     });
 
-     // Price can update if the price level is at capacity. Stored prices are compressed by tick,
+    // Price can update if the price level is at capacity. Stored prices are compressed by tick,
     // so moving one price level means stepping by +/- 1 in stored-price space.
     if (side == OrderSide.Buy) {
       price = _addToBookSide(_bidsAtPrice[tokenId], _bids[tokenId], price, newOrderId, quantity, -1);

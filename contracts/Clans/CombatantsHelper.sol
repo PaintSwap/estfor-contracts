@@ -165,7 +165,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHel
           if (otherPlayerIds.length != 0) {
             uint256 searchIndex = EstforLibrary.binarySearchMemory(otherPlayerIds, playerId);
             require(searchIndex == type(uint256).max, PlayerCannotBeInAssignedMoreThanOnce());
-          } 
+          }
         } else {
           require(!otherCombatants.isCombatant(clanId, playerId), PlayerAlreadyExistingCombatant());
         }
@@ -206,17 +206,13 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHel
       _playerInfos[playerIds[i]].combatantCooldownTimestamp = 0;
     }
   }
-  
-  function setPlayerLeftCombatantCooldownTimestampPenalty(
-    uint24 cooldownTimestampPenalty
-  ) external override onlyOwner {
+
+  function setPlayerLeftCombatantCooldownTimestampPenalty(uint24 cooldownTimestampPenalty) external override onlyOwner {
     _playerLeftCombatantCooldownTimestampPenalty = cooldownTimestampPenalty;
     emit EditMemberLeftCombatantCooldownTimestampPenalty(cooldownTimestampPenalty);
   }
 
-  function applyPlayerCombatantCooldownPenalty(
-    uint256 playerId
-  ) external override onlyClans {
+  function applyPlayerCombatantCooldownPenalty(uint256 playerId) external override onlyClans {
     PlayerInfo storage playerInfo = _playerInfos[playerId];
     if (_playerLeftCombatantCooldownTimestampPenalty == 0) {
       return;

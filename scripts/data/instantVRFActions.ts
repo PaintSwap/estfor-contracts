@@ -1,6 +1,6 @@
-import {ethers} from "ethers";
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {InstantVRFActionInput, InstantVRFActionType} from "@paintswap/estfor-definitions/types";
+import {ethers} from "ethers"
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {InstantVRFActionInput, InstantVRFActionType} from "@paintswap/estfor-definitions/types"
 export const allInstantVRFActions: InstantVRFActionInput[] = [
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_HELMET,
@@ -2109,4 +2109,4 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]

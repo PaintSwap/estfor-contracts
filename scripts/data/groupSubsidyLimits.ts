@@ -23,7 +23,7 @@ import {
   TERRITORY_TREASURY_ADDRESS,
   PET_NFT_REROLL_ADDRESS,
   ORDERBOOK_V2_ADDRESS,
-} from "../contractAddresses";
+} from "../contractAddresses"
 import {
   BankRelay__factory,
   BlackMarketTrader__factory,
@@ -47,38 +47,38 @@ import {
   Territories__factory,
   TerritoryTreasury__factory,
   PetNFTReroll__factory,
-} from "../../typechain-types";
-import {ethers} from "hardhat";
+} from "../../typechain-types"
+import {ethers} from "hardhat"
 
-const playerNFTIface = PlayerNFT__factory.createInterface();
-const cosmeticIface = Cosmetics__factory.createInterface();
-const shopIface = Shop__factory.createInterface();
-const playersIface = Players__factory.createInterface();
-const globalEventsIface = GlobalEvents__factory.createInterface();
-const blackMarketTraderIface = BlackMarketTrader__factory.createInterface();
-const clansIface = Clans__factory.createInterface();
-const bankRelayIface = BankRelay__factory.createInterface();
-const lockedVaultsIface = LockedBankVaults__factory.createInterface();
-const territoryIface = Territories__factory.createInterface();
-const territoryTreasuryIface = TerritoryTreasury__factory.createInterface();
-const petNFTIface = PetNFT__factory.createInterface();
-const itemNFTIface = ItemNFT__factory.createInterface();
-const instantActionsIface = InstantActions__factory.createInterface();
-const instantVRFActionsIface = InstantVRFActions__factory.createInterface();
-const passiveActionsIface = PassiveActions__factory.createInterface();
-const marketPlaceIface = Marketplace__factory.createInterface();
-const randomnessBeaconIface = RandomnessBeacon__factory.createInterface();
-const orderbookIface = OrderBook__factory.createInterface();
-const combatantsHelperIface = CombatantsHelper__factory.createInterface();
-const promotionsIface = Promotions__factory.createInterface();
-const petNftRerollIface = PetNFTReroll__factory.createInterface();
+const playerNFTIface = PlayerNFT__factory.createInterface()
+const cosmeticIface = Cosmetics__factory.createInterface()
+const shopIface = Shop__factory.createInterface()
+const playersIface = Players__factory.createInterface()
+const globalEventsIface = GlobalEvents__factory.createInterface()
+const blackMarketTraderIface = BlackMarketTrader__factory.createInterface()
+const clansIface = Clans__factory.createInterface()
+const bankRelayIface = BankRelay__factory.createInterface()
+const lockedVaultsIface = LockedBankVaults__factory.createInterface()
+const territoryIface = Territories__factory.createInterface()
+const territoryTreasuryIface = TerritoryTreasury__factory.createInterface()
+const petNFTIface = PetNFT__factory.createInterface()
+const itemNFTIface = ItemNFT__factory.createInterface()
+const instantActionsIface = InstantActions__factory.createInterface()
+const instantVRFActionsIface = InstantVRFActions__factory.createInterface()
+const passiveActionsIface = PassiveActions__factory.createInterface()
+const marketPlaceIface = Marketplace__factory.createInterface()
+const randomnessBeaconIface = RandomnessBeacon__factory.createInterface()
+const orderbookIface = OrderBook__factory.createInterface()
+const combatantsHelperIface = CombatantsHelper__factory.createInterface()
+const promotionsIface = Promotions__factory.createInterface()
+const petNftRerollIface = PetNFTReroll__factory.createInterface()
 const brushMinimalAbi = [
   "function approve(address spender, uint256 amount) external returns (bool)",
   "function transfer(address to, uint256 amount) external",
   "function transferFromBulk(address from, address[] calldata tos, uint256[] calldata amounts) external",
   "function transferBulk(address[] calldata tos, uint256[] calldata amounts) external",
-];
-const brushIface = new ethers.Interface(brushMinimalAbi);
+]
+const brushIface = new ethers.Interface(brushMinimalAbi)
 
 export const groups = [
   {
@@ -673,4 +673,4 @@ export const groups = [
       },
     ],
   },
-];
+]

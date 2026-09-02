@@ -12,12 +12,7 @@ import {PET_SHARD} from "./globals/items.sol";
 
 import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
 
-contract PetNFTReroll is
-  UUPSUpgradeable,
-  OwnableUpgradeable,
-  PaintswapVRFConsumerUpgradeable,
-  IPetNFTReroll
-{
+contract PetNFTReroll is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, IPetNFTReroll {
   uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 180_000;
   address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
@@ -26,12 +21,12 @@ contract PetNFTReroll is
     uint256 originalPetTokenId;
     address from;
   }
-  
-    ItemNFT private _itemNFT;
-    IPetNFT private _petNFT;
+
+  ItemNFT private _itemNFT;
+  IPetNFT private _petNFT;
   mapping(uint256 requestId => PetRerollInfo) private _requestIdToOwner;
 
-modifier isOwnerOfPet(uint256 petId) {
+  modifier isOwnerOfPet(uint256 petId) {
     require(_petNFT.ownerOf(petId) == _msgSender(), NotOwnerOfPet());
     _;
   }
@@ -65,7 +60,7 @@ modifier isOwnerOfPet(uint256 petId) {
     _petNFT = petNFT;
   }
 
-  function rerollPet(uint256 petTokenId) external payable isOwnerOfPet(petTokenId) isOwnerOfPetShard() {
+  function rerollPet(uint256 petTokenId) external payable isOwnerOfPet(petTokenId) isOwnerOfPetShard {
     uint256 requestId = _requestRandomWords(1);
     Pet memory pet = _petNFT.getPet(petTokenId);
 

@@ -169,7 +169,9 @@ contract Players is
   }
 
   /// @notice Process actions for a player up to the current block timestamp
-  function processActions(uint256 playerId) external override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
+  function processActions(
+    uint256 playerId
+  ) external override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     _processActionsAndSetState(_msgSender(), playerId);
   }
 
@@ -219,7 +221,11 @@ contract Players is
   }
 
   // Callback after applying a avatar to a player
-  function applyAvatarToPlayer(address from, uint256 playerId, Skill[2] calldata skills) external override onlyPlayerNFT {
+  function applyAvatarToPlayer(
+    address from,
+    uint256 playerId,
+    Skill[2] calldata skills
+  ) external override onlyPlayerNFT {
     if (_players[playerId].actionQueue.length != 0) {
       _processActionsAndSetState(from, playerId);
     }
@@ -250,7 +256,9 @@ contract Players is
     _quests.activateQuest(_msgSender(), playerId, questId);
   }
 
-  function deactivateQuest(uint256 playerId) external override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
+  function deactivateQuest(
+    uint256 playerId
+  ) external override isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     if (_players[playerId].actionQueue.length != 0) {
       _processActionsAndSetState(_msgSender(), playerId);
     }
@@ -528,7 +536,11 @@ contract Players is
     _implMisc1 = implMisc1;
   }
 
-  function setAlphaCombatParams(uint8 alphaCombat, uint8 betaCombat, uint8 alphaCombatHealing) public override onlyOwner {
+  function setAlphaCombatParams(
+    uint8 alphaCombat,
+    uint8 betaCombat,
+    uint8 alphaCombatHealing
+  ) public override onlyOwner {
     _alphaCombat = alphaCombat;
     _betaCombat = betaCombat;
     _alphaCombatHealing = alphaCombatHealing;

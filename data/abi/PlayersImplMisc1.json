@@ -179,6 +179,11 @@
   },
   {
     "inputs": [],
+    "name": "InvalidXPSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ItemDoesNotExist",
     "type": "error"
   },

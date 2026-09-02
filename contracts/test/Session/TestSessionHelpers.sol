@@ -23,10 +23,12 @@ contract TestSessionSafe is ERC1155Holder {
     module.revokeSession();
   }
 
-  function execTransactionFromModule(address to, uint256 value, bytes calldata data, Enum.Operation operation)
-    external
-    returns (bool success)
-  {
+  function execTransactionFromModule(
+    address to,
+    uint256 value,
+    bytes calldata data,
+    Enum.Operation operation
+  ) external returns (bool success) {
     require(operation == Enum.Operation.Call, "Unsupported operation");
     bytes memory returnData;
     (success, returnData) = to.call{value: value}(data);

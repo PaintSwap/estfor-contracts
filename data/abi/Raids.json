@@ -288,7 +288,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Raids.BaseRaid[]",
+        "internalType": "struct IRaids.BaseRaid[]",
         "name": "baseRaids",
         "type": "tuple[]"
       }
@@ -436,7 +436,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Raids.BaseRaid[]",
+        "internalType": "struct IRaids.BaseRaid[]",
         "name": "baseRaids",
         "type": "tuple[]"
       }
@@ -520,7 +520,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Raids.RaidInfo[]",
+        "internalType": "struct IRaids.RaidInfo[]",
         "name": "raidInfos",
         "type": "tuple[]"
       },
@@ -893,7 +893,7 @@
             "type": "uint16[16]"
           }
         ],
-        "internalType": "struct Raids.BaseRaid[]",
+        "internalType": "struct IRaids.BaseRaid[]",
         "name": "baseRaids",
         "type": "tuple[]"
       }
@@ -1049,7 +1049,7 @@
             "type": "uint16[16]"
           }
         ],
-        "internalType": "struct Raids.BaseRaid[]",
+        "internalType": "struct IRaids.BaseRaid[]",
         "name": "baseRaids",
         "type": "tuple[]"
       }
@@ -1135,7 +1135,7 @@
             "type": "uint16[5]"
           }
         ],
-        "internalType": "struct Raids.RaidInfo",
+        "internalType": "struct IRaids.RaidInfo",
         "name": "",
         "type": "tuple"
       }

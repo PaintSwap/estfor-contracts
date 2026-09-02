@@ -179,7 +179,13 @@ contract Territories is
     uint256 clanId,
     uint256 territoryId,
     uint256 leaderPlayerId
-  ) external payable override isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
+  )
+    external
+    payable
+    override
+    isOwnerOfPlayerAndActive(leaderPlayerId)
+    isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL)
+  {
     uint256 clanIdOccupier = _territories[territoryId].clanIdOccupier;
 
     _checkCanAttackTerritory(clanId, clanIdOccupier, territoryId);
@@ -315,7 +321,12 @@ contract Territories is
   function harvest(
     uint256 territoryId,
     uint256 playerId
-  ) external override isOwnerOfPlayerAndActive(playerId) isClanMember(_territories[territoryId].clanIdOccupier, playerId) {
+  )
+    external
+    override
+    isOwnerOfPlayerAndActive(playerId)
+    isClanMember(_territories[territoryId].clanIdOccupier, playerId)
+  {
     Territory storage territory = _territories[territoryId];
     uint256 unclaimedEmissions = territory.unclaimedEmissions;
 
@@ -448,7 +459,9 @@ contract Territories is
     return _clanInfos[clanId];
   }
 
-  function getPendingAttack(uint256 pendingAttackId) external view override returns (PendingAttack memory pendingAttack) {
+  function getPendingAttack(
+    uint256 pendingAttackId
+  ) external view override returns (PendingAttack memory pendingAttack) {
     return _pendingAttacks[pendingAttackId];
   }
 

@@ -1,6 +1,6 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {TokenIdInfo} from "@paintswap/estfor-definitions/types";
-import {ethers} from "ethers";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {TokenIdInfo} from "@paintswap/estfor-definitions/types"
+import {ethers} from "ethers"
 export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
   {
     tokenId: EstforConstants.BRONZE_HELMET,
@@ -3572,4 +3572,4 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1",
   },
-];
+]

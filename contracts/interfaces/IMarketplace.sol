@@ -9,17 +9,22 @@ interface IMarketplace {
   struct Listing {
     /* SLOT 0 */
     address seller;
-    uint96 price;       // Price in custom ERC20
-
+    uint96 price; // Price in custom ERC20
     /* SLOT 1 */
     address nftContract; // Can be PlayerNFT or PetNFT
-    uint96 amount;  // Amount of tokens listed (will be 1 for PlayerNFT and PetNFT)
-
+    uint96 amount; // Amount of tokens listed (will be 1 for PlayerNFT and PetNFT)
     /* SLOT 2 */
     uint256 tokenId;
   }
 
-  event Listed(uint256 indexed listingId, address indexed seller, address nft, uint256 tokenId, uint96 price, uint96 amount);
+  event Listed(
+    uint256 indexed listingId,
+    address indexed seller,
+    address nft,
+    uint256 tokenId,
+    uint96 price,
+    uint96 amount
+  );
   event Sold(uint256 indexed listingId, address indexed buyer, address indexed seller, uint96 price, uint96 amount);
   event Cancelled(uint256 indexed listingId);
 

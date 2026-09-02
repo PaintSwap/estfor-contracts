@@ -1,14 +1,14 @@
-import {ethers} from "hardhat";
-import {ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {ethers} from "hardhat"
+import {ITEM_NFT_ADDRESS} from "./contractAddresses"
 // import {addresses, quantities} from "./data/alphaBetaTesters";
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {getChainId} from "./utils";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {getChainId} from "./utils"
 
 async function main() {
-  const [owner] = await ethers.getSigners();
-  console.log(`Airdrop some items: ${owner.address} on chain: ${await getChainId(owner)}`);
+  const [owner] = await ethers.getSigners()
+  console.log(`Airdrop some items: ${owner.address} on chain: ${await getChainId(owner)}`)
 
-  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)
 
   const addresses = [
     "0xAf609ea71fcd99d2CcE39e604dFd6b8A370Ffbd7",
@@ -510,36 +510,36 @@ async function main() {
     "0xf9225A3cDD4412ECCeBCcE8aFb037d3661EBA079",
     "0x4216221c1B82D6384186a6cdc126D126A1B1bB20",
     "0x1d292fdd0047d4A363a2110eB10153a6391Be9f1",
-    "0x14EDC99a9dF887557B9162748aa9939d4E902cc9"
-  ];
+    "0x14EDC99a9dF887557B9162748aa9939d4E902cc9",
+  ]
 
-  const quantities = addresses.map(() => 1);
+  const quantities = addresses.map(() => 1)
 
   const tokenIds = [
     EstforConstants.REWARD_001_DAGGER,
     EstforConstants.REWARD_002_BOOK,
-    EstforConstants.REWARD_003_CROSSBOW
-  ];
+    EstforConstants.REWARD_003_CROSSBOW,
+  ]
 
   for (const tokenId of tokenIds) {
-    const chunkSize = 200;
+    const chunkSize = 200
     for (let i = 0; i < addresses.length; i += chunkSize) {
-      const accounts: string[] = [];
-      const amounts: number[] = [];
-      const chunk = addresses.slice(i, i + chunkSize);
+      const accounts: string[] = []
+      const amounts: number[] = []
+      const chunk = addresses.slice(i, i + chunkSize)
       chunk.forEach((address, j) => {
-        accounts.push(address);
-        amounts.push(quantities[i + j]);
-      });
+        accounts.push(address)
+        amounts.push(quantities[i + j])
+      })
 
-      const tx = await itemNFT.airdrop(accounts, tokenId, amounts);
-      await tx.wait();
-      console.log("Airdropping", i);
+      const tx = await itemNFT.airdrop(accounts, tokenId, amounts)
+      await tx.wait()
+      console.log("Airdropping", i)
     }
   }
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

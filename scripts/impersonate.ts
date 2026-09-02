@@ -1,4 +1,4 @@
-import {ethers, upgrades} from "hardhat";
+import {ethers, upgrades} from "hardhat"
 import {
   CLANS_ADDRESS,
   EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
@@ -20,9 +20,9 @@ import {
   BANK_ADDRESS,
   BANK_REGISTRY_ADDRESS,
   ACTIVITY_POINTS_ADDRESS,
-  VRF_ADDRESS
-} from "./contractAddresses";
-import {deployPlayerImplementations} from "./utils";
+  VRF_ADDRESS,
+} from "./contractAddresses"
+import {deployPlayerImplementations} from "./utils"
 import {
   Bridge,
   Clans,
@@ -41,37 +41,37 @@ import {
   Quests,
   RandomnessBeacon,
   Shop,
-  Territories
-} from "../typechain-types";
-import {defaultAttire, LockedBankVault} from "@paintswap/estfor-definitions/types";
-import {makeSigner} from "../test/Players/utils";
+  Territories,
+} from "../typechain-types"
+import {defaultAttire, LockedBankVault} from "@paintswap/estfor-definitions/types"
+import {makeSigner} from "./utils"
 
-import * as helpers from "@nomicfoundation/hardhat-network-helpers";
+import * as helpers from "@nomicfoundation/hardhat-network-helpers"
 
 // When you need to fork a chain and debug
 async function main() {
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  const network = await ethers.provider.getNetwork()
+  console.log(`ChainId: ${network.chainId}`)
 
-  const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-  const player = await ethers.getImpersonatedSigner("0x316602445edb542798A4ebd470F3F57fb8641e77");
-  const playerId = 204827;
+  const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f")
+  const player = await ethers.getImpersonatedSigner("0x316602445edb542798A4ebd470F3F57fb8641e77")
+  const playerId = 204827
 
-  await helpers.mine();
+  await helpers.mine()
 
-  const estforLibrary = await ethers.deployContract("EstforLibrary");
+  const estforLibrary = await ethers.deployContract("EstforLibrary")
   // Players
 
-  const playersLibrary = await ethers.deployContract("PlayersLibrary");
-  const Players = (await ethers.getContractFactory("Players")).connect(owner);
+  const playersLibrary = await ethers.deployContract("PlayersLibrary")
+  const Players = (await ethers.getContractFactory("Players")).connect(owner)
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
-    unsafeAllow: ["delegatecall"]
-  })) as unknown as Players;
+    unsafeAllow: ["delegatecall"],
+  })) as unknown as Players
 
   // Set the implementations
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(await playersLibrary.getAddress());
+    await deployPlayerImplementations(await playersLibrary.getAddress())
 
   await players.setImpls(
     await playersImplQueueActions.getAddress(),
@@ -79,80 +79,80 @@ async function main() {
     await playersImplRewards.getAddress(),
     await playersImplMisc.getAddress(),
     await playersImplMisc1.getAddress()
-  );
+  )
 
   // PlayerNFT
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: await estforLibrary.getAddress()}
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
     })
-  ).connect(owner);
+  ).connect(owner)
   const playerNFT = (await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"]
-  })) as unknown as PlayerNFT;
+    unsafeAllow: ["external-library-linking"],
+  })) as unknown as PlayerNFT
 
   // Quests
-  const Quests = await ethers.getContractFactory("Quests");
+  const Quests = await ethers.getContractFactory("Quests")
   const quests = (await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
-    kind: "uups"
-  })) as unknown as Quests;
+    kind: "uups",
+  })) as unknown as Quests
 
-  const Shop = await ethers.getContractFactory("Shop");
+  const Shop = await ethers.getContractFactory("Shop")
   const shop = (await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
-    kind: "uups"
-  })) as unknown as Shop;
+    kind: "uups",
+  })) as unknown as Shop
 
-  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon")
   const randomnessBeacon = (await upgrades.upgradeProxy(RANDOMNESS_BEACON_ADDRESS, RandomnessBeacon, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"]
-  })) as unknown as RandomnessBeacon;
+    unsafeAllow: ["external-library-linking"],
+  })) as unknown as RandomnessBeacon
 
   // ItemNFT
-  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
+  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary")
 
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {
-    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
-  });
+    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
+  })
   const itemNFT = (await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"]
-  })) as unknown as ItemNFT;
+    unsafeAllow: ["external-library-linking"],
+  })) as unknown as ItemNFT
 
-  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
+  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary")
   const Promotions = await ethers.getContractFactory("Promotions", {
-    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
-  });
+    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()},
+  })
   const promotions = (await upgrades.upgradeProxy(PROMOTIONS_ADDRESS, Promotions, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"]
-  })) as unknown as Promotions;
+    unsafeAllow: ["external-library-linking"],
+  })) as unknown as Promotions
 
   const Clans = await ethers.getContractFactory("Clans", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress()}
-  });
+    libraries: {EstforLibrary: await estforLibrary.getAddress()},
+  })
   const clans = (await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"]
-  })) as unknown as Clans;
+    unsafeAllow: ["external-library-linking"],
+  })) as unknown as Clans
 
-  const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary");
-  const lockedBankVaultsLibrary = (await ethers.deployContract("LockedBankVaultsLibrary")).connect(owner);
+  const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary")
+  const lockedBankVaultsLibrary = (await ethers.deployContract("LockedBankVaultsLibrary")).connect(owner)
 
   const LockedBankVaults = (
     await ethers.getContractFactory("LockedBankVaults", {
       libraries: {
         EstforLibrary: await estforLibrary.getAddress(),
         LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
-        ClanBattleLibrary: await clanBattleLibrary.getAddress()
-      }
+        ClanBattleLibrary: await clanBattleLibrary.getAddress(),
+      },
     })
-  ).connect(owner);
+  ).connect(owner)
   const lockedBankVaults = (await upgrades.upgradeProxy(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"]
-  })) as unknown as LockedBankVaults;
+    unsafeAllow: ["external-library-linking"],
+  })) as unknown as LockedBankVaults
 
   /*
   const Territories = (await ethers.getContractFactory("Territories")).connect(owner);
@@ -321,19 +321,19 @@ async function main() {
 
   // await clans.connect(player).requestToJoin(399, playerId, 1630);
 
-  console.log(await randomnessBeacon.getLastRequestId());
+  console.log(await randomnessBeacon.getLastRequestId())
 
-  const vrfSigner = await makeSigner(VRF_ADDRESS);
+  const vrfSigner = await makeSigner(VRF_ADDRESS)
   await randomnessBeacon
     .connect(vrfSigner)
     .rawFulfillRandomWords(
       ethers.toBeHex("43434258590458639823976159202374154389517098331641005363191644084619328966090", 32),
       [101037259411112802197602236726407676602290365580818998057371730549558401820882n],
       {gasLimit: 600_000}
-    );
+    )
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

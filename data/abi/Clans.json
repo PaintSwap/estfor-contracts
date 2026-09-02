@@ -386,7 +386,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Clans.Tier[]",
+        "internalType": "struct IClans.Tier[]",
         "name": "tiers",
         "type": "tuple[]"
       }
@@ -619,7 +619,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Clans.Tier[]",
+        "internalType": "struct IClans.Tier[]",
         "name": "tiers",
         "type": "tuple[]"
       }
@@ -1205,7 +1205,7 @@
             "type": "uint80"
           }
         ],
-        "internalType": "struct Clans.Tier[]",
+        "internalType": "struct IClans.Tier[]",
         "name": "tiers",
         "type": "tuple[]"
       }
@@ -1566,7 +1566,7 @@
             "type": "uint80"
           }
         ],
-        "internalType": "struct Clans.Tier[]",
+        "internalType": "struct IClans.Tier[]",
         "name": "tiers",
         "type": "tuple[]"
       }
@@ -1596,7 +1596,7 @@
             "type": "uint80"
           }
         ],
-        "internalType": "struct Clans.NFTInfo[]",
+        "internalType": "struct IClans.NFTInfo[]",
         "name": "nftInfos",
         "type": "tuple[]"
       },
@@ -1674,7 +1674,7 @@
             "type": "uint80"
           }
         ],
-        "internalType": "struct Clans.NFTInfo[]",
+        "internalType": "struct IClans.NFTInfo[]",
         "name": "gateKeptNFTs",
         "type": "tuple[]"
       }
@@ -1856,7 +1856,7 @@
             "type": "uint40"
           }
         ],
-        "internalType": "struct Clans.PlayerInfo",
+        "internalType": "struct IClans.PlayerInfo",
         "name": "",
         "type": "tuple"
       }
@@ -1931,7 +1931,7 @@
             "type": "uint80"
           }
         ],
-        "internalType": "struct Clans.Tier",
+        "internalType": "struct IClans.Tier",
         "name": "",
         "type": "tuple"
       }

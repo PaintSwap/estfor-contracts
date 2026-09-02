@@ -48,17 +48,58 @@ interface ITerritories is ICombatants, IClanMemberLeftCB {
   event EditTerritories(TerritoryInput[] territories);
   event RemoveTerritories(uint256[] territoryIds);
   event SetMinimumMMRs(uint256[] territoryIds, uint16[] minimumMMRs);
-  event AttackTerritory(uint256 clanId, uint256 territoryId, address from, uint256 leaderPlayerId, uint256 requestId, uint256 pendingAttackId, uint256 attackingCooldownTimestamp);
-  event BattleResult(uint256 requestId, uint64[] attackingPlayerIds, uint64[] defendingPlayerIds, uint256[] attackingRolls, uint256[] defendingRolls, uint8[] battleResults, uint8[] randomSkills, bool didAttackersWin, uint256 attackingClanId, uint256 defendingClanId, uint256[] randomWords, uint256 territoryId, uint256 clanXPGainedWinner);
+  event AttackTerritory(
+    uint256 clanId,
+    uint256 territoryId,
+    address from,
+    uint256 leaderPlayerId,
+    uint256 requestId,
+    uint256 pendingAttackId,
+    uint256 attackingCooldownTimestamp
+  );
+  event BattleResult(
+    uint256 requestId,
+    uint64[] attackingPlayerIds,
+    uint64[] defendingPlayerIds,
+    uint256[] attackingRolls,
+    uint256[] defendingRolls,
+    uint8[] battleResults,
+    uint8[] randomSkills,
+    bool didAttackersWin,
+    uint256 attackingClanId,
+    uint256 defendingClanId,
+    uint256[] randomWords,
+    uint256 territoryId,
+    uint256 clanXPGainedWinner
+  );
   event Deposit(uint256 amount);
   event SetComparableSkills(Skill[] skills);
-  event ClaimUnoccupiedTerritory(uint256 territoryId, uint256 clanId, address from, uint256 leaderPlayerId, uint256 requestId);
-  event AssignCombatants(uint256 clanId, uint64[] playerIds, address from, uint256 leaderPlayerId, uint256 cooldownTimestamp);
+  event ClaimUnoccupiedTerritory(
+    uint256 territoryId,
+    uint256 clanId,
+    address from,
+    uint256 leaderPlayerId,
+    uint256 requestId
+  );
+  event AssignCombatants(
+    uint256 clanId,
+    uint64[] playerIds,
+    address from,
+    uint256 leaderPlayerId,
+    uint256 cooldownTimestamp
+  );
   event RemoveCombatant(uint256 playerId, uint256 clanId);
   event Harvest(uint256 territoryId, address from, uint256 playerId, uint256 cooldownTimestamp, uint256 amount);
   event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
   event SetMaxClanCombatants(uint256 maxClanCombatants);
-  event BlockingAttacks(uint256 clanId, uint256 itemTokenId, address from, uint256 leaderPlayerId, uint256 blockAttacksTimestamp, uint256 blockAttacksCooldownTimestamp);
+  event BlockingAttacks(
+    uint256 clanId,
+    uint256 itemTokenId,
+    address from,
+    uint256 leaderPlayerId,
+    uint256 blockAttacksTimestamp,
+    uint256 blockAttacksCooldownTimestamp
+  );
   event SetAttackCooldown(uint256 attackCooldown);
 
   error InvalidTerritory();
@@ -95,7 +136,21 @@ interface ITerritories is ICombatants, IClanMemberLeftCB {
   function MAX_DAILY_EMISSIONS() external view returns (uint256);
   function PERCENTAGE_EMISSION_MUL() external view returns (uint256);
   function TERRITORY_ATTACKED_COOLDOWN_PLAYER() external view returns (uint256);
-  function initialize(TerritoryInput[] calldata territories, address players, IClans clans, IBrushToken brush, ILockedBankVaults lockedBankVaults, ItemNFT itemNFT, address paintswapVRFConsumer, Skill[] calldata comparableSkills, uint8 maxClanCombatants, uint24 attackingCooldown, AdminAccess adminAccess, IActivityPoints activityPoints, bool isBeta) external;
+  function initialize(
+    TerritoryInput[] calldata territories,
+    address players,
+    IClans clans,
+    IBrushToken brush,
+    ILockedBankVaults lockedBankVaults,
+    ItemNFT itemNFT,
+    address paintswapVRFConsumer,
+    Skill[] calldata comparableSkills,
+    uint8 maxClanCombatants,
+    uint24 attackingCooldown,
+    AdminAccess adminAccess,
+    IActivityPoints activityPoints,
+    bool isBeta
+  ) external;
   function setActivityPoints(address activityPoints) external;
   function initializeV3(address paintswapVRFConsumer) external;
   function attackTerritory(uint256 clanId, uint256 territoryId, uint256 leaderPlayerId) external payable;

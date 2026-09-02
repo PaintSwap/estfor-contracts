@@ -181,7 +181,9 @@ contract LockedBankVaults is
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external override(ILockedBankVaults, IActivityPointsCaller) onlyOwner {
+  function setActivityPoints(
+    address activityPoints
+  ) external override(ILockedBankVaults, IActivityPointsCaller) onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 
@@ -225,7 +227,13 @@ contract LockedBankVaults is
     uint256 defendingClanId,
     uint16 itemTokenId,
     uint256 leaderPlayerId
-  ) external payable override isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
+  )
+    external
+    payable
+    override
+    isOwnerOfPlayerAndActive(leaderPlayerId)
+    isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL)
+  {
     require(!_preventAttacks, AttacksPrevented());
 
     (bool isReattacking, bool isUsingSuperAttack, uint256 superAttackCooldownTimestamp) = LockedBankVaultsLibrary
@@ -244,7 +252,14 @@ contract LockedBankVaults is
     }
 
     // Check MMRs are within the list, X ranks above and below. However at the extremes add it to the other end
-    LockedBankVaultsLibrary.checkWithinRange(_sortedClansByMMR, _clanInfos, clanId, defendingClanId, _clans, _mmrAttackDistance);
+    LockedBankVaultsLibrary.checkWithinRange(
+      _sortedClansByMMR,
+      _clanInfos,
+      clanId,
+      defendingClanId,
+      _clans,
+      _mmrAttackDistance
+    );
 
     VaultClanInfo storage clanInfo = _clanInfos[clanId];
     clanInfo.currentlyAttacking = true;
@@ -548,7 +563,10 @@ contract LockedBankVaults is
     return LockedBankVaultsLibrary.getSortedMMR(_sortedClansByMMR);
   }
 
-  function getLastClanBattles(uint256 clanId, uint256 otherClanId) external view override returns (ClanBattleInfo memory) {
+  function getLastClanBattles(
+    uint256 clanId,
+    uint256 otherClanId
+  ) external view override returns (ClanBattleInfo memory) {
     return _lastClanBattles[clanId][otherClanId];
   }
 
@@ -598,7 +616,7 @@ contract LockedBankVaults is
   function setDevAddress(address dev) external override onlyOwner {
     _dev = dev;
   }
-  
+
   function setMaxClanCombatants(uint8 maxClanCombatants) public override onlyOwner {
     _maxClanCombatants = maxClanCombatants;
     emit SetMaxClanCombatants(maxClanCombatants);

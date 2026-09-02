@@ -1,9 +1,9 @@
-import {Skill} from "@paintswap/estfor-definitions/types";
-import {AvatarInfo} from "../utils";
+import {Skill} from "@paintswap/estfor-definitions/types"
+import {AvatarInfo} from "../utils"
 
 export const avatarIds: number[] = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009,
-];
+]
 
 export const avatarInfos: AvatarInfo[] = [
   {
@@ -132,4 +132,4 @@ export const avatarInfos: AvatarInfo[] = [
     imageURI: "10009.jpg",
     startSkills: [Skill.ALCHEMY, Skill.FORGING],
   },
-];
+]

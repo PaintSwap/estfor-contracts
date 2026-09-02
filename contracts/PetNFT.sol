@@ -31,7 +31,13 @@ import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.
 // It does not use the standard OZ _balances for tracking, instead it packs the owner
 // into the pet struct and avoid updating multiple to/from balances using
 // SamWitchERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
-contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, OwnableUpgradeable, IMarketplaceNFT, IPetNFT {
+contract PetNFT is
+  SamWitchERC1155UpgradeableSinglePerToken,
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  IMarketplaceNFT,
+  IPetNFT
+{
   using SkillLibrary for Skill;
   using BloomFilter for BloomFilter.Filter;
 
@@ -79,7 +85,10 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
 
   modifier onlyMinters() {
     address sender = _msgSender();
-    require(sender == _instantVRFActions || _minterApprovals[sender] || (_adminAccess.isAdmin(sender) && _isBeta), NotMinter());
+    require(
+      sender == _instantVRFActions || _minterApprovals[sender] || (_adminAccess.isAdmin(sender) && _isBeta),
+      NotMinter()
+    );
     _;
   }
 
@@ -777,7 +786,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   function setDevAddress(address dev) external onlyOwner {
     _dev = dev;
   }
-  
+
   function setBridge(address bridge) external onlyOwner {
     _bridge = bridge;
   }

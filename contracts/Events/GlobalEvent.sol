@@ -88,7 +88,10 @@ contract GlobalEvents is UUPSUpgradeable, OwnableUpgradeable {
     emit AddGlobalEvent(eventId, globalEventInfo);
   }
 
-  function addGlobalEvents(uint256[] calldata eventIds, GlobalEventInfo[] calldata globalEventInfos) external onlyOwner {
+  function addGlobalEvents(
+    uint256[] calldata eventIds,
+    GlobalEventInfo[] calldata globalEventInfos
+  ) external onlyOwner {
     require(eventIds.length == globalEventInfos.length, LengthMismatch());
     for (uint256 i = 0; i < eventIds.length; ++i) {
       _addGlobalEvent(eventIds[i], globalEventInfos[i]);

@@ -1,5 +1,5 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {BasePetInput, PetEnhancementType, PetSkin, Skill} from "@paintswap/estfor-definitions/types";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {BasePetInput, PetEnhancementType, PetSkin, Skill} from "@paintswap/estfor-definitions/types"
 export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER1,
@@ -6936,4 +6936,4 @@ export const allBasePets: BasePetInput[] = [
     percentageStarThreshold: 53,
     isTransferable: true,
   },
-];
+]

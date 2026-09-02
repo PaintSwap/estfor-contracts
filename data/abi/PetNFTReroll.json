@@ -270,7 +270,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract PetNFT",
+        "internalType": "contract IPetNFT",
         "name": "petNFT",
         "type": "address"
       },

@@ -1,5 +1,5 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ActionChoiceInput, Skill} from "@paintswap/estfor-definitions/types";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {ActionChoiceInput, Skill} from "@paintswap/estfor-definitions/types"
 
 export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
@@ -326,7 +326,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]
 export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
@@ -1662,7 +1662,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]
 export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
@@ -2132,7 +2132,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]
 export const allActionChoicesMelee: ActionChoiceInput[] = [
   {
     skill: Skill.MELEE,
@@ -2152,7 +2152,7 @@ export const allActionChoicesMelee: ActionChoiceInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]
 export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
@@ -2694,7 +2694,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]
 export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
@@ -4724,7 +4724,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]
 export const allActionChoicesAlchemy: ActionChoiceInput[] = [
   {
     skill: Skill.ALCHEMY,
@@ -5806,7 +5806,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     isAvailable: false,
     questPrerequisiteId: EstforConstants.QUEST_WORLD_I_I,
   },
-];
+]
 export const allActionChoicesFletching: ActionChoiceInput[] = [
   {
     skill: Skill.FLETCHING,
@@ -6350,7 +6350,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]
 export const allActionChoicesRanged: ActionChoiceInput[] = [
   {
     skill: Skill.RANGED,
@@ -7612,7 +7612,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]
 export const allActionChoicesForging: ActionChoiceInput[] = [
   {
     skill: Skill.FORGING,
@@ -8228,7 +8228,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     isAvailable: false,
     questPrerequisiteId: EstforConstants.QUEST_WORLD_I_I,
   },
-];
+]
 export const allActionChoicesFarming: ActionChoiceInput[] = [
   {
     skill: Skill.FARMING,
@@ -8446,4 +8446,4 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     isAvailable: true,
     questPrerequisiteId: 0,
   },
-];
+]

@@ -1,14 +1,14 @@
-import {createHash} from "crypto";
-import {execFileSync} from "child_process";
-import {readFileSync} from "fs";
-import {resolve} from "path";
-import {getAddress, Interface, JsonRpcProvider, keccak256, zeroPadValue} from "ethers";
+import {createHash} from "crypto"
+import {execFileSync} from "child_process"
+import {readFileSync} from "fs"
+import {resolve} from "path"
+import {getAddress, Interface, JsonRpcProvider, keccak256, zeroPadValue} from "ethers"
 import {
   ArtifactFingerprint,
   BytecodeComparison,
   compareRuntimeBytecode,
   loadArtifactFingerprint,
-} from "./deploymentArtifacts";
+} from "./deploymentArtifacts"
 import {
   CONTRACT_NAMES,
   ContractKind,
@@ -16,15 +16,15 @@ import {
   DeploymentRegistry,
   EXTERNAL_NAMES,
   getDeploymentRegistryPath,
-} from "./deploymentRegistry";
-import {buildShopPlan} from "./shopReconciliation";
-import type {ShopPlan, ShopPlanOptions} from "./shopReconciliation";
-import type {ShopSimulationResult} from "./shopSimulation";
-import type {ReconciliationOperation} from "./reconciliation";
+} from "./deploymentRegistry"
+import {buildShopPlan} from "./shopReconciliation"
+import type {ShopPlan, ShopPlanOptions} from "./shopReconciliation"
+import type {ShopSimulationResult} from "./shopSimulation"
+import type {ReconciliationOperation} from "./reconciliation"
 
-export const EIP1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
-export const EIP1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50";
-export const UUPS_PROXIABLE_UUID = EIP1967_IMPLEMENTATION_SLOT;
+export const EIP1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+export const EIP1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50"
+export const UUPS_PROXIABLE_UUID = EIP1967_IMPLEMENTATION_SLOT
 
 const readInterface = new Interface([
   "function owner() view returns (address)",
@@ -32,76 +32,76 @@ const readInterface = new Interface([
   "function proxiableUUID() view returns (bytes32)",
   "function getOwners() view returns (address[])",
   "function getThreshold() view returns (uint256)",
-]);
+])
 
-export type FindingSeverity = "error" | "warning";
+export type FindingSeverity = "error" | "warning"
 
 export interface Finding {
-  severity: FindingSeverity;
-  code: string;
-  subject: string;
-  message: string;
+  severity: FindingSeverity
+  code: string
+  subject: string
+  message: string
 }
 
 export interface CodeInventory {
-  address: string;
-  codeSize: number;
-  codeHash: string;
+  address: string
+  codeSize: number
+  codeHash: string
 }
 
 export interface ImplementationInventory extends CodeInventory {
-  slot: string;
-  proxiableUUID: string | null;
-  artifact: Omit<ArtifactFingerprint, "runtime" | "metadataStart">;
-  comparison: BytecodeComparison;
-  legacyManifest: {implementationFound: boolean};
+  slot: string
+  proxiableUUID: string | null
+  artifact: Omit<ArtifactFingerprint, "runtime" | "metadataStart">
+  comparison: BytecodeComparison
+  legacyManifest: {implementationFound: boolean}
 }
 
 export interface ContractInventory extends CodeInventory {
-  name: ContractName;
-  kind: ContractKind;
-  owner: string | null;
-  ownerMatchesAuthority: boolean | null;
-  implementation: ImplementationInventory | null;
-  legacyManifest: {proxyFound: boolean | null};
+  name: ContractName
+  kind: ContractKind
+  owner: string | null
+  ownerMatchesAuthority: boolean | null
+  implementation: ImplementationInventory | null
+  legacyManifest: {proxyFound: boolean | null}
 }
 
 export interface DeploymentPlan {
-  schemaVersion: 1;
-  mode: "read-only";
-  deploymentId: string;
-  chainId: number;
-  networkFingerprint: {genesisHash: string};
-  profile: string;
-  authority: {type: "safe"; address: string; codeHash: string; owners: string[]; threshold: number};
-  observationBlock: {number: number; hash: string};
+  schemaVersion: 1
+  mode: "read-only"
+  deploymentId: string
+  chainId: number
+  networkFingerprint: {genesisHash: string}
+  profile: string
+  authority: {type: "safe"; address: string; codeHash: string; owners: string[]; threshold: number}
+  observationBlock: {number: number; hash: string}
   inputs: {
-    registryHash: string;
-    sourceDataHash: string;
-    gitRevision: string;
-    openZeppelinManifestHash: string;
-  };
-  contracts: ContractInventory[];
-  externals: Array<CodeInventory & {name: string}>;
-  domains: Array<{name: string; policy: "managed" | "observed" | "unmanaged"; reason: string}>;
-  shop: ShopPlan;
-  operations: ReconciliationOperation[];
-  simulation: ShopSimulationResult | {status: "blocked"; reasons: string[]} | null;
-  findings: Finding[];
+    registryHash: string
+    sourceDataHash: string
+    gitRevision: string
+    openZeppelinManifestHash: string
+  }
+  contracts: ContractInventory[]
+  externals: Array<CodeInventory & {name: string}>
+  domains: Array<{name: string; policy: "managed" | "observed" | "unmanaged"; reason: string}>
+  shop: ShopPlan
+  operations: ReconciliationOperation[]
+  simulation: ShopSimulationResult | {status: "blocked"; reasons: string[]} | null
+  findings: Finding[]
   summary: {
-    contracts: number;
-    externals: number;
-    errors: number;
-    warnings: number;
-    implementationClassifications: Record<string, number>;
-    domainPolicies: Record<"managed" | "observed" | "unmanaged", number>;
-  };
-  planHash: string;
+    contracts: number
+    externals: number
+    errors: number
+    warnings: number
+    implementationClassifications: Record<string, number>
+    domainPolicies: Record<"managed" | "observed" | "unmanaged", number>
+  }
+  planHash: string
 }
 
 interface LegacyManifest {
-  proxies?: Array<{address?: string}>;
-  impls?: Record<string, {address?: string}>;
+  proxies?: Array<{address?: string}>
+  impls?: Record<string, {address?: string}>
 }
 
 const DOMAINS: DeploymentPlan["domains"] = [
@@ -133,33 +133,33 @@ const DOMAINS: DeploymentPlan["domains"] = [
     policy: "unmanaged",
     reason: "Domain-specific complete read and deletion semantics are not implemented",
   },
-];
+]
 
 function sha256(value: string | Buffer): string {
-  return `0x${createHash("sha256").update(value).digest("hex")}`;
+  return `0x${createHash("sha256").update(value).digest("hex")}`
 }
 
 function canonical(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`
   if (value !== null && typeof value === "object") {
     return `{${Object.entries(value as Record<string, unknown>)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, child]) => `${JSON.stringify(key)}:${canonical(child)}`)
-      .join(",")}}`;
+      .join(",")}}`
   }
-  return JSON.stringify(value);
+  return JSON.stringify(value)
 }
 
 export function hashPlan(plan: Omit<DeploymentPlan, "planHash">): string {
-  return sha256(canonical(plan));
+  return sha256(canonical(plan))
 }
 
 function codeInventory(address: string, code: string): CodeInventory {
-  return {address: getAddress(address), codeSize: (code.length - 2) / 2, codeHash: keccak256(code)};
+  return {address: getAddress(address), codeSize: (code.length - 2) / 2, codeHash: keccak256(code)}
 }
 
 function addressFromStorage(value: string): string {
-  return getAddress(`0x${value.slice(-40)}`);
+  return getAddress(`0x${value.slice(-40)}`)
 }
 
 async function callAddress(
@@ -168,9 +168,9 @@ async function callAddress(
   signature: string,
   blockTag: number
 ): Promise<string> {
-  const data = readInterface.encodeFunctionData(signature);
-  const result = await provider.call({to: address, data, blockTag});
-  return getAddress(readInterface.decodeFunctionResult(signature, result)[0]);
+  const data = readInterface.encodeFunctionData(signature)
+  const result = await provider.call({to: address, data, blockTag})
+  return getAddress(readInterface.decodeFunctionResult(signature, result)[0])
 }
 
 async function callBytes32(
@@ -179,9 +179,9 @@ async function callBytes32(
   signature: string,
   blockTag: number
 ): Promise<string> {
-  const data = readInterface.encodeFunctionData(signature);
-  const result = await provider.call({to: address, data, blockTag});
-  return readInterface.decodeFunctionResult(signature, result)[0];
+  const data = readInterface.encodeFunctionData(signature)
+  const result = await provider.call({to: address, data, blockTag})
+  return readInterface.decodeFunctionResult(signature, result)[0]
 }
 
 async function inventoryImplementation(
@@ -194,25 +194,25 @@ async function inventoryImplementation(
   manifestImplementations: Set<string>,
   findings: Finding[]
 ): Promise<ImplementationInventory> {
-  const code = await provider.getCode(address, blockTag);
+  const code = await provider.getCode(address, blockTag)
   if (code === "0x")
     findings.push({
       severity: "error",
       code: "IMPLEMENTATION_NO_CODE",
       subject: name,
       message: `No code at implementation ${address}`,
-    });
-  let proxiableUUID: string | null = null;
+    })
+  let proxiableUUID: string | null = null
   if (deployment.contracts[name].kind === "uups") {
     try {
-      proxiableUUID = await callBytes32(provider, address, "proxiableUUID", blockTag);
+      proxiableUUID = await callBytes32(provider, address, "proxiableUUID", blockTag)
       if (proxiableUUID.toLowerCase() !== UUPS_PROXIABLE_UUID) {
         findings.push({
           severity: "error",
           code: "INVALID_PROXIABLE_UUID",
           subject: name,
           message: `Implementation returned ${proxiableUUID}`,
-        });
+        })
       }
     } catch {
       findings.push({
@@ -220,20 +220,20 @@ async function inventoryImplementation(
         code: "PROXIABLE_UUID_READ_FAILED",
         subject: name,
         message: "Could not read proxiableUUID() from the implementation",
-      });
+      })
     }
   }
-  const artifact = loadArtifactFingerprint(name);
-  const comparison = compareRuntimeBytecode(code, address, artifact, deployment);
-  const implementationFound = manifestImplementations.has(address.toLowerCase());
+  const artifact = loadArtifactFingerprint(name)
+  const comparison = compareRuntimeBytecode(code, address, artifact, deployment)
+  const implementationFound = manifestImplementations.has(address.toLowerCase())
   if (!implementationFound)
     findings.push({
       severity: "warning",
       code: "IMPLEMENTATION_NOT_IN_LEGACY_MANIFEST",
       subject: name,
       message: `${address} is not in .openzeppelin/sonic.json`,
-    });
-  const {runtime: _runtime, metadataStart: _metadataStart, ...reportedArtifact} = artifact;
+    })
+  const {runtime: _runtime, metadataStart: _metadataStart, ...reportedArtifact} = artifact
   return {
     ...codeInventory(address, code),
     slot,
@@ -241,7 +241,7 @@ async function inventoryImplementation(
     artifact: reportedArtifact,
     comparison,
     legacyManifest: {implementationFound},
-  };
+  }
 }
 
 async function inventoryContract(
@@ -253,46 +253,46 @@ async function inventoryContract(
   manifestImplementations: Set<string>,
   findings: Finding[]
 ): Promise<ContractInventory> {
-  const tracked = deployment.contracts[name];
-  const address = getAddress(tracked.address);
-  const code = await provider.getCode(address, blockTag);
+  const tracked = deployment.contracts[name]
+  const address = getAddress(tracked.address)
+  const code = await provider.getCode(address, blockTag)
   if (code === "0x")
-    findings.push({severity: "error", code: "CONTRACT_NO_CODE", subject: name, message: `No code at ${address}`});
+    findings.push({severity: "error", code: "CONTRACT_NO_CODE", subject: name, message: `No code at ${address}`})
 
-  let owner: string | null = null;
-  let ownerMatchesAuthority: boolean | null = null;
-  let implementation: ImplementationInventory | null = null;
-  let proxyFound: boolean | null = null;
+  let owner: string | null = null
+  let ownerMatchesAuthority: boolean | null = null
+  let implementation: ImplementationInventory | null = null
+  let proxyFound: boolean | null = null
   if (tracked.kind === "uups" || tracked.kind === "beacon") {
     try {
-      owner = await callAddress(provider, address, "owner", blockTag);
-      ownerMatchesAuthority = owner === getAddress(deployment.authority.address);
+      owner = await callAddress(provider, address, "owner", blockTag)
+      ownerMatchesAuthority = owner === getAddress(deployment.authority.address)
       if (!ownerMatchesAuthority)
         findings.push({
           severity: "error",
           code: "OWNER_MISMATCH",
           subject: name,
           message: `Owner ${owner} is not tracked Safe ${getAddress(deployment.authority.address)}`,
-        });
+        })
     } catch {
       findings.push({
         severity: "error",
         code: "OWNER_READ_FAILED",
         subject: name,
         message: `Could not read owner() at ${address}`,
-      });
+      })
     }
   }
   if (tracked.kind === "uups") {
-    const stored = await provider.getStorage(address, EIP1967_IMPLEMENTATION_SLOT, blockTag);
-    const implementationAddress = addressFromStorage(stored);
+    const stored = await provider.getStorage(address, EIP1967_IMPLEMENTATION_SLOT, blockTag)
+    const implementationAddress = addressFromStorage(stored)
     if (implementationAddress === getAddress(zeroPadValue("0x00", 20))) {
       findings.push({
         severity: "error",
         code: "EMPTY_IMPLEMENTATION_SLOT",
         subject: name,
         message: "EIP-1967 implementation slot is empty",
-      });
+      })
     }
     implementation = await inventoryImplementation(
       provider,
@@ -303,17 +303,17 @@ async function inventoryContract(
       blockTag,
       manifestImplementations,
       findings
-    );
-    proxyFound = manifestProxies.has(address.toLowerCase());
+    )
+    proxyFound = manifestProxies.has(address.toLowerCase())
     if (!proxyFound)
       findings.push({
         severity: "warning",
         code: "PROXY_NOT_IN_LEGACY_MANIFEST",
         subject: name,
         message: `${address} is not in .openzeppelin/sonic.json`,
-      });
+      })
   } else if (tracked.kind === "beacon") {
-    const implementationAddress = await callAddress(provider, address, "implementation", blockTag);
+    const implementationAddress = await callAddress(provider, address, "implementation", blockTag)
     implementation = await inventoryImplementation(
       provider,
       deployment,
@@ -323,11 +323,11 @@ async function inventoryContract(
       blockTag,
       manifestImplementations,
       findings
-    );
+    )
   } else {
-    const artifact = loadArtifactFingerprint(name);
-    const comparison = compareRuntimeBytecode(code, address, artifact, deployment);
-    const {runtime: _runtime, metadataStart: _metadataStart, ...reportedArtifact} = artifact;
+    const artifact = loadArtifactFingerprint(name)
+    const comparison = compareRuntimeBytecode(code, address, artifact, deployment)
+    const {runtime: _runtime, metadataStart: _metadataStart, ...reportedArtifact} = artifact
     implementation = {
       ...codeInventory(address, code),
       slot: "tracked-address",
@@ -335,14 +335,14 @@ async function inventoryContract(
       artifact: reportedArtifact,
       comparison,
       legacyManifest: {implementationFound: manifestImplementations.has(address.toLowerCase())},
-    };
+    }
     if (tracked.kind === "implementation" && !implementation.legacyManifest.implementationFound) {
       findings.push({
         severity: "warning",
         code: "IMPLEMENTATION_NOT_IN_LEGACY_MANIFEST",
         subject: name,
         message: `${address} is not in .openzeppelin/sonic.json`,
-      });
+      })
     }
   }
   return {
@@ -353,7 +353,7 @@ async function inventoryContract(
     ownerMatchesAuthority,
     implementation,
     legacyManifest: {proxyFound},
-  };
+  }
 }
 
 export async function buildDeploymentPlan(
@@ -362,47 +362,47 @@ export async function buildDeploymentPlan(
   requestedBlock?: number,
   shopOptions: ShopPlanOptions = {}
 ): Promise<DeploymentPlan> {
-  const network = await provider.getNetwork();
+  const network = await provider.getNetwork()
   if (network.chainId !== BigInt(deployment.chainId))
-    throw new Error(`RPC chain ID ${network.chainId} does not match deployment chain ID ${deployment.chainId}`);
-  const genesis = await provider.getBlock(0);
+    throw new Error(`RPC chain ID ${network.chainId} does not match deployment chain ID ${deployment.chainId}`)
+  const genesis = await provider.getBlock(0)
   if (!genesis?.hash || genesis.hash.toLowerCase() !== deployment.networkFingerprint.genesisHash.toLowerCase()) {
-    throw new Error("RPC network fingerprint does not match deployment registry");
+    throw new Error("RPC network fingerprint does not match deployment registry")
   }
-  const block = await provider.getBlock(requestedBlock ?? "latest");
-  if (!block?.hash) throw new Error("Could not resolve observation block");
+  const block = await provider.getBlock(requestedBlock ?? "latest")
+  if (!block?.hash) throw new Error("Could not resolve observation block")
   if (block.number < deployment.deploymentBlock)
-    throw new Error(`Observation block ${block.number} predates deployment block ${deployment.deploymentBlock}`);
+    throw new Error(`Observation block ${block.number} predates deployment block ${deployment.deploymentBlock}`)
 
-  const manifestPath = resolve(__dirname, "../.openzeppelin/sonic.json");
-  const manifestRaw = readFileSync(manifestPath);
-  const manifest = JSON.parse(manifestRaw.toString()) as LegacyManifest;
+  const manifestPath = resolve(__dirname, "../.openzeppelin/sonic.json")
+  const manifestRaw = readFileSync(manifestPath)
+  const manifest = JSON.parse(manifestRaw.toString()) as LegacyManifest
   const manifestProxies = new Set(
     (manifest.proxies ?? []).flatMap(({address}) => (address ? [address.toLowerCase()] : []))
-  );
+  )
   const manifestImplementations = new Set(
     Object.values(manifest.impls ?? {}).flatMap(({address}) => (address ? [address.toLowerCase()] : []))
-  );
-  const findings: Finding[] = [];
+  )
+  const findings: Finding[] = []
 
-  const safeAddress = getAddress(deployment.authority.address);
-  const safeCode = await provider.getCode(safeAddress, block.number);
-  if (safeCode === "0x") throw new Error(`Tracked Safe has no code at observation block ${block.number}`);
+  const safeAddress = getAddress(deployment.authority.address)
+  const safeCode = await provider.getCode(safeAddress, block.number)
+  if (safeCode === "0x") throw new Error(`Tracked Safe has no code at observation block ${block.number}`)
   const ownersResult = await provider.call({
     to: safeAddress,
     data: readInterface.encodeFunctionData("getOwners"),
     blockTag: block.number,
-  });
-  const owners = (readInterface.decodeFunctionResult("getOwners", ownersResult)[0] as string[]).map(getAddress).sort();
+  })
+  const owners = (readInterface.decodeFunctionResult("getOwners", ownersResult)[0] as string[]).map(getAddress).sort()
   const thresholdResult = await provider.call({
     to: safeAddress,
     data: readInterface.encodeFunctionData("getThreshold"),
     blockTag: block.number,
-  });
-  const threshold = Number(readInterface.decodeFunctionResult("getThreshold", thresholdResult)[0]);
-  if (threshold < 2 || owners.length < threshold) throw new Error("Tracked authority is not a multisignature Safe");
+  })
+  const threshold = Number(readInterface.decodeFunctionResult("getThreshold", thresholdResult)[0])
+  if (threshold < 2 || owners.length < threshold) throw new Error("Tracked authority is not a multisignature Safe")
 
-  const contracts: ContractInventory[] = [];
+  const contracts: ContractInventory[] = []
   for (const name of CONTRACT_NAMES) {
     contracts.push(
       await inventoryContract(
@@ -414,26 +414,26 @@ export async function buildDeploymentPlan(
         manifestImplementations,
         findings
       )
-    );
+    )
   }
-  const externals = [];
+  const externals = []
   for (const name of EXTERNAL_NAMES) {
-    const address = getAddress(deployment.externals[name]);
-    const code = await provider.getCode(address, block.number);
+    const address = getAddress(deployment.externals[name])
+    const code = await provider.getCode(address, block.number)
     if (code === "0x")
-      findings.push({severity: "error", code: "EXTERNAL_NO_CODE", subject: name, message: `No code at ${address}`});
-    externals.push({name, ...codeInventory(address, code)});
+      findings.push({severity: "error", code: "EXTERNAL_NO_CODE", subject: name, message: `No code at ${address}`})
+    externals.push({name, ...codeInventory(address, code)})
   }
-  const shop = await buildShopPlan(provider, deployment, block.number, shopOptions);
+  const shop = await buildShopPlan(provider, deployment, block.number, shopOptions)
   for (const reason of shop.blockedReasons) {
-    findings.push({severity: "error", code: "SHOP_CHANGE_BLOCKED", subject: "shop", message: reason});
+    findings.push({severity: "error", code: "SHOP_CHANGE_BLOCKED", subject: "shop", message: reason})
   }
 
-  const classifications: Record<string, number> = {};
+  const classifications: Record<string, number> = {}
   for (const contract of contracts) {
-    if (!contract.implementation) continue;
-    const classification = contract.implementation.comparison.classification;
-    classifications[classification] = (classifications[classification] ?? 0) + 1;
+    if (!contract.implementation) continue
+    const classification = contract.implementation.comparison.classification
+    classifications[classification] = (classifications[classification] ?? 0) + 1
   }
   const withoutHash: Omit<DeploymentPlan, "planHash"> = {
     schemaVersion: 1,
@@ -471,8 +471,8 @@ export async function buildDeploymentPlan(
         unmanaged: DOMAINS.filter(({policy}) => policy === "unmanaged").length,
       },
     },
-  };
-  return {...withoutHash, planHash: hashPlan(withoutHash)};
+  }
+  return {...withoutHash, planHash: hashPlan(withoutHash)}
 }
 
 export function renderPlanMarkdown(plan: DeploymentPlan): string {
@@ -546,6 +546,6 @@ export function renderPlanMarkdown(plan: DeploymentPlan): string {
     "| --- | --- | --- |",
     ...plan.domains.map(({name, policy, reason}) => `| ${name} | ${policy} | ${reason} |`),
     "",
-  ];
-  return `${lines.join("\n")}\n`;
+  ]
+  return `${lines.join("\n")}\n`
 }

@@ -17,7 +17,12 @@ interface IBankRelay {
     uint256[] calldata amounts
   ) external;
   function depositToken(uint256 playerId, address token, uint256 amount) external;
-  function depositTokenAtBank(address payable clanBankAddress, uint256 playerId, address token, uint256 amount) external;
+  function depositTokenAtBank(
+    address payable clanBankAddress,
+    uint256 playerId,
+    address token,
+    uint256 amount
+  ) external;
   function depositTokenFor(address playerOwner, uint256 playerId, address token, uint256 amount) external;
   function depositTokenForAtBank(
     address payable clanBankAddress,
@@ -42,8 +47,14 @@ interface IBankRelay {
     BulkTransferInfo[] calldata nftsInfo,
     uint256 playerId
   ) external;
-  function withdrawNFT(uint256 playerId, address to, uint256 toPlayerId, address nft, uint256 tokenId, uint256 amount)
-    external;
+  function withdrawNFT(
+    uint256 playerId,
+    address to,
+    uint256 toPlayerId,
+    address nft,
+    uint256 tokenId,
+    uint256 amount
+  ) external;
   function withdrawNFTAtBank(
     address payable clanBankAddress,
     uint256 playerId,

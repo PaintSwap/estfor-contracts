@@ -1,20 +1,20 @@
-import "dotenv/config";
+import "dotenv/config"
 
-import {HardhatNetworkAccountUserConfig, SolcUserConfig, HardhatUserConfig} from "hardhat/types";
-import "@typechain/hardhat";
-import "@nomicfoundation/hardhat-toolbox";
-import "@nomiclabs/hardhat-solhint";
-import "hardhat-deploy";
-import "@openzeppelin/hardhat-upgrades";
-import "@nomicfoundation/hardhat-ethers";
-import "@nomicfoundation/hardhat-chai-matchers";
+import {HardhatNetworkAccountUserConfig, SolcUserConfig, HardhatUserConfig} from "hardhat/types"
+import "@typechain/hardhat"
+import "@nomicfoundation/hardhat-toolbox"
+import "@nomiclabs/hardhat-solhint"
+import "hardhat-deploy"
+import "@openzeppelin/hardhat-upgrades"
+import "@nomicfoundation/hardhat-ethers"
+import "@nomicfoundation/hardhat-chai-matchers"
 
-import "hardhat-contract-sizer";
-import "hardhat-gas-reporter";
-import "hardhat-storage-layout";
-import "hardhat-abi-exporter";
-import "solidity-coverage";
-import {ethers, parseUnits} from "ethers";
+import "hardhat-contract-sizer"
+import "hardhat-gas-reporter"
+import "hardhat-storage-layout"
+import "hardhat-abi-exporter"
+import "solidity-coverage"
+import {ethers, parseUnits} from "ethers"
 
 const defaultConfig: SolcUserConfig = {
   version: "0.8.28",
@@ -34,7 +34,7 @@ const defaultConfig: SolcUserConfig = {
       },
     },
   },
-};
+}
 
 const mediumRunsConfig: SolcUserConfig = {
   ...defaultConfig,
@@ -45,7 +45,7 @@ const mediumRunsConfig: SolcUserConfig = {
       runs: 5000,
     },
   },
-};
+}
 
 const lowRunsConfig: SolcUserConfig = {
   ...defaultConfig,
@@ -56,7 +56,7 @@ const lowRunsConfig: SolcUserConfig = {
       runs: 1000,
     },
   },
-};
+}
 
 const lowestRunsConfig: SolcUserConfig = {
   ...defaultConfig,
@@ -67,10 +67,10 @@ const lowestRunsConfig: SolcUserConfig = {
       runs: 320,
     },
   },
-};
+}
 
-const privateKey = process.env.PRIVATE_KEY as string;
-const privateKey1 = process.env.PRIVATE_KEY1 as string;
+const privateKey = process.env.PRIVATE_KEY as string
+const privateKey1 = process.env.PRIVATE_KEY1 as string
 
 const hardhatAccounts: HardhatNetworkAccountUserConfig[] = [
   {
@@ -85,7 +85,7 @@ const hardhatAccounts: HardhatNetworkAccountUserConfig[] = [
     privateKey: process.env.PROPOSER_PRIVATE_KEY as string,
     balance: ethers.parseEther("100000").toString(),
   },
-];
+]
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -188,6 +188,6 @@ const config: HardhatUserConfig = {
   typechain: {
     target: "ethers-v6",
   },
-};
+}
 
-export default config;
+export default config

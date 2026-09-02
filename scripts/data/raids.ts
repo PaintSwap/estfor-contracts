@@ -1,5 +1,5 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-export const allBaseRaidIds: number[] = [1]; // EstforConstants.RAID_ICE_MONSTER];
+import {EstforConstants} from "@paintswap/estfor-definitions"
+export const allBaseRaidIds: number[] = [1] // EstforConstants.RAID_ICE_MONSTER];
 
 export const allBaseRaids = [
   {
@@ -20,6 +20,6 @@ export const allBaseRaids = [
     tier: 1,
     randomLootTokenIds: [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     randomLootTokenAmounts: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    randomChances: [5000, 10000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-  }
-];
+    randomChances: [5000, 10000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  },
+]

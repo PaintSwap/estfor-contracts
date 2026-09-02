@@ -1,18 +1,18 @@
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ethers, upgrades} from "hardhat";
-import {ITEM_NFT_ADDRESS, ITEM_NFT_LIBRARY_ADDRESS} from "./contractAddresses";
-import {allItems} from "./data/items";
-import {getSafeUpgradeTransaction, initialiseSafe, sendTransactionSetToSafe} from "./utils";
-import {OperationType, MetaTransactionData} from "@safe-global/types-kit";
-import {ItemNFT__factory} from "../typechain-types";
+import {EstforConstants} from "@paintswap/estfor-definitions"
+import {ethers, upgrades} from "hardhat"
+import {ITEM_NFT_ADDRESS, ITEM_NFT_LIBRARY_ADDRESS} from "./contractAddresses"
+import {allItems} from "./data/items"
+import {getSafeUpgradeTransaction, initialiseSafe, sendTransactionSetToSafe} from "./utils"
+import {OperationType, MetaTransactionData} from "@safe-global/types-kit"
+import {ItemNFT__factory} from "../typechain-types"
 
 async function main() {
-  const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
-  const network = await ethers.provider.getNetwork();
-  const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
-  console.log(`Add items using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`);
+  const [owner, , proposer] = await ethers.getSigners() // 0 is old deployer, 2 is proposer for Safe (new deployer)
+  const network = await ethers.provider.getNetwork()
+  const {useSafe, apiKit, protocolKit} = await initialiseSafe(network)
+  console.log(`Add items using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`)
 
-  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)
 
   const itemIds = new Set([
     EstforConstants.ANNIV3_EGG_TIER1,
@@ -23,30 +23,30 @@ async function main() {
     EstforConstants.ANNIV3_RING,
     EstforConstants.ANNIV3_AMULET,
     EstforConstants.ANNIV3_POUCH,
-  ]);
+  ])
 
-  const items = allItems.filter((item) => itemIds.has(item.tokenId));
+  const items = allItems.filter((item) => itemIds.has(item.tokenId))
   if (items.length !== itemIds.size) {
-    console.log("Cannot find all items");
+    console.log("Cannot find all items")
   } else {
     if (useSafe) {
-      const transactionSet: MetaTransactionData[] = [];
-      const iface = ItemNFT__factory.createInterface();
+      const transactionSet: MetaTransactionData[] = []
+      const iface = ItemNFT__factory.createInterface()
 
       transactionSet.push({
         to: ethers.getAddress(ITEM_NFT_ADDRESS),
         value: "0",
         data: iface.encodeFunctionData("addItems", [items]),
         operation: OperationType.Call,
-      });
-      await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
+      })
+      await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer)
     } else {
-      await itemNFT.addItems(items);
+      await itemNFT.addItems(items)
     }
   }
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})

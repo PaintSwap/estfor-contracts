@@ -79,6 +79,11 @@
   },
   {
     "inputs": [],
+    "name": "GuaranteedRewardsNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InputAmountsMustBeInOrder",
     "type": "error"
   },
@@ -216,6 +221,27 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "RandomRewardNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "chance1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "chance2",
+        "type": "uint16"
+      }
+    ],
+    "name": "RandomRewardsMustBeInOrder",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint16",
@@ -243,12 +269,22 @@
   },
   {
     "inputs": [],
+    "name": "TooManyGuaranteedRewards",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "TooManyInputItems",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "TooManyMinSkills",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyRandomRewards",
     "type": "error"
   },
   {
@@ -335,7 +371,7 @@
                 "type": "uint16"
               }
             ],
-            "internalType": "struct PassiveActions.PassiveActionInfoInput",
+            "internalType": "struct IPassiveActions.PassiveActionInfoInput",
             "name": "info",
             "type": "tuple"
           },
@@ -380,7 +416,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct PassiveActions.PassiveActionInput[]",
+        "internalType": "struct IPassiveActions.PassiveActionInput[]",
         "name": "passiveActionInputs",
         "type": "tuple[]"
       }
@@ -400,7 +436,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "from",
+        "name": "from_",
         "type": "address"
       },
       {
@@ -443,7 +479,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "from",
+        "name": "from_",
         "type": "address"
       },
       {
@@ -519,7 +555,7 @@
                 "type": "uint16"
               }
             ],
-            "internalType": "struct PassiveActions.PassiveActionInfoInput",
+            "internalType": "struct IPassiveActions.PassiveActionInfoInput",
             "name": "info",
             "type": "tuple"
           },
@@ -564,7 +600,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct PassiveActions.PassiveActionInput[]",
+        "internalType": "struct IPassiveActions.PassiveActionInput[]",
         "name": "passiveActionInputs",
         "type": "tuple[]"
       }
@@ -616,7 +652,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "from",
+        "name": "from_",
         "type": "address"
       },
       {
@@ -735,7 +771,7 @@
                 "type": "uint16"
               }
             ],
-            "internalType": "struct PassiveActions.PassiveActionInfoInput",
+            "internalType": "struct IPassiveActions.PassiveActionInfoInput",
             "name": "info",
             "type": "tuple"
           },
@@ -779,7 +815,7 @@
             "type": "tuple[]"
           }
         ],
-        "internalType": "struct PassiveActions.PassiveActionInput[]",
+        "internalType": "struct IPassiveActions.PassiveActionInput[]",
         "name": "passiveActionInputs",
         "type": "tuple[]"
       }
@@ -887,7 +923,7 @@
                 "type": "uint16"
               }
             ],
-            "internalType": "struct PassiveActions.PassiveActionInfoInput",
+            "internalType": "struct IPassiveActions.PassiveActionInfoInput",
             "name": "info",
             "type": "tuple"
           },
@@ -931,7 +967,7 @@
             "type": "tuple[]"
           }
         ],
-        "internalType": "struct PassiveActions.PassiveActionInput[]",
+        "internalType": "struct IPassiveActions.PassiveActionInput[]",
         "name": "passiveActionInputs",
         "type": "tuple[]"
       }
@@ -1086,7 +1122,7 @@
             "type": "uint16"
           }
         ],
-        "internalType": "struct PassiveActions.PassiveAction",
+        "internalType": "struct IPassiveActions.PassiveAction",
         "name": "",
         "type": "tuple"
       }
@@ -1266,7 +1302,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct PassiveActions.PendingPassiveActionState",
+        "internalType": "struct IPassiveActions.PendingPassiveActionState",
         "name": "_pendingPassiveActionState",
         "type": "tuple"
       }

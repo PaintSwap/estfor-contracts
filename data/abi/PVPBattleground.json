@@ -584,7 +584,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct PVPBattleground.PendingAttack",
+        "internalType": "struct IPVPBattleground.PendingAttack",
         "name": "pendingAttack",
         "type": "tuple"
       }
@@ -625,7 +625,7 @@
             "type": "uint8"
           }
         ],
-        "internalType": "struct PVPBattleground.PlayerInfo",
+        "internalType": "struct IPVPBattleground.PlayerInfo",
         "name": "",
         "type": "tuple"
       }
@@ -641,7 +641,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract PlayerNFT",
+        "internalType": "contract IPlayerNFT",
         "name": "playerNFT",
         "type": "address"
       },

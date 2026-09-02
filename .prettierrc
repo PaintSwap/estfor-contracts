@@ -1,4 +1,5 @@
 {
+  "plugins": ["prettier-plugin-solidity"],
   "printWidth": 120,
   "tabWidth": 2,
   "useTabs": false,
@@ -12,14 +13,8 @@
     {
       "files": ["*.js", "*.ts"],
       "options": {
-        "trailingComma": "es5",
-        "explicitTypes": "preserve"
-      }
-    },
-    {
-      "files": "*.json",
-      "options": {
-        "explicitTypes": "preserve"
+        "semi": false,
+        "trailingComma": "es5"
       }
     }
   ]
