@@ -12,6 +12,7 @@ import {PET_SHARD} from "./globals/items.sol";
 
 import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
 
+/// @custom:oz-upgrades-from PetNFTRerollV1
 contract PetNFTReroll is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, IPetNFTReroll {
   uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 180_000;
   address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;

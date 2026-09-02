@@ -10,6 +10,7 @@ import {IMarketplace} from "./interfaces/IMarketplace.sol";
 import {IMarketplaceNFT} from "./interfaces/IMarketplaceNFT.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 
+/// @custom:oz-upgrades-from MarketplaceV1
 contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
   error NotSeller();
   error NotNFTContract();

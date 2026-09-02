@@ -12,6 +12,7 @@ import {EstforLibrary} from "./EstforLibrary.sol";
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
+/// @custom:oz-upgrades-from WorldActionsV1
 contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;

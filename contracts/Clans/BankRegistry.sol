@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
+/// @custom:oz-upgrades-from BankRegistryV1
 contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
   error LengthMismatch();
 

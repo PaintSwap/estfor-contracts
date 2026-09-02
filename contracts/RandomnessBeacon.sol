@@ -13,6 +13,7 @@ import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/Paintswa
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
+/// @custom:oz-upgrades-from RandomnessBeaconV1
 contract RandomnessBeacon is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;

@@ -24,6 +24,7 @@ import {EstforLibrary} from "./EstforLibrary.sol";
 import {PlayersLibrary} from "./Players/PlayersLibrary.sol";
 
 // For battling a single player vs player
+/// @custom:oz-upgrades-from PVPBattlegroundV1
 contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, IPVPBattleground {
   using SafeCast for uint256;
 

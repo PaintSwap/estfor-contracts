@@ -9,6 +9,7 @@ import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {IClans} from "../interfaces/IClans.sol";
 
+/// @custom:oz-upgrades-from BankFactoryV1
 contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
   event BankContractCreated(address creator, uint256 clanId, address newContract);
 

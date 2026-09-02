@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
+/// @custom:oz-upgrades-from AdminAccessV1
 contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
   mapping(address admin => bool isAdmin) private _admins;
   mapping(address admin => bool isAdmin) private _promotionalAdmins;

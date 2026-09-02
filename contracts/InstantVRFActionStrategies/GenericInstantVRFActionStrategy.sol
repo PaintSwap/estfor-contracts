@@ -10,6 +10,7 @@ import {Skill} from "../globals/players.sol";
 import {InstantVRFActionInput, InstantVRFActionType, InstantVRFRandomReward} from "../globals/rewards.sol";
 import {NONE} from "../globals/items.sol";
 
+/// @custom:oz-upgrades-from GenericInstantVRFActionStrategyV1
 contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IInstantVRFActionStrategy {
   error TooManyRandomRewards();
   error RandomRewardSpecifiedWithoutTokenId();

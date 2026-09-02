@@ -7,6 +7,7 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 
+/// @custom:oz-upgrades-from TreasuryV1
 contract Treasury is UUPSUpgradeable, OwnableUpgradeable {
   using EnumerableMap for EnumerableMap.AddressToUintMap;
 

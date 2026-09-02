@@ -18,6 +18,7 @@ import {Skill} from "../globals/players.sol";
 import {PlayersLibrary} from "../Players/PlayersLibrary.sol";
 import {IBridge} from "../interfaces/IBridge.sol";
 
+/// @custom:oz-upgrades-from BridgeV1
 contract Bridge is UUPSUpgradeable, OAppUpgradeable, IBridge {
   PetNFT private _petNFT;
   PlayerNFT private _playerNFT;
@@ -36,7 +37,7 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable, IBridge {
     _disableInitializers();
   }
 
-  /// @custom:oz-upgrades-unsafe-allow missing-initializer-call
+  /// @custom:oz-upgrades-unsafe-allow missing-initializer-call incorrect-initializer-order
   function initialize(uint32 srcEid) public override initializer {
     __Ownable_init(_msgSender());
     __OApp_init(_msgSender());

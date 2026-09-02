@@ -16,15 +16,23 @@ additional_compiler_profiles = [
 ]
 compilation_restrictions = [
   { paths = "contracts/Bazaar/OrderBook.sol", via_ir = true },
+  { paths = "contracts/old/OrderBookV1.sol", via_ir = true },
   { paths = "contracts/PetNFTLibrary.sol", via_ir = true },
   { paths = "contracts/Clans/Clans.sol", via_ir = true },
+  { paths = "contracts/old/ClansV1.sol", via_ir = true },
   { paths = "contracts/Players/PlayersLibrary.sol", via_ir = true },
   { paths = "contracts/Clans/CombatantsHelper.sol", via_ir = true },
+  { paths = "contracts/old/CombatantsHelperV1.sol", via_ir = true },
   { paths = "contracts/Clans/LockedBankVaultsLibrary.sol", via_ir = true },
+  { paths = "contracts/old/dependencies/Clans/LockedBankVaultsLibrary.sol", via_ir = true },
   { paths = "contracts/Quests.sol", via_ir = true },
+  { paths = "contracts/old/QuestsV1.sol", via_ir = true },
   { paths = "contracts/PlayerNFT.sol", via_ir = true },
+  { paths = "contracts/old/PlayerNFTV1.sol", via_ir = true },
   { paths = "contracts/PassiveActions.sol", via_ir = true },
+  { paths = "contracts/old/PassiveActionsV1.sol", via_ir = true },
   { paths = "contracts/Session/UsageBasedSessionModule.sol", via_ir = true },
+  { paths = "contracts/old/UsageBasedSessionModuleV1.sol", via_ir = true },
   { paths = "contracts/test/LockedBankVaultsBattleResultDecoder.sol", via_ir = true },
 ]
 libraries = [

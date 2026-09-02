@@ -18,6 +18,7 @@ import {IOrderBook} from "./interfaces/IOrderBook.sol";
 /// @notice This efficient ERC1155 order book is an upgradeable UUPS proxy contract. It has functions for bulk placing
 ///         limit orders, cancelling limit orders, and claiming NFTs and tokens from filled or partially filled orders.
 ///         It suppports ERC2981 royalties, and optional dev & burn fees on successful trades.
+/// @custom:oz-upgrades-from OrderBookV1
 contract OrderBook is
   UUPSUpgradeable,
   OwnableUpgradeable,

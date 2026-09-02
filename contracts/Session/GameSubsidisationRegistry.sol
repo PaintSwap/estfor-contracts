@@ -5,6 +5,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IGameSubsidisationRegistry} from "../interfaces/IGameSubsidisationRegistry.sol";
 
+/// @custom:oz-upgrades-from GameSubsidisationRegistryV1
 contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGameSubsidisationRegistry {
   // Group 0 = Disabled, Group 1 = Basic, Group 2 = Combat, etc.
   mapping(address => mapping(bytes4 => uint256)) private _functionToLimitGroup;

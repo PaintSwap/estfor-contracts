@@ -13,6 +13,7 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {BulkTransferInfo} from "../globals/items.sol";
 import {IBankRelay} from "../interfaces/IBankRelay.sol";
 
+/// @custom:oz-upgrades-from BankRelayV1
 contract BankRelay is UUPSUpgradeable, OwnableUpgradeable, IBankRelay {
   Clans private _clans;
   BankFactory private _bankFactory;

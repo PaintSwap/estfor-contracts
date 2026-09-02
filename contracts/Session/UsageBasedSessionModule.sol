@@ -14,6 +14,7 @@ import {IUsageBasedSessionModule} from "../interfaces/IUsageBasedSessionModule.s
 
 /// @title UsageBasedSessionModule
 /// @notice A module for Gnosis Safe that allows for session keys with rate-limited actions
+/// @custom:oz-upgrades-from UsageBasedSessionModuleV1
 contract UsageBasedSessionModule is
   UUPSUpgradeable,
   OwnableUpgradeable,

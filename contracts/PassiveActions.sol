@@ -21,6 +21,7 @@ import "./globals/all.sol";
 
 // Stake some items which get burnt and get something else in return for waiting a certain time. All or nothing.
 // Supports skipping a day based on random chance & random items in Passive Actions
+/// @custom:oz-upgrades-from PassiveActionsV1
 contract PassiveActions is
   IPassiveActions,
   UUPSUpgradeable,

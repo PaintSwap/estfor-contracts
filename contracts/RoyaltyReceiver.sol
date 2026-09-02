@@ -9,6 +9,7 @@ import {ISolidlyRouter, Route} from "./interfaces/external/ISolidlyRouter.sol";
 
 import {ITerritories} from "./interfaces/ITerritories.sol";
 
+/// @custom:oz-upgrades-from RoyaltyReceiverV1
 contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {

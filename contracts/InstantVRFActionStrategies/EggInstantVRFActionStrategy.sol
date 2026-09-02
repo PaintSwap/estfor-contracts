@@ -8,6 +8,7 @@ import {IInstantVRFActionStrategy} from "./interfaces/IInstantVRFActionStrategy.
 import {Skill} from "../globals/players.sol";
 import {InstantVRFActionInput} from "../globals/rewards.sol";
 
+/// @custom:oz-upgrades-from EggInstantVRFActionStrategyV1
 contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IInstantVRFActionStrategy {
   error OnlyInstantVRFActions();
   error BasePetIdMinGreaterThanMax();

@@ -28,6 +28,7 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
+/// @custom:oz-upgrades-from TerritoriesV1
 contract Territories is
   UUPSUpgradeable,
   OwnableUpgradeable,

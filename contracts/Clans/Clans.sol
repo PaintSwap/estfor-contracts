@@ -23,6 +23,7 @@ import {ClanRank} from "../globals/clans.sol";
 
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
+/// @custom:oz-upgrades-from ClansV1
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCaller {
   using BloomFilter for BloomFilter.Filter;
 

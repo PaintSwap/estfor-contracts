@@ -20,6 +20,7 @@ import "./globals/items.sol";
 import "./globals/rewards.sol";
 import "./globals/promotions.sol";
 
+/// @custom:oz-upgrades-from PromotionsV1
 contract Promotions is UUPSUpgradeable, OwnableUpgradeable, IPromotions {
   using BitMaps for BitMaps.BitMap;
 

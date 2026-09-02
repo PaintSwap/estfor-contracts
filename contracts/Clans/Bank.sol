@@ -18,6 +18,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {BankRegistry} from "./BankRegistry.sol";
 import {BulkTransferInfo} from "../globals/items.sol";
 
+/// @custom:oz-upgrades-from BankV1
 contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgradeable, IBank {
   using SafeCast for uint256;
   using BitMaps for BitMaps.BitMap;

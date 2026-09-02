@@ -14,6 +14,9 @@ const readInterface = new Interface([
   "function implementation() view returns (address)",
   "function owner() view returns (address)",
 ])
+const SONIC_CHAIN_ID = 146
+const SONIC_CODE_SIZE_LIMIT = 48 * 1024
+const SIMULATION_BALANCE = 10n ** 30n
 
 export interface DeploymentSimulationResult {
   status: "passed" | "no-op"
@@ -75,21 +78,21 @@ export async function simulateDeploymentPlan(
     }
   }
   const port = await freePort()
-  const child = spawn(
-    "anvil",
-    [
-      "--fork-url",
-      rpcUrl,
-      "--fork-block-number",
-      String(plan.observationBlock.number),
-      "--chain-id",
-      String(plan.chainId),
-      "--port",
-      String(port),
-      "--silent",
-    ],
-    {stdio: ["ignore", "ignore", "pipe"]}
-  )
+  const anvilArgs = [
+    "--fork-url",
+    rpcUrl,
+    "--fork-block-number",
+    String(plan.observationBlock.number),
+    "--chain-id",
+    String(plan.chainId),
+    "--port",
+    String(port),
+    "--silent",
+  ]
+  if (plan.chainId === SONIC_CHAIN_ID) {
+    anvilArgs.push("--code-size-limit", String(SONIC_CODE_SIZE_LIMIT))
+  }
+  const child = spawn("anvil", anvilArgs, {stdio: ["ignore", "ignore", "pipe"]})
   let stderr = ""
   child.stderr?.on("data", (data) => (stderr += String(data)))
   const provider = new JsonRpcProvider(`http://127.0.0.1:${port}`, plan.chainId, {staticNetwork: true})
@@ -113,7 +116,7 @@ export async function simulateDeploymentPlan(
         continue
       }
       await provider.send("anvil_impersonateAccount", [candidate.deployer])
-      await provider.send("anvil_setBalance", [candidate.deployer, toBeHex(10n ** 20n)])
+      await provider.send("anvil_setBalance", [candidate.deployer, toBeHex(SIMULATION_BALANCE)])
       const creation = loadFoundryPreparedCreationCode(
         candidate.contractName,
         desiredDeployment,
@@ -138,7 +141,7 @@ export async function simulateDeploymentPlan(
     const calls: DeploymentSimulationResult["calls"] = []
     for (const operation of plan.operations) {
       await provider.send("anvil_impersonateAccount", [operation.caller])
-      await provider.send("anvil_setBalance", [operation.caller, toBeHex(10n ** 20n)])
+      await provider.send("anvil_setBalance", [operation.caller, toBeHex(SIMULATION_BALANCE)])
       const transaction = toRpcTransaction(operation)
       await provider.call(transaction)
       operation.estimatedGas = (await provider.estimateGas(transaction)).toString()

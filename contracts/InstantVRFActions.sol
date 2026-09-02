@@ -19,6 +19,7 @@ import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPo
 
 import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
 
+/// @custom:oz-upgrades-from InstantVRFActionsV1
 contract InstantVRFActions is IInstantVRFActions, UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable {
   struct PlayerActionInfo {
     uint16[10] actionIdAmountPairs; // actionId, amount

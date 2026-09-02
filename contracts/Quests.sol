@@ -17,6 +17,7 @@ import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPo
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
+/// @custom:oz-upgrades-from QuestsV1
 contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   using Math for uint256;
   using BitMaps for BitMaps.BitMap;

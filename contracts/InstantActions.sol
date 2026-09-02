@@ -15,6 +15,7 @@ import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPo
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
+/// @custom:oz-upgrades-from InstantActionsV1
 contract InstantActions is IInstantActions, UUPSUpgradeable, OwnableUpgradeable {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;

@@ -9,6 +9,7 @@ import {IOracleCB} from "./interfaces/IOracleCB.sol";
 import {Equipment} from "./globals/misc.sol";
 import {NONE} from "./globals/items.sol";
 
+/// @custom:oz-upgrades-from DailyRewardsSchedulerV1
 contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
   error CanOnlyRequestAfter1DayHasPassed();
   error InvalidReward();

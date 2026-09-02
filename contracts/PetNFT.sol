@@ -31,6 +31,7 @@ import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.
 // It does not use the standard OZ _balances for tracking, instead it packs the owner
 // into the pet struct and avoid updating multiple to/from balances using
 // SamWitchERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
+/// @custom:oz-upgrades-from PetNFTV1
 contract PetNFT is
   SamWitchERC1155UpgradeableSinglePerToken,
   UUPSUpgradeable,

@@ -20,6 +20,7 @@ import {BloomFilter} from "./libraries/BloomFilter.sol";
 import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
+/// @custom:oz-upgrades-from PlayerNFTV1
 contract PlayerNFT is
   UUPSUpgradeable,
   OwnableUpgradeable,

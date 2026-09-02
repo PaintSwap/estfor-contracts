@@ -9,6 +9,7 @@ import {IPlayerNFT} from "./interfaces/IPlayerNFT.sol";
 
 import {CosmeticInfo, EquipPosition} from "./globals/players.sol";
 
+/// @custom:oz-upgrades-from CosmeticsV1
 contract Cosmetics is UUPSUpgradeable, OwnableUpgradeable {
   error LengthMismatch();
   error NotEquippableCosmetic();

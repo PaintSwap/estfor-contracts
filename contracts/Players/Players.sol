@@ -26,6 +26,8 @@ import {IActivityPointsCaller, IActivityPoints} from "../ActivityPoints/interfac
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
+/// @custom:oz-upgrades-from PlayersV1
+/// @custom:oz-upgrades-unsafe-allow-reachable delegatecall
 contract Players is
   UUPSUpgradeable,
   OwnableUpgradeable,

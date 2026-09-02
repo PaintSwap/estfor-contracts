@@ -19,6 +19,7 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 // This contract allows setting both territory and locked vault combatants in a single transaction
 // And more efficiently checking if they are already combatants in either territory or locked vaults
 // as the same player cannot be in both
+/// @custom:oz-upgrades-from CombatantsHelperV1
 contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHelper {
   struct PlayerInfo {
     uint40 combatantCooldownTimestamp;

@@ -8,6 +8,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 
 import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
 
+/// @custom:oz-upgrades-from BlackMarketTraderV1
 contract BlackMarketTrader is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable {
   error ItemDoesNotExist();
   error ShopItemAlreadyExists();

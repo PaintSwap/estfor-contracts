@@ -28,6 +28,7 @@ import "../globals/all.sol";
 // Colonel can decide to fight in raids
 // Spawning needs calling manually (every 8 hours or w.e it is set to)
 // 1-3 Random spawn with different stats, you can pick one to kill. Loot is given based on total rolls of the monster?
+/// @custom:oz-upgrades-from RaidsV1
 contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, IRaids {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;

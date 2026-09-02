@@ -9,6 +9,7 @@ import {IItemNFT} from "../interfaces/IItemNFT.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
+/// @custom:oz-upgrades-from GlobalEventsV1
 contract GlobalEvents is UUPSUpgradeable, OwnableUpgradeable {
   error EventIdZero();
   error StartTimeZero();

@@ -16,6 +16,7 @@ import {AdminAccess} from "./AdminAccess.sol";
 import {BoostType, BulkTransferInfo, CombatStats, EquipPosition, Item, ItemInput, Skill, IS_FULL_MODE_BIT, IS_AVAILABLE_BIT} from "./globals/all.sol";
 
 // The NFT contract contains data related to the items and who owns them
+/// @custom:oz-upgrades-from ItemNFTV1
 contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IERC2981, IItemNFT {
   event AddItems(ItemInput[] items);
   event EditItems(ItemInput[] items);

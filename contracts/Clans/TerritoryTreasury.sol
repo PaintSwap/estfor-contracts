@@ -10,6 +10,7 @@ import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
 import {Treasury} from "../Treasury.sol";
 
+/// @custom:oz-upgrades-from TerritoryTreasuryV1
 contract TerritoryTreasury is UUPSUpgradeable, OwnableUpgradeable {
   event Harvest(address from, uint256 playerId, uint256 amount, uint256 nextHarvestAllowedTimestamp);
   event SetMinHarvestInternal(uint256 minHarvestInterval);

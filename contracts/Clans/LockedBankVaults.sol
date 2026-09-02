@@ -29,6 +29,7 @@ import {BankRelay} from "./BankRelay.sol";
 
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
+/// @custom:oz-upgrades-from LockedBankVaultsV1
 contract LockedBankVaults is
   UUPSUpgradeable,
   OwnableUpgradeable,

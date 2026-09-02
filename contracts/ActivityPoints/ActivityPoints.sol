@@ -15,6 +15,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {IActivityPoints, ActivityType} from "./interfaces/IActivityPoints.sol";
 
+/// @custom:oz-upgrades-from ActivityPointsV1
 contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgradeable, OwnableUpgradeable {
   error CannotBeZeroAddress();
   error InvalidBoostMultiplier();
