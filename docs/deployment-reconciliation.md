@@ -28,6 +28,22 @@ Use `--allow-removals` to permit planned removals. Limit options reject plans th
 
 Do not put secrets in a plan or a tracked deployment file.
 
+## Replacing linked libraries
+
+A library address is embedded in the bytecode of every implementation that uses it. When a library differs from the desired
+artifact, planning automatically assigns its future CREATE address from the proposer nonce, compiles dependent candidates
+with that address, and records the complete deployment order in the plan. The operator does not declare candidate addresses
+in the deployment registry.
+
+Keep `PROPOSER_PRIVATE_KEY` set to the account that will deploy the reviewed candidates. Do not use this account for other
+transactions between planning and apply because each transaction changes its nonce and predicted addresses. If its nonce
+changes, discard the old plan and generate a new one.
+
+Apply deploys libraries first, then standalone Players delegates and upgradeable implementations. It submits the generated
+`Players.setImpls(...)`, UUPS, and beacon calls to the Safe only after every candidate deployment is verified. After the Safe
+executes the proposals, use `--resume <run-id>` and verify that the managed plan is empty. Update stable registry addresses
+from the verified final plan in a separate registry-only change.
+
 ## Main files
 
 | File                                 | Purpose                                                      |

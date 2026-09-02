@@ -3,7 +3,7 @@ import {describe, it} from "node:test"
 import {ArtifactFingerprint, compareRuntimeBytecode} from "./deploymentArtifacts"
 import {CONTRACT_NAMES, loadDeploymentRegistry} from "./deploymentRegistry"
 import type {DeploymentPlan} from "./deploymentInventory"
-import {buildRemainderPlan, hashPlan} from "./deploymentInventory"
+import {buildRemainderPlan, hashPlan, renderFindings} from "./deploymentInventory"
 
 function artifact(runtime: string, overrides: Partial<ArtifactFingerprint> = {}): ArtifactFingerprint {
   return {
@@ -88,6 +88,22 @@ describe("deployment inventory", function () {
     const first = hashPlan({a: 1, b: {c: 2}} as never)
     const second = hashPlan({b: {c: 2}, a: 1} as never)
     assert.equal(first, second)
+  })
+
+  it("renders actionable findings grouped by severity", function () {
+    assert.equal(
+      renderFindings([
+        {severity: "warning", code: "MANIFEST_GAP", subject: "players", message: "Add the implementation"},
+        {severity: "error", code: "UPGRADE_BLOCKED", subject: "shop", message: "Add an upgrade reference"},
+      ]),
+      [
+        "Errors:",
+        "- UPGRADE_BLOCKED (shop): Add an upgrade reference",
+        "Warnings:",
+        "- MANIFEST_GAP (players): Add the implementation",
+      ].join("\n")
+    )
+    assert.equal(renderFindings([]), "No findings.")
   })
 
   it("removes pending operations and candidates that only support them", function () {

@@ -2,7 +2,7 @@ import {createHash} from "crypto"
 import {spawnSync} from "child_process"
 import {existsSync, readFileSync, renameSync, writeFileSync} from "fs"
 import {resolve} from "path"
-import {Interface, JsonRpcProvider, Wallet, getAddress, getCreateAddress, keccak256} from "ethers"
+import {AbiCoder, Interface, JsonRpcProvider, Wallet, getAddress, getCreateAddress, keccak256} from "ethers"
 import {
   BytecodeClassification,
   compareRuntimeBytecode,
@@ -12,11 +12,14 @@ import {
   loadImplementationCreationCode,
 } from "./deploymentArtifacts"
 import type {ContractKind, ContractName, DeploymentRegistry} from "./deploymentRegistry"
+import {PLAYERS_IMPLEMENTATIONS} from "./deploymentSlots"
 import type {ReconciliationOperation} from "./reconciliation"
 
 const upgradeInterface = new Interface([
   "function upgradeToAndCall(address newImplementation,bytes data) payable",
   "function upgradeTo(address newImplementation)",
+  "function endpoint() view returns (address)",
+  "function setImpls(address implQueueActions,address implProcessActions,address implRewards,address implMisc,address implMisc1)",
 ])
 
 export interface UpgradeInventoryInput {
@@ -29,7 +32,7 @@ export interface UpgradeInventoryInput {
 
 export interface UpgradeCandidate {
   contractName: ContractName
-  kind: "uups" | "beacon" | "library"
+  kind: "uups" | "beacon" | "library" | "implementation"
   target: string
   currentImplementation: string
   candidateAddress: string
@@ -39,17 +42,15 @@ export interface UpgradeCandidate {
   fullyQualifiedName: string
   creationCodeHash: string
   creationCodeSize: number
+  constructorData: string
   libraryDependencies: ContractName[]
   validation: {status: "passed"; outputHash: string; output: string} | {status: "not-applicable"}
   operationId: string | null
 }
 
 export type UpgradeOperation = ReconciliationOperation<
-  "uups-implementation" | "beacon-implementation",
-  {
-    type: "implementation-address"
-    expected: string
-  }
+  "uups-implementation" | "beacon-implementation" | "players-implementations",
+  {type: "implementation-address"; expected: string} | {type: "players-implementations"; expected: string[]}
 > & {domain: "deployment-infrastructure"; contractName: ContractName}
 
 export interface UpgradePlan {
@@ -118,6 +119,47 @@ function isAlignedRuntime(classification: BytecodeClassification): boolean {
   return classification === "exact-match" || classification === "build-metadata-drift"
 }
 
+export function withCandidateLibraries(
+  deployment: DeploymentRegistry,
+  candidates: readonly UpgradeCandidate[]
+): DeploymentRegistry {
+  const desiredDeployment = structuredClone(deployment)
+  for (const candidate of candidates) {
+    if (candidate.kind === "library") {
+      desiredDeployment.contracts[candidate.contractName].nextAddress = candidate.candidateAddress
+    }
+  }
+  return desiredDeployment
+}
+
+async function candidateRuntimeMatches(
+  provider: JsonRpcProvider,
+  candidateAddress: string,
+  contractName: ContractName,
+  deployment: DeploymentRegistry,
+  constructorData: string,
+  blockTag?: number
+): Promise<boolean> {
+  const code = await provider.getCode(candidateAddress, blockTag)
+  if (code === "0x") return false
+  const comparison = compareRuntimeBytecode(code, candidateAddress, loadArtifactFingerprint(contractName), deployment)
+  if (isAlignedRuntime(comparison.classification)) return true
+  if (
+    contractName !== "bridge" ||
+    constructorData === "0x" ||
+    comparison.classification !== "unknown" ||
+    comparison.reason !== "An immutable is not the implementation self-address and has no declared desired value"
+  )
+    return false
+  const expectedEndpoint = getAddress(AbiCoder.defaultAbiCoder().decode(["address"], constructorData)[0])
+  const result = await provider.call({
+    to: candidateAddress,
+    data: upgradeInterface.encodeFunctionData("endpoint"),
+    blockTag,
+  })
+  return getAddress(upgradeInterface.decodeFunctionResult("endpoint", result)[0]) === expectedEndpoint
+}
+
 export async function buildUpgradePlan(
   provider: JsonRpcProvider,
   deployment: DeploymentRegistry,
@@ -135,9 +177,6 @@ export async function buildUpgradePlan(
   for (const contract of unknown) {
     blockedReasons.push(`${contract.name}: bytecode comparison is unknown`)
   }
-  for (const contract of drift.filter(({kind}) => kind === "implementation")) {
-    blockedReasons.push(`${contract.name}: ${contract.kind} drift has no authority-controlled upgrade target`)
-  }
 
   const upgradeable = drift.filter(
     (contract): contract is UpgradeInventoryInput & {kind: "uups" | "beacon"} =>
@@ -146,7 +185,10 @@ export async function buildUpgradePlan(
   const libraries = drift.filter(
     (contract): contract is UpgradeInventoryInput & {kind: "library"} => contract.kind === "library"
   )
-  if (upgradeable.length === 0 && libraries.length === 0) {
+  const implementations = drift.filter(
+    (contract): contract is UpgradeInventoryInput & {kind: "implementation"} => contract.kind === "implementation"
+  )
+  if (upgradeable.length === 0 && libraries.length === 0 && implementations.length === 0) {
     return {candidates, operations, blockedReasons, validationFailures}
   }
   if (!options.deployerAddress) {
@@ -188,38 +230,34 @@ export async function buildUpgradePlan(
     blockedReasons.push(error instanceof Error ? error.message : String(error))
   }
 
-  for (const contract of orderedLibraries) {
+  const desiredDeployment = structuredClone(deployment)
+  let nextNonce = baseNonce
+  const plannedLibraries = orderedLibraries.flatMap((contract) => {
+    if (!libraryCreations.has(contract.name)) return []
+    const reusable = options.reusableCandidates?.[contract.name]
+    const nonce = nextNonce
+    const candidateAddress = getAddress(reusable ?? getCreateAddress({from: deployer, nonce}))
+    desiredDeployment.contracts[contract.name].nextAddress = candidateAddress
+    if (!reusable) nextNonce++
+    return [{contract, reusable, nonce, candidateAddress}]
+  })
+  for (const {contract, reusable, nonce, candidateAddress} of plannedLibraries) {
     try {
-      const desiredAddress = deployment.contracts[contract.name].nextAddress
-      if (!desiredAddress) {
-        const suggested = getCreateAddress({
-          from: deployer,
-          nonce: baseNonce + candidates.filter(({status}) => status === "planned").length,
-        })
-        throw new Error(`declare nextAddress ${suggested} before replacing this library`)
-      }
-      const creation = libraryCreations.get(contract.name)
-      if (!creation) continue
-      const nonce = baseNonce + candidates.filter(({status}) => status === "planned").length
-      const predictedAddress = getAddress(getCreateAddress({from: deployer, nonce}))
-      const candidateAddress = getAddress(desiredAddress)
-      const code = await provider.getCode(candidateAddress, blockTag)
-      let status: UpgradeCandidate["status"] = "reused"
-      if (code === "0x") {
-        if (candidateAddress !== predictedAddress) {
-          throw new Error(`nextAddress must be ${predictedAddress} for deployer nonce ${nonce}`)
-        }
-        status = "planned"
-      } else {
+      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment)
+      let status: UpgradeCandidate["status"] = "planned"
+      if (reusable) {
+        const code = await provider.getCode(candidateAddress, blockTag)
+        if (code === "0x") throw new Error(`reusable candidate ${candidateAddress} has no code`)
         const comparison = compareRuntimeBytecode(
           code,
           candidateAddress,
           loadArtifactFingerprint(contract.name),
-          deployment
+          desiredDeployment
         )
         if (!isAlignedRuntime(comparison.classification)) {
-          throw new Error(`nextAddress ${candidateAddress} does not contain the desired library`)
+          throw new Error(`reusable candidate ${candidateAddress} does not match the desired artifact`)
         }
+        status = "reused"
       }
       candidates.push({
         contractName: contract.name,
@@ -233,6 +271,7 @@ export async function buildUpgradePlan(
         fullyQualifiedName: creation.fullyQualifiedName,
         creationCodeHash: creation.codeHash,
         creationCodeSize: creation.codeSize,
+        constructorData: "0x",
         libraryDependencies: creation.libraryDependencies,
         validation: {status: "not-applicable"},
         operationId: null,
@@ -242,19 +281,26 @@ export async function buildUpgradePlan(
     }
   }
 
-  for (const contract of upgradeable) {
-    try {
-      const creation = loadFoundryPreparedCreationCode(contract.name, deployment)
-      for (const libraryName of creation.libraryDependencies) {
-        const library = byName.get(libraryName)
-        const candidate = candidates.find(({contractName, kind}) => contractName === libraryName && kind === "library")
-        if (!candidate && (!library || !isAlignedRuntime(library.classification))) {
-          throw new Error(`desired library ${libraryName} is not aligned`)
-        }
+  const assertAlignedLibraries = (creation: ReturnType<typeof loadImplementationCreationCode>): void => {
+    for (const libraryName of creation.libraryDependencies) {
+      const library = byName.get(libraryName)
+      const candidate = candidates.find(({contractName, kind}) => contractName === libraryName && kind === "library")
+      if (!candidate && (!library || !isAlignedRuntime(library.classification))) {
+        throw new Error(`desired library ${libraryName} is not aligned`)
       }
-      const validation = (options.validate ?? validateUpgrade)(creation.fullyQualifiedName)
+    }
+  }
+
+  const playersOperationId = "deployment-infrastructure:players:set-implementations"
+  for (const contract of implementations) {
+    try {
+      if (!PLAYERS_IMPLEMENTATIONS.some(({name}) => name === contract.name)) {
+        throw new Error("standalone implementation has no declared reconciliation call")
+      }
+      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment)
+      assertAlignedLibraries(creation)
       const reusable = options.reusableCandidates?.[contract.name]
-      const nonce = baseNonce + candidates.filter(({status}) => status === "planned").length
+      const nonce = nextNonce
       const candidateAddress = getAddress(reusable ?? getCreateAddress({from: deployer, nonce}))
       let status: UpgradeCandidate["status"] = "planned"
       if (reusable) {
@@ -264,12 +310,72 @@ export async function buildUpgradePlan(
           code,
           candidateAddress,
           loadArtifactFingerprint(contract.name),
-          deployment
+          desiredDeployment
         )
         if (!isAlignedRuntime(comparison.classification)) {
           throw new Error(`reusable candidate ${candidateAddress} does not match the desired artifact`)
         }
         status = "reused"
+      } else {
+        nextNonce++
+      }
+      candidates.push({
+        contractName: contract.name,
+        kind: "implementation",
+        target: getAddress(deployment.contracts.players.address),
+        currentImplementation: getAddress(contract.address),
+        candidateAddress,
+        deployer,
+        nonce,
+        status,
+        fullyQualifiedName: creation.fullyQualifiedName,
+        creationCodeHash: creation.codeHash,
+        creationCodeSize: creation.codeSize,
+        constructorData: "0x",
+        libraryDependencies: creation.libraryDependencies,
+        validation: {status: "not-applicable"},
+        operationId: playersOperationId,
+      })
+    } catch (error) {
+      blockedReasons.push(`${contract.name}: ${error instanceof Error ? error.message : String(error)}`)
+    }
+  }
+
+  for (const contract of upgradeable) {
+    try {
+      let constructorData = "0x"
+      if (contract.name === "bridge") {
+        const result = await provider.call({
+          to: contract.address,
+          data: upgradeInterface.encodeFunctionData("endpoint"),
+          blockTag,
+        })
+        const endpoint = getAddress(upgradeInterface.decodeFunctionResult("endpoint", result)[0])
+        constructorData = AbiCoder.defaultAbiCoder().encode(["address"], [endpoint])
+      }
+      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment, constructorData)
+      assertAlignedLibraries(creation)
+      const validation = (options.validate ?? validateUpgrade)(creation.fullyQualifiedName)
+      const reusable = options.reusableCandidates?.[contract.name]
+      const nonce = nextNonce
+      const candidateAddress = getAddress(reusable ?? getCreateAddress({from: deployer, nonce}))
+      let status: UpgradeCandidate["status"] = "planned"
+      if (reusable) {
+        if (
+          !(await candidateRuntimeMatches(
+            provider,
+            candidateAddress,
+            contract.name,
+            desiredDeployment,
+            constructorData,
+            blockTag
+          ))
+        ) {
+          throw new Error(`reusable candidate ${candidateAddress} does not match the desired artifact`)
+        }
+        status = "reused"
+      } else {
+        nextNonce++
       }
       const operationId = `deployment-infrastructure:${contract.name}:upgrade`
       const candidate: UpgradeCandidate = {
@@ -284,6 +390,7 @@ export async function buildUpgradePlan(
         fullyQualifiedName: creation.fullyQualifiedName,
         creationCodeHash: creation.codeHash,
         creationCodeSize: creation.codeSize,
+        constructorData,
         libraryDependencies: creation.libraryDependencies,
         validation,
         operationId,
@@ -317,6 +424,33 @@ export async function buildUpgradePlan(
       blockedReasons.push(`${contract.name}: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
+
+  const implementationCandidates = candidates.filter(({kind}) => kind === "implementation")
+  if (implementationCandidates.length !== 0) {
+    const expected = PLAYERS_IMPLEMENTATIONS.map(({name}) => {
+      const candidate = implementationCandidates.find(({contractName}) => contractName === name)
+      const current = byName.get(name)
+      if (!candidate && !current) throw new Error(`Players implementation inventory is missing ${name}`)
+      return getAddress(candidate?.candidateAddress ?? current!.address)
+    })
+    operations.push({
+      id: playersOperationId,
+      domain: "deployment-infrastructure",
+      action: "update",
+      resource: "players-implementations",
+      contractName: "players",
+      target: getAddress(deployment.contracts.players.address),
+      caller: getAddress(deployment.authority.address),
+      value: "0",
+      data: upgradeInterface.encodeFunctionData("setImpls", expected),
+      destructive: false,
+      dependencies: operations.some(({contractName}) => contractName === "players")
+        ? ["deployment-infrastructure:players:upgrade"]
+        : [],
+      estimatedGas: null,
+      postcondition: {type: "players-implementations", expected},
+    })
+  }
   return {candidates, operations, blockedReasons, validationFailures}
 }
 
@@ -344,9 +478,11 @@ export async function deployUpgradeCandidates(
   outputRoot: string
 ): Promise<void> {
   const deployer = getAddress(await wallet.getAddress())
+  const desiredDeployment = withCandidateLibraries(deployment, candidates)
   for (const candidate of candidates) {
     if (candidate.deployer !== deployer) throw new Error(`Candidate ${candidate.contractName} uses another deployer`)
-    const creation = loadFoundryPreparedCreationCode(candidate.contractName, deployment)
+    const constructorData = candidate.constructorData ?? "0x"
+    const creation = loadFoundryPreparedCreationCode(candidate.contractName, desiredDeployment, constructorData)
     if (creation.codeHash !== candidate.creationCodeHash) {
       throw new Error(`Creation code changed for ${candidate.contractName}`)
     }
@@ -414,16 +550,18 @@ export async function deployUpgradeCandidates(
         planHash.slice(2, 18),
         candidate.contractName
       )
-      const foundryMethod = candidate.kind === "library" ? "deployLibrary" : "prepareUpgrade"
+      const foundryMethod =
+        candidate.kind === "library" || candidate.kind === "implementation" ? "deployCode" : "prepareUpgrade"
       const result = spawnSync(
         "forge",
         [
           "script",
           "scripts/ReconciliationCodeDeployment.s.sol:ReconciliationCodeDeployment",
           "--sig",
-          `${foundryMethod}(string,address)`,
+          `${foundryMethod}(string,address,bytes)`,
           candidate.fullyQualifiedName,
           candidate.candidateAddress,
+          constructorData,
           "--rpc-url",
           rpcUrl,
           "--broadcast",
@@ -433,7 +571,7 @@ export async function deployUpgradeCandidates(
           resolve(preparationRoot, "out"),
           "--cache-path",
           resolve(preparationRoot, "cache"),
-          ...foundryLibraryArguments(deployment).flatMap((library) => ["--libraries", library]),
+          ...foundryLibraryArguments(desiredDeployment).flatMap((library) => ["--libraries", library]),
         ],
         {
           cwd: resolve(__dirname, ".."),
@@ -479,14 +617,16 @@ export async function deployUpgradeCandidates(
       writeCandidateJournal(journalPath, journal)
       code = await provider.getCode(candidate.candidateAddress)
     }
-    const comparison = compareRuntimeBytecode(
-      code,
-      candidate.candidateAddress,
-      loadArtifactFingerprint(candidate.contractName),
-      deployment
-    )
-    if (!isAlignedRuntime(comparison.classification)) {
-      throw new Error(`Deployed candidate does not match ${candidate.contractName}: ${comparison.reason}`)
+    if (
+      !(await candidateRuntimeMatches(
+        provider,
+        candidate.candidateAddress,
+        candidate.contractName,
+        desiredDeployment,
+        constructorData
+      ))
+    ) {
+      throw new Error(`Deployed candidate does not match ${candidate.contractName}`)
     }
   }
 }

@@ -199,9 +199,9 @@ Design rules:
 - `authority.type` must be `safe`. The loader rejects an EOA owner instead of selecting a direct-broadcast fallback.
 - Any newly created proxy must name the tracked Safe as owner during initialization or transfer ownership to it within the same creation transaction.
 - Current implementation addresses are discovered from the chain and recorded in run reports, not maintained as stable intent.
-- A library replacement uses a reviewed `nextAddress` while the current `address` remains auditable. Planning verifies that
-  `nextAddress` is the CREATE address for the reviewed deployer nonce, deploys it before linked implementations, and treats it
-  as the desired link target. After rollout, promote `nextAddress` to `address` in a separate registry-only change.
+- Planning derives a changed library's candidate address from the reviewed deployer nonce, deploys it before linked
+  implementations, and treats it as the desired link target. After rollout, promote the verified candidate to `address` in
+  a separate registry-only change.
 - Optional `upgradeCallData` stores reviewed UUPS reinitializer calldata. It defaults to `0x` and is used only when an
   implementation upgrade operation exists.
 - `deploymentBlock` bounds deployment-specific verification and audit queries.
@@ -579,9 +579,9 @@ Deployment infrastructure is now a managed domain in plan schema 3. The artifact
 link references and this repository's Foundry-prelinked library addresses. One dependency graph therefore drives runtime
 classification, linked creation bytecode, candidate planning, fork simulation, and apply. Exact matches and metadata-only
 drift do not create candidates. Executable, library, or declared immutable drift creates candidates for UUPS proxies and
-beacons. Changed libraries are planned first when their reviewed `nextAddress` matches the deployer's predicted CREATE
-address; every dependent creation payload links that same address. A missing or invalid `nextAddress`, drift at standalone
-implementation addresses, unknown comparisons, unsupported constructor arguments, and failed OpenZeppelin storage
+beacons. Changed libraries are assigned predicted CREATE addresses and planned first; every dependent creation payload links
+those same addresses. Drift at Players delegate implementation addresses produces raw code candidates and one atomic
+`Players.setImpls` operation. Unknown comparisons, unsupported constructor arguments, and failed OpenZeppelin storage
 validation block apply.
 
 Upgrade planning derives its deployment address from `PROPOSER_PRIVATE_KEY`. The command loads the key from `.env`.

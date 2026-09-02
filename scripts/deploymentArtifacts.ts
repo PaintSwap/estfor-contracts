@@ -273,12 +273,17 @@ export function loadArtifactFingerprint(
 export function loadImplementationCreationCode(
   contractName: ContractName,
   deployment: DeploymentRegistry,
-  outRoot = resolve(__dirname, "../out")
+  outRoot = resolve(__dirname, "../out"),
+  constructorData = "0x"
 ): ImplementationCreationCode {
   const {artifact, source, expectedName} = artifactMatch(contractName, outRoot)
   const constructor = artifact.abi?.find(({type}) => type === "constructor")
-  if ((constructor?.inputs?.length ?? 0) !== 0) {
+  const constructorInputs = constructor?.inputs?.length ?? 0
+  if (constructorInputs !== 0 && constructorData === "0x") {
     throw new Error(`${contractName} implementation constructor arguments are not declared for reconciliation`)
+  }
+  if (constructorInputs === 0 && constructorData !== "0x") {
+    throw new Error(`${contractName} does not accept implementation constructor arguments`)
   }
   let code = `0x${artifact.bytecode?.object?.replace(/^0x/, "") ?? ""}`.toLowerCase()
   if (code === "0x") throw new Error(`Foundry creation bytecode not found for ${contractName}`)
@@ -293,6 +298,7 @@ export function loadImplementationCreationCode(
     code = `${code.slice(0, offset)}${address}${code.slice(offset + range.length * 2)}`
   }
   if (code.includes("__$")) throw new Error(`Unresolved library link in ${contractName} creation bytecode`)
+  code += constructorData.slice(2).toLowerCase()
   return {
     fullyQualifiedName: `${source}:${expectedName}`,
     code,
@@ -312,7 +318,8 @@ const preparedArtifacts = new Map<string, string>()
 
 export function loadFoundryPreparedCreationCode(
   contractName: ContractName,
-  deployment: DeploymentRegistry
+  deployment: DeploymentRegistry,
+  constructorData = "0x"
 ): ImplementationCreationCode {
   const libraries = foundryLibraryArguments(deployment)
   const key = sha256(JSON.stringify(libraries)).slice(2, 18)
@@ -335,8 +342,13 @@ export function loadFoundryPreparedCreationCode(
     if (result.error || result.status !== 0) throw new Error("Foundry linked-artifact build failed")
     preparedArtifacts.set(key, outRoot)
   }
-  const canonical = loadImplementationCreationCode(contractName, deployment)
-  const prepared = loadImplementationCreationCode(contractName, deployment, outRoot)
+  const canonical = loadImplementationCreationCode(
+    contractName,
+    deployment,
+    resolve(__dirname, "../out"),
+    constructorData
+  )
+  const prepared = loadImplementationCreationCode(contractName, deployment, outRoot, constructorData)
   return {...prepared, libraryDependencies: canonical.libraryDependencies}
 }
 

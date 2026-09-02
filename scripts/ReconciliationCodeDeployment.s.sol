@@ -8,10 +8,12 @@ import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 contract ReconciliationCodeDeployment is Script {
   function prepareUpgrade(
     string calldata fullyQualifiedName,
-    address expectedAddress
+    address expectedAddress,
+    bytes calldata constructorData
   ) external returns (address implementation) {
     Options memory options;
     options.unsafeAllow = "external-library-linking";
+    options.constructorData = constructorData;
 
     vm.startBroadcast(vm.envUint("PROPOSER_PRIVATE_KEY"));
     implementation = Upgrades.prepareUpgrade(fullyQualifiedName, options);
@@ -20,11 +22,12 @@ contract ReconciliationCodeDeployment is Script {
     require(implementation == expectedAddress, "Unexpected implementation address");
   }
 
-  function deployLibrary(
+  function deployCode(
     string calldata fullyQualifiedName,
-    address expectedAddress
+    address expectedAddress,
+    bytes calldata constructorData
   ) external returns (address deployed) {
-    bytes memory creationCode = vm.getCode(fullyQualifiedName);
+    bytes memory creationCode = abi.encodePacked(vm.getCode(fullyQualifiedName), constructorData);
 
     vm.startBroadcast(vm.envUint("PROPOSER_PRIVATE_KEY"));
     assembly ("memory-safe") {

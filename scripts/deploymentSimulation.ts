@@ -4,9 +4,10 @@ import {Interface, JsonRpcProvider, getAddress, toBeHex} from "ethers"
 import {loadFoundryPreparedCreationCode} from "./deploymentArtifacts"
 import type {DeploymentPlan} from "./deploymentInventory"
 import type {DeploymentRegistry} from "./deploymentRegistry"
-import {EIP1967_IMPLEMENTATION_SLOT, addressFromStorage} from "./deploymentSlots"
+import {EIP1967_IMPLEMENTATION_SLOT, PLAYERS_IMPLEMENTATIONS, addressFromStorage} from "./deploymentSlots"
 import {toRpcTransaction} from "./reconciliation"
 import {verifyShopPostconditions} from "./shopReconciliation"
+import {withCandidateLibraries} from "./upgradeReconciliation"
 import {verifyDeploymentWiring} from "./deploymentWiring"
 
 const readInterface = new Interface([
@@ -99,6 +100,7 @@ export async function simulateDeploymentPlan(
       throw new Error(`Anvil fork block hash does not match reviewed observation block ${plan.observationBlock.hash}`)
     }
 
+    const desiredDeployment = withCandidateLibraries(deployment, plan.upgrades.candidates)
     const candidateDeployments: DeploymentSimulationResult["candidateDeployments"] = []
     for (const candidate of plan.upgrades.candidates) {
       const existingCode = await provider.getCode(candidate.candidateAddress)
@@ -112,7 +114,11 @@ export async function simulateDeploymentPlan(
       }
       await provider.send("anvil_impersonateAccount", [candidate.deployer])
       await provider.send("anvil_setBalance", [candidate.deployer, toBeHex(10n ** 20n)])
-      const creation = loadFoundryPreparedCreationCode(candidate.contractName, deployment)
+      const creation = loadFoundryPreparedCreationCode(
+        candidate.contractName,
+        desiredDeployment,
+        candidate.constructorData ?? "0x"
+      )
       if (creation.codeHash !== candidate.creationCodeHash)
         throw new Error(`Creation code changed for ${candidate.contractName}`)
       const transactionHash = (await provider.send("eth_sendTransaction", [
@@ -143,12 +149,26 @@ export async function simulateDeploymentPlan(
     }
 
     for (const candidate of plan.upgrades.candidates) {
-      if (candidate.kind === "library") continue
+      if (candidate.kind === "library" || candidate.kind === "implementation") continue
       const actual = await implementationAddress(provider, candidate.target, candidate.kind)
       if (actual !== candidate.candidateAddress)
         throw new Error(`Upgrade postcondition failed for ${candidate.contractName}`)
     }
     let postconditionsVerified = plan.upgrades.candidates.length
+    for (const operation of plan.upgrades.operations) {
+      if (operation.postcondition.type !== "players-implementations") continue
+      const actual = await Promise.all(
+        PLAYERS_IMPLEMENTATIONS.map(async ({slot}) =>
+          addressFromStorage(await provider.getStorage(operation.target, slot))
+        )
+      )
+      if (JSON.stringify(actual) !== JSON.stringify(operation.postcondition.expected)) {
+        throw new Error(
+          `Players implementation postcondition failed: expected ${operation.postcondition.expected}, found ${actual}`
+        )
+      }
+      postconditionsVerified++
+    }
     for (const contract of plan.contracts.filter(({ownerMatchesAuthority}) => ownerMatchesAuthority !== null)) {
       const result = await provider.call({to: contract.address, data: readInterface.encodeFunctionData("owner")})
       const owner = getAddress(readInterface.decodeFunctionResult("owner", result)[0])

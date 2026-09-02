@@ -20,7 +20,12 @@ import {
 import {buildShopPlan, deferShopPlanForUpgrade, hasShopStateGetter} from "./shopReconciliation"
 import type {ShopPlan, ShopPlanOptions} from "./shopReconciliation"
 import type {DeploymentSimulationResult} from "./deploymentSimulation"
-import {EIP1967_IMPLEMENTATION_SLOT, UUPS_PROXIABLE_UUID, addressFromStorage} from "./deploymentSlots"
+import {
+  EIP1967_IMPLEMENTATION_SLOT,
+  PLAYERS_IMPLEMENTATIONS,
+  UUPS_PROXIABLE_UUID,
+  addressFromStorage,
+} from "./deploymentSlots"
 import {DEFAULT_SAFE_BATCH_LIMITS} from "./reconciliation"
 import type {ReconciliationOperation} from "./reconciliation"
 import {buildUpgradePlan} from "./upgradeReconciliation"
@@ -257,10 +262,11 @@ async function inventoryContract(
   blockTag: number,
   manifestProxies: Set<string>,
   manifestImplementations: Set<string>,
-  findings: Finding[]
+  findings: Finding[],
+  observedAddress?: string
 ): Promise<ContractInventory> {
   const tracked = deployment.contracts[name]
-  const address = getAddress(tracked.address)
+  const address = getAddress(observedAddress ?? tracked.address)
   const code = await provider.getCode(address, blockTag)
   if (code === "0x")
     findings.push({severity: "error", code: "CONTRACT_NO_CODE", subject: name, message: `No code at ${address}`})
@@ -342,14 +348,6 @@ async function inventoryContract(
       comparison,
       legacyManifest: {implementationFound: manifestImplementations.has(address.toLowerCase())},
     }
-    if (tracked.kind === "implementation" && !implementation.legacyManifest.implementationFound) {
-      findings.push({
-        severity: "warning",
-        code: "IMPLEMENTATION_NOT_IN_LEGACY_MANIFEST",
-        subject: name,
-        message: `${address} is not in .openzeppelin/sonic.json`,
-      })
-    }
   }
   return {
     ...codeInventory(address, code),
@@ -408,6 +406,15 @@ export async function buildDeploymentPlan(
   const threshold = Number(readInterface.decodeFunctionResult("getThreshold", thresholdResult)[0])
   if (threshold < 2 || owners.length < threshold) throw new Error("Tracked authority is not a multisignature Safe")
 
+  const playersAddress = deployment.contracts.players.address
+  const playersImplementations = new Map<ContractName, string>(
+    await Promise.all(
+      PLAYERS_IMPLEMENTATIONS.map(
+        async ({name, slot}) =>
+          [name, addressFromStorage(await provider.getStorage(playersAddress, slot, block.number))] as const
+      )
+    )
+  )
   const contracts: ContractInventory[] = []
   for (const name of CONTRACT_NAMES) {
     contracts.push(
@@ -418,7 +425,8 @@ export async function buildDeploymentPlan(
         block.number,
         manifestProxies,
         manifestImplementations,
-        findings
+        findings,
+        playersImplementations.get(name)
       )
     )
   }
@@ -536,7 +544,12 @@ export function buildRemainderPlan(plan: DeploymentPlan, pendingOperationIds: Re
   const allPendingOperationIdSet = new Set(allPendingOperationIds)
   const keepOperation = ({id}: ReconciliationOperation) => !allPendingOperationIdSet.has(id)
   const upgradeOperations = plan.upgrades.operations.filter(keepOperation)
-  const requiredCandidates = new Set(upgradeOperations.map(({contractName}) => contractName))
+  const upgradeOperationIds = new Set(upgradeOperations.map(({id}) => id))
+  const requiredCandidates = new Set(
+    plan.upgrades.candidates
+      .filter(({operationId}) => operationId !== null && upgradeOperationIds.has(operationId))
+      .map(({contractName}) => contractName)
+  )
   const candidatesByName = new Map(plan.upgrades.candidates.map((candidate) => [candidate.contractName, candidate]))
   const addDependencies = (contractName: ContractName): void => {
     const candidate = candidatesByName.get(contractName)
@@ -570,6 +583,19 @@ export function buildRemainderPlan(plan: DeploymentPlan, pendingOperationIds: Re
     pendingCandidates,
     simulation: null,
   }
+}
+
+export function renderFindings(findings: Finding[]): string {
+  if (findings.length === 0) return "No findings."
+  const renderSeverity = (severity: FindingSeverity): string[] => {
+    const matching = findings.filter((finding) => finding.severity === severity)
+    if (matching.length === 0) return []
+    return [
+      `${severity === "error" ? "Errors" : "Warnings"}:`,
+      ...matching.map(({code, subject, message}) => `- ${code} (${subject}): ${message}`),
+    ]
+  }
+  return [...renderSeverity("error"), ...renderSeverity("warning")].join("\n")
 }
 
 export function renderPlanMarkdown(plan: DeploymentPlan): string {

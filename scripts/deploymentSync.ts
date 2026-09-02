@@ -4,7 +4,13 @@ import {existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from "f
 import {dirname, resolve} from "path"
 import {JsonRpcProvider, Wallet, getAddress} from "ethers"
 import {loadDeploymentRegistry} from "./deploymentRegistry"
-import {buildDeploymentPlan, buildRemainderPlan, hashPlan, renderPlanMarkdown} from "./deploymentInventory"
+import {
+  buildDeploymentPlan,
+  buildRemainderPlan,
+  hashPlan,
+  renderFindings,
+  renderPlanMarkdown,
+} from "./deploymentInventory"
 import {DEFAULT_SHOP_LIMITS} from "./shopReconciliation"
 import {simulateDeploymentPlan} from "./deploymentSimulation"
 import {
@@ -66,13 +72,16 @@ function authorityPayload(plan: DeploymentPlan): string {
 
 function candidatePayloads(plan: DeploymentPlan): string {
   return JSON.stringify(
-    plan.upgrades.candidates.map(({contractName, candidateAddress, deployer, creationCodeHash, validation}) => ({
-      contractName,
-      candidateAddress,
-      deployer,
-      creationCodeHash,
-      validationHash: validation.status === "passed" ? validation.outputHash : null,
-    }))
+    plan.upgrades.candidates.map(
+      ({contractName, candidateAddress, deployer, creationCodeHash, constructorData, validation}) => ({
+        contractName,
+        candidateAddress,
+        deployer,
+        creationCodeHash,
+        constructorData,
+        validationHash: validation.status === "passed" ? validation.outputHash : null,
+      })
+    )
   )
 }
 
@@ -170,7 +179,7 @@ async function main() {
           maxSafeGas: bigintOption("--max-safe-gas", DEFAULT_SAFE_BATCH_LIMITS.maxGas),
         }),
   }
-  const build = spawnSync("forge", ["build"], {stdio: "inherit"})
+  const build = spawnSync("forge", ["build", "--quiet"], {stdio: "inherit"})
   if (build.error) throw build.error
   if (build.status !== 0) throw new Error(`forge build failed with status ${build.status}`)
   const provider = new JsonRpcProvider(rpcUrl, deployment.chainId, {staticNetwork: true})
@@ -230,6 +239,7 @@ async function main() {
   console.log(
     `Plan ${plan.planHash}: ${plan.summary.errors} errors, ${plan.summary.warnings} warnings, ${plan.operations.length} operations, simulation ${simulation.status}`
   )
+  console.log(renderFindings(plan.findings))
 
   if (!apply && !resumeRunId) {
     if (plan.summary.errors !== 0) process.exitCode = 2
