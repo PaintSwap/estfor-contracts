@@ -366,6 +366,7 @@ export async function buildDeploymentPlan(
   requestedBlock?: number,
   options: DeploymentPlanOptions = {}
 ): Promise<DeploymentPlan> {
+  options.onProgress?.("Checking RPC chain identity")
   const network = await provider.getNetwork()
   if (network.chainId !== BigInt(deployment.chainId))
     throw new Error(`RPC chain ID ${network.chainId} does not match deployment chain ID ${deployment.chainId}`)
@@ -377,6 +378,7 @@ export async function buildDeploymentPlan(
   if (!block?.hash) throw new Error("Could not resolve observation block")
   if (block.number < deployment.deploymentBlock)
     throw new Error(`Observation block ${block.number} predates deployment block ${deployment.deploymentBlock}`)
+  options.onProgress?.(`Using observation block ${block.number}`)
 
   const manifestPath = resolve(__dirname, "../.openzeppelin/sonic.json")
   const manifestRaw = readFileSync(manifestPath)
@@ -390,6 +392,7 @@ export async function buildDeploymentPlan(
   const findings: Finding[] = []
 
   const safeAddress = getAddress(deployment.authority.address)
+  options.onProgress?.("Reading Safe authority owners and threshold")
   const safeCode = await provider.getCode(safeAddress, block.number)
   if (safeCode === "0x") throw new Error(`Tracked Safe has no code at observation block ${block.number}`)
   const ownersResult = await provider.call({
@@ -407,6 +410,7 @@ export async function buildDeploymentPlan(
   if (threshold < 2 || owners.length < threshold) throw new Error("Tracked authority is not a multisignature Safe")
 
   const playersAddress = deployment.contracts.players.address
+  options.onProgress?.("Reading Players implementation slots")
   const playersImplementations = new Map<ContractName, string>(
     await Promise.all(
       PLAYERS_IMPLEMENTATIONS.map(
@@ -416,7 +420,8 @@ export async function buildDeploymentPlan(
     )
   )
   const contracts: ContractInventory[] = []
-  for (const name of CONTRACT_NAMES) {
+  for (const [index, name] of CONTRACT_NAMES.entries()) {
+    options.onProgress?.(`Inventorying contract ${name} (${index + 1}/${CONTRACT_NAMES.length})`)
     contracts.push(
       await inventoryContract(
         provider,
@@ -431,13 +436,15 @@ export async function buildDeploymentPlan(
     )
   }
   const externals = []
-  for (const name of EXTERNAL_NAMES) {
+  for (const [index, name] of EXTERNAL_NAMES.entries()) {
+    options.onProgress?.(`Inventorying external ${name} (${index + 1}/${EXTERNAL_NAMES.length})`)
     const address = getAddress(deployment.externals[name])
     const code = await provider.getCode(address, block.number)
     if (code === "0x")
       findings.push({severity: "error", code: "EXTERNAL_NO_CODE", subject: name, message: `No code at ${address}`})
     externals.push({name, ...codeInventory(address, code)})
   }
+  options.onProgress?.("Building upgrade plan")
   const upgrades = await buildUpgradePlan(
     provider,
     deployment,
@@ -457,6 +464,7 @@ export async function buildDeploymentPlan(
     ),
     options
   )
+  options.onProgress?.("Verifying deployment wiring")
   for (const failure of await verifyDeploymentWiring(provider, deployment, block.number)) {
     findings.push({severity: "error", code: "WIRING_MISMATCH", subject: "infrastructure", message: failure})
   }
@@ -483,6 +491,11 @@ export async function buildDeploymentPlan(
   for (const reason of shop.blockedReasons) {
     findings.push({severity: "error", code: "SHOP_CHANGE_BLOCKED", subject: "shop", message: reason})
   }
+  options.onProgress?.(
+    `Deployment plan built with ${upgrades.candidates.length} candidates and ${
+      upgrades.operations.length + shop.operations.length
+    } operations`
+  )
 
   const classifications: Record<string, number> = {}
   for (const contract of contracts) {

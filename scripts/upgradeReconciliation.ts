@@ -65,6 +65,7 @@ export interface UpgradePlanOptions {
   deployerNonce?: number
   reusableCandidates?: Partial<Record<ContractName, string>>
   validate?: (fullyQualifiedName: string) => {status: "passed"; outputHash: string; output: string}
+  onProgress?: (message: string) => void
 }
 
 export interface CandidateDeploymentJournal {
@@ -188,6 +189,9 @@ export async function buildUpgradePlan(
   const implementations = drift.filter(
     (contract): contract is UpgradeInventoryInput & {kind: "implementation"} => contract.kind === "implementation"
   )
+  options.onProgress?.(
+    `Upgrade comparison found ${upgradeable.length} upgradeable contracts, ${libraries.length} libraries, and ${implementations.length} Players implementations with drift`
+  )
   if (upgradeable.length === 0 && libraries.length === 0 && implementations.length === 0) {
     return {candidates, operations, blockedReasons, validationFailures}
   }
@@ -203,7 +207,10 @@ export async function buildUpgradePlan(
   const libraryCreations = new Map<ContractName, ReturnType<typeof loadImplementationCreationCode>>()
   for (const library of libraries) {
     try {
-      libraryCreations.set(library.name, loadFoundryPreparedCreationCode(library.name, deployment))
+      libraryCreations.set(
+        library.name,
+        loadFoundryPreparedCreationCode(library.name, deployment, "0x", options.onProgress)
+      )
     } catch (error) {
       blockedReasons.push(`${library.name}: ${error instanceof Error ? error.message : String(error)}`)
     }
@@ -242,8 +249,9 @@ export async function buildUpgradePlan(
     return [{contract, reusable, nonce, candidateAddress}]
   })
   for (const {contract, reusable, nonce, candidateAddress} of plannedLibraries) {
+    options.onProgress?.(`Preparing library candidate ${contract.name}`)
     try {
-      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment)
+      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment, "0x", options.onProgress)
       let status: UpgradeCandidate["status"] = "planned"
       if (reusable) {
         const code = await provider.getCode(candidateAddress, blockTag)
@@ -293,11 +301,12 @@ export async function buildUpgradePlan(
 
   const playersOperationId = "deployment-infrastructure:players:set-implementations"
   for (const contract of implementations) {
+    options.onProgress?.(`Preparing Players implementation candidate ${contract.name}`)
     try {
       if (!PLAYERS_IMPLEMENTATIONS.some(({name}) => name === contract.name)) {
         throw new Error("standalone implementation has no declared reconciliation call")
       }
-      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment)
+      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment, "0x", options.onProgress)
       assertAlignedLibraries(creation)
       const reusable = options.reusableCandidates?.[contract.name]
       const nonce = nextNonce
@@ -342,6 +351,7 @@ export async function buildUpgradePlan(
   }
 
   for (const contract of upgradeable) {
+    options.onProgress?.(`Preparing and validating upgrade candidate ${contract.name}`)
     try {
       let constructorData = "0x"
       if (contract.name === "bridge") {
@@ -353,7 +363,12 @@ export async function buildUpgradePlan(
         const endpoint = getAddress(upgradeInterface.decodeFunctionResult("endpoint", result)[0])
         constructorData = AbiCoder.defaultAbiCoder().encode(["address"], [endpoint])
       }
-      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment, constructorData)
+      const creation = loadFoundryPreparedCreationCode(
+        contract.name,
+        desiredDeployment,
+        constructorData,
+        options.onProgress
+      )
       assertAlignedLibraries(creation)
       const validation = (options.validate ?? validateUpgrade)(creation.fullyQualifiedName)
       const reusable = options.reusableCandidates?.[contract.name]
@@ -475,14 +490,21 @@ export async function deployUpgradeCandidates(
   deployment: DeploymentRegistry,
   planHash: string,
   candidates: UpgradeCandidate[],
-  outputRoot: string
+  outputRoot: string,
+  onProgress?: (message: string) => void
 ): Promise<void> {
   const deployer = getAddress(await wallet.getAddress())
   const desiredDeployment = withCandidateLibraries(deployment, candidates)
-  for (const candidate of candidates) {
+  for (const [index, candidate] of candidates.entries()) {
+    onProgress?.(`Checking candidate ${candidate.contractName} (${index + 1}/${candidates.length})`)
     if (candidate.deployer !== deployer) throw new Error(`Candidate ${candidate.contractName} uses another deployer`)
     const constructorData = candidate.constructorData ?? "0x"
-    const creation = loadFoundryPreparedCreationCode(candidate.contractName, desiredDeployment, constructorData)
+    const creation = loadFoundryPreparedCreationCode(
+      candidate.contractName,
+      desiredDeployment,
+      constructorData,
+      onProgress
+    )
     if (creation.codeHash !== candidate.creationCodeHash) {
       throw new Error(`Creation code changed for ${candidate.contractName}`)
     }
@@ -552,6 +574,7 @@ export async function deployUpgradeCandidates(
       )
       const foundryMethod =
         candidate.kind === "library" || candidate.kind === "implementation" ? "deployCode" : "prepareUpgrade"
+      onProgress?.(`Running Forge ${foundryMethod} for ${candidate.contractName}`)
       const result = spawnSync(
         "forge",
         [
@@ -589,6 +612,7 @@ export async function deployUpgradeCandidates(
       if (result.error || result.status !== 0 || code === "0x") {
         throw new Error(`Foundry ${foundryMethod} failed for ${candidate.contractName}`)
       }
+      onProgress?.(`Forge ${foundryMethod} completed for ${candidate.contractName}`)
       const latestBlock = await provider.getBlockNumber()
       for (let blockNumber = startBlock + 1; blockNumber <= latestBlock; blockNumber++) {
         const block = await provider.getBlock(blockNumber, true)

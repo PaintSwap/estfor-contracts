@@ -29,6 +29,13 @@ import type {DeploymentPlan, DeploymentPlanOptions} from "./deploymentInventory"
 import {deployUpgradeCandidates} from "./upgradeReconciliation"
 import {assertSafeOwner} from "./reconciliation"
 
+const syncStartedAt = Date.now()
+
+function logProgress(message: string): void {
+  const elapsedSeconds = ((Date.now() - syncStartedAt) / 1000).toFixed(1)
+  console.log(`[deployment:sync +${elapsedSeconds}s] ${message}`)
+}
+
 function option(name: string): string | undefined {
   const index = process.argv.indexOf(name)
   if (index === -1) return undefined
@@ -92,12 +99,17 @@ async function simulate(
 ): Promise<void> {
   const reasons = [...plan.upgrades.blockedReasons, ...plan.shop.blockedReasons]
   if (reasons.length === 0) {
-    plan.simulation = await simulateDeploymentPlan(rpcUrl, deployment, plan)
+    logProgress(
+      `Starting Anvil simulation (${plan.upgrades.candidates.length} candidates, ${plan.operations.length} operations)`
+    )
+    plan.simulation = await simulateDeploymentPlan(rpcUrl, deployment, plan, logProgress)
   } else {
+    logProgress(`Skipping simulation because the plan has ${reasons.length} blocking reason(s)`)
     plan.simulation = {status: "blocked", reasons}
   }
   const {planHash: _oldPlanHash, ...withoutHash} = plan
   plan.planHash = hashPlan(withoutHash)
+  logProgress(`Plan simulation finished with status ${plan.simulation.status}`)
 }
 
 async function main() {
@@ -151,6 +163,7 @@ async function main() {
     throw new Error("PROPOSER_PRIVATE_KEY does not match the reviewed candidate deployer")
   }
   const planOptions: DeploymentPlanOptions = {
+    onProgress: logProgress,
     deployerAddress: proposerAddress,
     ...(reviewedPlan
       ? {
@@ -179,10 +192,16 @@ async function main() {
           maxSafeGas: bigintOption("--max-safe-gas", DEFAULT_SAFE_BATCH_LIMITS.maxGas),
         }),
   }
+  logProgress(
+    `Starting deployment sync for ${deploymentId} (${apply ? "apply" : resumeRunId ? "resume" : "plan"} mode)`
+  )
+  logProgress("Building contracts with Forge")
   const build = spawnSync("forge", ["build", "--quiet"], {stdio: "inherit"})
   if (build.error) throw build.error
   if (build.status !== 0) throw new Error(`forge build failed with status ${build.status}`)
+  logProgress("Forge build completed")
   const provider = new JsonRpcProvider(rpcUrl, deployment.chainId, {staticNetwork: true})
+  logProgress("Building deployment plan from repository artifacts and on-chain state")
   const builtPlan = await buildDeploymentPlan(
     provider,
     deployment,
@@ -203,6 +222,7 @@ async function main() {
       : option("--output") ??
           `runs/${deploymentId}/${plan.observationBlock.number}-${plan.observationBlock.hash.slice(2, 10)}`
   )
+  logProgress(`Writing plan artifacts to ${outputRoot}`)
   mkdirSync(outputRoot, {recursive: true})
   const jsonPath = resolve(outputRoot, "plan.json")
   const markdownPath = resolve(outputRoot, "plan.md")
@@ -267,9 +287,11 @@ async function main() {
       .filter((name) => /^safe-proposal-.*\.json$/.test(name))
       .map((name) => ({path: resolve(outputRoot, name), journal: readSafeJournal(resolve(outputRoot, name))}))
       .filter(({journal}) => journal.operationIds.some((id) => relevantOperationIds.has(id)))
+    logProgress(`Refreshing ${journals.length} Safe proposal journal(s)`)
     const unjournaledOperationIds: string[] = []
     for (const entry of journals) {
       const {journal} = entry
+      logProgress(`Refreshing Safe batch ${journal.batchIndex + 1}`)
       try {
         await refreshSafeJournal(api, journal, provider)
       } catch (error) {
@@ -295,6 +317,7 @@ async function main() {
         candidateAddress,
       ])
     )
+    logProgress("Rebuilding the plan from current chain state")
     const currentStatePlan = await buildDeploymentPlan(provider, deployment, undefined, {
       ...planOptions,
       reusableCandidates,
@@ -344,6 +367,7 @@ async function main() {
     throw new Error("PROPOSER_PRIVATE_KEY is required for Safe proposal apply")
   }
 
+  logProgress("Checking reviewed plan age and existing candidate code")
   const latestBlock = await provider.getBlockNumber()
   const maxPlanAgeBlocks = integerOption("--max-plan-age-blocks", 3_600)
   if (latestBlock - plan.observationBlock.number > maxPlanAgeBlocks)
@@ -363,6 +387,7 @@ async function main() {
         candidate !== null
     )
   )
+  logProgress("Rebuilding the plan to check for chain-state changes since review")
   const builtCurrentPlan = await buildDeploymentPlan(provider, deployment, undefined, {
     ...planOptions,
     reusableCandidates,
@@ -382,6 +407,7 @@ async function main() {
   assertSafeOwner(proposerAddress, currentPlan.authority.owners)
 
   if (plan.upgrades.candidates.length !== 0) {
+    logProgress(`Deploying ${plan.upgrades.candidates.length} upgrade candidate(s)`)
     const deployer = new Wallet(proposerPrivateKey!, provider)
     await deployUpgradeCandidates(
       provider,
@@ -390,7 +416,8 @@ async function main() {
       deployment,
       plan.planHash,
       plan.upgrades.candidates,
-      outputRoot
+      outputRoot,
+      logProgress
     )
   }
 
@@ -400,6 +427,7 @@ async function main() {
     return
   }
 
+  logProgress("Initializing Safe protocol and API clients")
   const clients = await createSafeClients(
     deployment.chainId,
     rpcUrl,
@@ -407,10 +435,12 @@ async function main() {
     process.env.SAFE_API_KEY!,
     proposerPrivateKey!
   )
+  logProgress(`Safe clients initialized; preparing ${batches.length} batch(es)`)
   if (!currentPlan.authority.owners.includes(clients.proposerAddress))
     throw new Error(`Proposal sender ${clients.proposerAddress} is not an owner of the tracked Safe`)
   let nextNonce = Number(await clients.api.getNextNonce(deployment.authority.address))
   for (const batch of batches) {
+    logProgress(`Preparing Safe batch ${batch.index + 1}/${batches.length}`)
     const journalPath = resolve(outputRoot, `safe-proposal-${plan.planHash.slice(2, 10)}-${batch.index + 1}.json`)
     let nonce = nextNonce
     if (existsSync(journalPath)) {
@@ -447,6 +477,7 @@ async function main() {
     } else {
       nextNonce++
     }
+    logProgress(`Submitting Safe batch ${batch.index + 1}/${batches.length} at nonce ${nonce}`)
     const journal = await submitSafeBatch(
       clients,
       deploymentId,
@@ -458,6 +489,7 @@ async function main() {
     )
     console.log(`Submitted Safe batch ${batch.index + 1} at nonce ${journal.nonce}: ${journal.safeTxHash}`)
   }
+  logProgress("Deployment sync completed")
 }
 
 main().catch((error) => {

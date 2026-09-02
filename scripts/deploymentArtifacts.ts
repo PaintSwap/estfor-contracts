@@ -319,7 +319,8 @@ const preparedArtifacts = new Map<string, string>()
 export function loadFoundryPreparedCreationCode(
   contractName: ContractName,
   deployment: DeploymentRegistry,
-  constructorData = "0x"
+  constructorData = "0x",
+  onProgress?: (message: string) => void
 ): ImplementationCreationCode {
   const libraries = foundryLibraryArguments(deployment)
   const key = sha256(JSON.stringify(libraries)).slice(2, 18)
@@ -327,6 +328,7 @@ export function loadFoundryPreparedCreationCode(
   if (!outRoot) {
     const buildRoot = resolve(".deployments", "reconciliation-artifacts", key)
     outRoot = resolve(buildRoot, "out")
+    onProgress?.(`Building linked Foundry artifacts (${key})`)
     const result = spawnSync(
       "forge",
       [
@@ -340,6 +342,7 @@ export function loadFoundryPreparedCreationCode(
       {cwd: resolve(__dirname, ".."), encoding: "utf8", maxBuffer: 50 * 1024 * 1024}
     )
     if (result.error || result.status !== 0) throw new Error("Foundry linked-artifact build failed")
+    onProgress?.(`Linked Foundry artifact build completed (${key})`)
     preparedArtifacts.set(key, outRoot)
   }
   const canonical = loadImplementationCreationCode(

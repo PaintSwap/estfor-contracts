@@ -66,7 +66,8 @@ async function implementationAddress(
 export async function simulateDeploymentPlan(
   rpcUrl: string,
   deployment: DeploymentRegistry,
-  plan: DeploymentPlan
+  plan: DeploymentPlan,
+  onProgress?: (message: string) => void
 ): Promise<DeploymentSimulationResult> {
   if (plan.operations.length === 0 && plan.upgrades.candidates.length === 0) {
     return {
@@ -97,7 +98,9 @@ export async function simulateDeploymentPlan(
   child.stderr?.on("data", (data) => (stderr += String(data)))
   const provider = new JsonRpcProvider(`http://127.0.0.1:${port}`, plan.chainId, {staticNetwork: true})
   try {
+    onProgress?.(`Starting pinned Anvil fork at block ${plan.observationBlock.number}`)
     await waitForAnvil(provider, child)
+    onProgress?.("Anvil fork is ready; verifying observation block")
     const pinnedBlock = await provider.getBlock(plan.observationBlock.number)
     if (!pinnedBlock?.hash || pinnedBlock.hash.toLowerCase() !== plan.observationBlock.hash.toLowerCase()) {
       throw new Error(`Anvil fork block hash does not match reviewed observation block ${plan.observationBlock.hash}`)
@@ -105,7 +108,8 @@ export async function simulateDeploymentPlan(
 
     const desiredDeployment = withCandidateLibraries(deployment, plan.upgrades.candidates)
     const candidateDeployments: DeploymentSimulationResult["candidateDeployments"] = []
-    for (const candidate of plan.upgrades.candidates) {
+    for (const [index, candidate] of plan.upgrades.candidates.entries()) {
+      onProgress?.(`Simulating candidate ${candidate.contractName} (${index + 1}/${plan.upgrades.candidates.length})`)
       const existingCode = await provider.getCode(candidate.candidateAddress)
       if (existingCode !== "0x") {
         candidateDeployments.push({
@@ -120,7 +124,8 @@ export async function simulateDeploymentPlan(
       const creation = loadFoundryPreparedCreationCode(
         candidate.contractName,
         desiredDeployment,
-        candidate.constructorData ?? "0x"
+        candidate.constructorData ?? "0x",
+        onProgress
       )
       if (creation.codeHash !== candidate.creationCodeHash)
         throw new Error(`Creation code changed for ${candidate.contractName}`)
@@ -139,7 +144,8 @@ export async function simulateDeploymentPlan(
     }
 
     const calls: DeploymentSimulationResult["calls"] = []
-    for (const operation of plan.operations) {
+    for (const [index, operation] of plan.operations.entries()) {
+      onProgress?.(`Simulating operation ${operation.id} (${index + 1}/${plan.operations.length})`)
       await provider.send("anvil_impersonateAccount", [operation.caller])
       await provider.send("anvil_setBalance", [operation.caller, toBeHex(SIMULATION_BALANCE)])
       const transaction = toRpcTransaction(operation)
@@ -151,6 +157,7 @@ export async function simulateDeploymentPlan(
       calls.push({operationId: operation.id, estimatedGas: operation.estimatedGas, transactionHash})
     }
 
+    onProgress?.("Verifying upgrade, ownership, wiring, and shop postconditions")
     for (const candidate of plan.upgrades.candidates) {
       if (candidate.kind === "library" || candidate.kind === "implementation") continue
       const actual = await implementationAddress(provider, candidate.target, candidate.kind)
@@ -181,8 +188,10 @@ export async function simulateDeploymentPlan(
     const wiringFailures = await verifyDeploymentWiring(provider, deployment)
     if (wiringFailures.length !== 0) throw new Error(`Wiring postcondition failed: ${wiringFailures.join("; ")}`)
     postconditionsVerified += 6
-    await verifyShopPostconditions(provider, plan.shop)
+    onProgress?.("Verifying shop postconditions (64 RPC pages)")
+    await verifyShopPostconditions(provider, plan.shop, onProgress)
     postconditionsVerified += plan.shop.desired.length
+    onProgress?.(`Simulation verified ${postconditionsVerified} postconditions`)
     return {
       status: "passed",
       forkBlock: plan.observationBlock.number,

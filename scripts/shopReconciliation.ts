@@ -64,6 +64,7 @@ export interface ShopPlan
 
 export interface ShopPlanOptions extends ReconciliationPlanOptions {
   maxAggregatePriceChange?: bigint
+  onProgress?: (message: string) => void
 }
 
 export const DEFAULT_SHOP_LIMITS = {
@@ -86,10 +87,18 @@ function desiredRecords(data: ShopData): ShopRecord[] {
   }))
 }
 
-async function readRecords(provider: JsonRpcProvider, address: string, blockTag: number): Promise<ShopRecord[]> {
+async function readRecords(
+  provider: JsonRpcProvider,
+  address: string,
+  blockTag: number,
+  onProgress?: (message: string) => void
+): Promise<ShopRecord[]> {
   const records: ShopRecord[] = []
   const pageSize = 1024
   for (let startTokenId = 0; startTokenId < 65_536; startTokenId += pageSize) {
+    if (startTokenId % (pageSize * 8) === 0) {
+      onProgress?.(`Reading shop token IDs ${startTokenId}-${startTokenId + pageSize * 8 - 1}`)
+    }
     const result = await provider.call({
       to: address,
       data: shopInterface.encodeFunctionData("getShopItemStates", [startTokenId, startTokenId + pageSize]),
@@ -106,10 +115,11 @@ async function readRecords(provider: JsonRpcProvider, address: string, blockTag:
 export async function readCurrentShop(
   provider: JsonRpcProvider,
   deployment: DeploymentRegistry,
-  blockTag: number
+  blockTag: number,
+  onProgress?: (message: string) => void
 ): Promise<ShopRecord[]> {
   const address = getAddress(deployment.contracts.shop.address)
-  return readRecords(provider, address, blockTag)
+  return readRecords(provider, address, blockTag, onProgress)
 }
 
 function operation(
@@ -312,13 +322,18 @@ export async function buildShopPlan(
   blockTag: number,
   options: ShopPlanOptions = {}
 ): Promise<ShopPlan> {
-  const records = await readCurrentShop(provider, deployment, blockTag)
+  options.onProgress?.("Reading current shop state (64 RPC pages)")
+  const records = await readCurrentShop(provider, deployment, blockTag, options.onProgress)
   return diffShop(deployment, records, options)
 }
 
-export async function verifyShopPostconditions(provider: JsonRpcProvider, plan: ShopPlan): Promise<void> {
+export async function verifyShopPostconditions(
+  provider: JsonRpcProvider,
+  plan: ShopPlan,
+  onProgress?: (message: string) => void
+): Promise<void> {
   const blockTag = Number(await provider.send("eth_blockNumber", []))
-  const actual = await readRecords(provider, plan.target, blockTag)
+  const actual = await readRecords(provider, plan.target, blockTag, onProgress)
   const expected = plan.desired.filter(({price, unsellable}) => price !== "0" || unsellable)
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error("Shop simulation postconditions failed")
 }
