@@ -19,17 +19,23 @@ After updating the contract code, add an Upgrade test to ensure the upgrade work
 ```solidity
 // test/UpgradeSafety.t.sol
 import {Test} from "forge-std/Test.sol";
-import {Upgrades, Options} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 
 contract UpgradeSafetyTest is Test {
-    function testPlayerNFTUpgradeSafe() public {
-        Options memory opts;
-        Upgrades.validateUpgrade("contracts/PlayerNFT.sol", opts);
-    }
+  function testPlayerNFTUpgradeSafe() public {
+    _validateUpgrade("contracts/PlayerNFT.sol:PlayerNFT");
+  }
+
+  function _validateUpgrade(string memory fullyQualifiedName) private {
+    string[] memory command = new string[](3);
+    command[0] = "bash";
+    command[1] = "scripts/validate-foundry-upgrade.sh";
+    command[2] = fullyQualifiedName;
+    vm.ffi(command);
+  }
 }
 ```
 
-If the test already exists then just update the reference contract path to point to the old contract.
+If the test already exists, add one `_validateUpgrade` call for the upgraded contract. The contract's `@custom:oz-upgrades-from` annotation identifies the archived reference contract.
 
 A custom Paintswap OZ fork is used specifically to add "memory-safe" assembly markers to v5.1 contracts. This works around a stack-too-deep compilation issue in Arrays.sol. Upstream OZ contracts have not yet marked their assembly blocks as memory-safe so this fork is needed to work around the issue.
 
