@@ -7,6 +7,6 @@ import {Upgrades, Options} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 contract UpgradeSafetyTest is Test {
   function testShopUpgradeSafe() public {
     Options memory opts;
-    Upgrades.validateUpgrade("Shop.sol:Shop", opts);
+    Upgrades.validateUpgrade("contracts/Shop.sol:Shop", opts);
   }
 }

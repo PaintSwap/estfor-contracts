@@ -18,7 +18,9 @@ artifacts
 
 # Foundry files
 cache-foundry
+cache-upgrade-safety
 out
+out-upgrade-safety
 broadcast
 .forge-deploy-data
 .deployments

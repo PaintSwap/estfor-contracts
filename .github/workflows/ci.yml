@@ -35,3 +35,5 @@ jobs:
           IS_BETA: "false"
       - name: Foundry tests
         run: forge test
+      - name: Upgrade safety
+        run: FOUNDRY_PROFILE=upgrade-safety forge test --match-contract UpgradeSafetyTest

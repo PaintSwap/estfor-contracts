@@ -56,8 +56,9 @@ fs_permissions = [
 ]
 
 # Promotions owns a game function named testClearPlayerPromotions (an admin op to clear test
-# promotions), which Foundry's collector mistakes for a fuzz test. Keep it out of test runs.
-no_match_contract = "Promotions"
+# promotions), which Foundry's collector mistakes for a fuzz test. UpgradeSafetyTest runs in the
+# isolated upgrade-safety profile below.
+no_match_contract = "Promotions|UpgradeSafetyTest"
 
 remappings = [
   "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
@@ -70,3 +71,11 @@ remappings = [
   "@layerzerolabs/test-devtools-evm-foundry/=node_modules/@layerzerolabs/test-devtools-evm-foundry/",
   "@layerzerolabs/lz-evm-protocol-v2/=node_modules/@layerzerolabs/lz-evm-protocol-v2/",
 ]
+
+# OpenZeppelin validation rejects duplicate records for a contract across incremental build-info
+# files. Keep validation in a fresh, isolated output without discarding the default build cache.
+[profile.upgrade-safety]
+out = "out-upgrade-safety"
+cache_path = "cache-upgrade-safety"
+force = true
+no_match_contract = "Promotions"

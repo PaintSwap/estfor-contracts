@@ -6,17 +6,17 @@ import {IPlayerNFT as PlayerNFT} from "../../contracts/interfaces/IPlayerNFT.sol
 import {EstforTest} from "../utils/EstforTest.sol";
 import {FullGameStack} from "../utils/FullGameStack.sol";
 
-interface TestSessionSafe {
+interface ITestSessionSafe {
   function callEnableSession(IUsageBasedSessionModule module, address sessionKey, uint48 duration) external;
   function callRevokeSession(IUsageBasedSessionModule module) external;
 }
 
-interface TestSessionTarget {
+interface ITestSessionTarget {
   function calls() external view returns (uint256);
   function doAction() external;
 }
 
-interface TestSessionRevertingTarget {
+interface ITestSessionRevertingTarget {
   function revertAction() external pure;
 }
 
@@ -24,10 +24,10 @@ contract UsageBasedSessionModuleTest is EstforTest {
   uint256 private constant SESSION_KEY = 0x51A;
   uint256 private constant SECOND_SESSION_KEY = 0x52A;
   uint48 private constant SESSION_DURATION = 1 hours;
-  bytes4 private constant DO_ACTION_SELECTOR = TestSessionTarget.doAction.selector;
+  bytes4 private constant DO_ACTION_SELECTOR = ITestSessionTarget.doAction.selector;
 
-  TestSessionSafe private safe;
-  TestSessionTarget private target;
+  ITestSessionSafe private safe;
+  ITestSessionTarget private target;
   uint48 private sessionDeadline;
 
   function setUp() public {
@@ -101,7 +101,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
   }
 
   function testRejectsActionWithoutGroup() public {
-    TestSessionTarget unmappedTarget = _deployTarget();
+    ITestSessionTarget unmappedTarget = _deployTarget();
     IUsageBasedSessionModule.ExecuteParams memory bad = _signedParams(
       safe,
       unmappedTarget,
@@ -114,10 +114,10 @@ contract UsageBasedSessionModuleTest is EstforTest {
   }
 
   function testRejectsRevertingTargetCall() public {
-    TestSessionRevertingTarget revertingTarget = _deployRevertingTarget();
+    ITestSessionRevertingTarget revertingTarget = _deployRevertingTarget();
     gameSubsidisationRegistry.setFunctionGroup(
       address(revertingTarget),
-      TestSessionRevertingTarget.revertAction.selector,
+      ITestSessionRevertingTarget.revertAction.selector,
       1
     );
     bytes memory data = abi.encodeCall(revertingTarget.revertAction, ());
@@ -131,7 +131,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
     _expectFailedItem(
       bad,
-      TestSessionRevertingTarget.revertAction.selector,
+      ITestSessionRevertingTarget.revertAction.selector,
       IUsageBasedSessionModule.ModuleCallFailed.selector
     );
   }
@@ -155,7 +155,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
   }
 
   function testRejectsWrongSignedTarget() public {
-    TestSessionTarget otherTarget = _deployTarget();
+    ITestSessionTarget otherTarget = _deployTarget();
     bytes memory data = abi.encodeCall(target.doAction, ());
     IUsageBasedSessionModule.ExecuteParams memory bad = IUsageBasedSessionModule.ExecuteParams({
       safe: address(safe),
@@ -181,10 +181,10 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
   function testBatchSupportsMixedResultsForSameSafe() public {
     gameSubsidisationRegistry.setGroupLimit(1, 5);
-    TestSessionRevertingTarget revertingTarget = _deployRevertingTarget();
+    ITestSessionRevertingTarget revertingTarget = _deployRevertingTarget();
     gameSubsidisationRegistry.setFunctionGroup(
       address(revertingTarget),
-      TestSessionRevertingTarget.revertAction.selector,
+      ITestSessionRevertingTarget.revertAction.selector,
       1
     );
     bytes memory failingData = abi.encodeCall(revertingTarget.revertAction, ());
@@ -205,7 +205,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
     vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
     emit IUsageBasedSessionModule.BatchItemFailed(
       address(safe),
-      TestSessionRevertingTarget.revertAction.selector,
+      ITestSessionRevertingTarget.revertAction.selector,
       abi.encodeWithSelector(IUsageBasedSessionModule.ModuleCallFailed.selector)
     );
     vm.expectEmit(true, false, false, true, address(usageBasedSessionModule));
@@ -217,7 +217,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
   function testBatchSupportsMixedResultsForDifferentSafes() public {
     gameSubsidisationRegistry.setGroupLimit(1, 5);
-    (TestSessionSafe safe2, TestSessionTarget target2, uint48 deadline2) = _createSession(SECOND_SESSION_KEY, 5);
+    (ITestSessionSafe safe2, ITestSessionTarget target2, uint48 deadline2) = _createSession(SECOND_SESSION_KEY, 5);
     IUsageBasedSessionModule.ExecuteParams[] memory params = new IUsageBasedSessionModule.ExecuteParams[](2);
     params[0] = _signedParams(safe, target, SESSION_KEY, 0, sessionDeadline);
     params[1] = _signedParams(safe2, target2, SECOND_SESSION_KEY, 999, deadline2);
@@ -295,7 +295,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
   function testRevokeFailsAfterDailySessionOperationLimit() public {
     usageBasedSessionModule.setSessionOpsPerDay(1);
-    (TestSessionSafe limitedSafe, , ) = _createSession(SECOND_SESSION_KEY, 2);
+    (ITestSessionSafe limitedSafe, , ) = _createSession(SECOND_SESSION_KEY, 2);
 
     vm.expectRevert(IUsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
     limitedSafe.callRevokeSession(usageBasedSessionModule);
@@ -321,7 +321,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
   function testEnableFailsWhenDailySessionOperationLimitIsExhausted() public {
     usageBasedSessionModule.setSessionOpsPerDay(2);
-    (TestSessionSafe limitedSafe, , ) = _createSession(SECOND_SESSION_KEY, 2);
+    (ITestSessionSafe limitedSafe, , ) = _createSession(SECOND_SESSION_KEY, 2);
     limitedSafe.callRevokeSession(usageBasedSessionModule);
 
     vm.expectRevert(IUsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
@@ -330,7 +330,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
 
   function testDailySessionOperationLimitResetsNextDay() public {
     usageBasedSessionModule.setSessionOpsPerDay(2);
-    (TestSessionSafe limitedSafe, , ) = _createSession(SECOND_SESSION_KEY, 2);
+    (ITestSessionSafe limitedSafe, , ) = _createSession(SECOND_SESSION_KEY, 2);
     limitedSafe.callRevokeSession(usageBasedSessionModule);
 
     vm.expectRevert(IUsageBasedSessionModule.SessionOpsPerDayLimitReached.selector);
@@ -408,7 +408,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
   function _createSession(
     uint256 key,
     uint256 groupLimit
-  ) private returns (TestSessionSafe newSafe, TestSessionTarget newTarget, uint48 deadline) {
+  ) private returns (ITestSessionSafe newSafe, ITestSessionTarget newTarget, uint48 deadline) {
     newSafe = _deploySafe();
     newTarget = _deployTarget();
     gameSubsidisationRegistry.setFunctionGroup(address(newTarget), DO_ACTION_SELECTOR, 1);
@@ -418,8 +418,8 @@ contract UsageBasedSessionModuleTest is EstforTest {
   }
 
   function _signedParams(
-    TestSessionSafe sessionSafe,
-    TestSessionTarget sessionTarget,
+    ITestSessionSafe sessionSafe,
+    ITestSessionTarget sessionTarget,
     uint256 key,
     uint256 nonce,
     uint48 deadline
@@ -475,7 +475,7 @@ contract UsageBasedSessionModuleTest is EstforTest {
     bytes4 selector,
     bytes4 errorSelector
   ) private {
-    (TestSessionSafe fallbackSafe, TestSessionTarget fallbackTarget, uint48 fallbackDeadline) = _createSession(
+    (ITestSessionSafe fallbackSafe, ITestSessionTarget fallbackTarget, uint48 fallbackDeadline) = _createSession(
       SECOND_SESSION_KEY,
       2
     );
@@ -488,20 +488,20 @@ contract UsageBasedSessionModuleTest is EstforTest {
     usageBasedSessionModule.executeBatch(params);
   }
 
-  function _deploySafe() private returns (TestSessionSafe) {
+  function _deploySafe() private returns (ITestSessionSafe) {
     return
-      TestSessionSafe(
+      ITestSessionSafe(
         _deployArtifact("contracts/test/Session/TestSessionHelpers.sol:TestSessionSafe", abi.encode(address(this)))
       );
   }
 
-  function _deployTarget() private returns (TestSessionTarget) {
-    return TestSessionTarget(_deployArtifact("contracts/test/Session/TestSessionHelpers.sol:TestSessionTarget"));
+  function _deployTarget() private returns (ITestSessionTarget) {
+    return ITestSessionTarget(_deployArtifact("contracts/test/Session/TestSessionHelpers.sol:TestSessionTarget"));
   }
 
-  function _deployRevertingTarget() private returns (TestSessionRevertingTarget) {
+  function _deployRevertingTarget() private returns (ITestSessionRevertingTarget) {
     return
-      TestSessionRevertingTarget(
+      ITestSessionRevertingTarget(
         _deployArtifact("contracts/test/Session/TestSessionHelpers.sol:TestSessionRevertingTarget")
       );
   }
@@ -511,7 +511,7 @@ contract UsageBasedSessionModulePlayerNFTTest is FullGameStack {
   uint256 private constant SESSION_KEY = 0x51A;
   bytes4 private constant MINT_SELECTOR = PlayerNFT.mint.selector;
 
-  TestSessionSafe private safe;
+  ITestSessionSafe private safe;
   uint48 private sessionDeadline;
 
   function setUp() public {
@@ -540,7 +540,7 @@ contract UsageBasedSessionModulePlayerNFTTest is FullGameStack {
     usageBasedSessionModule.executeBatch(_single(_params(_mintData("FirstHero1"), 0, SESSION_KEY)));
     usageBasedSessionModule.executeBatch(_single(_params(_mintData("SecondHero2"), 1, SESSION_KEY)));
 
-    TestSessionSafe fallbackSafe = _deploySafe();
+    ITestSessionSafe fallbackSafe = _deploySafe();
     uint256 fallbackKey = 0x52A;
     fallbackSafe.callEnableSession(usageBasedSessionModule, vm.addr(fallbackKey), 1 hours);
     uint48 fallbackDeadline = usageBasedSessionModule.getSession(address(fallbackSafe)).deadline;
@@ -585,7 +585,7 @@ contract UsageBasedSessionModulePlayerNFTTest is FullGameStack {
   }
 
   function _paramsFor(
-    TestSessionSafe sessionSafe,
+    ITestSessionSafe sessionSafe,
     bytes memory data,
     uint256 nonce,
     uint256 key,
@@ -624,9 +624,9 @@ contract UsageBasedSessionModulePlayerNFTTest is FullGameStack {
     params[0] = item;
   }
 
-  function _deploySafe() private returns (TestSessionSafe) {
+  function _deploySafe() private returns (ITestSessionSafe) {
     return
-      TestSessionSafe(
+      ITestSessionSafe(
         _deployArtifact("contracts/test/Session/TestSessionHelpers.sol:TestSessionSafe", abi.encode(address(this)))
       );
   }
