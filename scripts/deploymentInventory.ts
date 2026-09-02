@@ -20,6 +20,7 @@ import {
 import {buildShopPlan} from "./shopReconciliation"
 import type {ShopPlan, ShopPlanOptions} from "./shopReconciliation"
 import type {ShopSimulationResult} from "./shopSimulation"
+import {DEFAULT_SAFE_BATCH_LIMITS} from "./reconciliation"
 import type {ReconciliationOperation} from "./reconciliation"
 
 export const EIP1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
@@ -67,7 +68,7 @@ export interface ContractInventory extends CodeInventory {
 }
 
 export interface DeploymentPlan {
-  schemaVersion: 1
+  schemaVersion: 2
   mode: "read-only"
   deploymentId: string
   chainId: number
@@ -81,6 +82,7 @@ export interface DeploymentPlan {
     gitRevision: string
     openZeppelinManifestHash: string
   }
+  execution: {safeBatchLimits: {maxOperations: number; maxGas: string}}
   contracts: ContractInventory[]
   externals: Array<CodeInventory & {name: string}>
   domains: Array<{name: string; policy: "managed" | "observed" | "unmanaged"; reason: string}>
@@ -97,6 +99,11 @@ export interface DeploymentPlan {
     domainPolicies: Record<"managed" | "observed" | "unmanaged", number>
   }
   planHash: string
+}
+
+export interface DeploymentPlanOptions extends ShopPlanOptions {
+  maxSafeOperations?: number
+  maxSafeGas?: bigint
 }
 
 interface LegacyManifest {
@@ -360,7 +367,7 @@ export async function buildDeploymentPlan(
   provider: JsonRpcProvider,
   deployment: DeploymentRegistry,
   requestedBlock?: number,
-  shopOptions: ShopPlanOptions = {}
+  options: DeploymentPlanOptions = {}
 ): Promise<DeploymentPlan> {
   const network = await provider.getNetwork()
   if (network.chainId !== BigInt(deployment.chainId))
@@ -424,7 +431,7 @@ export async function buildDeploymentPlan(
       findings.push({severity: "error", code: "EXTERNAL_NO_CODE", subject: name, message: `No code at ${address}`})
     externals.push({name, ...codeInventory(address, code)})
   }
-  const shop = await buildShopPlan(provider, deployment, block.number, shopOptions)
+  const shop = await buildShopPlan(provider, deployment, block.number, options)
   for (const reason of shop.blockedReasons) {
     findings.push({severity: "error", code: "SHOP_CHANGE_BLOCKED", subject: "shop", message: reason})
   }
@@ -436,7 +443,7 @@ export async function buildDeploymentPlan(
     classifications[classification] = (classifications[classification] ?? 0) + 1
   }
   const withoutHash: Omit<DeploymentPlan, "planHash"> = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     mode: "read-only",
     deploymentId: deployment.deploymentId,
     chainId: deployment.chainId,
@@ -449,6 +456,12 @@ export async function buildDeploymentPlan(
       sourceDataHash: sha256(canonical(shop.desired)),
       gitRevision: execFileSync("git", ["rev-parse", "HEAD"], {encoding: "utf8"}).trim(),
       openZeppelinManifestHash: sha256(manifestRaw),
+    },
+    execution: {
+      safeBatchLimits: {
+        maxOperations: options.maxSafeOperations ?? DEFAULT_SAFE_BATCH_LIMITS.maxOperations,
+        maxGas: (options.maxSafeGas ?? DEFAULT_SAFE_BATCH_LIMITS.maxGas).toString(),
+      },
     },
     contracts,
     externals,

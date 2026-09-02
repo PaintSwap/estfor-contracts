@@ -1,3 +1,5 @@
+export const DEFAULT_SAFE_BATCH_LIMITS = {maxOperations: 20, maxGas: 8_000_000n}
+
 export type ReconciliationAction = "add" | "update" | "remove"
 
 export interface ReconciliationOperation<Resource extends string = string, Postcondition = unknown> {

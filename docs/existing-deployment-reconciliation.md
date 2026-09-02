@@ -507,12 +507,17 @@ and no-op classifications plus dependency-ordered calldata. Removals require `--
 100 changed IDs, 10 removals, and 10,000 BRUSH of aggregate price movement. These defaults can be overridden with
 `--max-shop-changes`, `--max-shop-removals`, and `--max-shop-value-change` (wei). Unblocked operations are preflighted
 at the observation block, executed from the tracked Safe on an ephemeral Anvil fork pinned to that block, and followed
-by verification of every managed ID. The command remains read-only and rejects `--apply` and `--resume` until Phase 4.
+by verification of every managed ID. The command remains read-only by default. Phase 4 adds reviewed-plan apply and
+state-based resume modes.
 
 Existing Shop proxies must be upgraded to the implementation that exposes `getShopItemStates` before Phase 3 can inspect
 them. The reconciler fails closed when this direct read is unavailable; it does not fall back to chain-history reconstruction.
 
 ### Phase 4: Safe proposal execution
+
+Status: Safe proposal execution is implemented on 2026-09-02 for managed Shop operations. The code-creation part remains
+blocked on Phase 5 producing validated library and implementation candidates, so the creation acceptance case is not yet
+implemented.
 
 1. Add Foundry broadcasts only for deployer-funded library, implementation, and new-proxy creation.
 2. Generate Safe Transaction Builder JSON for all authority-controlled calls.
@@ -527,6 +532,25 @@ Acceptance:
 - Safe simulation uses the Safe as caller;
 - generated Safe calldata matches the simulated calldata byte for byte; and
 - apply submits the reviewed proposal and records its Safe transaction hash and nonce.
+
+Read-only plans now retain deterministic Safe Transaction Builder JSON files generated from the same generic operation
+envelope used by fork simulation. The reviewed plan hash covers the Safe operation-count and aggregate-gas batch limits;
+defaults are 20 operations and 8,000,000 estimated gas, configurable with `--max-safe-operations` and `--max-safe-gas`.
+Dependency-connected operations stay in one atomic batch, while independent groups split at those limits. Destructive
+dependency groups are isolated from independent changes as a fixed risk boundary.
+
+Apply uses `--apply --plan <path>`. It verifies the stored plan hash, reconstructs the plan at its pinned block, checks a
+3,600-block default staleness limit, re-reads latest state, and refuses submission if the authority, inputs, or operation
+calldata changed. Every authority operation must name the tracked Safe as caller. The proposer key must belong to a
+tracked Safe owner. There is no direct owner broadcast path. Proposal journals are written before submission and then
+record nonce, Safe transaction hash, service status, execution transaction hash, and the validated RPC receipt. An unknown
+service failure is not retried; a prepared proposal is retried only after the service confirms that its Safe transaction
+hash is absent.
+
+`--resume <run-id>` refreshes each journal from the Safe service, reports pending, executed, failed, and unproposed
+remaining work, and writes a new remainder plan from current state. Once every proposal executed, it requires an empty
+managed plan and stores the final verification report. Partial execution is resumed by reviewing and applying the newly
+generated current-state plan; old calls are never broadcast directly.
 
 ### Phase 5: implementation upgrades
 
