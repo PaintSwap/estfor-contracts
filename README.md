@@ -19,31 +19,13 @@ pnpm install
 To compile:
 
 ```shell
-pnpm compile
+forge compile
 ```
 
 To run the tests:
 
 ```shell
-pnpm test
-```
-
-To deploy the contracts:
-
-```shell
-pnpm deploy
-```
-
-To verify the contracts on ftmscan:
-
-```shell
-pnpm verifyContracts
-```
-
-To check storage slot packing of the test file:
-
-```shell
-pnpm umlStorage
+forge test
 ```
 
 ## Existing deployments
@@ -53,19 +35,19 @@ Use `deployment:sync` to inspect or change a tracked deployment. The command loa
 Create and simulate a read-only plan:
 
 ```shell
-pnpm deployment:sync -- --deployment sonic-live
+pnpm deployment:sync --deployment sonic-live
 ```
 
 Apply a reviewed plan:
 
 ```shell
-pnpm deployment:sync -- --deployment sonic-live --apply --plan runs/sonic-live/<run-id>/plan.json
+pnpm deployment:sync --deployment sonic-live --apply --plan runs/sonic-live/<run-id>/plan.json
 ```
 
 Resume after an interruption:
 
 ```shell
-pnpm deployment:sync -- --deployment sonic-live --resume <run-id>
+pnpm deployment:sync --deployment sonic-live --resume <run-id>
 ```
 
 The command requires `RPC_URL` or `SONIC_RPC`. Upgrade plans and apply operations use `PROPOSER_PRIVATE_KEY`. Safe apply and resume operations use `SAFE_API_KEY`.
