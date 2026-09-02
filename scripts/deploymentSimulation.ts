@@ -5,6 +5,7 @@ import {loadFoundryPreparedCreationCode} from "./deploymentArtifacts"
 import type {DeploymentPlan} from "./deploymentInventory"
 import type {DeploymentRegistry} from "./deploymentRegistry"
 import {EIP1967_IMPLEMENTATION_SLOT, addressFromStorage} from "./deploymentSlots"
+import {toRpcTransaction} from "./reconciliation"
 import {verifyShopPostconditions} from "./shopReconciliation"
 import {verifyDeploymentWiring} from "./deploymentWiring"
 
@@ -132,7 +133,7 @@ export async function simulateDeploymentPlan(
     for (const operation of plan.operations) {
       await provider.send("anvil_impersonateAccount", [operation.caller])
       await provider.send("anvil_setBalance", [operation.caller, toBeHex(10n ** 20n)])
-      const transaction = {from: operation.caller, to: operation.target, data: operation.data, value: "0x0"}
+      const transaction = toRpcTransaction(operation)
       await provider.call(transaction)
       operation.estimatedGas = (await provider.estimateGas(transaction)).toString()
       const transactionHash = (await provider.send("eth_sendTransaction", [transaction])) as string

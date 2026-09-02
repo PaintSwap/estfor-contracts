@@ -48,19 +48,26 @@ pnpm umlStorage
 
 ## Existing deployments
 
-Tracked deployment addresses and metadata have one source of truth:
+Use `deployment:sync` to inspect or change a tracked deployment. The command loads `.env` automatically.
 
-- [Sonic mainnet](deployments/146/sonic-live.json)
-- [Sonic mainnet beta](deployments/146/sonic-beta.json)
-
-Select an existing deployment explicitly and validate its addresses against Sonic:
+Create and simulate a read-only plan:
 
 ```shell
-DEPLOYMENT_ID=sonic-live pnpm deployment:validate
+pnpm deployment:sync -- --deployment sonic-live
 ```
 
-The command requires `RPC_URL` or `SONIC_RPC`.
+Apply a reviewed plan:
 
-### Obtain SAFE Api Key
+```shell
+pnpm deployment:sync -- --deployment sonic-live --apply --plan runs/sonic-live/<run-id>/plan.json
+```
 
-[https://developer.safe.global/api-keys](https://developer.safe.global/api-keys)
+Resume after an interruption:
+
+```shell
+pnpm deployment:sync -- --deployment sonic-live --resume <run-id>
+```
+
+The command requires `RPC_URL` or `SONIC_RPC`. Upgrade plans and apply operations use `PROPOSER_PRIVATE_KEY`. Safe apply and resume operations use `SAFE_API_KEY`.
+
+See the [deployment reconciliation operator guide](docs/deployment-reconciliation.md) for the command modes, files, and outputs. Tracked addresses are in [Sonic live](deployments/146/sonic-live.json) and [Sonic beta](deployments/146/sonic-beta.json).

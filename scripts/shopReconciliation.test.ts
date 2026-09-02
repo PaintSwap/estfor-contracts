@@ -3,25 +3,33 @@ import {ChildProcess, spawn} from "child_process"
 import {readFileSync} from "fs"
 import {createServer} from "net"
 import {after, before, describe, it} from "node:test"
-import {Contract, ContractFactory, Interface, JsonRpcProvider} from "ethers"
+import {Contract, ContractFactory, Interface, JsonRpcProvider, toBeHex} from "ethers"
 import {getShopData} from "./data/shop"
-import {DeploymentRegistry, loadDeploymentRegistry} from "./deploymentRegistry"
-import {SHOP_RECONCILIATION_ABI, buildShopPlan, diffShop, hasShopStateGetter} from "./shopReconciliation"
-import {simulateShopPlan} from "./shopSimulation"
+import type {DeploymentRegistry} from "./deploymentRegistry"
+import {loadDeploymentRegistry} from "./deploymentRegistry"
+import {toRpcTransaction} from "./reconciliation"
+import type {ShopRecord} from "./shopReconciliation"
+import {
+  SHOP_RECONCILIATION_ABI,
+  buildShopPlan,
+  diffShop,
+  hasShopStateGetter,
+  verifyShopPostconditions,
+} from "./shopReconciliation"
 
 async function freePort(): Promise<number> {
   return new Promise((resolve, reject) => {
     const server = createServer()
     server.listen(0, "127.0.0.1", () => {
       const address = server.address()
-      if (!address || typeof address === "string") return reject(new Error("port"))
+      if (!address || typeof address === "string") return reject(new Error("Could not allocate Anvil port"))
       server.close((error) => (error ? reject(error) : resolve(address.port)))
     })
   })
 }
 
 async function waitForRpc(provider: JsonRpcProvider): Promise<void> {
-  for (let i = 0; i < 100; i++) {
+  for (let attempt = 0; attempt < 100; attempt++) {
     try {
       await provider.getBlockNumber()
       return
@@ -94,21 +102,30 @@ describe("Shop reconciliation", function () {
     assert.equal(hasShopStateGetter("0x6000123456786000"), false)
   })
 
-  it("classifies missing, changed, stale, and unchanged records exactly", async function () {
+  it("classifies missing, changed, stale, and unchanged records exactly", function () {
     const desired = getShopData("live")
+    const prices = new Map(desired.buyableItems.map(({tokenId, price}) => [tokenId, price]))
+    const unsellable = new Set(desired.unsellableItemIds)
+    const desiredRecords: ShopRecord[] = [...new Set([...prices.keys(), ...unsellable])]
+      .sort((a, b) => a - b)
+      .map((tokenId) => ({
+        tokenId,
+        price: (prices.get(tokenId) ?? 0n).toString(),
+        unsellable: unsellable.has(tokenId),
+      }))
     const staleId = Array.from({length: 65_536}, (_, id) => id).find(
       (id) => !desired.buyableItems.some(({tokenId}) => tokenId === id) && !desired.unsellableItemIds.includes(id)
     )!
-    const initial = desired.buyableItems.slice(1).map((item, index) => ({
-      tokenId: item.tokenId,
-      price: index === 0 ? item.price + 1n : item.price,
-    }))
-    initial.push({tokenId: staleId, price: 1n})
-    await (await fixture.addBuyableItems(initial)).wait()
-    await (await fixture.addUnsellableItems(desired.unsellableItemIds)).wait()
+    const missingId = desired.buyableItems[0].tokenId
+    const changedId = desired.buyableItems[1].tokenId
+    const current = desiredRecords
+      .filter(({tokenId}) => tokenId !== missingId)
+      .map((record) =>
+        record.tokenId === changedId ? {...record, price: (BigInt(record.price) + 1n).toString()} : record
+      )
+    current.push({tokenId: staleId, price: "1", unsellable: false})
 
-    const block = await currentBlock(provider)
-    const plan = await buildShopPlan(provider, deployment, block, {
+    const plan = diffShop(deployment, current, {
       allowRemovals: true,
       maxRemovals: 10,
       maxAggregatePriceChange: 100_000n * 10n ** 18n,
@@ -131,27 +148,52 @@ describe("Shop reconciliation", function () {
       remove: [],
       noOp: [...desired.unsellableItemIds].sort((a, b) => a - b),
     })
+    const empty = diffShop(deployment, desiredRecords)
+    assert.equal(empty.operations.length, 0)
+    assert.equal(empty.blockedReasons.length, 0)
+  })
 
-    const blockHash = (await provider.getBlock(block))!.hash
-    const simulation = await simulateShopPlan(provider, rpcUrl, 31337, block, blockHash!, plan)
-    assert.equal(simulation.status, "passed")
-    assert.equal(simulation.postconditionsVerified, plan.desired.length)
+  it("simulates on a pinned fork and reaches an empty second plan", async function () {
+    const block = await currentBlock(provider)
+    const plan = await buildShopPlan(provider, deployment, block)
+    const forkPort = await freePort()
+    const forkChild = spawn("anvil", [
+      "--fork-url",
+      rpcUrl,
+      "--fork-block-number",
+      String(block),
+      "--chain-id",
+      "31337",
+      "--port",
+      String(forkPort),
+      "--silent",
+    ])
+    const forkProvider = new JsonRpcProvider(`http://127.0.0.1:${forkPort}`, 31337, {staticNetwork: true})
+    try {
+      await waitForRpc(forkProvider)
+      await forkProvider.send("anvil_impersonateAccount", [plan.operations[0].caller])
+      await forkProvider.send("anvil_setBalance", [plan.operations[0].caller, toBeHex(10n ** 20n)])
+      for (const operation of plan.operations) {
+        const transaction = toRpcTransaction(operation)
+        await forkProvider.call(transaction)
+        const transactionHash = await forkProvider.send("eth_sendTransaction", [transaction])
+        await forkProvider.waitForTransaction(transactionHash)
+      }
+      await verifyShopPostconditions(forkProvider, plan)
+    } finally {
+      forkProvider.destroy()
+      forkChild.kill("SIGTERM")
+    }
 
     const first = plan.operations[0]
-    const hash = await provider.send("eth_sendTransaction", [{from: first.caller, to: first.target, data: first.data}])
-    await provider.waitForTransaction(hash)
-    const remainder = await buildShopPlan(provider, deployment, await currentBlock(provider), {
-      allowRemovals: true,
-      maxAggregatePriceChange: 100_000n * 10n ** 18n,
-    })
+    const firstTransactionHash = await provider.send("eth_sendTransaction", [toRpcTransaction(first)])
+    await provider.waitForTransaction(firstTransactionHash)
+    const remainder = await buildShopPlan(provider, deployment, await currentBlock(provider))
     assert.ok(remainder.operations.length < plan.operations.length)
     assert.ok(!remainder.operations.some(({id}) => id === first.id))
-
     for (const operation of remainder.operations) {
-      const txHash = await provider.send("eth_sendTransaction", [
-        {from: operation.caller, to: operation.target, data: operation.data},
-      ])
-      await provider.waitForTransaction(txHash)
+      const transactionHash = await provider.send("eth_sendTransaction", [toRpcTransaction(operation)])
+      await provider.waitForTransaction(transactionHash)
     }
     const empty = await buildShopPlan(provider, deployment, await currentBlock(provider))
     assert.equal(empty.operations.length, 0)

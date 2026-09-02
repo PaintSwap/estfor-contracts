@@ -363,7 +363,7 @@ Adding arrays or enumerable sets to every contract increases storage, mutation g
 Use one command surface with explicit modes:
 
 ```text
-# Build, inspect, plan, and simulate. No signer is required.
+# Build, inspect, plan, and simulate. Upgrade candidates require PROPOSER_PRIVATE_KEY.
 pnpm deployment:sync -- --deployment sonic-live
 
 # Deploy required code and submit exactly a reviewed Safe proposal.
@@ -584,7 +584,8 @@ address; every dependent creation payload links that same address. A missing or 
 implementation addresses, unknown comparisons, unsupported constructor arguments, and failed OpenZeppelin storage
 validation block apply.
 
-Upgrade planning derives its deployment address from the existing `PROPOSER_PRIVATE_KEY`. The pinned proposer nonce
+Upgrade planning derives its deployment address from `PROPOSER_PRIVATE_KEY`. The command loads the key from `.env`.
+The pinned proposer nonce
 determines each CREATE candidate address, so the reviewed Safe calldata already contains the final implementation address.
 The plan records the linked creation-code hash, artifact identity, library dependencies, validation evidence, nonce, and
 implementation postcondition. The same operation envelope then produces the fork call and Safe Transaction Builder call,

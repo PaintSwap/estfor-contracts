@@ -1,10 +1,10 @@
 import "dotenv/config"
 import {spawnSync} from "child_process"
-import {existsSync, mkdirSync, readFileSync, writeFileSync} from "fs"
+import {existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from "fs"
 import {dirname, resolve} from "path"
 import {JsonRpcProvider, Wallet, getAddress} from "ethers"
 import {loadDeploymentRegistry} from "./deploymentRegistry"
-import {buildDeploymentPlan, hashPlan, renderPlanMarkdown} from "./deploymentInventory"
+import {buildDeploymentPlan, buildRemainderPlan, hashPlan, renderPlanMarkdown} from "./deploymentInventory"
 import {DEFAULT_SHOP_LIMITS} from "./shopReconciliation"
 import {simulateDeploymentPlan} from "./deploymentSimulation"
 import {
@@ -21,6 +21,7 @@ import {
 } from "./safeReconciliation"
 import type {DeploymentPlan, DeploymentPlanOptions} from "./deploymentInventory"
 import {deployUpgradeCandidates} from "./upgradeReconciliation"
+import {assertSafeOwner} from "./reconciliation"
 
 function option(name: string): string | undefined {
   const index = process.argv.indexOf(name)
@@ -150,6 +151,15 @@ async function main() {
           maxAggregatePriceChange: BigInt(reviewedPlan.shop.limits.maxAggregatePriceChange),
           maxSafeOperations: reviewedPlan.execution.safeBatchLimits.maxOperations,
           maxSafeGas: BigInt(reviewedPlan.execution.safeBatchLimits.maxGas),
+          ...(reviewedPlan.pendingOperationIds?.length
+            ? {
+                reusableCandidates: Object.fromEntries(
+                  [...reviewedPlan.upgrades.candidates, ...(reviewedPlan.pendingCandidates ?? [])].map(
+                    ({contractName, candidateAddress}) => [contractName, candidateAddress]
+                  )
+                ),
+              }
+            : {}),
         }
       : {
           allowRemovals: process.argv.includes("--allow-removals"),
@@ -164,12 +174,15 @@ async function main() {
   if (build.error) throw build.error
   if (build.status !== 0) throw new Error(`forge build failed with status ${build.status}`)
   const provider = new JsonRpcProvider(rpcUrl, deployment.chainId, {staticNetwork: true})
-  const plan = await buildDeploymentPlan(
+  const builtPlan = await buildDeploymentPlan(
     provider,
     deployment,
     reviewedPlan?.observationBlock.number ?? block,
     planOptions
   )
+  const plan = reviewedPlan?.pendingOperationIds?.length
+    ? buildRemainderPlan(builtPlan, new Set(reviewedPlan.pendingOperationIds))
+    : builtPlan
   await simulate(plan, rpcUrl, deployment)
   const simulation = plan.simulation
   if (!simulation) throw new Error("Plan simulation did not produce a result")
@@ -226,68 +239,95 @@ async function main() {
   if (plan.summary.errors !== 0) throw new Error("Cannot submit a plan with alignment errors")
   if (simulation.status !== "passed" && simulation.status !== "no-op")
     throw new Error("Cannot submit a plan that did not pass simulation")
-  if (batches.length !== 0 && !process.env.SAFE_API_KEY) {
+  if ((batches.length !== 0 || plan.pendingOperationIds.length !== 0) && !process.env.SAFE_API_KEY) {
     throw new Error("SAFE_API_KEY is required for Safe proposal apply and resume")
   }
 
   if (resumeRunId) {
-    if (batches.length === 0) {
-      console.log("Deployment is aligned; no Safe proposal remains")
+    if (batches.length === 0 && plan.pendingOperationIds.length === 0) {
+      if (plan.upgrades.candidates.length === 0 && plan.pendingCandidates.length === 0)
+        console.log("Deployment is aligned; no Safe proposal remains")
+      else console.log("Candidate code exists without an authority operation; deployment remains pending")
+      if (plan.upgrades.candidates.length !== 0 || plan.pendingCandidates.length !== 0) process.exitCode = 2
       return
     }
     const api = createSafeApi(deployment.chainId, process.env.SAFE_API_KEY!)
-    const journals = []
+    const relevantOperationIds = new Set([...plan.pendingOperationIds, ...plan.operations.map(({id}) => id)])
+    const journals = readdirSync(outputRoot)
+      .filter((name) => /^safe-proposal-.*\.json$/.test(name))
+      .map((name) => ({path: resolve(outputRoot, name), journal: readSafeJournal(resolve(outputRoot, name))}))
+      .filter(({journal}) => journal.operationIds.some((id) => relevantOperationIds.has(id)))
     const unjournaledOperationIds: string[] = []
-    for (const batch of batches) {
-      const journalPath = resolve(outputRoot, `safe-proposal-${batch.index + 1}.json`)
-      if (!existsSync(journalPath)) {
-        unjournaledOperationIds.push(...batch.operationIds)
-        console.log(`Safe batch ${batch.index + 1}: unproposed (no journal)`)
-        continue
-      }
-      const journal = readSafeJournal(journalPath)
+    for (const entry of journals) {
+      const {journal} = entry
       try {
         await refreshSafeJournal(api, journal, provider)
       } catch (error) {
         if (journal.status !== "prepared" || !isSafeTransactionNotFound(error)) throw error
         unjournaledOperationIds.push(...journal.operationIds)
-        console.log(`Safe batch ${batch.index + 1}: prepared but absent from the Safe service`)
+        console.log(`Safe batch ${journal.batchIndex + 1}: prepared but absent from the Safe service`)
       }
-      writeSafeJournal(journalPath, journal)
-      journals.push(journal)
-      console.log(`Safe batch ${batch.index + 1}: ${journal.status} (${journal.safeTxHash})`)
+      writeSafeJournal(entry.path, journal)
+      console.log(`Safe batch ${journal.batchIndex + 1}: ${journal.status} (${journal.safeTxHash})`)
     }
-    const reusableCandidates = Object.fromEntries(
-      plan.upgrades.candidates.map(({contractName, candidateAddress}) => [contractName, candidateAddress])
+    for (const batch of batches) {
+      if (!journals.some(({journal}) => JSON.stringify(journal.operationIds) === JSON.stringify(batch.operationIds))) {
+        unjournaledOperationIds.push(...batch.operationIds)
+        console.log(`Safe batch ${batch.index + 1}: unproposed (no journal)`)
+      }
+    }
+    const pendingOperationIds = new Set(
+      journals.filter(({journal}) => journal.status === "pending").flatMap(({journal}) => journal.operationIds)
     )
-    const remainderPlan = await buildDeploymentPlan(provider, deployment, undefined, {
+    const reusableCandidates = Object.fromEntries(
+      [...plan.upgrades.candidates, ...plan.pendingCandidates].map(({contractName, candidateAddress}) => [
+        contractName,
+        candidateAddress,
+      ])
+    )
+    const currentStatePlan = await buildDeploymentPlan(provider, deployment, undefined, {
       ...planOptions,
       reusableCandidates,
     })
+    const remainderPlan = buildRemainderPlan(currentStatePlan, pendingOperationIds)
     await simulate(remainderPlan, rpcUrl, deployment)
     writeFileSync(resolve(outputRoot, "remainder-plan.json"), `${JSON.stringify(remainderPlan, null, 2)}\n`)
     writeFileSync(resolve(outputRoot, "remainder-plan.md"), renderPlanMarkdown(remainderPlan))
-    const pendingOperationIds = new Set(
-      journals.filter(({status}) => status === "pending").flatMap(({operationIds}) => operationIds)
-    )
-    const remainingOperationIds = remainderPlan.operations
-      .map(({id}) => id)
-      .filter((id) => !pendingOperationIds.has(id))
+    const remainingOperationIds = remainderPlan.operations.map(({id}) => id)
     const unproposedOperationIds = new Set([...unjournaledOperationIds, ...remainingOperationIds])
     console.log(
       `Resume result: ${pendingOperationIds.size} pending operations, ${unproposedOperationIds.size} unproposed remaining operations`
     )
-    if (journals.length === batches.length && journals.every(({status}) => status === "executed")) {
+    const executedOperationIds = new Set(
+      journals.filter(({journal}) => journal.status === "executed").flatMap(({journal}) => journal.operationIds)
+    )
+    const allReviewedOperationsExecuted = [...relevantOperationIds].every((id) => executedOperationIds.has(id))
+    if (allReviewedOperationsExecuted) {
       writeFileSync(resolve(outputRoot, "final-plan.json"), `${JSON.stringify(remainderPlan, null, 2)}\n`)
-      if (remainderPlan.summary.errors !== 0 || remainderPlan.operations.length !== 0)
+      if (
+        remainderPlan.summary.errors !== 0 ||
+        remainderPlan.operations.length !== 0 ||
+        remainderPlan.upgrades.candidates.length !== 0
+      )
         throw new Error("Safe proposals executed, but final deployment verification is not aligned")
       console.log("Final verification passed; the managed deployment plan is empty")
     }
     return
   }
 
-  if (batches.length === 0 && plan.upgrades.candidates.length === 0) {
+  if (
+    batches.length === 0 &&
+    plan.upgrades.candidates.length === 0 &&
+    plan.pendingCandidates.length === 0 &&
+    plan.pendingOperationIds.length === 0
+  ) {
     console.log("Deployment is already aligned; no Safe proposal was submitted")
+    return
+  }
+
+  if (batches.length === 0 && plan.upgrades.candidates.length === 0) {
+    console.log(`Deployment remains pending with ${plan.pendingOperationIds.length} Safe operations`)
+    process.exitCode = 2
     return
   }
   if (batches.length !== 0 && !proposerPrivateKey) {
@@ -313,7 +353,13 @@ async function main() {
         candidate !== null
     )
   )
-  const currentPlan = await buildDeploymentPlan(provider, deployment, undefined, {...planOptions, reusableCandidates})
+  const builtCurrentPlan = await buildDeploymentPlan(provider, deployment, undefined, {
+    ...planOptions,
+    reusableCandidates,
+  })
+  const currentPlan = reviewedPlan?.pendingOperationIds?.length
+    ? buildRemainderPlan(builtCurrentPlan, new Set(reviewedPlan.pendingOperationIds))
+    : builtCurrentPlan
   await simulate(currentPlan, rpcUrl, deployment)
   if (
     currentPlan.summary.errors !== 0 ||
@@ -322,6 +368,8 @@ async function main() {
     operationPayloads(currentPlan) !== operationPayloads(plan)
   )
     throw new Error("Managed chain state changed after the reviewed plan; generate and review a new plan")
+
+  assertSafeOwner(proposerAddress, currentPlan.authority.owners)
 
   if (plan.upgrades.candidates.length !== 0) {
     const deployer = new Wallet(proposerPrivateKey!, provider)
@@ -337,7 +385,8 @@ async function main() {
   }
 
   if (batches.length === 0) {
-    console.log("Code candidates deployed; no Safe proposal was required")
+    console.log("Candidate code deployed without an authority operation; deployment remains pending")
+    process.exitCode = 2
     return
   }
 
@@ -352,7 +401,7 @@ async function main() {
     throw new Error(`Proposal sender ${clients.proposerAddress} is not an owner of the tracked Safe`)
   let nextNonce = Number(await clients.api.getNextNonce(deployment.authority.address))
   for (const batch of batches) {
-    const journalPath = resolve(outputRoot, `safe-proposal-${batch.index + 1}.json`)
+    const journalPath = resolve(outputRoot, `safe-proposal-${plan.planHash.slice(2, 10)}-${batch.index + 1}.json`)
     let nonce = nextNonce
     if (existsSync(journalPath)) {
       const existing = readSafeJournal(journalPath)

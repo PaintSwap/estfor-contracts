@@ -37,7 +37,7 @@ describe("implementation upgrade reconciliation", function () {
     assert.equal(plan.operations[0].postcondition.expected, plan.candidates[0].candidateAddress)
   })
 
-  it("fails closed without a planning address and for unknown bytecode", async function () {
+  it("fails closed without a proposer key-derived address and for unknown bytecode", async function () {
     const noDeployer = await buildUpgradePlan(provider, deployment, 1, [shop], {validate: validation})
     assert.match(noDeployer.blockedReasons[0], /PROPOSER_PRIVATE_KEY/)
     assert.equal(noDeployer.operations.length, 0)

@@ -24,7 +24,7 @@ import {EIP1967_IMPLEMENTATION_SLOT, UUPS_PROXIABLE_UUID, addressFromStorage} fr
 import {DEFAULT_SAFE_BATCH_LIMITS} from "./reconciliation"
 import type {ReconciliationOperation} from "./reconciliation"
 import {buildUpgradePlan} from "./upgradeReconciliation"
-import type {UpgradePlan, UpgradePlanOptions} from "./upgradeReconciliation"
+import type {UpgradeCandidate, UpgradePlan, UpgradePlanOptions} from "./upgradeReconciliation"
 import {verifyDeploymentWiring} from "./deploymentWiring"
 
 const readInterface = new Interface([
@@ -89,6 +89,8 @@ export interface DeploymentPlan {
   upgrades: UpgradePlan
   shop: ShopPlan
   operations: ReconciliationOperation[]
+  pendingOperationIds: string[]
+  pendingCandidates: UpgradeCandidate[]
   simulation: DeploymentSimulationResult | {status: "blocked"; reasons: string[]} | null
   findings: Finding[]
   summary: {
@@ -507,6 +509,8 @@ export async function buildDeploymentPlan(
     upgrades,
     shop,
     operations: [...upgrades.operations, ...shop.operations],
+    pendingOperationIds: [],
+    pendingCandidates: [],
     simulation: null,
     findings,
     summary: {
@@ -525,6 +529,47 @@ export async function buildDeploymentPlan(
     },
   }
   return {...withoutHash, planHash: hashPlan(withoutHash)}
+}
+
+export function buildRemainderPlan(plan: DeploymentPlan, pendingOperationIds: ReadonlySet<string>): DeploymentPlan {
+  const allPendingOperationIds = [...new Set([...plan.pendingOperationIds, ...pendingOperationIds])].sort()
+  const allPendingOperationIdSet = new Set(allPendingOperationIds)
+  const keepOperation = ({id}: ReconciliationOperation) => !allPendingOperationIdSet.has(id)
+  const upgradeOperations = plan.upgrades.operations.filter(keepOperation)
+  const requiredCandidates = new Set(upgradeOperations.map(({contractName}) => contractName))
+  const candidatesByName = new Map(plan.upgrades.candidates.map((candidate) => [candidate.contractName, candidate]))
+  const addDependencies = (contractName: ContractName): void => {
+    const candidate = candidatesByName.get(contractName)
+    if (!candidate) return
+    for (const dependency of candidate.libraryDependencies) {
+      if (requiredCandidates.has(dependency)) continue
+      requiredCandidates.add(dependency)
+      addDependencies(dependency)
+    }
+  }
+  for (const contractName of [...requiredCandidates]) addDependencies(contractName)
+  const activeCandidates = plan.upgrades.candidates.filter(({contractName}) => requiredCandidates.has(contractName))
+  const pendingCandidates = [
+    ...new Map(
+      [...plan.pendingCandidates, ...plan.upgrades.candidates]
+        .filter(({contractName}) => !requiredCandidates.has(contractName))
+        .map((candidate) => [candidate.contractName, candidate])
+    ).values(),
+  ]
+
+  return {
+    ...plan,
+    upgrades: {
+      ...plan.upgrades,
+      operations: upgradeOperations,
+      candidates: activeCandidates,
+    },
+    shop: {...plan.shop, operations: plan.shop.operations.filter(keepOperation)},
+    operations: plan.operations.filter(keepOperation),
+    pendingOperationIds: allPendingOperationIds,
+    pendingCandidates,
+    simulation: null,
+  }
 }
 
 export function renderPlanMarkdown(plan: DeploymentPlan): string {

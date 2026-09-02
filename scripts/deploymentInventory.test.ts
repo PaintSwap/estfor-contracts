@@ -2,7 +2,8 @@ import assert from "node:assert/strict"
 import {describe, it} from "node:test"
 import {ArtifactFingerprint, compareRuntimeBytecode} from "./deploymentArtifacts"
 import {CONTRACT_NAMES, loadDeploymentRegistry} from "./deploymentRegistry"
-import {hashPlan} from "./deploymentInventory"
+import type {DeploymentPlan} from "./deploymentInventory"
+import {buildRemainderPlan, hashPlan} from "./deploymentInventory"
 
 function artifact(runtime: string, overrides: Partial<ArtifactFingerprint> = {}): ArtifactFingerprint {
   return {
@@ -87,5 +88,57 @@ describe("deployment inventory", function () {
     const first = hashPlan({a: 1, b: {c: 2}} as never)
     const second = hashPlan({b: {c: 2}, a: 1} as never)
     assert.equal(first, second)
+  })
+
+  it("removes pending operations and candidates that only support them", function () {
+    const operation = (id: string, contractName: "shop" | "players") => ({id, contractName})
+    const candidate = (
+      contractName: "shop" | "players" | "estforLibrary" | "playersLibrary",
+      operationId: string | null,
+      libraryDependencies: Array<"estforLibrary" | "playersLibrary"> = []
+    ) => ({contractName, operationId, libraryDependencies})
+    const plan = {
+      operations: [operation("upgrade:shop", "shop"), operation("upgrade:players", "players"), {id: "shop:update"}],
+      upgrades: {
+        operations: [operation("upgrade:shop", "shop"), operation("upgrade:players", "players")],
+        candidates: [
+          candidate("shop", "upgrade:shop", ["estforLibrary"]),
+          candidate("estforLibrary", null),
+          candidate("players", "upgrade:players", ["playersLibrary"]),
+          candidate("playersLibrary", null),
+        ],
+      },
+      shop: {operations: [{id: "shop:update"}]},
+      pendingOperationIds: [],
+      pendingCandidates: [],
+      simulation: {status: "passed"},
+      planHash: "0xold",
+    } as unknown as DeploymentPlan
+
+    const remainder = buildRemainderPlan(plan, new Set(["upgrade:shop", "shop:update"]))
+
+    assert.deepEqual(
+      remainder.operations.map(({id}) => id),
+      ["upgrade:players"]
+    )
+    assert.deepEqual(
+      remainder.upgrades.candidates.map(({contractName}) => contractName),
+      ["players", "playersLibrary"]
+    )
+    assert.deepEqual(remainder.shop.operations, [])
+    assert.deepEqual(remainder.pendingOperationIds, ["shop:update", "upgrade:shop"])
+    assert.deepEqual(
+      remainder.pendingCandidates.map(({contractName}) => contractName),
+      ["shop", "estforLibrary"]
+    )
+    assert.equal(remainder.simulation, null)
+
+    const nextRemainder = buildRemainderPlan(remainder, new Set(["upgrade:players"]))
+    assert.deepEqual(nextRemainder.operations, [])
+    assert.deepEqual(nextRemainder.pendingOperationIds, ["shop:update", "upgrade:players", "upgrade:shop"])
+    assert.deepEqual(
+      nextRemainder.pendingCandidates.map(({contractName}) => contractName),
+      ["shop", "estforLibrary", "players", "playersLibrary"]
+    )
   })
 })

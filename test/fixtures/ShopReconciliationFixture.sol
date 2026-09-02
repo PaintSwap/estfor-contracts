@@ -2,12 +2,6 @@
 pragma solidity ^0.8.28;
 
 contract ShopReconciliationFixture {
-  event AddShopItems(ShopItem[] shopItems);
-  event EditShopItems(ShopItem[] shopItems);
-  event RemoveShopItems(uint16[] tokenIds);
-  event AddUnsellableItems(uint16[] tokenIds);
-  event RemoveUnsellableItems(uint16[] tokenIds);
-
   struct ShopItem {
     uint16 tokenId;
     uint128 price;
@@ -40,28 +34,33 @@ contract ShopReconciliationFixture {
   }
 
   function addBuyableItems(ShopItem[] calldata items) external onlyOwner {
-    for (uint256 i; i < items.length; ++i) shopItems[items[i].tokenId] = items[i].price;
-    emit AddShopItems(items);
+    for (uint256 i; i < items.length; ++i) {
+      shopItems[items[i].tokenId] = items[i].price;
+    }
   }
 
   function editItems(ShopItem[] calldata items) external onlyOwner {
-    for (uint256 i; i < items.length; ++i) shopItems[items[i].tokenId] = items[i].price;
-    emit EditShopItems(items);
+    for (uint256 i; i < items.length; ++i) {
+      shopItems[items[i].tokenId] = items[i].price;
+    }
   }
 
   function removeItems(uint16[] calldata tokenIds) external onlyOwner {
-    for (uint256 i; i < tokenIds.length; ++i) delete shopItems[tokenIds[i]];
-    emit RemoveShopItems(tokenIds);
+    for (uint256 i; i < tokenIds.length; ++i) {
+      delete shopItems[tokenIds[i]];
+    }
   }
 
   function addUnsellableItems(uint16[] calldata tokenIds) external onlyOwner {
-    for (uint256 i; i < tokenIds.length; ++i) tokenInfos[tokenIds[i]].unsellable = true;
-    emit AddUnsellableItems(tokenIds);
+    for (uint256 i; i < tokenIds.length; ++i) {
+      tokenInfos[tokenIds[i]].unsellable = true;
+    }
   }
 
   function removeUnsellableItems(uint16[] calldata tokenIds) external onlyOwner {
-    for (uint256 i; i < tokenIds.length; ++i) tokenInfos[tokenIds[i]].unsellable = false;
-    emit RemoveUnsellableItems(tokenIds);
+    for (uint256 i; i < tokenIds.length; ++i) {
+      tokenInfos[tokenIds[i]].unsellable = false;
+    }
   }
 
   function getShopItemStates(uint256 startTokenId, uint256 endTokenId) external view returns (ShopItemState[] memory) {

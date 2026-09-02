@@ -12,6 +12,7 @@ import {
   refreshSafeJournal,
   submitSafeBatch,
 } from "./safeReconciliation"
+import {assertSafeOwner, toRpcTransaction} from "./reconciliation"
 import type {ReconciliationOperation} from "./reconciliation"
 
 const SAFE = "0x1111111111111111111111111111111111111111"
@@ -84,6 +85,21 @@ describe("Safe reconciliation", function () {
       contractInputsValues: null,
     })
     assert.deepEqual(batch.transactions[0], {to: TARGET, value: "0", data: "0x61", operation: OperationType.Call})
+  })
+
+  it("uses the operation value in RPC simulation transactions", function () {
+    assert.deepEqual(toRpcTransaction({...operation("a", "1"), value: "15"}), {
+      from: SAFE,
+      to: TARGET,
+      data: "0x61",
+      value: "0x0f",
+    })
+  })
+
+  it("rejects a non-owner proposer before apply", function () {
+    assert.doesNotThrow(() => assertSafeOwner(SAFE, [SAFE]))
+    assert.throws(() => assertSafeOwner(TARGET, [SAFE]), /is not an owner of the tracked Safe/)
+    assert.throws(() => assertSafeOwner(undefined, [SAFE]), /is unavailable/)
   })
 
   it("journals the payload before submission and records the Safe hash and nonce", async function () {
