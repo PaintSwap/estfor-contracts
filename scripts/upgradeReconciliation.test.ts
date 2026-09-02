@@ -39,7 +39,7 @@ describe("implementation upgrade reconciliation", function () {
 
   it("fails closed without a planning address and for unknown bytecode", async function () {
     const noDeployer = await buildUpgradePlan(provider, deployment, 1, [shop], {validate: validation})
-    assert.match(noDeployer.blockedReasons[0], /--deployer-address/)
+    assert.match(noDeployer.blockedReasons[0], /PROPOSER_PRIVATE_KEY/)
     assert.equal(noDeployer.operations.length, 0)
 
     const unknown = await buildUpgradePlan(provider, deployment, 1, [{...shop, classification: "unknown"}], {

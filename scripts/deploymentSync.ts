@@ -131,25 +131,35 @@ async function main() {
     if (reviewedPlan.deploymentId !== deploymentId || reviewedPlan.chainId !== deployment.chainId)
       throw new Error("Reviewed plan deployment identity does not match --deployment")
   }
-  const planOptions: DeploymentPlanOptions = reviewedPlan
-    ? {
-        allowRemovals: reviewedPlan.shop.limits.allowRemovals,
-        maxChangedItems: reviewedPlan.shop.limits.maxChangedItems,
-        maxRemovals: reviewedPlan.shop.limits.maxRemovals,
-        maxAggregatePriceChange: BigInt(reviewedPlan.shop.limits.maxAggregatePriceChange),
-        maxSafeOperations: reviewedPlan.execution.safeBatchLimits.maxOperations,
-        maxSafeGas: BigInt(reviewedPlan.execution.safeBatchLimits.maxGas),
-        deployerAddress: reviewedPlan.upgrades.candidates[0]?.deployer,
-      }
-    : {
-        allowRemovals: process.argv.includes("--allow-removals"),
-        maxChangedItems: integerOption("--max-shop-changes", DEFAULT_SHOP_LIMITS.maxChangedItems),
-        maxRemovals: integerOption("--max-shop-removals", DEFAULT_SHOP_LIMITS.maxRemovals),
-        maxAggregatePriceChange: bigintOption("--max-shop-value-change", DEFAULT_SHOP_LIMITS.maxAggregatePriceChange),
-        maxSafeOperations: integerOption("--max-safe-operations", DEFAULT_SAFE_BATCH_LIMITS.maxOperations),
-        maxSafeGas: bigintOption("--max-safe-gas", DEFAULT_SAFE_BATCH_LIMITS.maxGas),
-        deployerAddress: option("--deployer-address") ?? process.env.DEPLOYER_ADDRESS,
-      }
+  const proposerPrivateKey = process.env.PROPOSER_PRIVATE_KEY
+  const proposerAddress = proposerPrivateKey ? getAddress(new Wallet(proposerPrivateKey).address) : undefined
+  const reviewedDeployer = reviewedPlan?.upgrades.candidates[0]?.deployer
+  if (reviewedDeployer && !proposerAddress) {
+    throw new Error("PROPOSER_PRIVATE_KEY is required to deploy reviewed upgrade candidates")
+  }
+  if (reviewedDeployer && proposerAddress !== reviewedDeployer) {
+    throw new Error("PROPOSER_PRIVATE_KEY does not match the reviewed candidate deployer")
+  }
+  const planOptions: DeploymentPlanOptions = {
+    deployerAddress: proposerAddress,
+    ...(reviewedPlan
+      ? {
+          allowRemovals: reviewedPlan.shop.limits.allowRemovals,
+          maxChangedItems: reviewedPlan.shop.limits.maxChangedItems,
+          maxRemovals: reviewedPlan.shop.limits.maxRemovals,
+          maxAggregatePriceChange: BigInt(reviewedPlan.shop.limits.maxAggregatePriceChange),
+          maxSafeOperations: reviewedPlan.execution.safeBatchLimits.maxOperations,
+          maxSafeGas: BigInt(reviewedPlan.execution.safeBatchLimits.maxGas),
+        }
+      : {
+          allowRemovals: process.argv.includes("--allow-removals"),
+          maxChangedItems: integerOption("--max-shop-changes", DEFAULT_SHOP_LIMITS.maxChangedItems),
+          maxRemovals: integerOption("--max-shop-removals", DEFAULT_SHOP_LIMITS.maxRemovals),
+          maxAggregatePriceChange: bigintOption("--max-shop-value-change", DEFAULT_SHOP_LIMITS.maxAggregatePriceChange),
+          maxSafeOperations: integerOption("--max-safe-operations", DEFAULT_SAFE_BATCH_LIMITS.maxOperations),
+          maxSafeGas: bigintOption("--max-safe-gas", DEFAULT_SAFE_BATCH_LIMITS.maxGas),
+        }),
+  }
   const build = spawnSync("forge", ["build"], {stdio: "inherit"})
   if (build.error) throw build.error
   if (build.status !== 0) throw new Error(`forge build failed with status ${build.status}`)
@@ -280,7 +290,7 @@ async function main() {
     console.log("Deployment is already aligned; no Safe proposal was submitted")
     return
   }
-  if (batches.length !== 0 && !process.env.PROPOSER_PRIVATE_KEY) {
+  if (batches.length !== 0 && !proposerPrivateKey) {
     throw new Error("PROPOSER_PRIVATE_KEY is required for Safe proposal apply")
   }
 
@@ -314,12 +324,7 @@ async function main() {
     throw new Error("Managed chain state changed after the reviewed plan; generate and review a new plan")
 
   if (plan.upgrades.candidates.length !== 0) {
-    if (!process.env.DEPLOYER_PRIVATE_KEY)
-      throw new Error("DEPLOYER_PRIVATE_KEY is required to deploy upgrade candidates")
-    const deployer = new Wallet(process.env.DEPLOYER_PRIVATE_KEY, provider)
-    if (getAddress(await deployer.getAddress()) !== plan.upgrades.candidates[0].deployer) {
-      throw new Error("DEPLOYER_PRIVATE_KEY does not match the reviewed deployer address")
-    }
+    const deployer = new Wallet(proposerPrivateKey!, provider)
     await deployUpgradeCandidates(
       provider,
       rpcUrl,
@@ -341,7 +346,7 @@ async function main() {
     rpcUrl,
     deployment.authority.address,
     process.env.SAFE_API_KEY!,
-    process.env.PROPOSER_PRIVATE_KEY!
+    proposerPrivateKey!
   )
   if (!currentPlan.authority.owners.includes(clients.proposerAddress))
     throw new Error(`Proposal sender ${clients.proposerAddress} is not an owner of the tracked Safe`)

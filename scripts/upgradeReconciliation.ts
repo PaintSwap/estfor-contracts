@@ -150,7 +150,7 @@ export async function buildUpgradePlan(
     return {candidates, operations, blockedReasons, validationFailures}
   }
   if (!options.deployerAddress) {
-    blockedReasons.push("Code deployments require --deployer-address (no private key is needed for planning)")
+    blockedReasons.push("Code deployments require the address derived from PROPOSER_PRIVATE_KEY")
     return {candidates, operations, blockedReasons, validationFailures}
   }
   const deployer = getAddress(options.deployerAddress)

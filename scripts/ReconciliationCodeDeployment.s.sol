@@ -13,7 +13,7 @@ contract ReconciliationCodeDeployment is Script {
     Options memory options;
     options.unsafeAllow = "external-library-linking";
 
-    vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
+    vm.startBroadcast(vm.envUint("PROPOSER_PRIVATE_KEY"));
     implementation = Upgrades.prepareUpgrade(fullyQualifiedName, options);
     vm.stopBroadcast();
 
@@ -26,7 +26,7 @@ contract ReconciliationCodeDeployment is Script {
   ) external returns (address deployed) {
     bytes memory creationCode = vm.getCode(fullyQualifiedName);
 
-    vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
+    vm.startBroadcast(vm.envUint("PROPOSER_PRIVATE_KEY"));
     assembly ("memory-safe") {
       deployed := create(0, add(creationCode, 32), mload(creationCode))
     }

@@ -584,14 +584,14 @@ address; every dependent creation payload links that same address. A missing or 
 implementation addresses, unknown comparisons, unsupported constructor arguments, and failed OpenZeppelin storage
 validation block apply.
 
-Read-only upgrade planning requires `--deployer-address` or `DEPLOYER_ADDRESS`, but no signer. The pinned deployer nonce
+Upgrade planning derives its deployment address from the existing `PROPOSER_PRIVATE_KEY`. The pinned proposer nonce
 determines each CREATE candidate address, so the reviewed Safe calldata already contains the final implementation address.
 The plan records the linked creation-code hash, artifact identity, library dependencies, validation evidence, nonce, and
 implementation postcondition. The same operation envelope then produces the fork call and Safe Transaction Builder call,
 which keeps their calldata identical. Successful and failed validation output is retained in the JSON plan so blocked
 upgrades remain diagnosable.
 
-Apply requires `DEPLOYER_PRIVATE_KEY` to match the reviewed address. It reruns the latest-state guard before any creation
+Apply requires `PROPOSER_PRIVATE_KEY` to match the reviewed address. It reruns the latest-state guard before any creation
 transaction. Candidate creation intents are journaled before broadcast, receipts and deployed runtime are verified, and
 successful candidates are reused after partial runs. All candidate creation goes through the generic Foundry broadcast;
 libraries use their reviewed linked creation payload. Upgradeable
