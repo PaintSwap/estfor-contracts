@@ -13,6 +13,11 @@ export const SHOP_RECONCILIATION_ABI = [
   "function removeUnsellableItems(uint16[] itemTokenIds)",
 ] as const
 const shopInterface = new Interface(SHOP_RECONCILIATION_ABI)
+const shopStateGetterSelector = shopInterface.getFunction("getShopItemStates")!.selector.slice(2).toLowerCase()
+
+export function hasShopStateGetter(runtimeCode: string): boolean {
+  return runtimeCode.toLowerCase().includes(shopStateGetterSelector)
+}
 
 export interface ShopRecord {
   tokenId: number
@@ -54,6 +59,7 @@ export interface ShopLimits {
 export interface ShopPlan
   extends ReconciliationPlan<ShopRecord[], ShopRecord[], ShopChanges, ShopLimits, ShopOperation> {
   target: string
+  readStatus: "available" | "deferred-for-upgrade"
 }
 
 export interface ShopPlanOptions extends ReconciliationPlanOptions {
@@ -251,6 +257,7 @@ export function diffShop(
   return {
     policy: "exact",
     target,
+    readStatus: "available",
     desired,
     current: [...current].sort((a, b) => a.tokenId - b.tokenId),
     changes: {
@@ -268,6 +275,34 @@ export function diffShop(
     },
     blockedReasons,
     operations,
+  }
+}
+
+export function deferShopPlanForUpgrade(deployment: DeploymentRegistry, options: ShopPlanOptions = {}): ShopPlan {
+  const desired = desiredRecords(getShopData(deployment.profile))
+  return {
+    policy: "exact",
+    target: getAddress(deployment.contracts.shop.address),
+    readStatus: "deferred-for-upgrade",
+    desired,
+    current: [],
+    changes: {
+      buyableItems: {add: [], update: [], remove: [], noOp: []},
+      unsellableItems: {add: [], remove: [], noOp: []},
+    },
+    limits: {
+      allowRemovals: options.allowRemovals ?? false,
+      maxChangedItems: options.maxChangedItems ?? DEFAULT_SHOP_LIMITS.maxChangedItems,
+      maxRemovals: options.maxRemovals ?? DEFAULT_SHOP_LIMITS.maxRemovals,
+      maxAggregatePriceChange: (
+        options.maxAggregatePriceChange ?? DEFAULT_SHOP_LIMITS.maxAggregatePriceChange
+      ).toString(),
+      changedItems: 0,
+      removals: 0,
+      aggregatePriceChange: "0",
+    },
+    blockedReasons: [],
+    operations: [],
   }
 }
 

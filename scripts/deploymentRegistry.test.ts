@@ -57,4 +57,26 @@ describe("DeploymentRegistry", function () {
     delete (incomplete.contracts as Record<string, unknown>).shop
     assert.throws(() => validateDeploymentRegistry(incomplete), /contracts.shop must be an object/)
   })
+
+  it("validates upgrade transition fields", function () {
+    const live = loadDeploymentRegistry("sonic-live")
+    const libraryTransition = structuredClone(live)
+    libraryTransition.contracts.estforLibrary.nextAddress = "0x1111111111111111111111111111111111111111"
+    assert.equal(
+      validateDeploymentRegistry(libraryTransition).contracts.estforLibrary.nextAddress,
+      "0x1111111111111111111111111111111111111111"
+    )
+
+    const proxyTransition = structuredClone(live)
+    proxyTransition.contracts.shop.nextAddress = "0x1111111111111111111111111111111111111111"
+    assert.throws(() => validateDeploymentRegistry(proxyTransition), /nextAddress is only supported for libraries/)
+
+    const invalidCalldata = structuredClone(live)
+    invalidCalldata.contracts.shop.upgradeCallData = "initialize()"
+    assert.throws(() => validateDeploymentRegistry(invalidCalldata), /upgradeCallData must be hex calldata/)
+
+    const beaconCalldata = structuredClone(live)
+    beaconCalldata.contracts.bank.upgradeCallData = "0x1234"
+    assert.throws(() => validateDeploymentRegistry(beaconCalldata), /only supported for UUPS contracts/)
+  })
 })

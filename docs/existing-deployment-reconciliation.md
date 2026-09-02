@@ -199,6 +199,11 @@ Design rules:
 - `authority.type` must be `safe`. The loader rejects an EOA owner instead of selecting a direct-broadcast fallback.
 - Any newly created proxy must name the tracked Safe as owner during initialization or transfer ownership to it within the same creation transaction.
 - Current implementation addresses are discovered from the chain and recorded in run reports, not maintained as stable intent.
+- A library replacement uses a reviewed `nextAddress` while the current `address` remains auditable. Planning verifies that
+  `nextAddress` is the CREATE address for the reviewed deployer nonce, deploys it before linked implementations, and treats it
+  as the desired link target. After rollout, promote `nextAddress` to `address` in a separate registry-only change.
+- Optional `upgradeCallData` stores reviewed UUPS reinitializer calldata. It defaults to `0x` and is used only when an
+  implementation upgrade operation exists.
 - `deploymentBlock` bounds deployment-specific verification and audit queries.
 - A genesis hash or another stable network fingerprint protects against an RPC that reports the expected chain ID for a different network.
 - `profile` is only a pointer in the first version. It maps current `live` and `beta` choices without designing future rule inheritance.
@@ -515,9 +520,7 @@ them. The reconciler fails closed when this direct read is unavailable; it does 
 
 ### Phase 4: Safe proposal execution
 
-Status: Safe proposal execution is implemented on 2026-09-02 for managed Shop operations. The code-creation part remains
-blocked on Phase 5 producing validated library and implementation candidates, so the creation acceptance case is not yet
-implemented.
+Status: implemented on 2026-09-02. Safe proposal execution manages Shop operations and Phase 5 implementation upgrades.
 
 1. Add Foundry broadcasts only for deployer-funded library, implementation, and new-proxy creation.
 2. Generate Safe Transaction Builder JSON for all authority-controlled calls.
@@ -554,6 +557,8 @@ generated current-state plan; old calls are never broadcast directly.
 
 ### Phase 5: implementation upgrades
 
+Status: implemented on 2026-09-02.
+
 1. Establish archived reference contracts and Foundry validation tests according to `AGENTS.md`.
 2. Implement segmented bytecode comparison, including linked library and immutable checks.
 3. Build the library dependency graph so linked implementations are upgraded only after their desired libraries are known.
@@ -569,6 +574,40 @@ Acceptance:
 - linked-library and executable drift produce validated upgrade operations;
 - an unknown comparison or failed storage check blocks apply; and
 - the second plan after execution contains no upgrade operation.
+
+Deployment infrastructure is now a managed domain in plan schema 3. The artifact loader discovers both normal Solidity
+link references and this repository's Foundry-prelinked library addresses. One dependency graph therefore drives runtime
+classification, linked creation bytecode, candidate planning, fork simulation, and apply. Exact matches and metadata-only
+drift do not create candidates. Executable, library, or declared immutable drift creates candidates for UUPS proxies and
+beacons. Changed libraries are planned first when their reviewed `nextAddress` matches the deployer's predicted CREATE
+address; every dependent creation payload links that same address. A missing or invalid `nextAddress`, drift at standalone
+implementation addresses, unknown comparisons, unsupported constructor arguments, and failed OpenZeppelin storage
+validation block apply.
+
+Read-only upgrade planning requires `--deployer-address` or `DEPLOYER_ADDRESS`, but no signer. The pinned deployer nonce
+determines each CREATE candidate address, so the reviewed Safe calldata already contains the final implementation address.
+The plan records the linked creation-code hash, artifact identity, library dependencies, validation evidence, nonce, and
+implementation postcondition. The same operation envelope then produces the fork call and Safe Transaction Builder call,
+which keeps their calldata identical. Successful and failed validation output is retained in the JSON plan so blocked
+upgrades remain diagnosable.
+
+Apply requires `DEPLOYER_PRIVATE_KEY` to match the reviewed address. It reruns the latest-state guard before any creation
+transaction. Candidate creation intents are journaled before broadcast, receipts and deployed runtime are verified, and
+successful candidates are reused after partial runs. All candidate creation goes through the generic Foundry broadcast;
+libraries use their reviewed linked creation payload. Upgradeable
+implementations use the generic Foundry `Upgrades.prepareUpgrade` script, which validates again and deploys without calling
+the proxy. UUPS `upgradeToAndCall`, including optional registry-declared reinitializer calldata, and beacon `upgradeTo`
+always name the tracked Safe as caller. The pinned Anvil simulation deploys or reuses candidates, executes the exact Safe
+operations, and then reruns implementation, ownership, shared wiring, and complete Shop postconditions. Apply writes
+Foundry logs and broadcast JSON under the reviewed run directory.
+
+Shop remains the first archived and validated upgrade reference. The reconciler checks the current implementation bytecode
+for the Phase 3 getter selector before reading Shop state. Only a proven missing selector with a planned Shop upgrade defers
+the pre-upgrade read. Fork simulation must first execute the getter upgrade and then verify every desired Shop record; it
+blocks apply if any record differs. RPC, decoding, malformed state, and post-upgrade managed-data failures are never
+deferred. Any other changed contract must first receive its versioned
+archive, `@custom:oz-upgrades-from` annotation, and upgrade-safety test under the repository policy; the reconciler fails
+closed until that work exists.
 
 ### Phase 6: expand managed resources
 

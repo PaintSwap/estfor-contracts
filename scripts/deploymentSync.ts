@@ -2,11 +2,11 @@ import "dotenv/config"
 import {spawnSync} from "child_process"
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from "fs"
 import {dirname, resolve} from "path"
-import {JsonRpcProvider} from "ethers"
+import {JsonRpcProvider, Wallet, getAddress} from "ethers"
 import {loadDeploymentRegistry} from "./deploymentRegistry"
 import {buildDeploymentPlan, hashPlan, renderPlanMarkdown} from "./deploymentInventory"
 import {DEFAULT_SHOP_LIMITS} from "./shopReconciliation"
-import {simulateShopPlan} from "./shopSimulation"
+import {simulateDeploymentPlan} from "./deploymentSimulation"
 import {
   DEFAULT_SAFE_BATCH_LIMITS,
   buildSafeBatches,
@@ -20,6 +20,7 @@ import {
   writeSafeJournal,
 } from "./safeReconciliation"
 import type {DeploymentPlan, DeploymentPlanOptions} from "./deploymentInventory"
+import {deployUpgradeCandidates} from "./upgradeReconciliation"
 
 function option(name: string): string | undefined {
   const index = process.argv.indexOf(name)
@@ -62,18 +63,28 @@ function authorityPayload(plan: DeploymentPlan): string {
   return JSON.stringify(plan.authority)
 }
 
-async function simulate(plan: DeploymentPlan, provider: JsonRpcProvider, rpcUrl: string): Promise<void> {
-  if (plan.shop.blockedReasons.length === 0) {
-    plan.simulation = await simulateShopPlan(
-      provider,
-      rpcUrl,
-      plan.chainId,
-      plan.observationBlock.number,
-      plan.observationBlock.hash,
-      plan.shop
-    )
+function candidatePayloads(plan: DeploymentPlan): string {
+  return JSON.stringify(
+    plan.upgrades.candidates.map(({contractName, candidateAddress, deployer, creationCodeHash, validation}) => ({
+      contractName,
+      candidateAddress,
+      deployer,
+      creationCodeHash,
+      validationHash: validation.status === "passed" ? validation.outputHash : null,
+    }))
+  )
+}
+
+async function simulate(
+  plan: DeploymentPlan,
+  rpcUrl: string,
+  deployment: ReturnType<typeof loadDeploymentRegistry>
+): Promise<void> {
+  const reasons = [...plan.upgrades.blockedReasons, ...plan.shop.blockedReasons]
+  if (reasons.length === 0) {
+    plan.simulation = await simulateDeploymentPlan(rpcUrl, deployment, plan)
   } else {
-    plan.simulation = {status: "blocked", reasons: plan.shop.blockedReasons}
+    plan.simulation = {status: "blocked", reasons}
   }
   const {planHash: _oldPlanHash, ...withoutHash} = plan
   plan.planHash = hashPlan(withoutHash)
@@ -106,8 +117,9 @@ async function main() {
     : undefined
   if (
     reviewedPlanValue &&
-    (reviewedPlanValue.schemaVersion !== 2 ||
+    (reviewedPlanValue.schemaVersion !== 3 ||
       !reviewedPlanValue.execution?.safeBatchLimits ||
+      !reviewedPlanValue.upgrades ||
       !reviewedPlanValue.shop?.limits)
   )
     throw new Error(`Unsupported or invalid deployment plan schema: ${reviewedPlanPath}`)
@@ -127,6 +139,7 @@ async function main() {
         maxAggregatePriceChange: BigInt(reviewedPlan.shop.limits.maxAggregatePriceChange),
         maxSafeOperations: reviewedPlan.execution.safeBatchLimits.maxOperations,
         maxSafeGas: BigInt(reviewedPlan.execution.safeBatchLimits.maxGas),
+        deployerAddress: reviewedPlan.upgrades.candidates[0]?.deployer,
       }
     : {
         allowRemovals: process.argv.includes("--allow-removals"),
@@ -135,6 +148,7 @@ async function main() {
         maxAggregatePriceChange: bigintOption("--max-shop-value-change", DEFAULT_SHOP_LIMITS.maxAggregatePriceChange),
         maxSafeOperations: integerOption("--max-safe-operations", DEFAULT_SAFE_BATCH_LIMITS.maxOperations),
         maxSafeGas: bigintOption("--max-safe-gas", DEFAULT_SAFE_BATCH_LIMITS.maxGas),
+        deployerAddress: option("--deployer-address") ?? process.env.DEPLOYER_ADDRESS,
       }
   const build = spawnSync("forge", ["build"], {stdio: "inherit"})
   if (build.error) throw build.error
@@ -146,7 +160,7 @@ async function main() {
     reviewedPlan?.observationBlock.number ?? block,
     planOptions
   )
-  await simulate(plan, provider, rpcUrl)
+  await simulate(plan, rpcUrl, deployment)
   const simulation = plan.simulation
   if (!simulation) throw new Error("Plan simulation did not produce a result")
   if (reviewedPlan && plan.planHash !== reviewedPlan.planHash)
@@ -202,14 +216,16 @@ async function main() {
   if (plan.summary.errors !== 0) throw new Error("Cannot submit a plan with alignment errors")
   if (simulation.status !== "passed" && simulation.status !== "no-op")
     throw new Error("Cannot submit a plan that did not pass simulation")
-  if (!process.env.SAFE_API_KEY) throw new Error("SAFE_API_KEY is required for apply and resume")
+  if (batches.length !== 0 && !process.env.SAFE_API_KEY) {
+    throw new Error("SAFE_API_KEY is required for Safe proposal apply and resume")
+  }
 
   if (resumeRunId) {
     if (batches.length === 0) {
       console.log("Deployment is aligned; no Safe proposal remains")
       return
     }
-    const api = createSafeApi(deployment.chainId, process.env.SAFE_API_KEY)
+    const api = createSafeApi(deployment.chainId, process.env.SAFE_API_KEY!)
     const journals = []
     const unjournaledOperationIds: string[] = []
     for (const batch of batches) {
@@ -231,8 +247,14 @@ async function main() {
       journals.push(journal)
       console.log(`Safe batch ${batch.index + 1}: ${journal.status} (${journal.safeTxHash})`)
     }
-    const remainderPlan = await buildDeploymentPlan(provider, deployment, undefined, planOptions)
-    await simulate(remainderPlan, provider, rpcUrl)
+    const reusableCandidates = Object.fromEntries(
+      plan.upgrades.candidates.map(({contractName, candidateAddress}) => [contractName, candidateAddress])
+    )
+    const remainderPlan = await buildDeploymentPlan(provider, deployment, undefined, {
+      ...planOptions,
+      reusableCandidates,
+    })
+    await simulate(remainderPlan, rpcUrl, deployment)
     writeFileSync(resolve(outputRoot, "remainder-plan.json"), `${JSON.stringify(remainderPlan, null, 2)}\n`)
     writeFileSync(resolve(outputRoot, "remainder-plan.md"), renderPlanMarkdown(remainderPlan))
     const pendingOperationIds = new Set(
@@ -254,11 +276,13 @@ async function main() {
     return
   }
 
-  if (batches.length === 0) {
+  if (batches.length === 0 && plan.upgrades.candidates.length === 0) {
     console.log("Deployment is already aligned; no Safe proposal was submitted")
     return
   }
-  if (!process.env.PROPOSER_PRIVATE_KEY) throw new Error("PROPOSER_PRIVATE_KEY is required for apply")
+  if (batches.length !== 0 && !process.env.PROPOSER_PRIVATE_KEY) {
+    throw new Error("PROPOSER_PRIVATE_KEY is required for Safe proposal apply")
+  }
 
   const latestBlock = await provider.getBlockNumber()
   const maxPlanAgeBlocks = integerOption("--max-plan-age-blocks", 3_600)
@@ -266,21 +290,58 @@ async function main() {
     throw new Error(
       `Reviewed plan is ${latestBlock - plan.observationBlock.number} blocks old; maximum is ${maxPlanAgeBlocks}`
     )
-  const currentPlan = await buildDeploymentPlan(provider, deployment, undefined, planOptions)
-  await simulate(currentPlan, provider, rpcUrl)
+
+  const reusableCandidates = Object.fromEntries(
+    (
+      await Promise.all(
+        plan.upgrades.candidates.map(async ({contractName, candidateAddress}) =>
+          (await provider.getCode(candidateAddress)) === "0x" ? null : ([contractName, candidateAddress] as const)
+        )
+      )
+    ).filter(
+      (candidate): candidate is readonly [(typeof plan.upgrades.candidates)[number]["contractName"], string] =>
+        candidate !== null
+    )
+  )
+  const currentPlan = await buildDeploymentPlan(provider, deployment, undefined, {...planOptions, reusableCandidates})
+  await simulate(currentPlan, rpcUrl, deployment)
   if (
     currentPlan.summary.errors !== 0 ||
     authorityPayload(currentPlan) !== authorityPayload(plan) ||
+    candidatePayloads(currentPlan) !== candidatePayloads(plan) ||
     operationPayloads(currentPlan) !== operationPayloads(plan)
   )
     throw new Error("Managed chain state changed after the reviewed plan; generate and review a new plan")
+
+  if (plan.upgrades.candidates.length !== 0) {
+    if (!process.env.DEPLOYER_PRIVATE_KEY)
+      throw new Error("DEPLOYER_PRIVATE_KEY is required to deploy upgrade candidates")
+    const deployer = new Wallet(process.env.DEPLOYER_PRIVATE_KEY, provider)
+    if (getAddress(await deployer.getAddress()) !== plan.upgrades.candidates[0].deployer) {
+      throw new Error("DEPLOYER_PRIVATE_KEY does not match the reviewed deployer address")
+    }
+    await deployUpgradeCandidates(
+      provider,
+      rpcUrl,
+      deployer,
+      deployment,
+      plan.planHash,
+      plan.upgrades.candidates,
+      outputRoot
+    )
+  }
+
+  if (batches.length === 0) {
+    console.log("Code candidates deployed; no Safe proposal was required")
+    return
+  }
 
   const clients = await createSafeClients(
     deployment.chainId,
     rpcUrl,
     deployment.authority.address,
-    process.env.SAFE_API_KEY,
-    process.env.PROPOSER_PRIVATE_KEY
+    process.env.SAFE_API_KEY!,
+    process.env.PROPOSER_PRIVATE_KEY!
   )
   if (!currentPlan.authority.owners.includes(clients.proposerAddress))
     throw new Error(`Proposal sender ${clients.proposerAddress} is not an owner of the tracked Safe`)

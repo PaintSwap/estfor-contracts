@@ -17,15 +17,15 @@ import {
   EXTERNAL_NAMES,
   getDeploymentRegistryPath,
 } from "./deploymentRegistry"
-import {buildShopPlan} from "./shopReconciliation"
+import {buildShopPlan, deferShopPlanForUpgrade, hasShopStateGetter} from "./shopReconciliation"
 import type {ShopPlan, ShopPlanOptions} from "./shopReconciliation"
-import type {ShopSimulationResult} from "./shopSimulation"
+import type {DeploymentSimulationResult} from "./deploymentSimulation"
+import {EIP1967_IMPLEMENTATION_SLOT, UUPS_PROXIABLE_UUID, addressFromStorage} from "./deploymentSlots"
 import {DEFAULT_SAFE_BATCH_LIMITS} from "./reconciliation"
 import type {ReconciliationOperation} from "./reconciliation"
-
-export const EIP1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
-export const EIP1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50"
-export const UUPS_PROXIABLE_UUID = EIP1967_IMPLEMENTATION_SLOT
+import {buildUpgradePlan} from "./upgradeReconciliation"
+import type {UpgradePlan, UpgradePlanOptions} from "./upgradeReconciliation"
+import {verifyDeploymentWiring} from "./deploymentWiring"
 
 const readInterface = new Interface([
   "function owner() view returns (address)",
@@ -68,7 +68,7 @@ export interface ContractInventory extends CodeInventory {
 }
 
 export interface DeploymentPlan {
-  schemaVersion: 2
+  schemaVersion: 3
   mode: "read-only"
   deploymentId: string
   chainId: number
@@ -86,9 +86,10 @@ export interface DeploymentPlan {
   contracts: ContractInventory[]
   externals: Array<CodeInventory & {name: string}>
   domains: Array<{name: string; policy: "managed" | "observed" | "unmanaged"; reason: string}>
+  upgrades: UpgradePlan
   shop: ShopPlan
   operations: ReconciliationOperation[]
-  simulation: ShopSimulationResult | {status: "blocked"; reasons: string[]} | null
+  simulation: DeploymentSimulationResult | {status: "blocked"; reasons: string[]} | null
   findings: Finding[]
   summary: {
     contracts: number
@@ -101,7 +102,7 @@ export interface DeploymentPlan {
   planHash: string
 }
 
-export interface DeploymentPlanOptions extends ShopPlanOptions {
+export interface DeploymentPlanOptions extends ShopPlanOptions, UpgradePlanOptions {
   maxSafeOperations?: number
   maxSafeGas?: bigint
 }
@@ -114,8 +115,8 @@ interface LegacyManifest {
 const DOMAINS: DeploymentPlan["domains"] = [
   {
     name: "deployment-infrastructure",
-    policy: "observed",
-    reason: "Stable addresses, code, implementations, and authority are inventoried in Phase 2",
+    policy: "managed",
+    reason: "Validated UUPS and beacon implementations are reconciled through deployer candidates and Safe upgrades",
   },
   {name: "items", policy: "unmanaged", reason: "Complete current key discovery is not implemented"},
   {
@@ -163,10 +164,6 @@ export function hashPlan(plan: Omit<DeploymentPlan, "planHash">): string {
 
 function codeInventory(address: string, code: string): CodeInventory {
   return {address: getAddress(address), codeSize: (code.length - 2) / 2, codeHash: keccak256(code)}
-}
-
-function addressFromStorage(value: string): string {
-  return getAddress(`0x${value.slice(-40)}`)
 }
 
 async function callAddress(
@@ -431,7 +428,48 @@ export async function buildDeploymentPlan(
       findings.push({severity: "error", code: "EXTERNAL_NO_CODE", subject: name, message: `No code at ${address}`})
     externals.push({name, ...codeInventory(address, code)})
   }
-  const shop = await buildShopPlan(provider, deployment, block.number, options)
+  const upgrades = await buildUpgradePlan(
+    provider,
+    deployment,
+    block.number,
+    contracts.flatMap((contract) =>
+      contract.implementation
+        ? [
+            {
+              name: contract.name,
+              kind: contract.kind,
+              address: contract.address,
+              implementationAddress: contract.implementation.address,
+              classification: contract.implementation.comparison.classification,
+            },
+          ]
+        : []
+    ),
+    options
+  )
+  for (const failure of await verifyDeploymentWiring(provider, deployment, block.number)) {
+    findings.push({severity: "error", code: "WIRING_MISMATCH", subject: "infrastructure", message: failure})
+  }
+  for (const reason of upgrades.blockedReasons) {
+    findings.push({
+      severity: "error",
+      code: "IMPLEMENTATION_UPGRADE_BLOCKED",
+      subject: "infrastructure",
+      message: reason,
+    })
+  }
+  const shopUpgrade = upgrades.operations.find(({contractName}) => contractName === "shop")
+  const shopInventory = contracts.find(({name}) => name === "shop")
+  const shopImplementationCode = shopInventory?.implementation
+    ? await provider.getCode(shopInventory.implementation.address, block.number)
+    : "0x"
+  const shop =
+    shopUpgrade && !hasShopStateGetter(shopImplementationCode)
+      ? deferShopPlanForUpgrade(deployment, options)
+      : await buildShopPlan(provider, deployment, block.number, options)
+  if (shopUpgrade) {
+    for (const operation of shop.operations) operation.dependencies.push(shopUpgrade.id)
+  }
   for (const reason of shop.blockedReasons) {
     findings.push({severity: "error", code: "SHOP_CHANGE_BLOCKED", subject: "shop", message: reason})
   }
@@ -443,7 +481,7 @@ export async function buildDeploymentPlan(
     classifications[classification] = (classifications[classification] ?? 0) + 1
   }
   const withoutHash: Omit<DeploymentPlan, "planHash"> = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     mode: "read-only",
     deploymentId: deployment.deploymentId,
     chainId: deployment.chainId,
@@ -466,8 +504,9 @@ export async function buildDeploymentPlan(
     contracts,
     externals,
     domains: DOMAINS,
+    upgrades,
     shop,
-    operations: shop.operations,
+    operations: [...upgrades.operations, ...shop.operations],
     simulation: null,
     findings,
     summary: {
@@ -518,7 +557,11 @@ export function renderPlanMarkdown(plan: DeploymentPlan): string {
     "",
     "## Shop reconciliation",
     "",
-    "- Current state: paginated `getShopItemStates` reads at the observation block",
+    `- Current state: ${
+      plan.shop.readStatus === "available"
+        ? "paginated `getShopItemStates` reads at the observation block"
+        : "deferred until the introspection upgrade executes"
+    }`,
     `- Buyable items: ${plan.shop.changes.buyableItems.add.length} add, ${plan.shop.changes.buyableItems.update.length} update, ${plan.shop.changes.buyableItems.remove.length} remove, ${plan.shop.changes.buyableItems.noOp.length} no-op`,
     `- Unsellable flags: ${plan.shop.changes.unsellableItems.add.length} add, ${plan.shop.changes.unsellableItems.remove.length} remove, ${plan.shop.changes.unsellableItems.noOp.length} no-op`,
     `- Change limits: ${plan.shop.limits.changedItems}/${plan.shop.limits.maxChangedItems} items, ${plan.shop.limits.removals}/${plan.shop.limits.maxRemovals} removals, ${plan.shop.limits.aggregatePriceChange}/${plan.shop.limits.maxAggregatePriceChange} aggregate price change`,
@@ -531,6 +574,15 @@ export function renderPlanMarkdown(plan: DeploymentPlan): string {
           ...plan.shop.changes.buyableItems.remove.map(({tokenId, price}) => `- Buyable item ${tokenId} at ${price}`),
           ...plan.shop.changes.unsellableItems.remove.map((tokenId) => `- Unsellable flag ${tokenId}`),
         ]),
+    "",
+    "## Implementation upgrades",
+    "",
+    ...(plan.upgrades.candidates.length === 0
+      ? ["No validated implementation candidates."]
+      : plan.upgrades.candidates.map(
+          (candidate) =>
+            `- **${candidate.contractName}**: ${candidate.currentImplementation} → ${candidate.candidateAddress} (${candidate.status}, nonce ${candidate.nonce})`
+        )),
     "",
     "## Contracts",
     "",

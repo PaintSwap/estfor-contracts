@@ -6,7 +6,7 @@ import {after, before, describe, it} from "node:test"
 import {Contract, ContractFactory, Interface, JsonRpcProvider} from "ethers"
 import {getShopData} from "./data/shop"
 import {DeploymentRegistry, loadDeploymentRegistry} from "./deploymentRegistry"
-import {SHOP_RECONCILIATION_ABI, buildShopPlan, diffShop} from "./shopReconciliation"
+import {SHOP_RECONCILIATION_ABI, buildShopPlan, diffShop, hasShopStateGetter} from "./shopReconciliation"
 import {simulateShopPlan} from "./shopSimulation"
 
 async function freePort(): Promise<number> {
@@ -87,6 +87,11 @@ describe("Shop reconciliation", function () {
     ]) {
       assert.equal(actual.getFunction(name)!.selector, expected.getFunction(name)!.selector, name)
     }
+  })
+
+  it("detects getter support from deployed implementation code", function () {
+    assert.equal(hasShopStateGetter("0x6000f53eceb26000"), true)
+    assert.equal(hasShopStateGetter("0x6000123456786000"), false)
   })
 
   it("classifies missing, changed, stale, and unchanged records exactly", async function () {

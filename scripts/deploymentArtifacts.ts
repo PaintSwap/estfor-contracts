@@ -1,4 +1,5 @@
 import {createHash} from "crypto"
+import {spawnSync} from "child_process"
 import {readFileSync, readdirSync, statSync} from "fs"
 import {basename, join, relative, resolve} from "path"
 import {getAddress, keccak256} from "ethers"
@@ -18,6 +19,11 @@ interface ByteRange {
 }
 
 interface FoundryArtifact {
+  abi?: Array<{type?: string; inputs?: unknown[]}>
+  bytecode?: {
+    object?: string
+    linkReferences?: Record<string, Record<string, ByteRange[]>>
+  }
   deployedBytecode?: {
     object?: string
     linkReferences?: Record<string, Record<string, ByteRange[]>>
@@ -48,6 +54,19 @@ export interface ArtifactFingerprint {
   immutableReferences: ByteRange[]
   metadataStart: number | null
   runtime: string
+}
+
+export interface ImplementationCreationCode {
+  fullyQualifiedName: string
+  code: string
+  codeHash: string
+  codeSize: number
+  libraryDependencies: ContractName[]
+}
+
+function desiredContractAddress(deployment: DeploymentRegistry, name: ContractName): string {
+  const contract = deployment.contracts[name]
+  return getAddress(contract.nextAddress ?? contract.address)
 }
 
 export interface BytecodeComparison {
@@ -114,14 +133,62 @@ const ARTIFACT_CONTRACT_NAMES: Record<ContractName, string> = {
   orderbookV2: "OrderBook",
 }
 
-const LIBRARY_REGISTRY_NAMES: Record<string, ContractName> = {
-  EstforLibrary: "estforLibrary",
-  ItemNFTLibrary: "itemNFTLibrary",
-  PetNFTLibrary: "petNFTLibrary",
-  PlayersLibrary: "playersLibrary",
-  PromotionsLibrary: "promotionsLibrary",
-  ClanBattleLibrary: "clanBattleLibrary",
-  LockedBankVaultsLibrary: "lockedBankVaultsLibrary",
+const LIBRARIES: Record<string, {registryName: ContractName; prelinkedAddress: string}> = {
+  EstforLibrary: {registryName: "estforLibrary", prelinkedAddress: "0000000000000000000000000000000000001001"},
+  ItemNFTLibrary: {registryName: "itemNFTLibrary", prelinkedAddress: "0000000000000000000000000000000000001002"},
+  PetNFTLibrary: {registryName: "petNFTLibrary", prelinkedAddress: "0000000000000000000000000000000000001003"},
+  PlayersLibrary: {registryName: "playersLibrary", prelinkedAddress: "0000000000000000000000000000000000001004"},
+  PromotionsLibrary: {registryName: "promotionsLibrary", prelinkedAddress: "0000000000000000000000000000000000001005"},
+  ClanBattleLibrary: {registryName: "clanBattleLibrary", prelinkedAddress: "0000000000000000000000000000000000001006"},
+  LockedBankVaultsLibrary: {
+    registryName: "lockedBankVaultsLibrary",
+    prelinkedAddress: "0000000000000000000000000000000000001007",
+  },
+}
+
+function linkReferences(
+  object: string,
+  explicit: Record<string, Record<string, ByteRange[]>> = {}
+): Array<{library: string; start: number; length: number}> {
+  const links = Object.entries(explicit).flatMap(([, libraries]) =>
+    Object.entries(libraries).flatMap(([library, ranges]) => ranges.map((range) => ({library, ...range})))
+  )
+  const bytes = object.replace(/^0x/, "").toLowerCase()
+  for (const [library, {prelinkedAddress}] of Object.entries(LIBRARIES)) {
+    const address = prelinkedAddress
+    let offset = bytes.indexOf(address)
+    while (offset !== -1) {
+      const start = offset / 2
+      if (!links.some((link) => link.start === start && link.length === 20)) links.push({library, start, length: 20})
+      offset = bytes.indexOf(address, offset + address.length)
+    }
+  }
+  return links.sort((a, b) => a.start - b.start)
+}
+
+function artifactMatch(contractName: ContractName, outRoot: string) {
+  const expectedName = ARTIFACT_CONTRACT_NAMES[contractName]
+  const candidates = jsonFiles(outRoot).filter(
+    (path) => basename(path) === `${expectedName}.json` && !path.includes("/build-info/")
+  )
+  const matches = candidates.flatMap((path) => {
+    const raw = readFileSync(path)
+    const artifact = JSON.parse(raw.toString()) as FoundryArtifact
+    const target = artifact.metadata?.settings?.compilationTarget
+    if (!target || target[Object.keys(target)[0]] !== expectedName || !artifact.deployedBytecode?.object) return []
+    const source = Object.keys(target)[0]
+    if (!source.startsWith("contracts/") || source.startsWith("contracts/old/")) return []
+    return [{path, raw, artifact, source, expectedName}]
+  })
+  if (matches.length === 0)
+    throw new Error(`Foundry artifact not found for ${contractName} (${expectedName}); run forge build`)
+  if (matches.length > 1)
+    throw new Error(
+      `Multiple Foundry artifacts found for ${contractName}: ${matches
+        .map(({path}) => relative(outRoot, path))
+        .join(", ")}`
+    )
+  return matches[0]
 }
 
 const jsonFileCache = new Map<string, string[]>()
@@ -180,33 +247,9 @@ export function loadArtifactFingerprint(
   contractName: ContractName,
   outRoot = resolve(__dirname, "../out")
 ): ArtifactFingerprint {
-  const expectedName = ARTIFACT_CONTRACT_NAMES[contractName]
-  const candidates = jsonFiles(outRoot).filter(
-    (path) => basename(path) === `${expectedName}.json` && !path.includes("/build-info/")
-  )
-  const matches = candidates.flatMap((path) => {
-    const raw = readFileSync(path)
-    const artifact = JSON.parse(raw.toString()) as FoundryArtifact
-    const target = artifact.metadata?.settings?.compilationTarget
-    if (!target || target[Object.keys(target)[0]] !== expectedName || !artifact.deployedBytecode?.object) return []
-    const source = Object.keys(target)[0]
-    if (!source.startsWith("contracts/") || source.startsWith("contracts/old/")) return []
-    return [{path, raw, artifact, source}]
-  })
-  if (matches.length === 0)
-    throw new Error(`Foundry artifact not found for ${contractName} (${expectedName}); run forge build`)
-  if (matches.length > 1)
-    throw new Error(
-      `Multiple Foundry artifacts found for ${contractName}: ${matches
-        .map(({path}) => relative(outRoot, path))
-        .join(", ")}`
-    )
-
-  const {raw, artifact, source} = matches[0]
+  const {raw, artifact, source, expectedName} = artifactMatch(contractName, outRoot)
   const runtime = `0x${artifact.deployedBytecode!.object!.replace(/^0x/, "")}`
-  const links = Object.entries(artifact.deployedBytecode!.linkReferences ?? {}).flatMap(([, libraries]) =>
-    Object.entries(libraries).flatMap(([library, ranges]) => ranges.map((range) => ({library, ...range})))
-  )
+  const links = linkReferences(runtime, artifact.deployedBytecode!.linkReferences)
   const immutables = Object.values(artifact.deployedBytecode!.immutableReferences ?? {}).flat()
   const settings = artifact.metadata?.settings
   const fullyQualifiedName = `${source}:${expectedName}`
@@ -220,11 +263,81 @@ export function loadArtifactFingerprint(
     viaIR: settings?.viaIR ?? false,
     runtimeHash: keccak256(runtime),
     runtimeSize: (runtime.length - 2) / 2,
-    linkReferences: links.sort((a, b) => a.start - b.start),
+    linkReferences: links,
     immutableReferences: immutables.sort((a, b) => a.start - b.start),
     metadataStart: metadataStart(runtime),
     runtime,
   }
+}
+
+export function loadImplementationCreationCode(
+  contractName: ContractName,
+  deployment: DeploymentRegistry,
+  outRoot = resolve(__dirname, "../out")
+): ImplementationCreationCode {
+  const {artifact, source, expectedName} = artifactMatch(contractName, outRoot)
+  const constructor = artifact.abi?.find(({type}) => type === "constructor")
+  if ((constructor?.inputs?.length ?? 0) !== 0) {
+    throw new Error(`${contractName} implementation constructor arguments are not declared for reconciliation`)
+  }
+  let code = `0x${artifact.bytecode?.object?.replace(/^0x/, "") ?? ""}`.toLowerCase()
+  if (code === "0x") throw new Error(`Foundry creation bytecode not found for ${contractName}`)
+  const dependencies = new Set<ContractName>()
+  for (const range of linkReferences(code, artifact.bytecode?.linkReferences)) {
+    const registryName = LIBRARIES[range.library]?.registryName
+    if (!registryName) throw new Error(`Linked library ${range.library} is not declared in the deployment registry`)
+    dependencies.add(registryName)
+    const address = desiredContractAddress(deployment, registryName).slice(2).toLowerCase()
+    if (range.length !== 20) throw new Error(`Unexpected link length for ${range.library}`)
+    const offset = 2 + range.start * 2
+    code = `${code.slice(0, offset)}${address}${code.slice(offset + range.length * 2)}`
+  }
+  if (code.includes("__$")) throw new Error(`Unresolved library link in ${contractName} creation bytecode`)
+  return {
+    fullyQualifiedName: `${source}:${expectedName}`,
+    code,
+    codeHash: keccak256(code),
+    codeSize: (code.length - 2) / 2,
+    libraryDependencies: [...dependencies].sort(),
+  }
+}
+
+export function foundryLibraryArguments(deployment: DeploymentRegistry): string[] {
+  return (Object.keys(deployment.contracts) as ContractName[])
+    .filter((name) => deployment.contracts[name].kind === "library")
+    .map((name) => `${loadArtifactFingerprint(name).fullyQualifiedName}:${desiredContractAddress(deployment, name)}`)
+}
+
+const preparedArtifacts = new Map<string, string>()
+
+export function loadFoundryPreparedCreationCode(
+  contractName: ContractName,
+  deployment: DeploymentRegistry
+): ImplementationCreationCode {
+  const libraries = foundryLibraryArguments(deployment)
+  const key = sha256(JSON.stringify(libraries)).slice(2, 18)
+  let outRoot = preparedArtifacts.get(key)
+  if (!outRoot) {
+    const buildRoot = resolve(".deployments", "reconciliation-artifacts", key)
+    outRoot = resolve(buildRoot, "out")
+    const result = spawnSync(
+      "forge",
+      [
+        "build",
+        "--out",
+        outRoot,
+        "--cache-path",
+        resolve(buildRoot, "cache"),
+        ...libraries.flatMap((library) => ["--libraries", library]),
+      ],
+      {cwd: resolve(__dirname, ".."), encoding: "utf8", maxBuffer: 50 * 1024 * 1024}
+    )
+    if (result.error || result.status !== 0) throw new Error("Foundry linked-artifact build failed")
+    preparedArtifacts.set(key, outRoot)
+  }
+  const canonical = loadImplementationCreationCode(contractName, deployment)
+  const prepared = loadImplementationCreationCode(contractName, deployment, outRoot)
+  return {...prepared, libraryDependencies: canonical.libraryDependencies}
 }
 
 function sliceBytes(value: string, start: number, length: number): string {
@@ -245,8 +358,8 @@ export function compareRuntimeBytecode(
   const actual = actualRuntime.toLowerCase()
   const desired = artifact.runtime.toLowerCase()
   const linkedLibraries = artifact.linkReferences.map((range) => {
-    const registryName = LIBRARY_REGISTRY_NAMES[range.library]
-    const expected = registryName ? getAddress(deployment.contracts[registryName].address) : "unknown"
+    const registryName = LIBRARIES[range.library]?.registryName
+    const expected = registryName ? desiredContractAddress(deployment, registryName) : "unknown"
     const actualBytes = sliceBytes(actual, range.start, range.length)
     const actualValue = range.length === 20 && actualBytes.length === 42 ? getAddress(actualBytes) : "unknown"
     return {

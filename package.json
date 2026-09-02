@@ -75,7 +75,7 @@
     "deploy:foundry": "bash scripts/deploy-foundry.sh",
     "deploy:foundry:smoke": "bash scripts/deploy-local-smoke.sh",
     "test:deployment-registry": "node --require ts-node/register --test scripts/deploymentRegistry.test.ts",
-    "test:deployment-reconciliation": "forge build && node --require ts-node/register --test scripts/deploymentRegistry.test.ts scripts/deploymentInventory.test.ts scripts/shopReconciliation.test.ts scripts/safeReconciliation.test.ts",
+    "test:deployment-reconciliation": "forge build && node --require ts-node/register --test scripts/deploymentRegistry.test.ts scripts/deploymentInventory.test.ts scripts/shopReconciliation.test.ts scripts/safeReconciliation.test.ts scripts/upgradeReconciliation.test.ts",
     "deployment:validate": "ts-node scripts/validateDeploymentRegistry.ts",
     "deployment:sync": "ts-node scripts/deploymentSync.ts",
     "deployUpgrade": "npx hardhat run scripts/deployUpgrade.ts",

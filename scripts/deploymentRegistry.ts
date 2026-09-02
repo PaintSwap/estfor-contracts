@@ -1,6 +1,6 @@
 import {readFileSync, readdirSync} from "fs"
 import {join, resolve} from "path"
-import {isAddress} from "ethers"
+import {isAddress, isHexString} from "ethers"
 
 export const CONTRACT_NAMES = [
   "bridge",
@@ -68,6 +68,8 @@ export type ContractKind = "uups" | "beacon" | "library" | "implementation"
 export interface DeploymentContract {
   kind: ContractKind
   address: string
+  nextAddress: string | null
+  upgradeCallData: string
 }
 
 export interface DeploymentRegistry {
@@ -168,6 +170,23 @@ export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?
     contracts[name] = {
       kind: rawContract.kind as ContractKind,
       address: requireAddress(rawContract.address, `contracts.${name}.address`),
+      nextAddress:
+        rawContract.nextAddress === undefined || rawContract.nextAddress === null
+          ? null
+          : requireAddress(rawContract.nextAddress, `contracts.${name}.nextAddress`),
+      upgradeCallData:
+        rawContract.upgradeCallData === undefined
+          ? "0x"
+          : requireString(rawContract.upgradeCallData, `contracts.${name}.upgradeCallData`),
+    }
+    if (contracts[name].nextAddress !== null && contracts[name].kind !== "library") {
+      throw new Error(`contracts.${name}.nextAddress is only supported for libraries`)
+    }
+    if (!isHexString(contracts[name].upgradeCallData)) {
+      throw new Error(`contracts.${name}.upgradeCallData must be hex calldata`)
+    }
+    if (contracts[name].upgradeCallData !== "0x" && contracts[name].kind !== "uups") {
+      throw new Error(`contracts.${name}.upgradeCallData is only supported for UUPS contracts`)
     }
   }
   const unknownContracts = Object.keys(rawContracts).filter(
