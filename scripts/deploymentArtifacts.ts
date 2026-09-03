@@ -52,6 +52,7 @@ export interface ArtifactFingerprint {
   runtimeSize: number
   linkReferences: Array<{library: string; start: number; length: number}>
   immutableReferences: ByteRange[]
+  selfAddressReferences: ByteRange[]
   metadataStart: number | null
   runtime: string
 }
@@ -74,6 +75,7 @@ export interface BytecodeComparison {
   artifactRuntimeHash: string
   linkedLibraries: Array<{library: string; expected: string; actual: string; matches: boolean}>
   immutables: Array<{start: number; length: number; actual: string; expected: string | null; matches: boolean | null}>
+  selfAddresses: Array<{start: number; length: number; actual: string; expected: string; matches: boolean}>
   reason: string
 }
 
@@ -220,6 +222,13 @@ function metadataStart(runtime: string): number | null {
   return Number.isInteger(start) && start >= 0 ? start : null
 }
 
+function selfAddressReferences(runtime: string, contractName: string): ByteRange[] {
+  if (!LIBRARIES[contractName]) return []
+  const bytes = runtime.slice(2).toLowerCase()
+  const legacyLibraryGuard = `73${"00".repeat(20)}3014`
+  return bytes.startsWith(legacyLibraryGuard) ? [{start: 1, length: 20}] : []
+}
+
 function findBuildInfoHash(outRoot: string, fullyQualifiedName: string): string | null {
   const buildInfoRoot = join(outRoot, "build-info")
   const cached = buildInfoHashCache.get(buildInfoRoot)
@@ -265,6 +274,7 @@ export function loadArtifactFingerprint(
     runtimeSize: (runtime.length - 2) / 2,
     linkReferences: links,
     immutableReferences: immutables.sort((a, b) => a.start - b.start),
+    selfAddressReferences: selfAddressReferences(runtime, expectedName),
     metadataStart: metadataStart(runtime),
     runtime,
   }
@@ -396,6 +406,18 @@ export function compareRuntimeBytecode(
       matches: isSelf ? true : null,
     }
   })
+  const expectedSelfAddress = getAddress(implementationAddress)
+  const selfAddresses = artifact.selfAddressReferences.map((range) => {
+    const actualBytes = sliceBytes(actual, range.start, range.length)
+    const actualValue = range.length === 20 && actualBytes.length === 42 ? getAddress(actualBytes) : "unknown"
+    return {
+      start: range.start,
+      length: range.length,
+      actual: actualValue,
+      expected: expectedSelfAddress,
+      matches: actualValue !== "unknown" && actualValue === expectedSelfAddress,
+    }
+  })
   const artifactRuntimeHash = artifact.runtimeHash
   const desiredExecutableEnd = artifact.metadataStart ?? (desired.length - 2) / 2
   const actualMetadataStart = metadataStart(actual)
@@ -405,13 +427,18 @@ export function compareRuntimeBytecode(
       artifactRuntimeHash,
       linkedLibraries,
       immutables,
+      selfAddresses,
       reason: "On-chain runtime has no valid Solidity metadata trailer",
     }
   }
   const actualExecutableEnd = actualMetadataStart ?? (actual.length - 2) / 2
 
   const ignored = new Set<number>()
-  for (const range of [...artifact.linkReferences, ...artifact.immutableReferences]) {
+  for (const range of [
+    ...artifact.linkReferences,
+    ...artifact.immutableReferences,
+    ...artifact.selfAddressReferences,
+  ]) {
     for (let index = range.start; index < range.start + range.length; index++) ignored.add(index)
   }
   let executableDiffers = false
@@ -427,7 +454,18 @@ export function compareRuntimeBytecode(
       artifactRuntimeHash,
       linkedLibraries,
       immutables,
+      selfAddresses,
       reason: "Executable bytes differ",
+    }
+  }
+  if (selfAddresses.some(({matches}) => !matches)) {
+    return {
+      classification: "immutable-drift",
+      artifactRuntimeHash,
+      linkedLibraries,
+      immutables,
+      selfAddresses,
+      reason: "Compiler-generated self-address differs",
     }
   }
   if (linkedLibraries.some(({expected}) => expected === "unknown")) {
@@ -436,6 +474,7 @@ export function compareRuntimeBytecode(
       artifactRuntimeHash,
       linkedLibraries,
       immutables,
+      selfAddresses,
       reason: "A linked library is not declared in the deployment registry",
     }
   }
@@ -445,6 +484,7 @@ export function compareRuntimeBytecode(
       artifactRuntimeHash,
       linkedLibraries,
       immutables,
+      selfAddresses,
       reason: "Linked library addresses differ",
     }
   }
@@ -454,6 +494,7 @@ export function compareRuntimeBytecode(
       artifactRuntimeHash,
       linkedLibraries,
       immutables,
+      selfAddresses,
       reason: "An immutable is not the implementation self-address and has no declared desired value",
     }
   }
@@ -466,6 +507,7 @@ export function compareRuntimeBytecode(
       artifactRuntimeHash,
       linkedLibraries,
       immutables,
+      selfAddresses,
       reason: "Only Solidity metadata differs",
     }
   }
@@ -474,6 +516,7 @@ export function compareRuntimeBytecode(
     artifactRuntimeHash,
     linkedLibraries,
     immutables,
-    reason: "Runtime matches after applying declared links and UUPS self immutables",
+    selfAddresses,
+    reason: "Runtime matches after applying declared links, self-addresses, and UUPS self immutables",
   }
 }

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import {describe, it} from "node:test"
-import {ArtifactFingerprint, compareRuntimeBytecode} from "./deploymentArtifacts"
+import {ArtifactFingerprint, compareRuntimeBytecode, loadArtifactFingerprint} from "./deploymentArtifacts"
 import {CONTRACT_NAMES, hashDeploymentRegistryIntent, loadDeploymentRegistry} from "./deploymentRegistry"
 import type {DeploymentPlan} from "./deploymentInventory"
 import {buildRemainderPlan, hashPlan, renderFindings} from "./deploymentInventory"
@@ -18,6 +18,7 @@ function artifact(runtime: string, overrides: Partial<ArtifactFingerprint> = {})
     runtimeSize: (runtime.length - 2) / 2,
     linkReferences: [],
     immutableReferences: [],
+    selfAddressReferences: [],
     metadataStart: null,
     runtime,
     ...overrides,
@@ -29,13 +30,16 @@ describe("deployment inventory", function () {
   const implementation = "0x1111111111111111111111111111111111111111"
 
   it("loads one current Foundry artifact for every tracked logical contract", function () {
-    const {loadArtifactFingerprint} = require("./deploymentArtifacts") as typeof import("./deploymentArtifacts")
     for (const name of CONTRACT_NAMES) {
       const fingerprint = loadArtifactFingerprint(name)
       assert.match(fingerprint.fullyQualifiedName, /^contracts\/.+:[A-Za-z0-9]+$/)
       assert.ok(fingerprint.runtimeSize > 0, name)
       assert.notEqual(fingerprint.buildInfoHash, null, name)
     }
+  })
+
+  it("detects the compiler-generated self-address in legacy-codegen library artifacts", function () {
+    assert.deepEqual(loadArtifactFingerprint("itemNFTLibrary").selfAddressReferences, [{start: 1, length: 20}])
   })
 
   it("classifies exact, metadata, and executable differences separately", function () {
@@ -55,6 +59,24 @@ describe("deployment inventory", function () {
     assert.equal(
       compareRuntimeBytecode("0xff02a10001", implementation, desired, deployment).classification,
       "executable-drift"
+    )
+  })
+
+  it("accepts a compiler-generated library self-address and rejects a different address", function () {
+    const runtime = `0x73${"00".repeat(20)}3014`
+    const libraryArtifact = {
+      ...artifact(runtime),
+      selfAddressReferences: [{start: 1, length: 20}],
+    } as ArtifactFingerprint
+
+    assert.equal(
+      compareRuntimeBytecode(`0x73${implementation.slice(2)}3014`, implementation, libraryArtifact, deployment)
+        .classification,
+      "exact-match"
+    )
+    assert.equal(
+      compareRuntimeBytecode(`0x73${"22".repeat(20)}3014`, implementation, libraryArtifact, deployment).classification,
+      "immutable-drift"
     )
   })
 
