@@ -15,6 +15,7 @@ import {DEFAULT_SHOP_LIMITS} from "./shopReconciliation"
 import {simulateDeploymentPlan} from "./deploymentSimulation"
 import {
   DEFAULT_SAFE_BATCH_LIMITS,
+  assertSafeProposalSender,
   buildSafeBatches,
   buildTransactionBuilderFile,
   createSafeApi,
@@ -27,7 +28,6 @@ import {
 } from "./safeReconciliation"
 import type {DeploymentPlan, DeploymentPlanOptions} from "./deploymentInventory"
 import {deployUpgradeCandidates} from "./upgradeReconciliation"
-import {assertSafeOwner} from "./reconciliation"
 
 const syncStartedAt = Date.now()
 
@@ -426,7 +426,11 @@ async function main() {
   )
     throw new Error("Managed chain state changed after the reviewed plan; generate and review a new plan")
 
-  assertSafeOwner(proposerAddress, currentPlan.authority.owners)
+  if (batches.length !== 0) {
+    logProgress("Checking Safe proposal sender permissions")
+    const api = createSafeApi(deployment.chainId, process.env.SAFE_API_KEY!)
+    await assertSafeProposalSender(api, deployment.authority.address, proposerAddress, currentPlan.authority.owners)
+  }
 
   if (plan.upgrades.candidates.length !== 0) {
     logProgress(`Deploying ${plan.upgrades.candidates.length} upgrade candidate(s)`)
@@ -458,8 +462,6 @@ async function main() {
     proposerPrivateKey!
   )
   logProgress(`Safe clients initialized; preparing ${batches.length} batch(es)`)
-  if (!currentPlan.authority.owners.includes(clients.proposerAddress))
-    throw new Error(`Proposal sender ${clients.proposerAddress} is not an owner of the tracked Safe`)
   let nextNonce = Number(await clients.api.getNextNonce(deployment.authority.address))
   for (const batch of batches) {
     logProgress(`Preparing Safe batch ${batch.index + 1}/${batches.length}`)

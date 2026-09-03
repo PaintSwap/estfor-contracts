@@ -5,6 +5,7 @@ import {join} from "path"
 import {describe, it} from "node:test"
 import {OperationType} from "@safe-global/types-kit"
 import {
+  assertSafeProposalSender,
   buildSafeBatches,
   buildTransactionBuilderFile,
   isSafeTransactionNotFound,
@@ -12,7 +13,7 @@ import {
   refreshSafeJournal,
   submitSafeBatch,
 } from "./safeReconciliation"
-import {assertSafeOwner, toRpcTransaction} from "./reconciliation"
+import {toRpcTransaction} from "./reconciliation"
 import type {ReconciliationOperation} from "./reconciliation"
 
 const SAFE = "0x1111111111111111111111111111111111111111"
@@ -96,10 +97,50 @@ describe("Safe reconciliation", function () {
     })
   })
 
-  it("rejects a non-owner proposer before apply", function () {
-    assert.doesNotThrow(() => assertSafeOwner(SAFE, [SAFE]))
-    assert.throws(() => assertSafeOwner(TARGET, [SAFE]), /is not an owner of the tracked Safe/)
-    assert.throws(() => assertSafeOwner(undefined, [SAFE]), /is unavailable/)
+  it("accepts a Safe proposer who is not an owner", async function () {
+    let filters: unknown
+    await assertSafeProposalSender(
+      {
+        async getSafeDelegates(parameters: unknown) {
+          filters = parameters
+          return {
+            results: [{safe: SAFE, delegate: TARGET, delegator: SAFE, expiryDate: "9999-12-31T23:59:59Z"}],
+          }
+        },
+      },
+      SAFE,
+      TARGET,
+      [SAFE]
+    )
+    assert.deepEqual(filters, {safeAddress: SAFE, delegateAddress: TARGET})
+  })
+
+  it("rejects a proposal sender who is neither an owner nor a Safe proposer", async function () {
+    const unavailableApi = {
+      async getSafeDelegates() {
+        throw new Error("delegate lookup should not run")
+      },
+    }
+    await assert.doesNotReject(assertSafeProposalSender(unavailableApi, SAFE, SAFE, [SAFE]))
+    await assert.rejects(
+      assertSafeProposalSender(
+        {
+          async getSafeDelegates() {
+            return {
+              results: [
+                {safe: SAFE, delegate: TARGET, delegator: SAFE, expiryDate: "2000-01-01T00:00:00Z"},
+                {safe: SAFE, delegate: TARGET, delegator: TARGET, expiryDate: "9999-12-31T23:59:59Z"},
+              ],
+            }
+          },
+        },
+        SAFE,
+        TARGET,
+        [SAFE]
+      ),
+      /is neither an owner nor a proposer of the tracked Safe/
+    )
+    await assert.rejects(assertSafeProposalSender(unavailableApi, SAFE, undefined, [SAFE]), /is unavailable/)
   })
 
   it("journals the payload before submission and records the Safe hash and nonce", async function () {

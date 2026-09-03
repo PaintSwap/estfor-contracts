@@ -43,12 +43,3 @@ export function toRpcTransaction(operation: ReconciliationOperation) {
     value: toBeHex(BigInt(operation.value)),
   }
 }
-
-export function assertSafeOwner(
-  proposerAddress: string | undefined,
-  owners: readonly string[]
-): asserts proposerAddress {
-  if (!proposerAddress || !owners.includes(proposerAddress)) {
-    throw new Error(`Proposal sender ${proposerAddress ?? "is unavailable"} is not an owner of the tracked Safe`)
-  }
-}

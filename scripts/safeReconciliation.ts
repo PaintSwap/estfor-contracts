@@ -67,6 +67,14 @@ export interface SafeProposalJournal {
 }
 
 interface SafeApi {
+  getSafeDelegates(parameters: {safeAddress: string; delegateAddress: string}): Promise<{
+    results: readonly {
+      safe: string
+      delegate: string
+      delegator: string
+      expiryDate: string | null
+    }[]
+  }>
   getNextNonce(safeAddress: string): Promise<string>
   getTransaction(safeTxHash: string): Promise<SafeMultisigTransactionResponse>
   proposeTransaction(parameters: {
@@ -231,6 +239,30 @@ export async function createSafeClients(
 
 export function createSafeApi(chainId: number, apiKey: string): SafeApiKit {
   return new SafeApiKit({chainId: BigInt(chainId), apiKey})
+}
+
+export async function assertSafeProposalSender(
+  api: Pick<SafeApi, "getSafeDelegates">,
+  safeAddress: string,
+  proposerAddress: string | undefined,
+  owners: readonly string[]
+): Promise<void> {
+  if (!proposerAddress) throw new Error("Proposal sender is unavailable")
+  const safe = getAddress(safeAddress)
+  const proposer = getAddress(proposerAddress)
+  const normalizedOwners = new Set(owners.map((owner) => getAddress(owner)))
+  if (normalizedOwners.has(proposer)) return
+  const delegates = await api.getSafeDelegates({safeAddress: safe, delegateAddress: proposer})
+  if (
+    !delegates.results.some(
+      (delegate) =>
+        getAddress(delegate.safe) === safe &&
+        getAddress(delegate.delegate) === proposer &&
+        normalizedOwners.has(getAddress(delegate.delegator)) &&
+        (delegate.expiryDate === null || Date.parse(delegate.expiryDate) > Date.now())
+    )
+  )
+    throw new Error(`Proposal sender ${proposer} is neither an owner nor a proposer of the tracked Safe ${safe}`)
 }
 
 export async function submitSafeBatch(
