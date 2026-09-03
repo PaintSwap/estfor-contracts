@@ -1,63 +1,41 @@
-Hardhat dependencies are legacy packages.
+# Tooling and deployment target
 
-Foundry toolchain is the new standard for testing, deploying, and interacting with Ethereum smart contracts for this project. Contracts should be Brio hardfork compatible on the Sonic chain (48kb contract size with 96kb init).
+- Use Foundry for Solidity compilation and testing. Use it as the default contract-facing engine for new deployment and interaction workflows.
+- Existing Hardhat scripts are supported legacy code. Modify them when a task requires it, but do not add a new Hardhat workflow unless requested.
+- Sonic deployments must satisfy the Brio limits: deployed runtime bytecode must not exceed 49,152 bytes, and init bytecode must not exceed 98,304 bytes.
+- Run only one Forge or Hardhat process at a time, including package scripts that invoke them.
 
-When upgrading a contract firstly copy the existing contract code to contracts/old/, update the archived contract name to a new version, and then update the contract code with an annotation reference to the old contract:
+# Multiple compiler profiles
 
-```solidity
-// contracts/old/PlayerNFTv1.sol
-contract PlayerNFTv1 is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IMarketplaceNFT, IPlayerNFT {
+- Sources listed under `compilation_restrictions` in `foundry.toml` require IR compilation.
+- Foundry tests and Solidity scripts must not import those implementation sources. Load the compiled artifact and interact through an interface that declares the exact functions, errors, and events in use.
+- When testing an IR-only implementation, follow the `:via-ir` artifact pattern in `test/utils/EstforTest.sol` and `test/utils/FullGameStack.sol`.
 
-// contracts/PlayerNFT.sol
-// New version of PlayerNFT (contract name remains the same)
-/// @custom:oz-upgrades-from PlayerNFTv1
-contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IMarketplaceNFT, IPlayerNFT {
-```
+# Upgradeable implementations
 
-After updating the contract code, add an Upgrade test to ensure the upgrade works as expected:
+When changing an existing UUPS or beacon implementation:
 
-```solidity
-// test/UpgradeSafety.t.sol
-import {UpgradeSafetyTestBase} from "./utils/UpgradeSafetyTestBase.sol";
+1. Before editing it, copy the current implementation to `contracts/old/<Name>V<N>.sol`. Use the next available archive version for `N`.
+2. Rename the archived contract declaration to `<Name>V<N>` and keep the archive compilable by correcting its relative imports.
+3. If the change affects an imported definition that contributes to storage layout, preserve the old definition under `contracts/old/dependencies/` and import it from the archive.
+4. Add `/// @custom:oz-upgrades-from <Name>V<N>` to the current implementation.
+5. Ensure `test/UpgradeSafety.t.sol` contains one validation test for the current implementation. Add a test only when one does not already exist.
+6. Run `forge clean` before the targeted upgrade-safety test, then run the relevant behavioral tests.
 
-contract UpgradeSafetyTest is UpgradeSafetyTestBase {
-  function testPlayerNFTUpgradeSafe() public {
-    _validateUpgrade("contracts/PlayerNFT.sol:PlayerNFT");
-  }
-}
-```
+Do not modify an established archive version unless correcting that archive is the task.
 
-If the test already exists, add one `_validateUpgrade` call for the upgraded contract. The contract's `@custom:oz-upgrades-from` annotation identifies the archived reference contract.
+# OpenZeppelin dependencies
 
-A custom Paintswap OZ fork is used specifically to add "memory-safe" assembly markers to v5.1 contracts. This works around a stack-too-deep compilation issue in Arrays.sol. Upstream OZ contracts have not yet marked their assembly blocks as memory-safe so this fork is needed to work around the issue.
+Keep `@openzeppelin/contracts` and `@openzeppelin/contracts-upgradeable` linked to the PaintSwap v5.1 memory-safe forks in this workspace. Replacing them with upstream packages can reintroduce the `Arrays.sol` stack-too-deep failure. Change these dependencies only when the task explicitly requires a migration.
 
-Ensure that the foundry test suite and scripts do not directly reference contracts that require IR compilation. Instead use indirect interfaces for exact error and event signatures.
+# Design
 
-Study how established products solve the problem before designing a solution. Adopt their proven patterns and conventions rather than inventing an approach from scratch.
+- Follow repository patterns for routine changes. For new architecture or an unfamiliar integration without local precedent, review relevant established implementations before choosing a design.
+- Choose the simplest complete design that fits the existing architecture. Before adding a package or a local implementation, check the documentation and types of current dependencies.
+- Build large changes as working end-to-end increments. Each increment must fit the intended final architecture; do not add a known disposable stopgap unless requested.
 
-Choose the simplest implementation that fully meets the current requirements. Avoid speculative abstractions, configuration, and indirection.
+# Documentation
 
-Grow the system in layers. Start from the smallest version that works end to end, and add each new capability on top of a product that already works. Never trade a working product for unfinished complexity.
-
-Make architectural decisions for the long term. Do not accept a stopgap that only works for now and is meant to be replaced later.
-
-Lean on the dependencies already in the project before writing your own implementation or adding packages. Do not assume a library lacks a capability without checking its documentation and types.
-
-Keep components modular and concerns clearly separated.
-
-Prefer established, well-maintained libraries when they reduce overall complexity or improve reliability. Do not reimplement common functionality without a clear reason.
-
-Write instructions and documentation using principles from ASD-STE100
-(Simplified Technical English):
-
-- Use short, direct sentences.
-- Use one instruction per sentence where practical.
-- Use consistent terminology. Do not use synonyms for defined concepts.
-- Prefer active voice.
-- Make requirements explicit.
-- Avoid ambiguous pronouns and references.
-- Avoid unnecessary words and idioms.
-- Use MUST, SHOULD, and MAY consistently for requirement strength.
-
-Do not enforce the ASD-STE100 controlled vocabulary. Prefer established
-software-engineering terminology where it is clearer.
+- Write instructions and documentation in plain technical English inspired by ASD-STE100.
+- Use short, active sentences with one requirement per sentence where practical. Use established terms consistently and make requirement strength explicit.
+- Use `MUST`, `SHOULD`, and `MAY` only for normative requirements. Do not enforce the ASD-STE100 controlled vocabulary when standard software terminology is clearer.
