@@ -51,10 +51,12 @@ For a UUPS contract with a reinitializer, the contract's `reinitializer` object 
 - `onchainVersion` is the OpenZeppelin initialized version read from the proxy.
 - `targetVersion` and `callData` are the reviewed reinitializer intent for the next implementation upgrade.
 
-Before it builds or rebuilds a plan, reconciliation reads the initialized-version storage at one observation block and
-updates `onchainVersion` in the tracked deployment file. An upgrade includes `callData` only when `onchainVersion` is lower
-than `targetVersion`. Equal or higher on-chain versions omit the calldata and do not block reconciliation. This makes a
-rerun refresh stale registry state without associating old calldata with a newer on-chain version.
+Before it builds or rebuilds a plan, reconciliation uses Foundry `cast` commands to read the latest initialized-version
+storage and update `onchainVersion` in the tracked deployment file. An upgrade includes `callData` only when
+`onchainVersion` is lower than `targetVersion`. Equal or higher on-chain versions omit the calldata and do not block
+reconciliation. This makes a rerun refresh stale registry state without associating old calldata with a newer on-chain
+version. When `--block` or a reviewed plan selects a historical block, reconciliation uses a separate non-writing observation
+for that plan; historical data never overwrites the latest tracked state.
 
 ## Main files
 

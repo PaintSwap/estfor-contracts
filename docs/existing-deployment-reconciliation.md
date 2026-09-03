@@ -208,9 +208,10 @@ Design rules:
   implementations, and treats it as the desired link target. After rollout, promote the verified candidate to `address` in
   a separate registry-only change.
 - An optional `reinitializer` object stores the observed `onchainVersion` separately from the reviewed `targetVersion` and
-  `callData`. Before planning, reconciliation reads the proxy's OpenZeppelin initialized-version storage and refreshes
-  `onchainVersion` in the tracked registry. An implementation upgrade includes the calldata only when the observed version
-  is lower than the target. Equal or higher observed versions omit the calldata without blocking the plan.
+  `callData`. Before planning, reconciliation uses Foundry `cast` to read the proxy's OpenZeppelin initialized-version
+  storage and refresh `onchainVersion` in the tracked registry. An implementation upgrade includes the calldata only when
+  the observed version is lower than the target. Equal or higher observed versions omit the calldata without blocking the
+  plan. Historical plan observations do not overwrite the latest tracked value.
 - `deploymentBlock` bounds deployment-specific verification and audit queries.
 - A genesis hash or another stable network fingerprint protects against an RPC that reports the expected chain ID for a different network.
 - `profile` is only a pointer in the first version. It maps current `live` and `beta` choices without designing future rule inheritance.

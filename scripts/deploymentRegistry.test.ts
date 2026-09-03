@@ -3,7 +3,7 @@ import {copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync} from "node:f
 import {tmpdir} from "node:os"
 import {join, resolve} from "node:path"
 import {describe, it} from "node:test"
-import {Interface, JsonRpcProvider, getAddress, toBeHex, zeroPadValue} from "ethers"
+import {Interface, getAddress, toBeHex, zeroPadValue} from "ethers"
 import {
   CONTRACT_NAMES,
   EXTERNAL_NAMES,
@@ -177,16 +177,28 @@ describe("DeploymentRegistry", function () {
       )
       versions.set(deployment.contracts.clans.address.toLowerCase(), 5)
       const observationHash = `0x${"1".repeat(64)}`
-      const provider = {
-        getNetwork: async () => ({chainId: 146n}),
-        getBlock: async (block: number | "latest") =>
-          block === 0
-            ? {number: 0, hash: deployment.networkFingerprint.genesisHash}
-            : {number: 2_000_000, hash: observationHash},
-        getStorage: async (address: string) => zeroPadValue(toBeHex(versions.get(address.toLowerCase())!), 32),
-      } as unknown as JsonRpcProvider
+      const cast = (arguments_: string[]) => {
+        if (arguments_[0] === "chain-id") return "146"
+        if (arguments_[0] === "block") {
+          const number = arguments_[1] === "latest" ? 2_000_000 : Number(arguments_[1])
+          return JSON.stringify({
+            schema_version: 1,
+            success: true,
+            errors: [],
+            warnings: [],
+            data: {
+              number: toBeHex(number),
+              hash: number === 0 ? deployment.networkFingerprint.genesisHash : observationHash,
+            },
+          })
+        }
+        if (arguments_[0] === "storage") {
+          return zeroPadValue(toBeHex(versions.get(arguments_[1].toLowerCase())!), 32)
+        }
+        throw new Error(`Unexpected cast command: ${arguments_.join(" ")}`)
+      }
 
-      const refreshed = await refreshDeploymentRegistry(provider, "sonic-live", undefined, deploymentsRoot)
+      const refreshed = refreshDeploymentRegistry("unused", "sonic-live", deploymentsRoot, cast)
 
       assert.deepEqual(refreshed.updatedContracts, ["clans"])
       assert.deepEqual(refreshed.observationBlock, {number: 2_000_000, hash: observationHash})
@@ -198,13 +210,10 @@ describe("DeploymentRegistry", function () {
           .onchainVersion,
         5
       )
-      assert.deepEqual(
-        (await refreshDeploymentRegistry(provider, "sonic-live", undefined, deploymentsRoot)).updatedContracts,
-        []
-      )
+      assert.deepEqual(refreshDeploymentRegistry("unused", "sonic-live", deploymentsRoot, cast).updatedContracts, [])
 
       versions.set(deployment.contracts.clans.address.toLowerCase(), 2)
-      const historical = await observeDeploymentRegistry(provider, "sonic-live", 1_900_000, deploymentsRoot)
+      const historical = observeDeploymentRegistry("unused", "sonic-live", 1_900_000, deploymentsRoot, cast)
       assert.equal(historical.deployment.contracts.clans.reinitializer?.onchainVersion, 2)
       assert.equal(
         JSON.parse(readFileSync(join(chainRoot, "sonic-live.json"), "utf8")).contracts.clans.reinitializer

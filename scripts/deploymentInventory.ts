@@ -9,7 +9,14 @@ import {
   compareRuntimeBytecode,
   loadArtifactFingerprint,
 } from "./deploymentArtifacts"
-import {CONTRACT_NAMES, ContractKind, ContractName, DeploymentRegistry, EXTERNAL_NAMES} from "./deploymentRegistry"
+import {
+  CONTRACT_NAMES,
+  ContractKind,
+  ContractName,
+  DeploymentRegistry,
+  EXTERNAL_NAMES,
+  hashDeploymentRegistryIntent,
+} from "./deploymentRegistry"
 import {buildShopPlan, deferShopPlanForUpgrade, hasShopStateGetter} from "./shopReconciliation"
 import type {ShopPlan, ShopPlanOptions} from "./shopReconciliation"
 import type {DeploymentSimulationResult} from "./deploymentSimulation"
@@ -161,30 +168,6 @@ function canonical(value: unknown): string {
 
 export function hashPlan(plan: Omit<DeploymentPlan, "planHash">): string {
   return sha256(canonical(plan))
-}
-
-export function hashRegistryIntent(deployment: DeploymentRegistry): string {
-  return sha256(
-    canonical({
-      ...deployment,
-      contracts: Object.fromEntries(
-        CONTRACT_NAMES.map((name) => {
-          const contract = deployment.contracts[name]
-          const reinitializer = contract.reinitializer
-          return [
-            name,
-            {
-              ...contract,
-              reinitializer:
-                reinitializer === null
-                  ? null
-                  : {targetVersion: reinitializer.targetVersion, callData: reinitializer.callData},
-            },
-          ]
-        })
-      ),
-    })
-  )
 }
 
 function codeInventory(address: string, code: string): CodeInventory {
@@ -532,7 +515,7 @@ export async function buildDeploymentPlan(
     authority: {type: "safe", address: safeAddress, codeHash: keccak256(safeCode), owners, threshold},
     observationBlock: {number: block.number, hash: block.hash},
     inputs: {
-      registryIntentHash: hashRegistryIntent(deployment),
+      registryIntentHash: hashDeploymentRegistryIntent(deployment),
       sourceDataHash: sha256(canonical(shop.desired)),
       gitRevision: execFileSync("git", ["rev-parse", "HEAD"], {encoding: "utf8"}).trim(),
       openZeppelinManifestHash: sha256(manifestRaw),

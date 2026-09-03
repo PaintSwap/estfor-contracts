@@ -1,6 +1,8 @@
+import {createHash} from "crypto"
+import {spawnSync} from "child_process"
 import {readFileSync, readdirSync, renameSync, writeFileSync} from "fs"
 import {join, resolve} from "path"
-import {JsonRpcProvider, isAddress, isHexString} from "ethers"
+import {isAddress, isHexString} from "ethers"
 import {INITIALIZABLE_STORAGE_SLOT} from "./deploymentSlots"
 
 const prettier = require("prettier") as {
@@ -103,6 +105,12 @@ export interface DeploymentRegistryRefresh {
   updatedContracts: ContractName[]
 }
 
+interface ObservedDeploymentRegistry {
+  result: DeploymentRegistryRefresh
+  file: string
+  rawRegistry: Record<string, unknown>
+}
+
 const DEPLOYMENTS_ROOT = resolve(__dirname, "../deployments")
 const DEPLOYMENT_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const HASH_PATTERN = /^0x[0-9a-fA-F]{64}$/
@@ -122,6 +130,31 @@ function requireString(value: unknown, label: string): string {
 function requireInteger(value: unknown, label: string): number {
   if (!Number.isSafeInteger(value) || Number(value) < 0) throw new Error(`${label} must be a non-negative integer`)
   return Number(value)
+}
+
+function canonical(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`
+  if (value !== null && typeof value === "object") {
+    return `{${Object.entries(value as Record<string, unknown>)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, child]) => `${JSON.stringify(key)}:${canonical(child)}`)
+      .join(",")}}`
+  }
+  return JSON.stringify(value)
+}
+
+function parseQuantity(value: unknown, label: string): number {
+  if (typeof value !== "string" && typeof value !== "number") throw new Error(`${label} is not a quantity`)
+  const quantity = BigInt(value)
+  if (quantity < 0n || quantity > BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw new Error(`${label} exceeds the registry's numeric range`)
+  }
+  return Number(quantity)
+}
+
+function parseCastBlock(value: string, label: string): Record<string, unknown> {
+  const output = requireObject(JSON.parse(value), label)
+  return output.schema_version === 1 ? requireObject(output.data, `${label} data`) : output
 }
 
 function requireAddress(value: unknown, label: string): string {
@@ -268,45 +301,82 @@ export function getDeploymentRegistryPath(deploymentId: string, deploymentsRoot 
   return findDeploymentFile(deploymentId, deploymentsRoot)
 }
 
-async function readDeploymentRegistryState(
-  provider: JsonRpcProvider,
+export function hashDeploymentRegistryIntent(deployment: DeploymentRegistry): string {
+  const intent = {
+    ...deployment,
+    contracts: Object.fromEntries(
+      CONTRACT_NAMES.map((name) => {
+        const contract = deployment.contracts[name]
+        const reinitializer = contract.reinitializer
+        return [
+          name,
+          {
+            ...contract,
+            reinitializer:
+              reinitializer === null
+                ? null
+                : {targetVersion: reinitializer.targetVersion, callData: reinitializer.callData},
+          },
+        ]
+      })
+    ),
+  }
+  return `0x${createHash("sha256").update(canonical(intent)).digest("hex")}`
+}
+
+function runCast(rpcUrl: string, arguments_: string[]): string {
+  const result = spawnSync("cast", [...arguments_, "--rpc-url", rpcUrl], {encoding: "utf8"})
+  if (result.error) throw new Error(`Could not run cast: ${result.error.message}`)
+  if (result.status !== 0) {
+    const detail = result.stderr.trim().split(rpcUrl).join("[RPC_URL]")
+    throw new Error(`cast ${arguments_[0]} failed with status ${result.status}${detail ? `: ${detail}` : ""}`)
+  }
+  return result.stdout.trim()
+}
+
+function observeDeploymentRegistryState(
+  rpcUrl: string,
   deploymentId: string,
   requestedBlock?: number,
   deploymentsRoot = DEPLOYMENTS_ROOT,
-  writeChanges = false
-): Promise<DeploymentRegistryRefresh> {
+  cast: (arguments_: string[]) => string = (arguments_) => runCast(rpcUrl, arguments_)
+): ObservedDeploymentRegistry {
   const file = findDeploymentFile(deploymentId, deploymentsRoot)
   const raw = JSON.parse(readFileSync(file, "utf8")) as unknown
   const deployment = validateDeploymentRegistry(raw, deploymentId)
-  const network = await provider.getNetwork()
-  if (network.chainId !== BigInt(deployment.chainId)) {
-    throw new Error(`RPC chain ID ${network.chainId} does not match deployment chain ID ${deployment.chainId}`)
+  const chainId = parseQuantity(cast(["chain-id"]), "RPC chain ID")
+  if (chainId !== deployment.chainId) {
+    throw new Error(`RPC chain ID ${chainId} does not match deployment chain ID ${deployment.chainId}`)
   }
-  const genesis = await provider.getBlock(0)
-  if (!genesis?.hash || genesis.hash.toLowerCase() !== deployment.networkFingerprint.genesisHash.toLowerCase()) {
+  const genesis = parseCastBlock(cast(["block", "0", "--json"]), "genesis block")
+  const genesisHash = requireString(genesis.hash, "genesis block hash")
+  if (genesisHash.toLowerCase() !== deployment.networkFingerprint.genesisHash.toLowerCase()) {
     throw new Error("RPC network fingerprint does not match deployment registry")
   }
-  const block = await provider.getBlock(requestedBlock ?? "latest")
-  if (!block?.hash) throw new Error("Could not resolve observation block")
+  const rawBlock = parseCastBlock(
+    cast(["block", requestedBlock === undefined ? "latest" : String(requestedBlock), "--json"]),
+    "observation block"
+  )
+  const block = {
+    number: parseQuantity(rawBlock.number, "observation block number"),
+    hash: requireString(rawBlock.hash, "observation block hash"),
+  }
+  if (!HASH_PATTERN.test(block.hash)) throw new Error("Observation block hash is invalid")
   if (block.number < deployment.deploymentBlock) {
     throw new Error(`Observation block ${block.number} predates deployment block ${deployment.deploymentBlock}`)
   }
 
-  const observedVersions = await Promise.all(
-    CONTRACT_NAMES.flatMap((name) => {
-      const contract = deployment.contracts[name]
-      if (contract.reinitializer === null) return []
-      return [
-        provider.getStorage(contract.address, INITIALIZABLE_STORAGE_SLOT, block.number).then((storage) => {
-          const version = BigInt(storage) & ((1n << 64n) - 1n)
-          if (version > BigInt(Number.MAX_SAFE_INTEGER)) {
-            throw new Error(`${name} initialized version ${version} exceeds the registry's numeric range`)
-          }
-          return [name, Number(version)] as const
-        }),
-      ]
-    })
-  )
+  const observedVersions: Array<readonly [ContractName, number]> = []
+  for (const name of CONTRACT_NAMES) {
+    const contract = deployment.contracts[name]
+    if (contract.reinitializer === null) continue
+    const storage = cast(["storage", contract.address, INITIALIZABLE_STORAGE_SLOT, "--block", String(block.number)])
+    const version = BigInt(storage) & ((1n << 64n) - 1n)
+    if (version > BigInt(Number.MAX_SAFE_INTEGER)) {
+      throw new Error(`${name} initialized version ${version} exceeds the registry's numeric range`)
+    }
+    observedVersions.push([name, Number(version)])
+  }
 
   const rawRegistry = requireObject(raw, "deployment registry")
   const rawContracts = requireObject(rawRegistry.contracts, "contracts")
@@ -319,37 +389,42 @@ async function readDeploymentRegistryState(
     updatedContracts.push(name)
   }
 
-  if (writeChanges && updatedContracts.length !== 0) {
-    const options = prettier.resolveConfig.sync(file) ?? {}
-    const contents = prettier.format(JSON.stringify(rawRegistry), {...options, parser: "json"})
-    const temporaryPath = `${file}.${process.pid}.tmp`
-    writeFileSync(temporaryPath, contents)
-    renameSync(temporaryPath, file)
-  }
-
   return {
-    deployment: validateDeploymentRegistry(rawRegistry, deploymentId),
-    observationBlock: {number: block.number, hash: block.hash},
-    updatedContracts,
+    result: {
+      deployment: validateDeploymentRegistry(rawRegistry, deploymentId),
+      observationBlock: block,
+      updatedContracts,
+    },
+    file,
+    rawRegistry,
   }
 }
 
 export function observeDeploymentRegistry(
-  provider: JsonRpcProvider,
+  rpcUrl: string,
   deploymentId: string,
   requestedBlock?: number,
-  deploymentsRoot = DEPLOYMENTS_ROOT
-): Promise<DeploymentRegistryRefresh> {
-  return readDeploymentRegistryState(provider, deploymentId, requestedBlock, deploymentsRoot)
+  deploymentsRoot = DEPLOYMENTS_ROOT,
+  cast?: (arguments_: string[]) => string
+): DeploymentRegistryRefresh {
+  return observeDeploymentRegistryState(rpcUrl, deploymentId, requestedBlock, deploymentsRoot, cast).result
 }
 
 export function refreshDeploymentRegistry(
-  provider: JsonRpcProvider,
+  rpcUrl: string,
   deploymentId: string,
-  requestedBlock?: number,
-  deploymentsRoot = DEPLOYMENTS_ROOT
-): Promise<DeploymentRegistryRefresh> {
-  return readDeploymentRegistryState(provider, deploymentId, requestedBlock, deploymentsRoot, true)
+  deploymentsRoot = DEPLOYMENTS_ROOT,
+  cast?: (arguments_: string[]) => string
+): DeploymentRegistryRefresh {
+  const observed = observeDeploymentRegistryState(rpcUrl, deploymentId, undefined, deploymentsRoot, cast)
+  if (observed.result.updatedContracts.length !== 0) {
+    const options = prettier.resolveConfig.sync(observed.file) ?? {}
+    const contents = prettier.format(JSON.stringify(observed.rawRegistry), {...options, parser: "json"})
+    const temporaryPath = `${observed.file}.${process.pid}.tmp`
+    writeFileSync(temporaryPath, contents)
+    renameSync(temporaryPath, observed.file)
+  }
+  return observed.result
 }
 
 export function getSelectedDeploymentId(environment: NodeJS.ProcessEnv = process.env): string {
