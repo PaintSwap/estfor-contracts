@@ -72,7 +72,7 @@ if [[ $fully_qualified_name == "contracts/Bridge/Bridge.sol:Bridge" ]]; then
   unsafe_allow+=,constructor,state-variable-immutable
 fi
 
-npx --yes @openzeppelin/upgrades-core@^1.45.0 validate \
+pnpm exec openzeppelin-upgrades-core validate \
   "$validation_dir" \
   --contract "$fully_qualified_name" \
   --unsafeAllow "$unsafe_allow" \

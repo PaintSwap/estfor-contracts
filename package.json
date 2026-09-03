@@ -27,6 +27,7 @@
     "@openzeppelin/contracts": "workspace:*",
     "@openzeppelin/contracts-upgradeable": "workspace:*",
     "@openzeppelin/hardhat-upgrades": "^3.9.1",
+    "@openzeppelin/upgrades-core": "1.45.0",
     "@paintswap/estfor-definitions": "2.0.111",
     "@paintswap/vrf": "^0.0.10",
     "@safe-global/api-kit": "^4.0.1",
