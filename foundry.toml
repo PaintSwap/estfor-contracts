@@ -65,7 +65,7 @@ fs_permissions = [
 
 # Promotions owns a game function named testClearPlayerPromotions (an admin op to clear test
 # promotions), which Foundry's collector mistakes for a fuzz test. Keep it out of test runs.
-no_match_contract = "Promotions"
+no_match_test = "^testClearPlayerPromotions"
 
 remappings = [
   "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
