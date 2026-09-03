@@ -44,6 +44,14 @@ Apply deploys libraries first, then standalone Players delegates and upgradeable
 executes the proposals, use `--resume <run-id>` and verify that the managed plan is empty. Update stable registry addresses
 from the verified final plan in a separate registry-only change.
 
+## Reinitializers
+
+For a UUPS contract with a reinitializer, record its `version` and encoded `callData` in the contract's `reinitializer`
+object. Reconciliation reads OpenZeppelin's initialized version from the proxy at the observation block. An upgrade includes
+the calldata only when the proxy's version is lower than the recorded version, so later implementation upgrades do not
+repeat an already completed reinitializer. A proxy version higher than the registry value blocks the plan as stale
+deployment intent.
+
 ## Main files
 
 | File                                 | Purpose                                                      |

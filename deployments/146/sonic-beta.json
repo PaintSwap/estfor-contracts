@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "deploymentId": "sonic-beta",
   "chainId": 146,
   "deploymentBlock": 1241080,
@@ -14,7 +14,14 @@
   "contracts": {
     "bridge": {"kind": "uups", "address": "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a"},
     "worldActions": {"kind": "uups", "address": "0x3a965bf890e5ac353603420cc8d4c821d1f8a765"},
-    "randomnessBeacon": {"kind": "uups", "address": "0x7695be7272f3d223a40fc3c0499053f81c17cb65"},
+    "randomnessBeacon": {
+      "kind": "uups",
+      "address": "0x7695be7272f3d223a40fc3c0499053f81c17cb65",
+      "reinitializer": {
+        "version": 3,
+        "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
+      }
+    },
     "dailyRewardsScheduler": {"kind": "uups", "address": "0x16ba02365efcb5dacc46fe743c46d37a93997575"},
     "treasury": {"kind": "uups", "address": "0xdd744b66bb24a01a4ec62287f3d0d91fee37f8b1"},
     "shop": {"kind": "uups", "address": "0xb3778f2c24d94e3c7cfe608388bd35bba9401caa"},
@@ -26,7 +33,14 @@
     "estforLibrary": {"kind": "library", "address": "0x96977118842d6f209f9442e76d7de04d393480d8"},
     "playerNFT": {"kind": "uups", "address": "0xbf5eed84c0cdff089c9dd6086ddf805d111ef35b"},
     "quests": {"kind": "uups", "address": "0xd896af0dd1d3533d5d86d4be52df9546a97ddb4d"},
-    "clans": {"kind": "uups", "address": "0x84d9d334c5b64fcbcb17d6b853a0434818d052bb"},
+    "clans": {
+      "kind": "uups",
+      "address": "0x84d9d334c5b64fcbcb17d6b853a0434818d052bb",
+      "reinitializer": {
+        "version": 2,
+        "callData": "0x29b6eca90000000000000000000000007fa2b4c19093e0777d72235ea28d302f53227fa0"
+      }
+    },
     "wishingWell": {"kind": "uups", "address": "0xb2570777de043adbc7bfcc4bfed747e2e44fbeea"},
     "bank": {"kind": "beacon", "address": "0x72598e7d7a6652ebb29026f83512bce1455999f6"},
     "petNFTLibrary": {"kind": "library", "address": "0xbF954C371371e9Ed098D47a3b97f6C5F3b39C867"},
@@ -42,17 +56,56 @@
     "promotions": {"kind": "uups", "address": "0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab"},
     "passiveActions": {"kind": "uups", "address": "0x0b577a40b8e69614bd2f6687349ba69c0d1f7113"},
     "instantActions": {"kind": "uups", "address": "0x76928633cfbf043bca1f6b8ffe634f4c63dbd90d"},
-    "instantVRFActions": {"kind": "uups", "address": "0x007247ab8fbae2b07f5adf3e70a141459c89264e"},
+    "instantVRFActions": {
+      "kind": "uups",
+      "address": "0x007247ab8fbae2b07f5adf3e70a141459c89264e",
+      "reinitializer": {
+        "version": 3,
+        "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
+      }
+    },
     "genericInstantVRFActionStrategy": {"kind": "uups", "address": "0x2e66bf22e21aee0986602dd2c7265a5470ec9962"},
     "eggInstantVRFActionStrategy": {"kind": "uups", "address": "0xd9deebc6ca8b75f8e4de7b4e96a4d8b7e2b3607e"},
     "bankRelay": {"kind": "uups", "address": "0xd6cdc1d365e505f0546361782c4336c829c39568"},
-    "pvpBattleground": {"kind": "uups", "address": "0xe91a6cdac47dfd546578273253bff1fddc350764"},
-    "raids": {"kind": "uups", "address": "0xbfd416e76519cf199dd95b82f6928b3a4b5ac995"},
+    "pvpBattleground": {
+      "kind": "uups",
+      "address": "0xe91a6cdac47dfd546578273253bff1fddc350764",
+      "reinitializer": {
+        "version": 3,
+        "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
+      }
+    },
+    "raids": {
+      "kind": "uups",
+      "address": "0xbfd416e76519cf199dd95b82f6928b3a4b5ac995",
+      "reinitializer": {
+        "version": 3,
+        "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
+      }
+    },
     "clanBattleLibrary": {"kind": "library", "address": "0x58e99f6ed3bfb9e9311d9297e48310c3c8aea178"},
     "lockedBankVaultsLibrary": {"kind": "library", "address": "0x080ca5bb70759b993676a4dc88c2e36125d83661"},
-    "lockedBankVaults": {"kind": "uups", "address": "0x9451943d38ac8cde8a2a8026adb8b28ac089b2cb"},
-    "territories": {"kind": "uups", "address": "0xa2ca7daad4b86819c455fafc704d727a23c5a513"},
-    "combatantsHelper": {"kind": "uups", "address": "0x7fa2b4c19093e0777d72235ea28d302f53227fa0"},
+    "lockedBankVaults": {
+      "kind": "uups",
+      "address": "0x9451943d38ac8cde8a2a8026adb8b28ac089b2cb",
+      "reinitializer": {
+        "version": 3,
+        "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
+      }
+    },
+    "territories": {
+      "kind": "uups",
+      "address": "0xa2ca7daad4b86819c455fafc704d727a23c5a513",
+      "reinitializer": {
+        "version": 3,
+        "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
+      }
+    },
+    "combatantsHelper": {
+      "kind": "uups",
+      "address": "0x7fa2b4c19093e0777d72235ea28d302f53227fa0",
+      "reinitializer": {"version": 4, "callData": "0x54a08606"}
+    },
     "territoryTreasury": {"kind": "uups", "address": "0x5d1429f842891ea0ed80e856762b48bc117ac2a8"},
     "bankRegistry": {"kind": "uups", "address": "0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6"},
     "bankFactory": {"kind": "uups", "address": "0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c"},

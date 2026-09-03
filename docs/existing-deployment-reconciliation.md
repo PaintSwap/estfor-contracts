@@ -158,11 +158,11 @@ deployments/
     blaze-beta.json
 ```
 
-An initial schema can stay small:
+The registry schema stays small:
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "deploymentId": "sonic-live",
   "chainId": 146,
   "deploymentBlock": 123456,
@@ -177,7 +177,11 @@ An initial schema can stay small:
   "contracts": {
     "shop": {
       "kind": "uups",
-      "address": "0x..."
+      "address": "0x...",
+      "reinitializer": {
+        "version": 2,
+        "callData": "0x..."
+      }
     },
     "bank": {
       "kind": "beacon",
@@ -202,8 +206,9 @@ Design rules:
 - Planning derives a changed library's candidate address from the reviewed deployer nonce, deploys it before linked
   implementations, and treats it as the desired link target. After rollout, promote the verified candidate to `address` in
   a separate registry-only change.
-- Optional `upgradeCallData` stores reviewed UUPS reinitializer calldata. It defaults to `0x` and is used only when an
-  implementation upgrade operation exists.
+- An optional `reinitializer` object stores a reviewed UUPS reinitializer version and calldata as one value. During an
+  implementation upgrade, planning reads the proxy's OpenZeppelin initialized-version storage and includes the calldata
+  only when the stored version is lower. A higher stored version blocks stale registry intent.
 - `deploymentBlock` bounds deployment-specific verification and audit queries.
 - A genesis hash or another stable network fingerprint protects against an RPC that reports the expected chain ID for a different network.
 - `profile` is only a pointer in the first version. It maps current `live` and `beta` choices without designing future rule inheritance.
@@ -597,8 +602,8 @@ transaction. Candidate creation intents are journaled before broadcast, receipts
 successful candidates are reused after partial runs. All candidate creation goes through the generic Foundry broadcast;
 libraries use their reviewed linked creation payload. Upgradeable
 implementations use the generic Foundry `Upgrades.prepareUpgrade` script, which validates again and deploys without calling
-the proxy. UUPS `upgradeToAndCall`, including optional registry-declared reinitializer calldata, and beacon `upgradeTo`
-always name the tracked Safe as caller. The pinned Anvil simulation deploys or reuses candidates, executes the exact Safe
+the proxy. UUPS `upgradeToAndCall` includes optional registry-declared reinitializer calldata only when the recorded version
+has not run; beacon `upgradeTo` and UUPS upgrades always name the tracked Safe as caller. The pinned Anvil simulation deploys or reuses candidates, executes the exact Safe
 operations, and then reruns implementation, ownership, shared wiring, and complete Shop postconditions. Apply writes
 Foundry logs and broadcast JSON under the reviewed run directory.
 

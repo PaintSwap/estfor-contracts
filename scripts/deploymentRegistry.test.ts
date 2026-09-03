@@ -1,5 +1,6 @@
 import assert from "node:assert/strict"
 import {describe, it} from "node:test"
+import {Interface, getAddress} from "ethers"
 import {
   CONTRACT_NAMES,
   EXTERNAL_NAMES,
@@ -37,6 +38,63 @@ describe("DeploymentRegistry", function () {
     }
   })
 
+  it("records each deployed reinitializer version with its calldata", function () {
+    const reinitializerInterface = new Interface([
+      "function initializeV2(address)",
+      "function initializeV3(address)",
+      "function initializeV4()",
+    ])
+    const versions = {
+      randomnessBeacon: 3,
+      clans: 2,
+      instantVRFActions: 3,
+      pvpBattleground: 3,
+      raids: 3,
+      lockedBankVaults: 3,
+      territories: 3,
+      combatantsHelper: 4,
+    } as const
+    for (const deploymentId of ["sonic-live", "sonic-beta"]) {
+      const deployment = loadDeploymentRegistry(deploymentId)
+      for (const [name, version] of Object.entries(versions)) {
+        const contract = deployment.contracts[name as keyof typeof versions]
+        assert.equal(contract.reinitializer?.version, version)
+        assert.notEqual(contract.reinitializer?.callData, "0x")
+      }
+      assert.equal(
+        getAddress(
+          reinitializerInterface.decodeFunctionData(
+            "initializeV2",
+            deployment.contracts.clans.reinitializer!.callData
+          )[0]
+        ),
+        getAddress(deployment.contracts.combatantsHelper.address)
+      )
+      for (const name of [
+        "randomnessBeacon",
+        "instantVRFActions",
+        "pvpBattleground",
+        "raids",
+        "lockedBankVaults",
+        "territories",
+      ] as const) {
+        assert.equal(
+          getAddress(
+            reinitializerInterface.decodeFunctionData(
+              "initializeV3",
+              deployment.contracts[name].reinitializer!.callData
+            )[0]
+          ),
+          getAddress(deployment.externals.vrf)
+        )
+      }
+      reinitializerInterface.decodeFunctionData(
+        "initializeV4",
+        deployment.contracts.combatantsHelper.reinitializer!.callData
+      )
+    }
+  })
+
   it("requires an explicit deployment ID", function () {
     assert.throws(() => getSelectedDeploymentId({}), /DEPLOYMENT_ID is required/)
     assert.equal(getSelectedDeploymentId({DEPLOYMENT_ID: "sonic-live"}), "sonic-live")
@@ -49,6 +107,10 @@ describe("DeploymentRegistry", function () {
 
   it("rejects non-Safe authority and incomplete contract registries", function () {
     const live = loadDeploymentRegistry("sonic-live")
+    const oldSchema = structuredClone(live) as unknown as Record<string, unknown>
+    oldSchema.schemaVersion = 1
+    assert.throws(() => validateDeploymentRegistry(oldSchema), /schemaVersion must be 2/)
+
     const nonSafe = structuredClone(live) as unknown as Record<string, unknown>
     ;(nonSafe.authority as Record<string, unknown>).type = "eoa"
     assert.throws(() => validateDeploymentRegistry(nonSafe), /authority.type must be "safe"/)
@@ -71,12 +133,20 @@ describe("DeploymentRegistry", function () {
     proxyTransition.contracts.shop.nextAddress = "0x1111111111111111111111111111111111111111"
     assert.throws(() => validateDeploymentRegistry(proxyTransition), /nextAddress is only supported for libraries/)
 
+    const reinitializer = structuredClone(live)
+    reinitializer.contracts.shop.reinitializer = {version: 1, callData: "0x1234"}
+    assert.equal(validateDeploymentRegistry(reinitializer).contracts.shop.reinitializer?.version, 1)
+
     const invalidCalldata = structuredClone(live)
-    invalidCalldata.contracts.shop.upgradeCallData = "initialize()"
-    assert.throws(() => validateDeploymentRegistry(invalidCalldata), /upgradeCallData must be hex calldata/)
+    invalidCalldata.contracts.shop.reinitializer = {version: 3, callData: "initialize()"}
+    assert.throws(() => validateDeploymentRegistry(invalidCalldata), /callData must be non-empty hex calldata/)
+
+    const zeroVersion = structuredClone(live)
+    zeroVersion.contracts.shop.reinitializer = {version: 0, callData: "0x1234"}
+    assert.throws(() => validateDeploymentRegistry(zeroVersion), /version must be greater than zero/)
 
     const beaconCalldata = structuredClone(live)
-    beaconCalldata.contracts.bank.upgradeCallData = "0x1234"
+    beaconCalldata.contracts.bank.reinitializer = {version: 2, callData: "0x1234"}
     assert.throws(() => validateDeploymentRegistry(beaconCalldata), /only supported for UUPS contracts/)
   })
 })

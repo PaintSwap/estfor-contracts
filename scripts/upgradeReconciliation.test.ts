@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import {describe, it} from "node:test"
-import {AbiCoder, Interface, JsonRpcProvider, getAddress, getCreateAddress} from "ethers"
+import {AbiCoder, Interface, JsonRpcProvider, getAddress, getCreateAddress, toBeHex, zeroPadValue} from "ethers"
 import {loadImplementationCreationCode} from "./deploymentArtifacts"
 import {loadDeploymentRegistry} from "./deploymentRegistry"
 import {buildUpgradePlan} from "./upgradeReconciliation"
@@ -20,6 +20,18 @@ describe("implementation upgrade reconciliation", function () {
     getCode: async () => "0x",
   } as unknown as JsonRpcProvider
   const validation = () => ({status: "passed" as const, outputHash: "0xvalidation", output: "validated"})
+  const buildReinitializerPlan = (initializedVersion: number) => {
+    const withReinitializer = structuredClone(deployment)
+    withReinitializer.contracts.shop.reinitializer = {version: 3, callData: "0x12345678"}
+    const reinitializerProvider = {
+      ...provider,
+      getStorage: async () => zeroPadValue(toBeHex(initializedVersion), 32),
+    } as unknown as JsonRpcProvider
+    return buildUpgradePlan(reinitializerProvider, withReinitializer, 1, [shop], {
+      deployerAddress: deployer,
+      validate: validation,
+    })
+  }
 
   it("builds deterministic candidate creation and Safe upgrade operations", async function () {
     const plan = await buildUpgradePlan(provider, deployment, 1, [shop], {
@@ -167,18 +179,29 @@ describe("implementation upgrade reconciliation", function () {
     )
   })
 
-  it("includes declared reinitializer calldata in the reviewed Safe operation", async function () {
-    const withReinitializer = structuredClone(deployment)
-    withReinitializer.contracts.shop.upgradeCallData = "0x12345678"
-    const plan = await buildUpgradePlan(provider, withReinitializer, 1, [shop], {
-      deployerAddress: deployer,
-      validate: validation,
-    })
+  it("includes declared reinitializer calldata when the proxy has not run that version", async function () {
+    const plan = await buildReinitializerPlan(2)
     const call = new Interface(["function upgradeToAndCall(address,bytes)"]).decodeFunctionData(
       "upgradeToAndCall",
       plan.operations[0].data
     )
     assert.equal(call[1], "0x12345678")
+  })
+
+  it("does not repeat declared reinitializer calldata when the proxy is already at that version", async function () {
+    const plan = await buildReinitializerPlan(3)
+    const call = new Interface(["function upgradeToAndCall(address,bytes)"]).decodeFunctionData(
+      "upgradeToAndCall",
+      plan.operations[0].data
+    )
+    assert.equal(call[1], "0x")
+  })
+
+  it("blocks an upgrade when the proxy reinitializer version is ahead of the registry", async function () {
+    const plan = await buildReinitializerPlan(4)
+    assert.equal(plan.candidates.length, 0)
+    assert.equal(plan.operations.length, 0)
+    assert.match(plan.blockedReasons[0], /initialized version 4 exceeds tracked reinitializer version 3/)
   })
 
   it("derives implementation constructor data from readable chain state", async function () {

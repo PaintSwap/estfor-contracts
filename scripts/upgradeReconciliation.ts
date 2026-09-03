@@ -12,7 +12,7 @@ import {
   loadImplementationCreationCode,
 } from "./deploymentArtifacts"
 import type {ContractKind, ContractName, DeploymentRegistry} from "./deploymentRegistry"
-import {PLAYERS_IMPLEMENTATIONS} from "./deploymentSlots"
+import {INITIALIZABLE_STORAGE_SLOT, PLAYERS_IMPLEMENTATIONS} from "./deploymentSlots"
 import type {ReconciliationOperation} from "./reconciliation"
 
 const upgradeInterface = new Interface([
@@ -118,6 +118,25 @@ function requiresUpgrade(classification: BytecodeClassification): boolean {
 
 function isAlignedRuntime(classification: BytecodeClassification): boolean {
   return classification === "exact-match" || classification === "build-metadata-drift"
+}
+
+async function resolveReinitializerCallData(
+  provider: JsonRpcProvider,
+  deployment: DeploymentRegistry,
+  contractName: ContractName,
+  blockTag: number
+): Promise<string> {
+  const contract = deployment.contracts[contractName]
+  if (contract.reinitializer === null) return "0x"
+  const storage = await provider.getStorage(contract.address, INITIALIZABLE_STORAGE_SLOT, blockTag)
+  const initializedVersion = BigInt(storage) & ((1n << 64n) - 1n)
+  const desiredVersion = BigInt(contract.reinitializer.version)
+  if (initializedVersion > desiredVersion) {
+    throw new Error(
+      `proxy initialized version ${initializedVersion} exceeds tracked reinitializer version ${desiredVersion}`
+    )
+  }
+  return initializedVersion < desiredVersion ? contract.reinitializer.callData : "0x"
 }
 
 export function withCandidateLibraries(
@@ -353,6 +372,10 @@ export async function buildUpgradePlan(
   for (const contract of upgradeable) {
     options.onProgress?.(`Preparing and validating upgrade candidate ${contract.name}`)
     try {
+      const upgradeCallData =
+        contract.kind === "uups"
+          ? await resolveReinitializerCallData(provider, deployment, contract.name, blockTag)
+          : "0x"
       let constructorData = "0x"
       if (contract.name === "bridge") {
         const result = await provider.call({
@@ -422,10 +445,7 @@ export async function buildUpgradePlan(
         value: "0",
         data:
           contract.kind === "uups"
-            ? upgradeInterface.encodeFunctionData("upgradeToAndCall", [
-                candidateAddress,
-                deployment.contracts[contract.name].upgradeCallData,
-              ])
+            ? upgradeInterface.encodeFunctionData("upgradeToAndCall", [candidateAddress, upgradeCallData])
             : upgradeInterface.encodeFunctionData("upgradeTo", [candidateAddress]),
         destructive: false,
         dependencies: [],

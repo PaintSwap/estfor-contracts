@@ -65,15 +65,20 @@ export type ExternalName = (typeof EXTERNAL_NAMES)[number]
 export type DeploymentProfile = "live" | "beta"
 export type ContractKind = "uups" | "beacon" | "library" | "implementation"
 
+export interface DeploymentReinitializer {
+  version: number
+  callData: string
+}
+
 export interface DeploymentContract {
   kind: ContractKind
   address: string
   nextAddress: string | null
-  upgradeCallData: string
+  reinitializer: DeploymentReinitializer | null
 }
 
 export interface DeploymentRegistry {
-  schemaVersion: 1
+  schemaVersion: 2
   deploymentId: string
   chainId: number
   deploymentBlock: number
@@ -136,7 +141,7 @@ function findDeploymentFile(deploymentId: string, deploymentsRoot: string): stri
 
 export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?: string): DeploymentRegistry {
   const registry = requireObject(value, "deployment registry")
-  if (registry.schemaVersion !== 1) throw new Error("deployment registry schemaVersion must be 1")
+  if (registry.schemaVersion !== 2) throw new Error("deployment registry schemaVersion must be 2")
 
   const deploymentId = requireString(registry.deploymentId, "deploymentId")
   if (!DEPLOYMENT_ID_PATTERN.test(deploymentId)) throw new Error(`Invalid deployment ID "${deploymentId}"`)
@@ -167,6 +172,10 @@ export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?
     if (!(["uups", "beacon", "library", "implementation"] as unknown[]).includes(rawContract.kind)) {
       throw new Error(`contracts.${name}.kind is invalid`)
     }
+    const rawReinitializer =
+      rawContract.reinitializer === undefined || rawContract.reinitializer === null
+        ? null
+        : requireObject(rawContract.reinitializer, `contracts.${name}.reinitializer`)
     contracts[name] = {
       kind: rawContract.kind as ContractKind,
       address: requireAddress(rawContract.address, `contracts.${name}.address`),
@@ -174,19 +183,26 @@ export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?
         rawContract.nextAddress === undefined || rawContract.nextAddress === null
           ? null
           : requireAddress(rawContract.nextAddress, `contracts.${name}.nextAddress`),
-      upgradeCallData:
-        rawContract.upgradeCallData === undefined
-          ? "0x"
-          : requireString(rawContract.upgradeCallData, `contracts.${name}.upgradeCallData`),
+      reinitializer:
+        rawReinitializer === null
+          ? null
+          : {
+              version: requireInteger(rawReinitializer.version, `contracts.${name}.reinitializer.version`),
+              callData: requireString(rawReinitializer.callData, `contracts.${name}.reinitializer.callData`),
+            },
     }
     if (contracts[name].nextAddress !== null && contracts[name].kind !== "library") {
       throw new Error(`contracts.${name}.nextAddress is only supported for libraries`)
     }
-    if (!isHexString(contracts[name].upgradeCallData)) {
-      throw new Error(`contracts.${name}.upgradeCallData must be hex calldata`)
+    const reinitializer = contracts[name].reinitializer
+    if (reinitializer !== null && (!isHexString(reinitializer.callData) || reinitializer.callData === "0x")) {
+      throw new Error(`contracts.${name}.reinitializer.callData must be non-empty hex calldata`)
     }
-    if (contracts[name].upgradeCallData !== "0x" && contracts[name].kind !== "uups") {
-      throw new Error(`contracts.${name}.upgradeCallData is only supported for UUPS contracts`)
+    if (reinitializer !== null && reinitializer.version === 0) {
+      throw new Error(`contracts.${name}.reinitializer.version must be greater than zero`)
+    }
+    if (reinitializer !== null && contracts[name].kind !== "uups") {
+      throw new Error(`contracts.${name} reinitializer is only supported for UUPS contracts`)
     }
   }
   const unknownContracts = Object.keys(rawContracts).filter(
@@ -210,7 +226,7 @@ export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?
   )
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     deploymentId,
     chainId,
     deploymentBlock,
