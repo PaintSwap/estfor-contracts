@@ -5,6 +5,7 @@ import {Vm} from "forge-std/Vm.sol";
 import {stdError} from "forge-std/StdError.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
+import {IRaidsGameData} from "../../contracts/interfaces/IGameData.sol";
 import {IOwnable} from "../../contracts/interfaces/IOwnable.sol";
 import {IRaids} from "../../contracts/interfaces/IRaids.sol";
 import {IClans as Clans} from "../../contracts/interfaces/IClans.sol";
@@ -123,6 +124,32 @@ contract RaidsTest is FullGameStack {
     assertEq(info.magicDefence, 0);
     assertEq(info.rangedDefence, -20);
     assertEq(info.tier, 1);
+  }
+
+  function testReadsConfiguredRaidData() public {
+    IRaids.BaseRaid[] memory baseRaids = new IRaids.BaseRaid[](2);
+    baseRaids[0] = _basicRaid();
+    baseRaids[1] = _tierTwoRaid();
+    raids.addBaseRaids(_uints(2, 7), baseRaids);
+
+    IRaidsGameData reader = IRaidsGameData(address(raids));
+    assertEq(keccak256(abi.encode(reader.getBaseRaidIds(0, 8))), keccak256(abi.encode(_uint16s(2, 7))));
+    assertEq(reader.getBaseRaid(2).minHealth, 100);
+    assertEq(reader.getBaseRaid(2).maxHealth, 200);
+    assertEq(reader.getBaseRaid(7).tier, 2);
+
+    raids.addBaseRaids(_uints(70_000), _baseRaids(_basicRaid()));
+    assertEq(reader.getBaseRaid(70_000).minHealth, 100);
+
+    uint16[] memory combatActionIds = reader.getCombatActionIds();
+    assertEq(combatActionIds.length, 5);
+    for (uint256 i; i < combatActionIds.length; ++i) {
+      assertEq(combatActionIds[i], 2001 + i);
+    }
+
+    uint256 maxLength = reader.MAX_STATE_READ_LENGTH();
+    vm.expectRevert(IRaidsGameData.InvalidStateReadRange.selector);
+    reader.getBaseRaidIds(0, maxLength + 1);
   }
 
   function testCanFightRaidWithClanCombatants() public {

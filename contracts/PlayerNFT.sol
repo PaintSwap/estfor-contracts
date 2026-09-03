@@ -406,6 +406,10 @@ contract PlayerNFT is
     return _playerInfos[playerId];
   }
 
+  function getAvatar(uint256 avatarId) external view returns (AvatarInfo memory) {
+    return _avatars[avatarId];
+  }
+
   function hasLowercaseName(string calldata lowercaseName) external view returns (bool lowercaseNameExists) {
     return _lowercaseNames[lowercaseName];
   }

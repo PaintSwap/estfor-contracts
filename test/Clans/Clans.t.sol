@@ -5,6 +5,7 @@ import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.so
 import {IERC721Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
+import {IClansGameData} from "../../contracts/interfaces/IGameData.sol";
 import {IClans} from "../../contracts/interfaces/IClans.sol";
 import {ClanRank} from "../../contracts/globals/clans.sol";
 import {TestERC1155NoRoyalty} from "../../contracts/test/TestERC1155NoRoyalty.sol";
@@ -63,6 +64,15 @@ contract ClansTest is FullGameStack {
     IClans.PlayerInfo memory player = clans.getPlayerInfo(playerId);
     assertEq(player.clanId, CLAN_ID);
     assertEq(player.requestedClanId, 0);
+  }
+
+  function testDiscoversConfiguredTiers() public {
+    _addUpgradedTiers();
+    uint8[] memory tierIds = IClansGameData(address(clans)).getTierIds();
+    assertEq(tierIds.length, 3);
+    assertEq(tierIds[0], 1);
+    assertEq(tierIds[1], 2);
+    assertEq(tierIds[2], 3);
   }
 
   function testCannotCreateAClanIfAlreadyInAnother() public {

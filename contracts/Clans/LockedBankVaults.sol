@@ -571,6 +571,10 @@ contract LockedBankVaults is
     return _lastClanBattles[clanId][otherClanId];
   }
 
+  function getComparableSkills() external view returns (Skill[] memory) {
+    return _comparableSkills;
+  }
+
   function setComparableSkills(Skill[] calldata skills) public override onlyOwner {
     for (uint256 i = 0; i < skills.length; ++i) {
       require(skills[i] != Skill.NONE && skills[i] != Skill.COMBAT, InvalidSkill(skills[i]));

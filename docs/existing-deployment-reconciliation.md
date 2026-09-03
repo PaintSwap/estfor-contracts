@@ -332,6 +332,10 @@ Add narrow getters before those fields become managed. For supporter packs, firs
 
 ### Wider data capability
 
+This table records the baseline before the Phase 6 read-API pass. See
+[`game-data-readiness.md`](./game-data-readiness.md) for the current per-contract status and remaining exact-reconciliation
+blockers.
+
 The fresh deployment seeds these domains from `scripts/data/*` through `prepareForgeDeployData.ts` and `_seedGame1/_seedGame2/_seedGame3`:
 
 | Domain                | Current comparison capability                | Main gap before exact management                                          |
@@ -619,6 +623,9 @@ archive, `@custom:oz-upgrades-from` annotation, and upgrade-safety test under th
 closed until that work exists.
 
 ### Phase 6: expand managed resources
+
+Status: contract read inventory and missing read APIs completed on 2026-09-03; deployment adapters remain pending. See
+[`game-data-readiness.md`](./game-data-readiness.md).
 
 For each data domain:
 

@@ -5,6 +5,7 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 import {IPlayerNFT} from "../contracts/interfaces/IPlayerNFT.sol";
+import {IPlayerNFTGameData} from "../contracts/interfaces/IGameData.sol";
 import {IERC1155Supply} from "../contracts/interfaces/IERC1155Supply.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
 import {IPlayersBase as PlayersBase} from "../contracts/interfaces/IPlayersBase.sol";
@@ -81,6 +82,15 @@ contract PlayerNFTTest is FullGameStack {
     assertEq(info.originalAvatarId, 1);
     assertEq(info.mintedTimestamp, timestamp);
     assertEq(info.upgradedTimestamp, 0);
+  }
+
+  function testReadsConfiguredAvatar() public view {
+    AvatarInfo memory avatar = IPlayerNFTGameData(address(playerNFT)).getAvatar(1);
+    assertEq(avatar.name, "Name goes here");
+    assertEq(avatar.description, "Hi I'm a description");
+    assertEq(avatar.imageURI, "1234.png");
+    assertEq(uint256(avatar.startSkills[0]), uint256(Skill.MAGIC));
+    assertEq(uint256(avatar.startSkills[1]), uint256(Skill.NONE));
   }
 
   function testMintingWithAnUpgradeShouldCostBrush() public {

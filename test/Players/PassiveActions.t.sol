@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
+import {IPassiveActionsGameData} from "../../contracts/interfaces/IGameData.sol";
 import {IOwnable} from "../../contracts/interfaces/IOwnable.sol";
 import {IPassiveActions} from "../../contracts/interfaces/IPassiveActions.sol";
 import {Skill, BoostType} from "../../contracts/globals/misc.sol";
@@ -175,6 +176,26 @@ contract PassiveActionsTest is FullGameStack {
     assertEq(uint8(passiveActions.getAction(1).minSkill1), uint8(Skill.WOODCUTTING));
     assertEq(passiveActions.getAction(2).durationDays, 1);
     assertEq(uint8(passiveActions.getAction(2).minSkill1), uint8(Skill.FIREMAKING));
+  }
+
+  function testReadsConfiguredPassiveActions() public {
+    IPassiveActions.PassiveActionInput memory first = _input();
+    first.guaranteedRewards = _guaranteed1(OAK_LOG, 2);
+    first.randomRewards = _random1(BRONZE_ARROW, 65_535, 3);
+    IPassiveActions.PassiveActionInput memory second = _input();
+    second.actionId = 3;
+    passiveActions.addActions(_inputs(first, second));
+
+    IPassiveActionsGameData reader = IPassiveActionsGameData(address(passiveActions));
+    assertEq(keccak256(abi.encode(reader.getActionIds(0, 4))), keccak256(abi.encode(_uint16s(1, 3))));
+    assertEq(reader.getActionRewards(1).guaranteedRewardTokenId1, OAK_LOG);
+    assertEq(reader.getActionRewards(1).guaranteedRewardRate1, 2);
+    assertEq(reader.getActionRewards(1).randomRewardTokenId1, BRONZE_ARROW);
+    assertEq(reader.getActionRewards(1).randomRewardAmount1, 3);
+
+    uint256 maxLength = reader.MAX_STATE_READ_LENGTH();
+    vm.expectRevert(IPassiveActionsGameData.InvalidStateReadRange.selector);
+    reader.getActionIds(0, maxLength + 1);
   }
 
   function testCheckGuaranteedRewards() public {

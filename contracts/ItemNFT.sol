@@ -18,6 +18,8 @@ import {BoostType, BulkTransferInfo, CombatStats, EquipPosition, Item, ItemInput
 // The NFT contract contains data related to the items and who owns them
 /// @custom:oz-upgrades-from ItemNFTV1
 contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IERC2981, IItemNFT {
+  uint256 public constant MAX_STATE_READ_LENGTH = 1024;
+
   event AddItems(ItemInput[] items);
   event EditItems(ItemInput[] items);
   event RemoveItems(uint16[] tokenIds);
@@ -33,6 +35,7 @@ contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IER
   error NotMinter(address minter);
   error NotBurner();
   error LengthMismatch();
+  error InvalidStateReadRange();
 
   struct ItemInfo {
     uint40 timestampFirstMint;
@@ -271,6 +274,30 @@ contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IER
     for (uint256 i; i < tokenIdsLength; ++i) {
       items[i] = _getItem(tokenIds[i]);
     }
+  }
+
+  function getItemTokenIds(uint256 startTokenId, uint256 endTokenId) external view returns (uint16[] memory tokenIds) {
+    if (
+      startTokenId >= endTokenId ||
+      endTokenId > uint256(type(uint16).max) + 1 ||
+      endTokenId - startTokenId > MAX_STATE_READ_LENGTH
+    ) revert InvalidStateReadRange();
+
+    uint256 count;
+    for (uint256 tokenId = startTokenId; tokenId < endTokenId; ++tokenId) {
+      if (exists(tokenId)) ++count;
+    }
+
+    tokenIds = new uint16[](count);
+    uint256 index;
+    for (uint256 tokenId = startTokenId; tokenId < endTokenId; ++tokenId) {
+      if (exists(tokenId)) tokenIds[index++] = uint16(tokenId);
+    }
+  }
+
+  function getTokenURI(uint16 tokenId) external view returns (string memory) {
+    require(exists(tokenId), ItemDoesNotExist(tokenId));
+    return _tokenURIs[tokenId];
   }
 
   function getTimestampFirstMint(uint256 tokenId) external view override returns (uint256) {

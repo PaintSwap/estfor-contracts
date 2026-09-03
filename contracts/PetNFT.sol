@@ -42,6 +42,10 @@ contract PetNFT is
   using SkillLibrary for Skill;
   using BloomFilter for BloomFilter.Filter;
 
+  uint256 public constant MAX_STATE_READ_LENGTH = 1024;
+
+  error InvalidStateReadRange();
+
   // From base class uint40 _totalSupplyAll
   uint40 private _nextPetId;
   address private _instantVRFActions;
@@ -666,6 +670,32 @@ contract PetNFT is
 
   function getPet(uint256 tokenId) external view returns (Pet memory) {
     return _pets[tokenId];
+  }
+
+  function getBasePetMetadata(uint24 basePetId) external view returns (BasePetMetadata memory) {
+    return _basePetMetadatas[basePetId];
+  }
+
+  function getBasePetIds(
+    uint256 startBasePetId,
+    uint256 endBasePetId
+  ) external view returns (uint24[] memory basePetIds) {
+    if (
+      startBasePetId >= endBasePetId ||
+      endBasePetId > uint256(type(uint24).max) + 1 ||
+      endBasePetId - startBasePetId > MAX_STATE_READ_LENGTH
+    ) revert InvalidStateReadRange();
+
+    uint256 count;
+    for (uint256 basePetId = startBasePetId; basePetId < endBasePetId; ++basePetId) {
+      if (_basePetMetadatas[basePetId].skillEnhancement1 != Skill.NONE) ++count;
+    }
+
+    basePetIds = new uint24[](count);
+    uint256 index;
+    for (uint256 basePetId = startBasePetId; basePetId < endBasePetId; ++basePetId) {
+      if (_basePetMetadatas[basePetId].skillEnhancement1 != Skill.NONE) basePetIds[index++] = uint24(basePetId);
+    }
   }
 
   function ownerOf(

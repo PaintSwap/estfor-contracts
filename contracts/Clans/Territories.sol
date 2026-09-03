@@ -470,6 +470,10 @@ contract Territories is
     return _territories[territoryId];
   }
 
+  function getComparableSkills() external view returns (Skill[] memory) {
+    return _comparableSkills;
+  }
+
   function getExpectedGasLimitFulfill() external view override returns (uint88 expectedGasLimitFulfill) {
     return _expectedGasLimitFulfill;
   }

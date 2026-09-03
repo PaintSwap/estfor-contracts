@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
+import {IPlayersGameData} from "../../contracts/interfaces/IGameData.sol";
 import {IPlayersBase as PlayersBase} from "../../contracts/interfaces/IPlayersBase.sol";
 import {IPlayersImplMisc as PlayersImplMisc} from "../../contracts/interfaces/IPlayersImplMisc.sol";
 import {RandomnessBeacon} from "../../contracts/RandomnessBeacon.sol";
@@ -102,6 +103,22 @@ contract RewardsTest is FullGameStack {
     _assertXPReward(state, 0, BRONZE_BAR, 10);
     _process();
     assertEq(itemNFT.balanceOf(ALICE, BRONZE_BAR), 10);
+  }
+
+  function testReadsConfiguredXPThresholdRewards() public {
+    players.addXPThresholdRewards(_thresholds(500, BRONZE_BAR, 3));
+    players.addXPThresholdRewards(_thresholds(1000, BRONZE_HELMET, 4));
+
+    XPThresholdReward[] memory thresholds = IPlayersGameData(address(players)).getXPThresholdRewards();
+    assertEq(thresholds.length, 2);
+    assertEq(thresholds[0].xpThreshold, 500);
+    assertEq(thresholds[0].rewards.length, 1);
+    assertEq(thresholds[0].rewards[0].itemTokenId, BRONZE_BAR);
+    assertEq(thresholds[0].rewards[0].amount, 3);
+    assertEq(thresholds[1].xpThreshold, 1000);
+    assertEq(thresholds[1].rewards.length, 1);
+    assertEq(thresholds[1].rewards[0].itemTokenId, BRONZE_HELMET);
+    assertEq(thresholds[1].rewards[0].amount, 4);
   }
 
   function testModifyXPAwardsThresholdRewardsOnlyOnce() public {

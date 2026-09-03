@@ -194,6 +194,10 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     return PointBoost(address(0), 0, 0);
   }
 
+  function getPointsCalculation(ActivityType activityType) external view returns (Calculation memory) {
+    return _calculations[activityType];
+  }
+
   function rewardBlueTickets(
     ActivityType activityType,
     address recipient,

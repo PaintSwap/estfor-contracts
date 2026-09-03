@@ -8,6 +8,7 @@ import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import {IERC1155Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 import {EstforTest} from "./utils/EstforTest.sol";
+import {IItemNFTGameData} from "../contracts/interfaces/IGameData.sol";
 import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 import {ItemNFT} from "../contracts/ItemNFT.sol";
 import {MockBankFactory} from "../contracts/test/MockBankFactory.sol";
@@ -58,6 +59,24 @@ contract ItemNFTTest is EstforTest {
 
   // TODO: The Hardhat source intentionally contains no assertions yet.
   function testGetItem() public view {}
+
+  function testReadsConfiguredItemData() public {
+    ItemInput[] memory items = new ItemInput[](2);
+    items[0] = _item(3, EquipPosition.RIGHT_HAND);
+    items[0].metadataURI = "three.json";
+    items[1] = _item(7, EquipPosition.LEFT_HAND);
+    items[1].metadataURI = "seven.json";
+    itemNFT.addItems(items);
+
+    IItemNFTGameData reader = IItemNFTGameData(address(itemNFT));
+    assertEq(keccak256(abi.encode(reader.getItemTokenIds(0, 8))), keccak256(abi.encode(_uint16s(3, 7))));
+    assertEq(reader.getTokenURI(3), "three.json");
+    assertEq(reader.getTokenURI(7), "seven.json");
+
+    uint256 maxLength = reader.MAX_STATE_READ_LENGTH();
+    vm.expectRevert(IItemNFTGameData.InvalidStateReadRange.selector);
+    reader.getItemTokenIds(0, maxLength + 1);
+  }
 
   // TODO: The Hardhat source intentionally contains no assertions yet.
   function testBalanceOfs() public view {}

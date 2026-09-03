@@ -810,6 +810,18 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     return _tiers[tierId];
   }
 
+  function getTierIds() external view returns (uint8[] memory tierIds) {
+    tierIds = new uint8[](type(uint8).max);
+    uint256 length;
+    for (uint256 tierId = 1; tierId <= type(uint8).max; ++tierId) {
+      if (_tiers[tierId].id != 0) tierIds[length++] = uint8(tierId);
+    }
+
+    assembly ("memory-safe") {
+      mstore(tierIds, length)
+    }
+  }
+
   function getClan(
     uint256 clanId
   )

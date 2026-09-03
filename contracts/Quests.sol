@@ -22,6 +22,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   using Math for uint256;
   using BitMaps for BitMaps.BitMap;
 
+  uint256 public constant MAX_STATE_READ_LENGTH = 1024;
+
+  error InvalidStateReadRange();
+
   struct PlayerQuestInfo {
     uint32 numFixedQuestsCompleted;
   }
@@ -90,6 +94,32 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
   function allFixedQuests(uint256 questId) external view override returns (Quest memory) {
     return _allFixedQuests[questId];
+  }
+
+  function getQuestIds(uint256 startQuestId, uint256 endQuestId) external view returns (uint16[] memory questIds) {
+    if (
+      startQuestId >= endQuestId ||
+      endQuestId > uint256(type(uint16).max) + 1 ||
+      endQuestId - startQuestId > MAX_STATE_READ_LENGTH
+    ) revert InvalidStateReadRange();
+
+    uint256 count;
+    for (uint256 questId = startQuestId; questId < endQuestId; ++questId) {
+      if (_questExists(questId)) ++count;
+    }
+
+    questIds = new uint16[](count);
+    uint256 index;
+    for (uint256 questId = startQuestId; questId < endQuestId; ++questId) {
+      if (_questExists(questId)) questIds[index++] = uint16(questId);
+    }
+  }
+
+  function getMinimumRequirements(
+    uint256 questId
+  ) external view returns (MinimumRequirement[3] memory minimumRequirements) {
+    require(_questExists(questId), QuestDoesntExist());
+    return _minimumRequirements[questId];
   }
 
   function activeQuests(uint256 playerId) external view override returns (PlayerQuest memory) {

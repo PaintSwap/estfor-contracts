@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
+import {IEggInstantVRFActionStrategyGameData, IGenericInstantVRFActionStrategyGameData, IInstantVRFActionsGameData} from "../contracts/interfaces/IGameData.sol";
 import {IInstantVRFActions} from "../contracts/interfaces/IInstantVRFActions.sol";
 import {GenericInstantVRFActionStrategy} from "../contracts/InstantVRFActionStrategies/GenericInstantVRFActionStrategy.sol";
 import {IQuests as Quests} from "../contracts/interfaces/IQuests.sol";
@@ -475,6 +476,40 @@ contract InstantVRFActionsTest is FullGameStack {
       address(genericInstantVRFActionStrategy)
     );
     assertEq(address(instantVRFActions.getStrategy(InstantVRFActionType.EGG)), address(0));
+  }
+
+  function testReadsConfiguredActionsAndStrategies() public {
+    _addForgingStrategies();
+    instantVRFActions.addStrategies(
+      _actionTypes(InstantVRFActionType.EGG),
+      _addresses(address(eggInstantVRFActionStrategy))
+    );
+
+    InstantVRFActionInput memory genericInput = _forgingInput();
+    InstantVRFActionInput memory eggInput = _eggInput();
+    eggInput.actionId = 3;
+    _addTwo(genericInput, eggInput);
+
+    IInstantVRFActionsGameData actionsReader = IInstantVRFActionsGameData(address(instantVRFActions));
+    assertEq(keccak256(abi.encode(actionsReader.getActionIds(0, 4))), keccak256(abi.encode(_uint16s(1, 3))));
+
+    InstantVRFRandomReward[] memory rewards = IGenericInstantVRFActionStrategyGameData(
+      address(genericInstantVRFActionStrategy)
+    ).getAction(1);
+    assertEq(rewards.length, 1);
+    assertEq(rewards[0].itemTokenId, RUNITE_ARROW);
+    assertEq(rewards[0].chance, 65_535);
+    assertEq(rewards[0].amount, 2);
+
+    IEggInstantVRFActionStrategyGameData.InstantVRFAction memory egg = IEggInstantVRFActionStrategyGameData(
+      address(eggInstantVRFActionStrategy)
+    ).getAction(3);
+    assertEq(egg.rewardBasePetIdMin, MIN_TIER1_BASE_PET_ID);
+    assertEq(egg.rewardBasePetIdMax, MAX_TIER1_BASE_PET_ID);
+
+    uint256 maxLength = actionsReader.MAX_STATE_READ_LENGTH();
+    vm.expectRevert(IInstantVRFActionsGameData.InvalidStateReadRange.selector);
+    actionsReader.getActionIds(0, maxLength + 1);
   }
 
   function testAddingSameStrategyShouldRevert() public {

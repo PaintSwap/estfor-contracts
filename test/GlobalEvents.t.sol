@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {EstforTest} from "./utils/EstforTest.sol";
 import {GlobalEvents} from "../contracts/Events/GlobalEvent.sol";
+import {IGlobalEventsGameData} from "../contracts/interfaces/IGameData.sol";
 import {GlobalEventInfo} from "../contracts/globals/events.sol";
 import {IPlayers} from "../contracts/interfaces/IPlayers.sol";
 import {MockItemNFT} from "../contracts/test/MockItemNFT.sol";
@@ -44,6 +45,20 @@ contract GlobalEventsTest is EstforTest {
     vm.expectEmit(false, false, false, true, address(globalEvents));
     emit AddGlobalEvent(EVENT_ID, eventInfo);
     globalEvents.addGlobalEvents(_eventIds(EVENT_ID), _eventInfos(eventInfo));
+  }
+
+  function testReadsConfiguredGlobalEvent() public {
+    GlobalEventInfo memory eventInfo = _eventInfo(uint40(block.timestamp), uint40(block.timestamp + 1 days), 2, 100);
+    globalEvents.addGlobalEvents(_eventIds(EVENT_ID), _eventInfos(eventInfo));
+
+    GlobalEventInfo memory stored = IGlobalEventsGameData(address(globalEvents)).getGlobalEvent(EVENT_ID);
+    assertEq(stored.startTime, eventInfo.startTime);
+    assertEq(stored.endTime, eventInfo.endTime);
+    assertEq(stored.rewardItemTokenId, BRONZE_ARROW);
+    assertEq(stored.rewardItemAmountPerInput, 2);
+    assertEq(stored.inputItemTokenId, LOG);
+    assertEq(stored.inputItemMaxAmount, 100);
+    assertEq(stored.totalInputAmount, 0);
   }
 
   function testRevertsIfEventInfoIsInvalid() public {

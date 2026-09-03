@@ -190,6 +190,18 @@ contract BlackMarketTrader is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFC
     return _calculateRequestPriceNative(callbackGasLimitForRequests(numActions));
   }
 
+  function getShopCollection(
+    uint256 globalEventId
+  ) external view returns (uint16 acceptedItemId, ShopItem[] memory shopItems) {
+    ShopCollection storage collection = _shopCollections[globalEventId];
+    acceptedItemId = collection.acceptedItemId;
+    uint256 length = collection.itemTokenIds.length;
+    shopItems = new ShopItem[](length);
+    for (uint256 i; i < length; ++i) {
+      shopItems[i] = collection.shopItems[collection.itemTokenIds[i]];
+    }
+  }
+
   function _addShopItem(ShopItem calldata shopItem, uint256 globalEventId) private {
     // Check item exists
     require(_itemNFT.exists(shopItem.tokenId), ItemDoesNotExist());

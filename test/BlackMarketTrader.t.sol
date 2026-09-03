@@ -5,6 +5,7 @@ import {Vm} from "forge-std/Vm.sol";
 import {stdError} from "forge-std/StdError.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
+import {IBlackMarketTraderGameData} from "../contracts/interfaces/IGameData.sol";
 import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 import {BlackMarketTrader} from "../contracts/Events/BlackMarketTrader.sol";
 import {ItemInput} from "../contracts/globals/players.sol";
@@ -33,6 +34,27 @@ contract BlackMarketTraderTest is FullGameStack {
     blackMarketTrader.addShopItems(items, EVENT_ID);
     vm.expectRevert(BlackMarketTrader.ShopItemAlreadyExists.selector);
     blackMarketTrader.addShopItems(items, EVENT_ID);
+  }
+
+  function testReadsConfiguredShopCollection() public {
+    _addItems(_ids(BRONZE_AXE, IRON_AXE, BRONZE_BAR));
+    _addShop(BRONZE_AXE, 2, 100, 10, EVENT_ID);
+    _addShop(IRON_AXE, 3, 200, 5, EVENT_ID);
+    blackMarketTrader.setAcceptedItemId(EVENT_ID, BRONZE_BAR);
+
+    (uint16 acceptedItemId, IBlackMarketTraderGameData.ShopItem[] memory items) = IBlackMarketTraderGameData(
+      address(blackMarketTrader)
+    ).getShopCollection(EVENT_ID);
+    assertEq(acceptedItemId, BRONZE_BAR);
+    assertEq(items.length, 2);
+    assertEq(items[0].tokenId, BRONZE_AXE);
+    assertEq(items[0].amountPerPurchase, 2);
+    assertEq(items[0].price, 100);
+    assertEq(items[0].stock, 10);
+    assertEq(items[1].tokenId, IRON_AXE);
+    assertEq(items[1].amountPerPurchase, 3);
+    assertEq(items[1].price, 200);
+    assertEq(items[1].stock, 5);
   }
 
   function testEditShopItems() public {

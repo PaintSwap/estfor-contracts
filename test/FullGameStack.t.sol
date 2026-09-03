@@ -2,6 +2,8 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
+import {IActivityPointsGameData} from "../contracts/interfaces/IGameData.sol";
+import {ActivityType} from "../contracts/ActivityPoints/interfaces/IActivityPoints.sol";
 import {IClans as Clans} from "../contracts/interfaces/IClans.sol";
 import {UpgradeableBeacon} from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
@@ -60,5 +62,17 @@ contract FullGameStackTest is FullGameStack {
 
     assertEq(bankFactory.getBankAddress(1), clans.getClanBankAddress(1));
     assertTrue(bankFactory.getBankAddress(1) != address(0));
+  }
+
+  function testReadsActivityPointsCalculation() public {
+    deployFullGame();
+
+    IActivityPointsGameData.Calculation memory calculation = IActivityPointsGameData(address(activityPoints))
+      .getPointsCalculation(ActivityType.players_evt_addxp);
+    assertEq(uint256(calculation.use), uint256(IActivityPointsGameData.CalculationType.log2));
+    assertEq(calculation.base, 5);
+    assertEq(calculation.multiplier, 8);
+    assertEq(calculation.divider, 10);
+    assertEq(calculation.maxPointsPerDay, 5000);
   }
 }

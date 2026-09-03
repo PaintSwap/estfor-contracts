@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
+import {ITerritoriesGameData} from "../../contracts/interfaces/IGameData.sol";
 import {ITerritories} from "../../contracts/interfaces/ITerritories.sol";
 import {IClans as Clans} from "../../contracts/interfaces/IClans.sol";
 import {ICombatantsHelper as CombatantsHelper} from "../../contracts/interfaces/ICombatantsHelper.sol";
@@ -63,6 +64,12 @@ contract TerritoriesTest is FullGameStack {
     assertEq(territories.getTerritory(1).territoryId, 1);
     assertEq(territories.getTerritory(1).percentageEmissions, 100);
     assertEq(territories.getTotalEmissionPercentage(), 1000);
+  }
+
+  function testReadsComparableSkills() public view {
+    Skill[] memory comparableSkills = ITerritoriesGameData(address(territories)).getComparableSkills();
+    assertEq(comparableSkills.length, 17);
+    assertEq(keccak256(abi.encode(comparableSkills)), keccak256(abi.encode(_battleSkills())));
   }
 
   function testClaimAnUnoccupiedTerritory() public {

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {FullGameStack} from "../utils/FullGameStack.sol";
+import {IPlayersGameData} from "../../contracts/interfaces/IGameData.sol";
 import {IPlayersBase as PlayersBase} from "../../contracts/interfaces/IPlayersBase.sol";
 import {Skill, Attire, CombatStyle, BoostType, Equipment} from "../../contracts/globals/misc.sol";
 import {ActionInput, ActionInfo, ActionQueueStrategy, QueuedActionInput, GUAR_MUL, RATE_MUL} from "../../contracts/globals/actions.sol";
@@ -114,6 +115,29 @@ contract NonCombatTest is FullGameStack {
       queuedAction.timespan + (queuedAction.timespan * 3) / 100
     );
     assertEq(itemNFT.balanceOf(ALICE, LOG), (queuedAction.timespan * rate) / (3600 * GUAR_MUL));
+  }
+
+  function testReadsConfiguredFullAttireBonus() public {
+    _addFullAttireItems(NATURE_MASK, NATURE_BODY, NATURE_BRACERS, NATURE_TROUSERS, NATURE_BOOTS);
+    _addFullAttireBonus(
+      Skill.WOODCUTTING,
+      NATURE_MASK,
+      NATURE_BODY,
+      NATURE_BRACERS,
+      NATURE_TROUSERS,
+      NATURE_BOOTS,
+      3,
+      4
+    );
+
+    PlayersBase.FullAttireBonus memory bonus = IPlayersGameData(address(players)).getFullAttireBonus(Skill.WOODCUTTING);
+    assertEq(bonus.bonusXPPercent, 3);
+    assertEq(bonus.bonusRewardsPercent, 4);
+    assertEq(bonus.itemTokenIds[0], NATURE_MASK);
+    assertEq(bonus.itemTokenIds[1], NATURE_BODY);
+    assertEq(bonus.itemTokenIds[2], NATURE_BRACERS);
+    assertEq(bonus.itemTokenIds[3], NATURE_TROUSERS);
+    assertEq(bonus.itemTokenIds[4], NATURE_BOOTS);
   }
 
   function testMultipleGuaranteedRewardsShouldBeAllowed() public {

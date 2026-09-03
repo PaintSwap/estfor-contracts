@@ -563,6 +563,30 @@ contract Players is
     );
   }
 
+  function getXPThresholdRewards() external view returns (XPThresholdReward[] memory xpThresholdRewards) {
+    uint256 numThresholds = XP_THRESHOLD_REWARDS.length / 4;
+    xpThresholdRewards = new XPThresholdReward[](numThresholds);
+
+    uint256 length;
+    for (uint256 i; i < numThresholds; ++i) {
+      uint256 key = i * 4;
+      uint32 xpThreshold = uint32(
+        XP_THRESHOLD_REWARDS[key] |
+          (bytes4(XP_THRESHOLD_REWARDS[key + 1]) >> 8) |
+          (bytes4(XP_THRESHOLD_REWARDS[key + 2]) >> 16) |
+          (bytes4(XP_THRESHOLD_REWARDS[key + 3]) >> 24)
+      );
+      Equipment[] memory rewards = _xpRewardThresholds[xpThreshold];
+      if (rewards.length != 0) {
+        xpThresholdRewards[length++] = XPThresholdReward({xpThreshold: xpThreshold, rewards: rewards});
+      }
+    }
+
+    assembly ("memory-safe") {
+      mstore(xpThresholdRewards, length)
+    }
+  }
+
   function setDailyRewardsEnabled(bool dailyRewardsEnabled) external override onlyOwner {
     _dailyRewardsEnabled = dailyRewardsEnabled;
   }
@@ -577,6 +601,10 @@ contract Players is
       _implMisc1,
       abi.encodeWithSelector(IPlayersDelegate.addFullAttireBonuses.selector, fullAttireBonuses)
     );
+  }
+
+  function getFullAttireBonus(Skill skill) external view returns (FullAttireBonus memory) {
+    return _fullAttireBonus[skill];
   }
 
   function setXPModifiers(address[] calldata accounts, bool isModifier) external override onlyOwner {

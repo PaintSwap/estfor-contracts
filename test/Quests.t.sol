@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
+import {IQuestsGameData} from "../contracts/interfaces/IGameData.sol";
 import {IQuests} from "../contracts/interfaces/IQuests.sol";
 import {QUEST_PURSE_STRINGS} from "../contracts/globals/quests.sol";
 import {QuestInput, Quest, PlayerQuest} from "../contracts/globals/quests.sol";
@@ -135,6 +136,27 @@ contract QuestsTest is FullGameStack {
     quests.addQuests(questsToAdd, _minRequirements(2));
     assertEq(quests.allFixedQuests(1).rewardItemTokenId1, firemakingQuest.rewardItemTokenId1);
     assertEq(quests.allFixedQuests(2).rewardItemTokenId1, firemakingQuestLog.rewardItemTokenId1);
+  }
+
+  function testReadsConfiguredQuestData() public {
+    IQuests.MinimumRequirement[3][] memory requirements = _minRequirements(2);
+    requirements[0][0] = IQuests.MinimumRequirement(Skill.HEALTH, 3000);
+    quests.addQuests(_quests(firemakingQuest, firemakingQuestLog), requirements);
+
+    IQuestsGameData reader = IQuestsGameData(address(quests));
+    assertEq(keccak256(abi.encode(reader.getQuestIds(0, 3))), keccak256(abi.encode(_uint16s(1, 2))));
+    IQuests.MinimumRequirement[3] memory storedRequirements = reader.getMinimumRequirements(1);
+    assertEq(uint256(storedRequirements[0].skill), uint256(Skill.HEALTH));
+    assertEq(storedRequirements[0].xp, 3000);
+
+    quests.removeQuest(1);
+    assertEq(keccak256(abi.encode(reader.getQuestIds(0, 3))), keccak256(abi.encode(_uint16s(2))));
+    vm.expectRevert(IQuests.QuestDoesntExist.selector);
+    reader.getMinimumRequirements(1);
+
+    uint256 maxLength = reader.MAX_STATE_READ_LENGTH();
+    vm.expectRevert(IQuestsGameData.InvalidStateReadRange.selector);
+    reader.getQuestIds(0, maxLength + 1);
   }
 
   function testShouldFailToAddSameQuestTwiceUsingBatch() public {

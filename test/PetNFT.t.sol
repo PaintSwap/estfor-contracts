@@ -8,10 +8,11 @@ import {IERC1155MetadataURI} from "@openzeppelin/contracts/token/ERC1155/extensi
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {IPetNFT} from "../contracts/interfaces/IPetNFT.sol";
+import {IPetNFTGameData} from "../contracts/interfaces/IGameData.sol";
 import {IERC1155Supply} from "../contracts/interfaces/IERC1155Supply.sol";
 import {IBrushToken} from "../contracts/interfaces/external/IBrushToken.sol";
 import {Skill} from "../contracts/globals/misc.sol";
-import {PetSkin, PetEnhancementType} from "../contracts/globals/pets.sol";
+import {BasePetMetadata, PetSkin, PetEnhancementType} from "../contracts/globals/pets.sol";
 import {FullGameStack} from "./utils/FullGameStack.sol";
 
 contract PetNFTTest is FullGameStack {
@@ -35,6 +36,25 @@ contract PetNFTTest is FullGameStack {
     petNFT.mintBatch(ALICE, _uints(BASE_ID), 1);
     assertEq(petNFT.getNextPetId(), 2);
     assertEq(petNFT.balanceOf(ALICE, PET_ID), 1);
+  }
+
+  function testReadsConfiguredBasePetData() public {
+    _addPet(_pet());
+    IPetNFTGameData reader = IPetNFTGameData(address(petNFT));
+
+    assertEq(keccak256(abi.encode(reader.getBasePetIds(0, 5))), keccak256(abi.encode(_uint24s(BASE_ID))));
+    BasePetMetadata memory metadata = reader.getBasePetMetadata(BASE_ID);
+    assertEq(metadata.tier, 2);
+    assertEq(uint256(metadata.skin), uint256(PetSkin.OG));
+    assertEq(uint256(metadata.enhancementType), uint256(PetEnhancementType.MELEE));
+    assertEq(uint256(metadata.skillEnhancement1), uint256(Skill.MELEE));
+    assertEq(metadata.skillPercentageMin1, 5);
+    assertEq(metadata.skillPercentageMax2, 20);
+    assertTrue(metadata.isTransferable);
+
+    uint256 maxLength = reader.MAX_STATE_READ_LENGTH();
+    vm.expectRevert(IPetNFTGameData.InvalidStateReadRange.selector);
+    reader.getBasePetIds(0, maxLength + 1);
   }
 
   function testURI() public {

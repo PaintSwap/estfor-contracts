@@ -67,6 +67,14 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
     return (equipment.itemTokenId, equipment.amount);
   }
 
+  function getDailyRewardPool(uint256 tier) external view returns (Equipment[] memory) {
+    return _dailyRewardPool[tier];
+  }
+
+  function getWeeklyRewardPool(uint256 tier) external view returns (Equipment[] memory) {
+    return _weeklyRewardPool[tier];
+  }
+
   function getSpecificDailyReward(
     uint256 tier,
     uint256 playerId,

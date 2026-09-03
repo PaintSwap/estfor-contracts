@@ -5,6 +5,7 @@ import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
 import {IPVPBattleground} from "../contracts/interfaces/IPVPBattleground.sol";
+import {IPVPBattlegroundGameData} from "../contracts/interfaces/IGameData.sol";
 import {MockVRF} from "../contracts/test/MockVRF.sol";
 import {BattleResultEnum} from "../contracts/globals/clans.sol";
 import {Skill} from "../contracts/globals/misc.sol";
@@ -21,6 +22,14 @@ contract PVPBattlegroundTest is FullGameStack {
     deployFullGame();
     defendingPlayerId = _createPlayer(address(this), 1, "New name", true);
     vm.deal(ALICE, 100 ether);
+  }
+
+  function testReadsComparableSkills() public view {
+    IPVPBattlegroundGameData gameData = IPVPBattlegroundGameData(address(pvpBattleground));
+    Skill[] memory comparableSkills = gameData.getComparableSkills();
+    assertEq(comparableSkills.length, 17);
+    assertEq(keccak256(abi.encode(comparableSkills)), keccak256(abi.encode(_battleSkills())));
+    assertEq(gameData.getNumSkillsToCompare(), 8);
   }
 
   function testBasicComparisonOfSkillLevel() public {

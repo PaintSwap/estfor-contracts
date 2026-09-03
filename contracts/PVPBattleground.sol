@@ -302,6 +302,14 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
     return _expectedGasLimitFulfill;
   }
 
+  function getComparableSkills() external view returns (Skill[] memory) {
+    return _comparableSkills;
+  }
+
+  function getNumSkillsToCompare() external view returns (uint8) {
+    return _numSkillsToCompare;
+  }
+
   function setComparableSkills(Skill[] calldata skills, uint8 numSkillsToCompare) public override onlyOwner {
     require(numSkillsToCompare <= skills.length, TooManySkillsToCompare());
     for (uint256 i = 0; i < skills.length; ++i) {

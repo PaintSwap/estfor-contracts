@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {EstforTest} from "./utils/EstforTest.sol";
 import {DailyRewardsScheduler} from "../contracts/DailyRewardsScheduler.sol";
+import {IDailyRewardsSchedulerGameData} from "../contracts/interfaces/IGameData.sol";
 import {RandomnessBeacon} from "../contracts/RandomnessBeacon.sol";
 import {Equipment} from "../contracts/globals/misc.sol";
 import {IOracleCB} from "../contracts/interfaces/IOracleCB.sol";
@@ -51,6 +52,23 @@ contract DailyRewardsSchedulerTest is EstforTest {
     assertNotEq(playerOneRewards, playerTwoRewards);
     assertNotEq(playerOneRewards, playerThreeRewards);
     assertNotEq(playerTwoRewards, playerThreeRewards);
+  }
+
+  function testReadsConfiguredRewardPools() public view {
+    IDailyRewardsSchedulerGameData reader = IDailyRewardsSchedulerGameData(address(scheduler));
+    Equipment[] memory daily = reader.getDailyRewardPool(TIER);
+    Equipment[] memory weekly = reader.getWeeklyRewardPool(TIER);
+
+    assertEq(daily.length, 8);
+    assertEq(daily[0].itemTokenId, 100);
+    assertEq(daily[0].amount, 10);
+    assertEq(daily[7].itemTokenId, 107);
+    assertEq(daily[7].amount, 80);
+    assertEq(weekly.length, 8);
+    assertEq(weekly[0].itemTokenId, 200);
+    assertEq(weekly[0].amount, 1);
+    assertEq(weekly[7].itemTokenId, 207);
+    assertEq(weekly[7].amount, 8);
   }
 
   function _setRewardPools() private {

@@ -5,6 +5,7 @@ import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.so
 import {Vm} from "forge-std/Vm.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
+import {ICosmeticsGameData} from "../contracts/interfaces/IGameData.sol";
 import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 import {Cosmetics} from "../contracts/Cosmetics.sol";
 import {IPlayerNFT as PlayerNFT} from "../contracts/interfaces/IPlayerNFT.sol";
@@ -63,6 +64,23 @@ contract CosmeticsTest is FullGameStack {
     vm.expectEmit(address(cosmetics));
     emit Cosmetics.SetCosmetics(tokenIds, infos);
     cosmetics.setCosmetics(tokenIds, infos);
+  }
+
+  function testReadsConfiguredCosmetics() public {
+    _setTwoCosmetics();
+    ICosmeticsGameData reader = ICosmeticsGameData(address(cosmetics));
+
+    assertEq(keccak256(abi.encode(reader.getCosmeticItemTokenIds(0, 3))), keccak256(abi.encode(_uint16s(1, 2))));
+    CosmeticInfo memory cosmetic = reader.getCosmetic(2);
+    assertEq(uint256(cosmetic.cosmeticPosition), uint256(EquipPosition.AVATAR_BORDER));
+    assertEq(cosmetic.itemTokenId, 2);
+
+    cosmetics.removeCosmeticItems(_tokenIds(1));
+    assertEq(keccak256(abi.encode(reader.getCosmeticItemTokenIds(0, 3))), keccak256(abi.encode(_uint16s(2))));
+
+    uint256 maxLength = reader.MAX_STATE_READ_LENGTH();
+    vm.expectRevert(ICosmeticsGameData.InvalidStateReadRange.selector);
+    reader.getCosmeticItemTokenIds(0, maxLength + 1);
   }
 
   function testShouldNotLetNonOwnersRemoveCosmetics() public {

@@ -17,6 +17,8 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
 
+  uint256 public constant MAX_STATE_READ_LENGTH = 1024;
+
   event AddActions(ActionInput[] actions);
   event EditActions(ActionInput[] actions);
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
@@ -44,6 +46,7 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
   error TooManySkills();
   error OutputAmountCannotBeZero();
   error OutputTokenIdCannotBeEmpty();
+  error InvalidStateReadRange();
 
   mapping(uint256 actionId => ActionInfo actionInfo) private _actions;
   mapping(uint256 actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) private _actionChoices;
@@ -96,6 +99,45 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
     uint16 choiceId
   ) external view override returns (ActionChoice memory choice) {
     return _actionChoices[actionId][choiceId];
+  }
+
+  function getActionIds(uint256 startActionId, uint256 endActionId) external view returns (uint16[] memory actionIds) {
+    _checkStateReadRange(startActionId, endActionId);
+
+    uint256 count;
+    for (uint256 actionId = startActionId; actionId < endActionId; ++actionId) {
+      if (_actions[actionId].skill._asSkill() != Skill.NONE) ++count;
+    }
+
+    actionIds = new uint16[](count);
+    uint256 index;
+    for (uint256 actionId = startActionId; actionId < endActionId; ++actionId) {
+      if (_actions[actionId].skill._asSkill() != Skill.NONE) actionIds[index++] = uint16(actionId);
+    }
+  }
+
+  function getActionChoiceIds(
+    uint16 actionId,
+    uint256 startChoiceId,
+    uint256 endChoiceId
+  ) external view returns (uint16[] memory choiceIds) {
+    _checkStateReadRange(startChoiceId, endChoiceId);
+
+    uint256 count;
+    for (uint256 choiceId = startChoiceId; choiceId < endChoiceId; ++choiceId) {
+      if (!_actionChoices[actionId][uint16(choiceId)].skill._isSkillNone()) ++count;
+    }
+
+    choiceIds = new uint16[](count);
+    uint256 index;
+    for (uint256 choiceId = startChoiceId; choiceId < endChoiceId; ++choiceId) {
+      if (!_actionChoices[actionId][uint16(choiceId)].skill._isSkillNone()) choiceIds[index++] = uint16(choiceId);
+    }
+  }
+
+  function _checkStateReadRange(uint256 startId, uint256 endId) private pure {
+    if (startId >= endId || endId > uint256(type(uint16).max) + 1 || endId - startId > MAX_STATE_READ_LENGTH)
+      revert InvalidStateReadRange();
   }
 
   function getActionSuccessPercentAndMinXP(

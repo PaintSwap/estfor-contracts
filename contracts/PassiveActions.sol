@@ -31,6 +31,10 @@ contract PassiveActions is
 {
   using Math for uint256;
 
+  uint256 public constant MAX_STATE_READ_LENGTH = 1024;
+
+  error InvalidStateReadRange();
+
   struct ActivePassiveInfo {
     uint16 actionId;
     uint96 queueId;
@@ -579,6 +583,29 @@ contract PassiveActions is
 
   function getAction(uint16 actionId) external view override returns (PassiveAction memory) {
     return _actions[actionId];
+  }
+
+  function getActionRewards(uint16 actionId) external view returns (ActionRewards memory) {
+    return _actionRewards[actionId];
+  }
+
+  function getActionIds(uint256 startActionId, uint256 endActionId) external view returns (uint16[] memory actionIds) {
+    if (
+      startActionId >= endActionId ||
+      endActionId > uint256(type(uint16).max) + 1 ||
+      endActionId - startActionId > MAX_STATE_READ_LENGTH
+    ) revert InvalidStateReadRange();
+
+    uint256 count;
+    for (uint256 actionId = startActionId; actionId < endActionId; ++actionId) {
+      if (_actions[uint16(actionId)].inputTokenId1 != NONE) ++count;
+    }
+
+    actionIds = new uint16[](count);
+    uint256 index;
+    for (uint256 actionId = startActionId; actionId < endActionId; ++actionId) {
+      if (_actions[uint16(actionId)].inputTokenId1 != NONE) actionIds[index++] = uint16(actionId);
+    }
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -72,6 +72,10 @@ contract GlobalEvents is UUPSUpgradeable, OwnableUpgradeable {
     emit ContributeToGlobalEvent(_msgSender(), eventId, playerId, amount);
   }
 
+  function getGlobalEvent(uint256 eventId) external view returns (GlobalEventInfo memory) {
+    return _globalEvents[eventId];
+  }
+
   function _addGlobalEvent(uint256 eventId, GlobalEventInfo calldata globalEventInfo) private {
     require(eventId != 0, EventIdZero());
     require(globalEventInfo.startTime != 0, StartTimeZero());

@@ -33,6 +33,10 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
 
+  uint256 public constant MAX_STATE_READ_LENGTH = 1024;
+
+  error InvalidStateReadRange();
+
   struct ClanInfo {
     IBank bank;
     uint40 attackingCooldownTimestamp;
@@ -605,6 +609,36 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
 
   function getRaidInfo(uint256 raidId) external view override returns (RaidInfo memory) {
     return _raidInfos[raidId];
+  }
+
+  function getBaseRaid(uint256 baseRaidId) external view returns (BaseRaid memory) {
+    return _baseRaids[baseRaidId];
+  }
+
+  function getBaseRaidIds(
+    uint256 startBaseRaidId,
+    uint256 endBaseRaidId
+  ) external view returns (uint16[] memory baseRaidIds) {
+    if (
+      startBaseRaidId >= endBaseRaidId ||
+      endBaseRaidId > uint256(type(uint16).max) + 1 ||
+      endBaseRaidId - startBaseRaidId > MAX_STATE_READ_LENGTH
+    ) revert InvalidStateReadRange();
+
+    uint256 count;
+    for (uint256 baseRaidId = startBaseRaidId; baseRaidId < endBaseRaidId; ++baseRaidId) {
+      if (_baseRaidExists(baseRaidId)) ++count;
+    }
+
+    baseRaidIds = new uint16[](count);
+    uint256 index;
+    for (uint256 baseRaidId = startBaseRaidId; baseRaidId < endBaseRaidId; ++baseRaidId) {
+      if (_baseRaidExists(baseRaidId)) baseRaidIds[index++] = uint16(baseRaidId);
+    }
+  }
+
+  function getCombatActionIds() external view returns (uint16[] memory) {
+    return _combatActionIds;
   }
 
   function getAttackCost() public view override returns (uint256) {

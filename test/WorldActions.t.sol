@@ -5,6 +5,7 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
 
 import {WorldActions} from "../contracts/WorldActions.sol";
 import {EstforLibrary} from "../contracts/EstforLibrary.sol";
+import {IWorldActionsGameData} from "../contracts/interfaces/IGameData.sol";
 import {ActionInput, ActionInfo, SPAWN_MUL, RATE_MUL} from "../contracts/globals/actions.sol";
 import {ActionChoiceInput} from "../contracts/globals/players.sol";
 import {Skill, CombatStats} from "../contracts/globals/misc.sol";
@@ -53,6 +54,27 @@ contract WorldActionsTest is EstforTest {
     action.info.isAvailable = false;
     worldActions.editActions(_actions(action));
     assertFalse(worldActions.getAction(1).isAvailable);
+  }
+
+  function testDiscoversConfiguredActionsAndChoices() public {
+    ActionInput memory firstAction = _combatAction(2);
+    ActionInput memory secondAction = _combatAction(7);
+    ActionInput[] memory actions = new ActionInput[](2);
+    actions[0] = firstAction;
+    actions[1] = secondAction;
+    worldActions.addActions(actions);
+
+    ActionChoiceInput memory choice = _choice(Skill.MAGIC, AIR_SCROLL, 1);
+    worldActions.addActionChoices(NONE, _uint16s(3), _choices(choice));
+    worldActions.addActionChoices(NONE, _uint16s(8), _choices(choice));
+
+    IWorldActionsGameData reader = IWorldActionsGameData(address(worldActions));
+    assertEq(keccak256(abi.encode(reader.getActionIds(0, 9))), keccak256(abi.encode(_uint16s(2, 7))));
+    assertEq(keccak256(abi.encode(reader.getActionChoiceIds(NONE, 0, 9))), keccak256(abi.encode(_uint16s(3, 8))));
+
+    uint256 maxLength = reader.MAX_STATE_READ_LENGTH();
+    vm.expectRevert(IWorldActionsGameData.InvalidStateReadRange.selector);
+    reader.getActionIds(0, maxLength + 1);
   }
 
   function testEditToHaveLessGuaranteedAndRandomRewards() public {

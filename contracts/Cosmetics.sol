@@ -11,11 +11,14 @@ import {CosmeticInfo, EquipPosition} from "./globals/players.sol";
 
 /// @custom:oz-upgrades-from CosmeticsV1
 contract Cosmetics is UUPSUpgradeable, OwnableUpgradeable {
+  uint256 public constant MAX_STATE_READ_LENGTH = 1024;
+
   error LengthMismatch();
   error NotEquippableCosmetic();
   error NoCosmeticEquipped();
   error CosmeticSlotOccupied();
   error NotOwnerOfPlayer();
+  error InvalidStateReadRange();
 
   event SetCosmetics(uint16[] itemTokenIds, CosmeticInfo[] cosmeticInfos);
   event CosmeticApplied(uint256 indexed playerId, uint16 indexed itemTokenId, EquipPosition slot);
@@ -72,6 +75,32 @@ contract Cosmetics is UUPSUpgradeable, OwnableUpgradeable {
     _itemNFT.mint(_msgSender(), equippedCosmeticTokenId, 1);
 
     emit CosmeticRemoved(playerId, slot);
+  }
+
+  function getCosmetic(uint16 itemTokenId) external view returns (CosmeticInfo memory) {
+    return _cosmetics[itemTokenId];
+  }
+
+  function getCosmeticItemTokenIds(
+    uint256 startItemTokenId,
+    uint256 endItemTokenId
+  ) external view returns (uint16[] memory itemTokenIds) {
+    if (
+      startItemTokenId >= endItemTokenId ||
+      endItemTokenId > uint256(type(uint16).max) + 1 ||
+      endItemTokenId - startItemTokenId > MAX_STATE_READ_LENGTH
+    ) revert InvalidStateReadRange();
+
+    uint256 count;
+    for (uint256 itemTokenId = startItemTokenId; itemTokenId < endItemTokenId; ++itemTokenId) {
+      if (_cosmetics[uint16(itemTokenId)].itemTokenId != 0) ++count;
+    }
+
+    itemTokenIds = new uint16[](count);
+    uint256 index;
+    for (uint256 itemTokenId = startItemTokenId; itemTokenId < endItemTokenId; ++itemTokenId) {
+      if (_cosmetics[uint16(itemTokenId)].itemTokenId != 0) itemTokenIds[index++] = uint16(itemTokenId);
+    }
   }
 
   function setCosmetics(uint16[] calldata itemTokenIds, CosmeticInfo[] calldata cosmeticInfos) external onlyOwner {

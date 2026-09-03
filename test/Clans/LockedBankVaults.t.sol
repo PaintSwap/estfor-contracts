@@ -10,6 +10,7 @@ import {Skill} from "../../contracts/globals/misc.sol";
 import {ItemInput, EquipPosition} from "../../contracts/globals/players.sol";
 import {BoostType} from "../../contracts/globals/misc.sol";
 import {ILockedBankVaults} from "../../contracts/interfaces/ILockedBankVaults.sol";
+import {ILockedBankVaultsGameData} from "../../contracts/interfaces/IGameData.sol";
 import {ILockedBankVaultsLibrary as LockedBankVaultsLibrary} from "../../contracts/interfaces/ILockedBankVaultsLibrary.sol";
 import {ILockedBankVaultsBattleResultDecoder, LockedBankVaultsBattleResultData} from "../../contracts/test/interfaces/LockedBankVaultsBattleResultDecoder.sol";
 
@@ -130,6 +131,12 @@ contract LockedBankVaultsTest is FullGameStack {
     clans.changeRank(CLAN_ID, ownerPlayerId, ClanRank.NONE, ownerPlayerId);
 
     assertEq(_toU256(lockedBankVaults.getClanInfo(CLAN_ID).playerIds), _uints(playerId));
+  }
+
+  function testReadsComparableSkills() public view {
+    Skill[] memory comparableSkills = ILockedBankVaultsGameData(address(lockedBankVaults)).getComparableSkills();
+    assertEq(comparableSkills.length, 17);
+    assertEq(keccak256(abi.encode(comparableSkills)), keccak256(abi.encode(_battleSkills())));
   }
 
   function testCanOnlyChangeCombatantsAfterTheCooldownChangeDeadlineHasPassed() public {

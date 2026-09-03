@@ -50,6 +50,10 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     _actions[input.actionId] = _packAction(randomRewards);
   }
 
+  function getAction(uint16 actionId) external view returns (InstantVRFRandomReward[] memory randomRewards) {
+    return _setupRandomRewards(actionId);
+  }
+
   function getRandomRewards(
     uint256 actionId,
     uint256 actionAmount,

@@ -12,6 +12,7 @@ import {InstantVRFActionInput} from "../globals/rewards.sol";
 contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IInstantVRFActionStrategy {
   error OnlyInstantVRFActions();
   error BasePetIdMinGreaterThanMax();
+  error InvalidActionId();
 
   struct InstantVRFAction {
     uint16 rewardBasePetIdMin;
@@ -45,6 +46,13 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
       instantVRFAction.rewardBasePetIdMax;
 
     require(instantVRFAction.rewardBasePetIdMin <= instantVRFAction.rewardBasePetIdMax, BasePetIdMinGreaterThanMax());
+  }
+
+  function getAction(uint16 actionId) external view returns (InstantVRFAction memory instantVRFAction) {
+    require(actionId != 0, InvalidActionId());
+    uint32 packedBasePetIdExtremes = _actions[actionId - 1];
+    instantVRFAction.rewardBasePetIdMin = uint16(packedBasePetIdExtremes >> 16);
+    instantVRFAction.rewardBasePetIdMax = uint16(packedBasePetIdExtremes);
   }
 
   function getRandomRewards(

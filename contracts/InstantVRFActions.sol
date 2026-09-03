@@ -21,6 +21,10 @@ import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/Paintswa
 
 /// @custom:oz-upgrades-from InstantVRFActionsV1
 contract InstantVRFActions is IInstantVRFActions, UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable {
+  uint256 public constant MAX_STATE_READ_LENGTH = 1024;
+
+  error InvalidStateReadRange();
+
   struct PlayerActionInfo {
     uint16[10] actionIdAmountPairs; // actionId, amount
   }
@@ -216,6 +220,25 @@ contract InstantVRFActions is IInstantVRFActions, UUPSUpgradeable, OwnableUpgrad
 
   function getAction(uint16 actionId) external view override returns (InstantVRFAction memory) {
     return _actions[actionId];
+  }
+
+  function getActionIds(uint256 startActionId, uint256 endActionId) external view returns (uint16[] memory actionIds) {
+    if (
+      startActionId >= endActionId ||
+      endActionId > uint256(type(uint16).max) + 1 ||
+      endActionId - startActionId > MAX_STATE_READ_LENGTH
+    ) revert InvalidStateReadRange();
+
+    uint256 count;
+    for (uint256 actionId = startActionId; actionId < endActionId; ++actionId) {
+      if (_actions[uint16(actionId)].inputTokenId1 != NONE) ++count;
+    }
+
+    actionIds = new uint16[](count);
+    uint256 index;
+    for (uint256 actionId = startActionId; actionId < endActionId; ++actionId) {
+      if (_actions[uint16(actionId)].inputTokenId1 != NONE) actionIds[index++] = uint16(actionId);
+    }
   }
 
   function getStrategy(InstantVRFActionType actionType) public view override returns (IInstantVRFActionStrategy) {

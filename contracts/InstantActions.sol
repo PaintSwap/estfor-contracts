@@ -20,6 +20,10 @@ contract InstantActions is IInstantActions, UUPSUpgradeable, OwnableUpgradeable 
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
 
+  uint256 public constant MAX_STATE_READ_LENGTH = 1024;
+
+  error InvalidStateReadRange();
+
   IPlayers private _players;
   IQuests private _quests;
   mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) private _actions;
@@ -61,6 +65,29 @@ contract InstantActions is IInstantActions, UUPSUpgradeable, OwnableUpgradeable 
     uint16 actionId
   ) external view override returns (InstantAction memory) {
     return _actions[actionType][actionId];
+  }
+
+  function getActionIds(
+    InstantActionType actionType,
+    uint256 startActionId,
+    uint256 endActionId
+  ) external view returns (uint16[] memory actionIds) {
+    if (
+      startActionId >= endActionId ||
+      endActionId > uint256(type(uint16).max) + 1 ||
+      endActionId - startActionId > MAX_STATE_READ_LENGTH
+    ) revert InvalidStateReadRange();
+
+    uint256 count;
+    for (uint256 actionId = startActionId; actionId < endActionId; ++actionId) {
+      if (_actions[actionType][uint16(actionId)].inputTokenId1 != NONE) ++count;
+    }
+
+    actionIds = new uint16[](count);
+    uint256 index;
+    for (uint256 actionId = startActionId; actionId < endActionId; ++actionId) {
+      if (_actions[actionType][uint16(actionId)].inputTokenId1 != NONE) actionIds[index++] = uint16(actionId);
+    }
   }
 
   function doInstantActions(

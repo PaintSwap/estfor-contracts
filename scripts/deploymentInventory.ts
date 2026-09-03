@@ -126,28 +126,134 @@ const DOMAINS: DeploymentPlan["domains"] = [
     policy: "managed",
     reason: "Validated UUPS and beacon implementations are reconciled through deployer candidates and Safe upgrades",
   },
-  {name: "items", policy: "unmanaged", reason: "Complete current key discovery is not implemented"},
+  {
+    name: "items",
+    policy: "unmanaged",
+    reason: "Contract reads and bounded uint16 key discovery are ready; the deployment adapter is not implemented",
+  },
   {
     name: "quests",
     policy: "unmanaged",
-    reason: "Minimum requirements and complete current key discovery are unavailable",
+    reason:
+      "Quest, minimum-requirement, and bounded uint16 key reads are ready; the deployment adapter is not implemented",
   },
   {
     name: "world-actions",
     policy: "unmanaged",
-    reason: "Complete current key discovery and action deletion are unavailable",
+    reason: "Action and choice reads are ready, but action deletion and the deployment adapter are unavailable",
   },
   {name: "shop", policy: "managed", reason: "Buyable prices and unsellable flags are reconciled exactly"},
-  {name: "clan-tiers", policy: "unmanaged", reason: "Removal and complete current key discovery are unavailable"},
-  {name: "instant-actions", policy: "unmanaged", reason: "Complete current key discovery is not implemented"},
-  {name: "instant-vrf-actions", policy: "unmanaged", reason: "Complete current key discovery is not implemented"},
-  {name: "passive-actions", policy: "unmanaged", reason: "Rewards are not fully readable and removal is unavailable"},
-  {name: "cosmetics", policy: "unmanaged", reason: "Configuration getters and enumeration are unavailable"},
-  {name: "avatars", policy: "unmanaged", reason: "Configuration getters, removal, and enumeration are unavailable"},
   {
-    name: "rewards-and-other-game-data",
+    name: "orderbook-token-constraints",
     policy: "unmanaged",
-    reason: "Domain-specific complete read and deletion semantics are not implemented",
+    reason: "Desired keys are readable, but arbitrary uint256 keys have no complete discovery or removal",
+  },
+  {
+    name: "clan-tiers",
+    policy: "unmanaged",
+    reason: "Tier reads and complete uint8 discovery are ready, but removal and the deployment adapter are unavailable",
+  },
+  {
+    name: "instant-actions",
+    policy: "unmanaged",
+    reason: "Contract reads, finite-type discovery, and mutations are ready; the deployment adapter is not implemented",
+  },
+  {
+    name: "instant-vrf-actions",
+    policy: "unmanaged",
+    reason: "Action and strategy data reads are ready; the deployment adapter is not implemented",
+  },
+  {
+    name: "passive-actions",
+    policy: "unmanaged",
+    reason: "Action and reward reads are ready, but removal and the deployment adapter are unavailable",
+  },
+  {
+    name: "cosmetics",
+    policy: "unmanaged",
+    reason:
+      "Contract reads, bounded uint16 discovery, and mutations are ready; the deployment adapter is not implemented",
+  },
+  {
+    name: "avatars",
+    policy: "unmanaged",
+    reason: "Known IDs are readable and writable, but arbitrary uint256 setter keys have no complete discovery",
+  },
+  {
+    name: "xp-threshold-rewards",
+    policy: "unmanaged",
+    reason: "Configured rewards are completely readable, but removal and the deployment adapter are unavailable",
+  },
+  {
+    name: "full-attire-bonuses",
+    policy: "unmanaged",
+    reason: "Finite Skill-key reads are ready, but stale-value removal and the deployment adapter are unavailable",
+  },
+  {
+    name: "daily-and-weekly-rewards",
+    policy: "unmanaged",
+    reason: "Desired tiers are readable, but arbitrary uint256 tier keys prevent complete stale-pool discovery",
+  },
+  {
+    name: "base-pets",
+    policy: "unmanaged",
+    reason:
+      "Metadata and bounded uint24 discovery are ready, but removal and enhancement-skill changes are unavailable and no adapter exists",
+  },
+  {
+    name: "raids",
+    policy: "unmanaged",
+    reason:
+      "Combat IDs and known base raids are readable, but arbitrary uint256 base-raid keys are not fully discoverable, removal is unavailable, and no adapter exists",
+  },
+  {
+    name: "territories",
+    policy: "unmanaged",
+    reason:
+      "Configuration is readable after runtime normalization, but removed ID gaps cannot be restored, the skill setter appends, and no adapter exists",
+  },
+  {
+    name: "pvp-battle-skills",
+    policy: "unmanaged",
+    reason: "Skills and comparison count are readable, but the setter appends and no deployment adapter exists",
+  },
+  {
+    name: "locked-vault-battle-skills",
+    policy: "unmanaged",
+    reason: "Skills are readable, but the setter appends and no deployment adapter exists",
+  },
+  {
+    name: "promotions",
+    policy: "unmanaged",
+    reason: "Finite Promotion-key reads and mutations exist, but desired data is not centralized and no adapter exists",
+  },
+  {
+    name: "activity-point-calculations",
+    policy: "unmanaged",
+    reason:
+      "Finite ActivityType-key reads and writes are ready, but desired data is not centralized and no adapter exists",
+  },
+  {
+    name: "global-events",
+    policy: "unmanaged",
+    reason:
+      "Desired event IDs are readable and editable, but arbitrary uint256 IDs have no complete discovery or removal",
+  },
+  {
+    name: "black-market-collections",
+    policy: "unmanaged",
+    reason:
+      "Known collections enumerate items, but event IDs are not discoverable, edits reset runtime stock, and no adapter exists",
+  },
+  {
+    name: "session-subsidy-limits",
+    policy: "unmanaged",
+    reason: "Desired keys are readable, but arbitrary contract-selector keys have no complete stale-entry discovery",
+  },
+  {
+    name: "shop-supporter-packs",
+    policy: "unmanaged",
+    reason: "Pack configuration, key discovery, and configuration-only remaining-quantity semantics are unavailable",
   },
 ]
 

@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {IOwnable} from "../contracts/interfaces/IOwnable.sol";
 
 import {FullGameStack} from "./utils/FullGameStack.sol";
+import {IInstantActionsGameData} from "../contracts/interfaces/IGameData.sol";
 import {IInstantActions} from "../contracts/interfaces/IInstantActions.sol";
 import {IQuests as Quests} from "../contracts/interfaces/IQuests.sol";
 import {Skill} from "../contracts/globals/misc.sol";
@@ -246,6 +247,24 @@ contract InstantActionsTest is FullGameStack {
     assertEq(x.inputTokenId3, ADAMANTINE_ARROW);
     assertEq(x.outputTokenId, ORICHALCUM_ARROW);
     assertEq(x.outputAmount, 3);
+  }
+
+  function testDiscoversConfiguredActions() public {
+    IInstantActions.InstantActionType actionType = IInstantActions.InstantActionType.GENERIC;
+    IInstantActions.InstantActionInput memory first = _input(actionType);
+    IInstantActions.InstantActionInput memory second = _input(actionType);
+    second.actionId = 3;
+    instantActions.addActions(_inputs(first, second));
+
+    IInstantActionsGameData reader = IInstantActionsGameData(address(instantActions));
+    assertEq(keccak256(abi.encode(reader.getActionIds(actionType, 0, 4))), keccak256(abi.encode(_uint16s(1, 3))));
+
+    instantActions.removeActions(_types(actionType), _uint16s(1));
+    assertEq(keccak256(abi.encode(reader.getActionIds(actionType, 0, 4))), keccak256(abi.encode(_uint16s(3))));
+
+    uint256 maxLength = reader.MAX_STATE_READ_LENGTH();
+    vm.expectRevert(IInstantActionsGameData.InvalidStateReadRange.selector);
+    reader.getActionIds(actionType, 0, maxLength + 1);
   }
 
   function testCheckPackedData() public {
