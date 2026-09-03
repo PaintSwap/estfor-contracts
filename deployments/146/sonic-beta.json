@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "deploymentId": "sonic-beta",
   "chainId": 146,
   "deploymentBlock": 1241080,
@@ -18,7 +18,8 @@
       "kind": "uups",
       "address": "0x7695be7272f3d223a40fc3c0499053f81c17cb65",
       "reinitializer": {
-        "version": 3,
+        "onchainVersion": 3,
+        "targetVersion": 3,
         "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
       }
     },
@@ -37,7 +38,8 @@
       "kind": "uups",
       "address": "0x84d9d334c5b64fcbcb17d6b853a0434818d052bb",
       "reinitializer": {
-        "version": 2,
+        "onchainVersion": 2,
+        "targetVersion": 2,
         "callData": "0x29b6eca90000000000000000000000007fa2b4c19093e0777d72235ea28d302f53227fa0"
       }
     },
@@ -60,7 +62,8 @@
       "kind": "uups",
       "address": "0x007247ab8fbae2b07f5adf3e70a141459c89264e",
       "reinitializer": {
-        "version": 3,
+        "onchainVersion": 3,
+        "targetVersion": 3,
         "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
       }
     },
@@ -71,7 +74,8 @@
       "kind": "uups",
       "address": "0xe91a6cdac47dfd546578273253bff1fddc350764",
       "reinitializer": {
-        "version": 3,
+        "onchainVersion": 3,
+        "targetVersion": 3,
         "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
       }
     },
@@ -79,7 +83,8 @@
       "kind": "uups",
       "address": "0xbfd416e76519cf199dd95b82f6928b3a4b5ac995",
       "reinitializer": {
-        "version": 3,
+        "onchainVersion": 3,
+        "targetVersion": 3,
         "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
       }
     },
@@ -89,7 +94,8 @@
       "kind": "uups",
       "address": "0x9451943d38ac8cde8a2a8026adb8b28ac089b2cb",
       "reinitializer": {
-        "version": 3,
+        "onchainVersion": 3,
+        "targetVersion": 3,
         "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
       }
     },
@@ -97,14 +103,15 @@
       "kind": "uups",
       "address": "0xa2ca7daad4b86819c455fafc704d727a23c5a513",
       "reinitializer": {
-        "version": 3,
+        "onchainVersion": 3,
+        "targetVersion": 3,
         "callData": "0x3101cfcb0000000000000000000000006e3efcb244e74cb898a7961061faa43c3cf79691"
       }
     },
     "combatantsHelper": {
       "kind": "uups",
       "address": "0x7fa2b4c19093e0777d72235ea28d302f53227fa0",
-      "reinitializer": {"version": 4, "callData": "0x54a08606"}
+      "reinitializer": {"onchainVersion": 4, "targetVersion": 4, "callData": "0x54a08606"}
     },
     "territoryTreasury": {"kind": "uups", "address": "0x5d1429f842891ea0ed80e856762b48bc117ac2a8"},
     "bankRegistry": {"kind": "uups", "address": "0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6"},

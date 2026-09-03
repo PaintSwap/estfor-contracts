@@ -1,6 +1,12 @@
-import {readFileSync, readdirSync} from "fs"
+import {readFileSync, readdirSync, renameSync, writeFileSync} from "fs"
 import {join, resolve} from "path"
-import {isAddress, isHexString} from "ethers"
+import {JsonRpcProvider, isAddress, isHexString} from "ethers"
+import {INITIALIZABLE_STORAGE_SLOT} from "./deploymentSlots"
+
+const prettier = require("prettier") as {
+  format(source: string, options: Record<string, unknown>): string
+  resolveConfig: {sync(path: string): Record<string, unknown> | null}
+}
 
 export const CONTRACT_NAMES = [
   "bridge",
@@ -66,7 +72,8 @@ export type DeploymentProfile = "live" | "beta"
 export type ContractKind = "uups" | "beacon" | "library" | "implementation"
 
 export interface DeploymentReinitializer {
-  version: number
+  onchainVersion: number
+  targetVersion: number
   callData: string
 }
 
@@ -78,7 +85,7 @@ export interface DeploymentContract {
 }
 
 export interface DeploymentRegistry {
-  schemaVersion: 2
+  schemaVersion: 3
   deploymentId: string
   chainId: number
   deploymentBlock: number
@@ -88,6 +95,12 @@ export interface DeploymentRegistry {
   contracts: Record<ContractName, DeploymentContract>
   externals: Record<ExternalName, string>
   subsidySigners: string[]
+}
+
+export interface DeploymentRegistryRefresh {
+  deployment: DeploymentRegistry
+  observationBlock: {number: number; hash: string}
+  updatedContracts: ContractName[]
 }
 
 const DEPLOYMENTS_ROOT = resolve(__dirname, "../deployments")
@@ -141,7 +154,7 @@ function findDeploymentFile(deploymentId: string, deploymentsRoot: string): stri
 
 export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?: string): DeploymentRegistry {
   const registry = requireObject(value, "deployment registry")
-  if (registry.schemaVersion !== 2) throw new Error("deployment registry schemaVersion must be 2")
+  if (registry.schemaVersion !== 3) throw new Error("deployment registry schemaVersion must be 3")
 
   const deploymentId = requireString(registry.deploymentId, "deploymentId")
   if (!DEPLOYMENT_ID_PATTERN.test(deploymentId)) throw new Error(`Invalid deployment ID "${deploymentId}"`)
@@ -187,7 +200,14 @@ export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?
         rawReinitializer === null
           ? null
           : {
-              version: requireInteger(rawReinitializer.version, `contracts.${name}.reinitializer.version`),
+              onchainVersion: requireInteger(
+                rawReinitializer.onchainVersion,
+                `contracts.${name}.reinitializer.onchainVersion`
+              ),
+              targetVersion: requireInteger(
+                rawReinitializer.targetVersion,
+                `contracts.${name}.reinitializer.targetVersion`
+              ),
               callData: requireString(rawReinitializer.callData, `contracts.${name}.reinitializer.callData`),
             },
     }
@@ -198,8 +218,8 @@ export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?
     if (reinitializer !== null && (!isHexString(reinitializer.callData) || reinitializer.callData === "0x")) {
       throw new Error(`contracts.${name}.reinitializer.callData must be non-empty hex calldata`)
     }
-    if (reinitializer !== null && reinitializer.version === 0) {
-      throw new Error(`contracts.${name}.reinitializer.version must be greater than zero`)
+    if (reinitializer !== null && reinitializer.targetVersion === 0) {
+      throw new Error(`contracts.${name}.reinitializer.targetVersion must be greater than zero`)
     }
     if (reinitializer !== null && contracts[name].kind !== "uups") {
       throw new Error(`contracts.${name} reinitializer is only supported for UUPS contracts`)
@@ -226,7 +246,7 @@ export function validateDeploymentRegistry(value: unknown, expectedDeploymentId?
   )
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     deploymentId,
     chainId,
     deploymentBlock,
@@ -246,6 +266,90 @@ export function loadDeploymentRegistry(deploymentId: string, deploymentsRoot = D
 
 export function getDeploymentRegistryPath(deploymentId: string, deploymentsRoot = DEPLOYMENTS_ROOT): string {
   return findDeploymentFile(deploymentId, deploymentsRoot)
+}
+
+async function readDeploymentRegistryState(
+  provider: JsonRpcProvider,
+  deploymentId: string,
+  requestedBlock?: number,
+  deploymentsRoot = DEPLOYMENTS_ROOT,
+  writeChanges = false
+): Promise<DeploymentRegistryRefresh> {
+  const file = findDeploymentFile(deploymentId, deploymentsRoot)
+  const raw = JSON.parse(readFileSync(file, "utf8")) as unknown
+  const deployment = validateDeploymentRegistry(raw, deploymentId)
+  const network = await provider.getNetwork()
+  if (network.chainId !== BigInt(deployment.chainId)) {
+    throw new Error(`RPC chain ID ${network.chainId} does not match deployment chain ID ${deployment.chainId}`)
+  }
+  const genesis = await provider.getBlock(0)
+  if (!genesis?.hash || genesis.hash.toLowerCase() !== deployment.networkFingerprint.genesisHash.toLowerCase()) {
+    throw new Error("RPC network fingerprint does not match deployment registry")
+  }
+  const block = await provider.getBlock(requestedBlock ?? "latest")
+  if (!block?.hash) throw new Error("Could not resolve observation block")
+  if (block.number < deployment.deploymentBlock) {
+    throw new Error(`Observation block ${block.number} predates deployment block ${deployment.deploymentBlock}`)
+  }
+
+  const observedVersions = await Promise.all(
+    CONTRACT_NAMES.flatMap((name) => {
+      const contract = deployment.contracts[name]
+      if (contract.reinitializer === null) return []
+      return [
+        provider.getStorage(contract.address, INITIALIZABLE_STORAGE_SLOT, block.number).then((storage) => {
+          const version = BigInt(storage) & ((1n << 64n) - 1n)
+          if (version > BigInt(Number.MAX_SAFE_INTEGER)) {
+            throw new Error(`${name} initialized version ${version} exceeds the registry's numeric range`)
+          }
+          return [name, Number(version)] as const
+        }),
+      ]
+    })
+  )
+
+  const rawRegistry = requireObject(raw, "deployment registry")
+  const rawContracts = requireObject(rawRegistry.contracts, "contracts")
+  const updatedContracts: ContractName[] = []
+  for (const [name, onchainVersion] of observedVersions) {
+    const rawContract = requireObject(rawContracts[name], `contracts.${name}`)
+    const rawReinitializer = requireObject(rawContract.reinitializer, `contracts.${name}.reinitializer`)
+    if (rawReinitializer.onchainVersion === onchainVersion) continue
+    rawReinitializer.onchainVersion = onchainVersion
+    updatedContracts.push(name)
+  }
+
+  if (writeChanges && updatedContracts.length !== 0) {
+    const options = prettier.resolveConfig.sync(file) ?? {}
+    const contents = prettier.format(JSON.stringify(rawRegistry), {...options, parser: "json"})
+    const temporaryPath = `${file}.${process.pid}.tmp`
+    writeFileSync(temporaryPath, contents)
+    renameSync(temporaryPath, file)
+  }
+
+  return {
+    deployment: validateDeploymentRegistry(rawRegistry, deploymentId),
+    observationBlock: {number: block.number, hash: block.hash},
+    updatedContracts,
+  }
+}
+
+export function observeDeploymentRegistry(
+  provider: JsonRpcProvider,
+  deploymentId: string,
+  requestedBlock?: number,
+  deploymentsRoot = DEPLOYMENTS_ROOT
+): Promise<DeploymentRegistryRefresh> {
+  return readDeploymentRegistryState(provider, deploymentId, requestedBlock, deploymentsRoot)
+}
+
+export function refreshDeploymentRegistry(
+  provider: JsonRpcProvider,
+  deploymentId: string,
+  requestedBlock?: number,
+  deploymentsRoot = DEPLOYMENTS_ROOT
+): Promise<DeploymentRegistryRefresh> {
+  return readDeploymentRegistryState(provider, deploymentId, requestedBlock, deploymentsRoot, true)
 }
 
 export function getSelectedDeploymentId(environment: NodeJS.ProcessEnv = process.env): string {

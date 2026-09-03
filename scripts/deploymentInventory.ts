@@ -9,14 +9,7 @@ import {
   compareRuntimeBytecode,
   loadArtifactFingerprint,
 } from "./deploymentArtifacts"
-import {
-  CONTRACT_NAMES,
-  ContractKind,
-  ContractName,
-  DeploymentRegistry,
-  EXTERNAL_NAMES,
-  getDeploymentRegistryPath,
-} from "./deploymentRegistry"
+import {CONTRACT_NAMES, ContractKind, ContractName, DeploymentRegistry, EXTERNAL_NAMES} from "./deploymentRegistry"
 import {buildShopPlan, deferShopPlanForUpgrade, hasShopStateGetter} from "./shopReconciliation"
 import type {ShopPlan, ShopPlanOptions} from "./shopReconciliation"
 import type {DeploymentSimulationResult} from "./deploymentSimulation"
@@ -66,6 +59,7 @@ export interface ImplementationInventory extends CodeInventory {
 export interface ContractInventory extends CodeInventory {
   name: ContractName
   kind: ContractKind
+  initializedVersion: number | null
   owner: string | null
   ownerMatchesAuthority: boolean | null
   implementation: ImplementationInventory | null
@@ -73,7 +67,7 @@ export interface ContractInventory extends CodeInventory {
 }
 
 export interface DeploymentPlan {
-  schemaVersion: 3
+  schemaVersion: 4
   mode: "read-only"
   deploymentId: string
   chainId: number
@@ -82,7 +76,7 @@ export interface DeploymentPlan {
   authority: {type: "safe"; address: string; codeHash: string; owners: string[]; threshold: number}
   observationBlock: {number: number; hash: string}
   inputs: {
-    registryHash: string
+    registryIntentHash: string
     sourceDataHash: string
     gitRevision: string
     openZeppelinManifestHash: string
@@ -167,6 +161,30 @@ function canonical(value: unknown): string {
 
 export function hashPlan(plan: Omit<DeploymentPlan, "planHash">): string {
   return sha256(canonical(plan))
+}
+
+export function hashRegistryIntent(deployment: DeploymentRegistry): string {
+  return sha256(
+    canonical({
+      ...deployment,
+      contracts: Object.fromEntries(
+        CONTRACT_NAMES.map((name) => {
+          const contract = deployment.contracts[name]
+          const reinitializer = contract.reinitializer
+          return [
+            name,
+            {
+              ...contract,
+              reinitializer:
+                reinitializer === null
+                  ? null
+                  : {targetVersion: reinitializer.targetVersion, callData: reinitializer.callData},
+            },
+          ]
+        })
+      ),
+    })
+  )
 }
 
 function codeInventory(address: string, code: string): CodeInventory {
@@ -353,6 +371,7 @@ async function inventoryContract(
     ...codeInventory(address, code),
     name,
     kind: tracked.kind,
+    initializedVersion: tracked.reinitializer?.onchainVersion ?? null,
     owner,
     ownerMatchesAuthority,
     implementation,
@@ -504,7 +523,7 @@ export async function buildDeploymentPlan(
     classifications[classification] = (classifications[classification] ?? 0) + 1
   }
   const withoutHash: Omit<DeploymentPlan, "planHash"> = {
-    schemaVersion: 3,
+    schemaVersion: 4,
     mode: "read-only",
     deploymentId: deployment.deploymentId,
     chainId: deployment.chainId,
@@ -513,7 +532,7 @@ export async function buildDeploymentPlan(
     authority: {type: "safe", address: safeAddress, codeHash: keccak256(safeCode), owners, threshold},
     observationBlock: {number: block.number, hash: block.hash},
     inputs: {
-      registryHash: sha256(readFileSync(getDeploymentRegistryPath(deployment.deploymentId))),
+      registryIntentHash: hashRegistryIntent(deployment),
       sourceDataHash: sha256(canonical(shop.desired)),
       gitRevision: execFileSync("git", ["rev-parse", "HEAD"], {encoding: "utf8"}).trim(),
       openZeppelinManifestHash: sha256(manifestRaw),

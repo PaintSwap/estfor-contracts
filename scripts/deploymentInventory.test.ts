@@ -3,7 +3,7 @@ import {describe, it} from "node:test"
 import {ArtifactFingerprint, compareRuntimeBytecode} from "./deploymentArtifacts"
 import {CONTRACT_NAMES, loadDeploymentRegistry} from "./deploymentRegistry"
 import type {DeploymentPlan} from "./deploymentInventory"
-import {buildRemainderPlan, hashPlan, renderFindings} from "./deploymentInventory"
+import {buildRemainderPlan, hashPlan, hashRegistryIntent, renderFindings} from "./deploymentInventory"
 
 function artifact(runtime: string, overrides: Partial<ArtifactFingerprint> = {}): ArtifactFingerprint {
   return {
@@ -88,6 +88,16 @@ describe("deployment inventory", function () {
     const first = hashPlan({a: 1, b: {c: 2}} as never)
     const second = hashPlan({b: {c: 2}, a: 1} as never)
     assert.equal(first, second)
+  })
+
+  it("hashes registry intent independently from refreshed on-chain versions", function () {
+    const changedState = structuredClone(deployment)
+    changedState.contracts.clans.reinitializer!.onchainVersion++
+    assert.equal(hashRegistryIntent(changedState), hashRegistryIntent(deployment))
+
+    const changedIntent = structuredClone(deployment)
+    changedIntent.contracts.clans.reinitializer!.targetVersion++
+    assert.notEqual(hashRegistryIntent(changedIntent), hashRegistryIntent(deployment))
   })
 
   it("renders actionable findings grouped by severity", function () {

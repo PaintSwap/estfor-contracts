@@ -10,11 +10,11 @@ The command loads `.env` before it reads configuration.
 
 ## Modes
 
-| Mode                    | Purpose                                                                                 |
-| ----------------------- | --------------------------------------------------------------------------------------- |
-| No mode option          | Read chain state, create a plan, and simulate it. This mode does not send transactions. |
-| `--apply --plan <path>` | Validate a reviewed plan, deploy required code, and submit Safe proposals.              |
-| `--resume <run-id>`     | Read transaction and Safe status, then create a plan for unproposed work.               |
+| Mode                    | Purpose                                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------------------------- |
+| No mode option          | Refresh tracked chain state, create a plan, and simulate it. This mode does not send transactions. |
+| `--apply --plan <path>` | Validate a reviewed plan, deploy required code, and submit Safe proposals.                         |
+| `--resume <run-id>`     | Read transaction and Safe status, then create a plan for unproposed work.                          |
 
 Use `--allow-removals` to permit planned removals. Limit options reject plans that contain too many changes or too much value change.
 
@@ -46,27 +46,31 @@ from the verified final plan in a separate registry-only change.
 
 ## Reinitializers
 
-For a UUPS contract with a reinitializer, record its `version` and encoded `callData` in the contract's `reinitializer`
-object. Reconciliation reads OpenZeppelin's initialized version from the proxy at the observation block. An upgrade includes
-the calldata only when the proxy's version is lower than the recorded version, so later implementation upgrades do not
-repeat an already completed reinitializer. A proxy version higher than the registry value blocks the plan as stale
-deployment intent.
+For a UUPS contract with a reinitializer, the contract's `reinitializer` object separates observed state from desired intent:
+
+- `onchainVersion` is the OpenZeppelin initialized version read from the proxy.
+- `targetVersion` and `callData` are the reviewed reinitializer intent for the next implementation upgrade.
+
+Before it builds or rebuilds a plan, reconciliation reads the initialized-version storage at one observation block and
+updates `onchainVersion` in the tracked deployment file. An upgrade includes `callData` only when `onchainVersion` is lower
+than `targetVersion`. Equal or higher on-chain versions omit the calldata and do not block reconciliation. This makes a
+rerun refresh stale registry state without associating old calldata with a newer on-chain version.
 
 ## Main files
 
-| File                                 | Purpose                                                      |
-| ------------------------------------ | ------------------------------------------------------------ |
-| `deploymentSync.ts`                  | Own the command workflow and mode selection.                 |
-| `deploymentRegistry.ts`              | Load and validate tracked deployment identity and addresses. |
-| `deploymentInventory.ts`             | Read chain state and create the deployment plan.             |
-| `deploymentArtifacts.ts`             | Compare deployed bytecode with Foundry artifacts.            |
-| `deploymentSimulation.ts`            | Execute the complete plan on a pinned Anvil fork.            |
-| `deploymentWiring.ts`                | Check required contract links and roles.                     |
-| `shopReconciliation.ts`              | Compare and encode managed Shop data.                        |
-| `upgradeReconciliation.ts`           | Validate and prepare implementation and library candidates.  |
-| `safeReconciliation.ts`              | Build, submit, and inspect Safe proposal batches.            |
-| `reconciliation.ts`                  | Define the shared operation and limit types.                 |
-| `ReconciliationCodeDeployment.s.sol` | Deploy validated candidate code through Foundry.             |
+| File                                 | Purpose                                                     |
+| ------------------------------------ | ----------------------------------------------------------- |
+| `deploymentSync.ts`                  | Own the command workflow and mode selection.                |
+| `deploymentRegistry.ts`              | Load, refresh, and validate tracked deployment state.       |
+| `deploymentInventory.ts`             | Read chain state and create the deployment plan.            |
+| `deploymentArtifacts.ts`             | Compare deployed bytecode with Foundry artifacts.           |
+| `deploymentSimulation.ts`            | Execute the complete plan on a pinned Anvil fork.           |
+| `deploymentWiring.ts`                | Check required contract links and roles.                    |
+| `shopReconciliation.ts`              | Compare and encode managed Shop data.                       |
+| `upgradeReconciliation.ts`           | Validate and prepare implementation and library candidates. |
+| `safeReconciliation.ts`              | Build, submit, and inspect Safe proposal batches.           |
+| `reconciliation.ts`                  | Define the shared operation and limit types.                |
+| `ReconciliationCodeDeployment.s.sol` | Deploy validated candidate code through Foundry.            |
 
 The `deploy-foundry.sh` and `DeployGame.s.sol` files create a new deployment. They are not modes of existing-deployment reconciliation.
 
@@ -79,5 +83,7 @@ Each run writes files under `runs/<deployment-id>/<run-id>/`:
 - `safe-transaction-builder-*.json` contains Safe calls.
 - proposal and deployment journals record submitted work.
 - `remainder-plan.*` contains only work that is not already pending.
+
+The command can also update `onchainVersion` values in `deployments/<chain-id>/<deployment-id>.json` before writing a plan.
 
 An apply is not complete until the Safe executes all proposals and a new plan has no managed operations.

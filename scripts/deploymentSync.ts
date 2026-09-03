@@ -3,7 +3,7 @@ import {spawnSync} from "child_process"
 import {existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from "fs"
 import {dirname, resolve} from "path"
 import {JsonRpcProvider, Wallet, getAddress} from "ethers"
-import {loadDeploymentRegistry} from "./deploymentRegistry"
+import {loadDeploymentRegistry, observeDeploymentRegistry, refreshDeploymentRegistry} from "./deploymentRegistry"
 import {
   buildDeploymentPlan,
   buildRemainderPlan,
@@ -133,13 +133,13 @@ async function main() {
     throw new Error("--block must be a non-negative integer")
   if (block !== undefined && reviewedPlanPath) throw new Error("--block cannot be combined with --apply or --resume")
 
-  const deployment = loadDeploymentRegistry(deploymentId)
+  let deployment = loadDeploymentRegistry(deploymentId)
   const reviewedPlanValue = reviewedPlanPath
     ? (JSON.parse(readFileSync(reviewedPlanPath, "utf8")) as Partial<DeploymentPlan>)
     : undefined
   if (
     reviewedPlanValue &&
-    (reviewedPlanValue.schemaVersion !== 3 ||
+    (reviewedPlanValue.schemaVersion !== 4 ||
       !reviewedPlanValue.execution?.safeBatchLimits ||
       !reviewedPlanValue.upgrades ||
       !reviewedPlanValue.shop?.limits)
@@ -195,23 +195,42 @@ async function main() {
   logProgress(
     `Starting deployment sync for ${deploymentId} (${apply ? "apply" : resumeRunId ? "resume" : "plan"} mode)`
   )
+  const provider = new JsonRpcProvider(rpcUrl, deployment.chainId, {staticNetwork: true})
+  const refreshRegistry = async (requestedBlock?: number): Promise<number> => {
+    logProgress("Refreshing tracked reinitializer versions from chain state")
+    const refreshed = await refreshDeploymentRegistry(provider, deploymentId, requestedBlock)
+    deployment = refreshed.deployment
+    if (refreshed.updatedContracts.length === 0) {
+      logProgress(`Deployment registry is current at block ${refreshed.observationBlock.number}`)
+    } else {
+      logProgress(
+        `Updated deployment registry at block ${refreshed.observationBlock.number}: ${refreshed.updatedContracts.join(
+          ", "
+        )}`
+      )
+    }
+    return refreshed.observationBlock.number
+  }
+  const refreshedBlock = await refreshRegistry(reviewedPlan ? undefined : block)
+  let planDeployment = deployment
+  let planBlock = refreshedBlock
+  if (reviewedPlan) {
+    logProgress(`Reading registry state at reviewed block ${reviewedPlan.observationBlock.number}`)
+    const reviewedState = await observeDeploymentRegistry(provider, deploymentId, reviewedPlan.observationBlock.number)
+    planDeployment = reviewedState.deployment
+    planBlock = reviewedState.observationBlock.number
+  }
   logProgress("Building contracts with Forge")
   const build = spawnSync("forge", ["build", "--quiet"], {stdio: "inherit"})
   if (build.error) throw build.error
   if (build.status !== 0) throw new Error(`forge build failed with status ${build.status}`)
   logProgress("Forge build completed")
-  const provider = new JsonRpcProvider(rpcUrl, deployment.chainId, {staticNetwork: true})
   logProgress("Building deployment plan from repository artifacts and on-chain state")
-  const builtPlan = await buildDeploymentPlan(
-    provider,
-    deployment,
-    reviewedPlan?.observationBlock.number ?? block,
-    planOptions
-  )
+  const builtPlan = await buildDeploymentPlan(provider, planDeployment, planBlock, planOptions)
   const plan = reviewedPlan?.pendingOperationIds?.length
     ? buildRemainderPlan(builtPlan, new Set(reviewedPlan.pendingOperationIds))
     : builtPlan
-  await simulate(plan, rpcUrl, deployment)
+  await simulate(plan, rpcUrl, planDeployment)
   const simulation = plan.simulation
   if (!simulation) throw new Error("Plan simulation did not produce a result")
   if (reviewedPlan && plan.planHash !== reviewedPlan.planHash)
@@ -318,7 +337,8 @@ async function main() {
       ])
     )
     logProgress("Rebuilding the plan from current chain state")
-    const currentStatePlan = await buildDeploymentPlan(provider, deployment, undefined, {
+    const currentBlock = await refreshRegistry()
+    const currentStatePlan = await buildDeploymentPlan(provider, deployment, currentBlock, {
       ...planOptions,
       reusableCandidates,
     })
@@ -388,7 +408,8 @@ async function main() {
     )
   )
   logProgress("Rebuilding the plan to check for chain-state changes since review")
-  const builtCurrentPlan = await buildDeploymentPlan(provider, deployment, undefined, {
+  const currentBlock = await refreshRegistry()
+  const builtCurrentPlan = await buildDeploymentPlan(provider, deployment, currentBlock, {
     ...planOptions,
     reusableCandidates,
   })

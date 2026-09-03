@@ -1,6 +1,9 @@
 import assert from "node:assert/strict"
+import {copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync} from "node:fs"
+import {tmpdir} from "node:os"
+import {join, resolve} from "node:path"
 import {describe, it} from "node:test"
-import {Interface, getAddress} from "ethers"
+import {Interface, JsonRpcProvider, getAddress, toBeHex, zeroPadValue} from "ethers"
 import {
   CONTRACT_NAMES,
   EXTERNAL_NAMES,
@@ -8,6 +11,8 @@ import {
   getDeploymentIsBeta,
   getSelectedDeploymentId,
   loadDeploymentRegistry,
+  observeDeploymentRegistry,
+  refreshDeploymentRegistry,
   validateDeploymentRegistry,
 } from "./deploymentRegistry"
 
@@ -38,7 +43,7 @@ describe("DeploymentRegistry", function () {
     }
   })
 
-  it("records each deployed reinitializer version with its calldata", function () {
+  it("records each deployed and target reinitializer version with its calldata", function () {
     const reinitializerInterface = new Interface([
       "function initializeV2(address)",
       "function initializeV3(address)",
@@ -58,7 +63,8 @@ describe("DeploymentRegistry", function () {
       const deployment = loadDeploymentRegistry(deploymentId)
       for (const [name, version] of Object.entries(versions)) {
         const contract = deployment.contracts[name as keyof typeof versions]
-        assert.equal(contract.reinitializer?.version, version)
+        assert.equal(contract.reinitializer?.onchainVersion, version)
+        assert.equal(contract.reinitializer?.targetVersion, version)
         assert.notEqual(contract.reinitializer?.callData, "0x")
       }
       assert.equal(
@@ -108,8 +114,8 @@ describe("DeploymentRegistry", function () {
   it("rejects non-Safe authority and incomplete contract registries", function () {
     const live = loadDeploymentRegistry("sonic-live")
     const oldSchema = structuredClone(live) as unknown as Record<string, unknown>
-    oldSchema.schemaVersion = 1
-    assert.throws(() => validateDeploymentRegistry(oldSchema), /schemaVersion must be 2/)
+    oldSchema.schemaVersion = 2
+    assert.throws(() => validateDeploymentRegistry(oldSchema), /schemaVersion must be 3/)
 
     const nonSafe = structuredClone(live) as unknown as Record<string, unknown>
     ;(nonSafe.authority as Record<string, unknown>).type = "eoa"
@@ -134,19 +140,79 @@ describe("DeploymentRegistry", function () {
     assert.throws(() => validateDeploymentRegistry(proxyTransition), /nextAddress is only supported for libraries/)
 
     const reinitializer = structuredClone(live)
-    reinitializer.contracts.shop.reinitializer = {version: 1, callData: "0x1234"}
-    assert.equal(validateDeploymentRegistry(reinitializer).contracts.shop.reinitializer?.version, 1)
+    reinitializer.contracts.shop.reinitializer = {onchainVersion: 0, targetVersion: 1, callData: "0x1234"}
+    assert.equal(validateDeploymentRegistry(reinitializer).contracts.shop.reinitializer?.targetVersion, 1)
 
     const invalidCalldata = structuredClone(live)
-    invalidCalldata.contracts.shop.reinitializer = {version: 3, callData: "initialize()"}
+    invalidCalldata.contracts.shop.reinitializer = {
+      onchainVersion: 2,
+      targetVersion: 3,
+      callData: "initialize()",
+    }
     assert.throws(() => validateDeploymentRegistry(invalidCalldata), /callData must be non-empty hex calldata/)
 
     const zeroVersion = structuredClone(live)
-    zeroVersion.contracts.shop.reinitializer = {version: 0, callData: "0x1234"}
-    assert.throws(() => validateDeploymentRegistry(zeroVersion), /version must be greater than zero/)
+    zeroVersion.contracts.shop.reinitializer = {onchainVersion: 0, targetVersion: 0, callData: "0x1234"}
+    assert.throws(() => validateDeploymentRegistry(zeroVersion), /targetVersion must be greater than zero/)
 
     const beaconCalldata = structuredClone(live)
-    beaconCalldata.contracts.bank.reinitializer = {version: 2, callData: "0x1234"}
+    beaconCalldata.contracts.bank.reinitializer = {onchainVersion: 1, targetVersion: 2, callData: "0x1234"}
     assert.throws(() => validateDeploymentRegistry(beaconCalldata), /only supported for UUPS contracts/)
+  })
+
+  it("refreshes on-chain reinitializer versions without changing target calldata", async function () {
+    const deploymentsRoot = mkdtempSync(join(tmpdir(), "estfor-deployments-"))
+    const chainRoot = join(deploymentsRoot, "146")
+    mkdirSync(chainRoot)
+    copyFileSync(resolve(__dirname, "../deployments/146/sonic-live.json"), join(chainRoot, "sonic-live.json"))
+    try {
+      const deployment = loadDeploymentRegistry("sonic-live", deploymentsRoot)
+      const versions = new Map(
+        CONTRACT_NAMES.flatMap((name) => {
+          const contract = deployment.contracts[name]
+          return contract.reinitializer === null
+            ? []
+            : ([[contract.address.toLowerCase(), contract.reinitializer.onchainVersion]] as const)
+        })
+      )
+      versions.set(deployment.contracts.clans.address.toLowerCase(), 5)
+      const observationHash = `0x${"1".repeat(64)}`
+      const provider = {
+        getNetwork: async () => ({chainId: 146n}),
+        getBlock: async (block: number | "latest") =>
+          block === 0
+            ? {number: 0, hash: deployment.networkFingerprint.genesisHash}
+            : {number: 2_000_000, hash: observationHash},
+        getStorage: async (address: string) => zeroPadValue(toBeHex(versions.get(address.toLowerCase())!), 32),
+      } as unknown as JsonRpcProvider
+
+      const refreshed = await refreshDeploymentRegistry(provider, "sonic-live", undefined, deploymentsRoot)
+
+      assert.deepEqual(refreshed.updatedContracts, ["clans"])
+      assert.deepEqual(refreshed.observationBlock, {number: 2_000_000, hash: observationHash})
+      assert.equal(refreshed.deployment.contracts.clans.reinitializer?.onchainVersion, 5)
+      assert.equal(refreshed.deployment.contracts.clans.reinitializer?.targetVersion, 2)
+      assert.match(refreshed.deployment.contracts.clans.reinitializer!.callData, /^0x29b6eca9/)
+      assert.equal(
+        JSON.parse(readFileSync(join(chainRoot, "sonic-live.json"), "utf8")).contracts.clans.reinitializer
+          .onchainVersion,
+        5
+      )
+      assert.deepEqual(
+        (await refreshDeploymentRegistry(provider, "sonic-live", undefined, deploymentsRoot)).updatedContracts,
+        []
+      )
+
+      versions.set(deployment.contracts.clans.address.toLowerCase(), 2)
+      const historical = await observeDeploymentRegistry(provider, "sonic-live", 1_900_000, deploymentsRoot)
+      assert.equal(historical.deployment.contracts.clans.reinitializer?.onchainVersion, 2)
+      assert.equal(
+        JSON.parse(readFileSync(join(chainRoot, "sonic-live.json"), "utf8")).contracts.clans.reinitializer
+          .onchainVersion,
+        5
+      )
+    } finally {
+      rmSync(deploymentsRoot, {recursive: true, force: true})
+    }
   })
 })

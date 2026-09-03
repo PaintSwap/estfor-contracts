@@ -12,7 +12,7 @@ pnpm deployment:sync -- --deployment sonic-live
 
 The command should be a desired-state reconciler, not another collection of imperative release scripts.
 
-- Its default behavior is read-only: select one tracked deployment, inspect chain state, calculate a deterministic plan, and simulate the plan.
+- Its default behavior does not write to the chain: select one tracked deployment, refresh observed registry state, calculate a deterministic plan, and simulate the plan.
 - Applying a plan requires an explicit apply option and the hash of the previously reviewed plan.
 - Deployment identity and stable addresses live in tracked files keyed by deployment ID. Chain ID is validated but is not the deployment identity because Sonic already has live and beta deployments on chain 146.
 - Current proxy implementations are discovered from EIP-1967 slots. Implementation code is compared with linked Foundry runtime artifacts by bytecode segment. OpenZeppelin validation remains the upgrade-safety check; it is not an implementation identity check.
@@ -162,7 +162,7 @@ The registry schema stays small:
 
 ```json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "deploymentId": "sonic-live",
   "chainId": 146,
   "deploymentBlock": 123456,
@@ -179,7 +179,8 @@ The registry schema stays small:
       "kind": "uups",
       "address": "0x...",
       "reinitializer": {
-        "version": 2,
+        "onchainVersion": 2,
+        "targetVersion": 2,
         "callData": "0x..."
       }
     },
@@ -206,9 +207,10 @@ Design rules:
 - Planning derives a changed library's candidate address from the reviewed deployer nonce, deploys it before linked
   implementations, and treats it as the desired link target. After rollout, promote the verified candidate to `address` in
   a separate registry-only change.
-- An optional `reinitializer` object stores a reviewed UUPS reinitializer version and calldata as one value. During an
-  implementation upgrade, planning reads the proxy's OpenZeppelin initialized-version storage and includes the calldata
-  only when the stored version is lower. A higher stored version blocks stale registry intent.
+- An optional `reinitializer` object stores the observed `onchainVersion` separately from the reviewed `targetVersion` and
+  `callData`. Before planning, reconciliation reads the proxy's OpenZeppelin initialized-version storage and refreshes
+  `onchainVersion` in the tracked registry. An implementation upgrade includes the calldata only when the observed version
+  is lower than the target. Equal or higher observed versions omit the calldata without blocking the plan.
 - `deploymentBlock` bounds deployment-specific verification and audit queries.
 - A genesis hash or another stable network fingerprint protects against an RPC that reports the expected chain ID for a different network.
 - `profile` is only a pointer in the first version. It maps current `live` and `beta` choices without designing future rule inheritance.
@@ -489,7 +491,7 @@ Acceptance:
 - both Sonic deployments produce separate reports; and
 - implementation mismatches are classified, never collapsed into a false upgrade decision.
 
-`pnpm deployment:sync -- --deployment sonic-live` now pins an observation block and writes a hashable JSON plan plus a Markdown report under `runs/<deployment-id>/`. It inventories every stable and external address, discovers UUPS and beacon implementations, validates UUPS UUIDs and Safe ownership, fingerprints Foundry artifacts and build info, classifies segmented runtime differences, and treats the legacy OpenZeppelin manifest as a warning-only cross-check. Configuration domains remain explicitly unmanaged until their later phases. The command is read-only and exits with status 2 when the report contains alignment errors, including the known `DailyRewardsScheduler` owner drift.
+`pnpm deployment:sync -- --deployment sonic-live` now pins an observation block, refreshes tracked on-chain reinitializer versions, and writes a hashable JSON plan plus a Markdown report under `runs/<deployment-id>/`. It inventories every stable and external address, discovers UUPS and beacon implementations, validates UUPS UUIDs and Safe ownership, fingerprints Foundry artifacts and build info, classifies segmented runtime differences, and treats the legacy OpenZeppelin manifest as a warning-only cross-check. Configuration domains remain explicitly unmanaged until their later phases. The command does not write to the chain and exits with status 2 when the report contains alignment errors, including the known `DailyRewardsScheduler` owner drift.
 
 ### Phase 3: Shop read-only tracer bullet
 
@@ -580,7 +582,7 @@ Acceptance:
 - an unknown comparison or failed storage check blocks apply; and
 - the second plan after execution contains no upgrade operation.
 
-Deployment infrastructure is now a managed domain in plan schema 3. The artifact loader discovers both normal Solidity
+Deployment infrastructure is now a managed domain in plan schema 4. The artifact loader discovers both normal Solidity
 link references and this repository's Foundry-prelinked library addresses. One dependency graph therefore drives runtime
 classification, linked creation bytecode, candidate planning, fork simulation, and apply. Exact matches and metadata-only
 drift do not create candidates. Executable, library, or declared immutable drift creates candidates for UUPS proxies and
@@ -602,8 +604,8 @@ transaction. Candidate creation intents are journaled before broadcast, receipts
 successful candidates are reused after partial runs. All candidate creation goes through the generic Foundry broadcast;
 libraries use their reviewed linked creation payload. Upgradeable
 implementations use the generic Foundry `Upgrades.prepareUpgrade` script, which validates again and deploys without calling
-the proxy. UUPS `upgradeToAndCall` includes optional registry-declared reinitializer calldata only when the recorded version
-has not run; beacon `upgradeTo` and UUPS upgrades always name the tracked Safe as caller. The pinned Anvil simulation deploys or reuses candidates, executes the exact Safe
+the proxy. UUPS `upgradeToAndCall` includes optional registry-declared reinitializer calldata only when the refreshed
+`onchainVersion` is below `targetVersion`; beacon `upgradeTo` and UUPS upgrades always name the tracked Safe as caller. The pinned Anvil simulation deploys or reuses candidates, executes the exact Safe
 operations, and then reruns implementation, ownership, shared wiring, and complete Shop postconditions. Apply writes
 Foundry logs and broadcast JSON under the reviewed run directory.
 
