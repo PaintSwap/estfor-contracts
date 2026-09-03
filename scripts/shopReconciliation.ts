@@ -332,6 +332,7 @@ export async function verifyShopPostconditions(
   plan: ShopPlan,
   onProgress?: (message: string) => void
 ): Promise<void> {
+  if (plan.readStatus === "deferred-for-upgrade") return
   const blockTag = Number(await provider.send("eth_blockNumber", []))
   const actual = await readRecords(provider, plan.target, blockTag, onProgress)
   const expected = plan.desired.filter(({price, unsellable}) => price !== "0" || unsellable)

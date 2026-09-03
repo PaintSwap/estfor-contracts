@@ -51,6 +51,14 @@ async function waitForAnvil(provider: JsonRpcProvider, child: ChildProcess): Pro
   throw new Error("Timed out waiting for the pinned Anvil fork")
 }
 
+async function waitForAnvilTransaction(provider: JsonRpcProvider, transactionHash: string) {
+  while (true) {
+    const receipt = await provider.getTransactionReceipt(transactionHash)
+    if (receipt) return receipt
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+}
+
 async function implementationAddress(
   provider: JsonRpcProvider,
   target: string,
@@ -96,7 +104,10 @@ export async function simulateDeploymentPlan(
   const child = spawn("anvil", anvilArgs, {stdio: ["ignore", "ignore", "pipe"]})
   let stderr = ""
   child.stderr?.on("data", (data) => (stderr += String(data)))
-  const provider = new JsonRpcProvider(`http://127.0.0.1:${port}`, plan.chainId, {staticNetwork: true})
+  const provider = new JsonRpcProvider(`http://127.0.0.1:${port}`, plan.chainId, {
+    staticNetwork: true,
+    cacheTimeout: -1,
+  })
   try {
     onProgress?.(`Starting pinned Anvil fork at block ${plan.observationBlock.number}`)
     await waitForAnvil(provider, child)
@@ -132,7 +143,7 @@ export async function simulateDeploymentPlan(
       const transactionHash = (await provider.send("eth_sendTransaction", [
         {from: candidate.deployer, data: creation.code, nonce: toBeHex(candidate.nonce)},
       ])) as string
-      const receipt = await provider.waitForTransaction(transactionHash)
+      const receipt = await waitForAnvilTransaction(provider, transactionHash)
       if (!receipt || receipt.status !== 1 || getAddress(receipt.contractAddress!) !== candidate.candidateAddress) {
         throw new Error(`Candidate simulation failed for ${candidate.contractName}`)
       }
@@ -152,7 +163,7 @@ export async function simulateDeploymentPlan(
       await provider.call(transaction)
       operation.estimatedGas = (await provider.estimateGas(transaction)).toString()
       const transactionHash = (await provider.send("eth_sendTransaction", [transaction])) as string
-      const receipt = await provider.waitForTransaction(transactionHash)
+      const receipt = await waitForAnvilTransaction(provider, transactionHash)
       if (!receipt || receipt.status !== 1) throw new Error(`Simulation transaction failed for ${operation.id}`)
       calls.push({operationId: operation.id, estimatedGas: operation.estimatedGas, transactionHash})
     }
@@ -188,9 +199,13 @@ export async function simulateDeploymentPlan(
     const wiringFailures = await verifyDeploymentWiring(provider, deployment)
     if (wiringFailures.length !== 0) throw new Error(`Wiring postcondition failed: ${wiringFailures.join("; ")}`)
     postconditionsVerified += 6
-    onProgress?.("Verifying shop postconditions (64 RPC pages)")
-    await verifyShopPostconditions(provider, plan.shop, onProgress)
-    postconditionsVerified += plan.shop.desired.length
+    if (plan.shop.readStatus === "available") {
+      onProgress?.("Verifying shop postconditions (64 RPC pages)")
+      await verifyShopPostconditions(provider, plan.shop, onProgress)
+      postconditionsVerified += plan.shop.desired.length
+    } else {
+      onProgress?.("Shop postconditions remain deferred until the getter upgrade executes")
+    }
     onProgress?.(`Simulation verified ${postconditionsVerified} postconditions`)
     return {
       status: "passed",

@@ -12,6 +12,7 @@ import type {ShopRecord} from "./shopReconciliation"
 import {
   SHOP_RECONCILIATION_ABI,
   buildShopPlan,
+  deferShopPlanForUpgrade,
   diffShop,
   hasShopStateGetter,
   verifyShopPostconditions,
@@ -100,6 +101,23 @@ describe("Shop reconciliation", function () {
   it("detects getter support from deployed implementation code", function () {
     assert.equal(hasShopStateGetter("0x6000f53eceb26000"), true)
     assert.equal(hasShopStateGetter("0x6000123456786000"), false)
+  })
+
+  it("does not read postconditions while Shop reconciliation is deferred for its getter upgrade", async function () {
+    let rpcCalls = 0
+    const unexpectedProvider = {
+      async send() {
+        rpcCalls++
+        throw new Error("deferred Shop verification made an RPC request")
+      },
+      async call() {
+        rpcCalls++
+        throw new Error("deferred Shop verification made an RPC request")
+      },
+    } as unknown as JsonRpcProvider
+
+    await verifyShopPostconditions(unexpectedProvider, deferShopPlanForUpgrade(deployment))
+    assert.equal(rpcCalls, 0)
   })
 
   it("classifies missing, changed, stale, and unchanged records exactly", function () {
