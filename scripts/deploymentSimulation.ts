@@ -1,6 +1,6 @@
 import {ChildProcess, spawn} from "child_process"
 import {createServer} from "net"
-import {Interface, JsonRpcProvider, getAddress, isError, toBeHex} from "ethers"
+import {Interface, JsonRpcProvider, getAddress, toBeHex} from "ethers"
 import {prepareCandidateArtifacts} from "./deploymentArtifacts"
 import type {DeploymentPlan} from "./deploymentInventory"
 import type {DeploymentRegistry} from "./deploymentRegistry"
@@ -18,6 +18,7 @@ const SONIC_CHAIN_ID = 146
 const SONIC_CODE_SIZE_LIMIT = 48 * 1024
 const SIMULATION_BALANCE = 10n ** 30n
 const SIMULATION_TRANSACTION_TIMEOUT_MS = 60_000
+const SIMULATION_RECEIPT_POLL_MS = 100
 
 export interface DeploymentSimulationResult {
   status: "passed" | "no-op"
@@ -53,17 +54,17 @@ async function waitForAnvil(provider: JsonRpcProvider, child: ChildProcess): Pro
 }
 
 export async function waitForAnvilTransaction(
-  provider: Pick<JsonRpcProvider, "waitForTransaction">,
+  provider: Pick<JsonRpcProvider, "getTransactionReceipt">,
   transactionHash: string,
   timeout = SIMULATION_TRANSACTION_TIMEOUT_MS
 ) {
-  try {
-    const receipt = await provider.waitForTransaction(transactionHash, 1, timeout)
-    if (!receipt) throw new Error(`Timed out waiting for simulated transaction ${transactionHash}`)
-    return receipt
-  } catch (error) {
-    if (isError(error, "TIMEOUT")) throw new Error(`Timed out waiting for simulated transaction ${transactionHash}`)
-    throw error
+  const deadline = Date.now() + timeout
+  while (true) {
+    const receipt = await provider.getTransactionReceipt(transactionHash)
+    if (receipt) return receipt
+    const remaining = deadline - Date.now()
+    if (remaining <= 0) throw new Error(`Timed out waiting for simulated transaction ${transactionHash}`)
+    await new Promise((resolve) => setTimeout(resolve, Math.min(SIMULATION_RECEIPT_POLL_MS, remaining)))
   }
 }
 
