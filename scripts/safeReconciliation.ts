@@ -8,6 +8,7 @@ import {
 } from "@safe-global/types-kit"
 import {JsonRpcProvider, Wallet, getAddress} from "ethers"
 import {readFileSync, renameSync, writeFileSync} from "fs"
+import {isDeepStrictEqual} from "util"
 import {DEFAULT_SAFE_BATCH_LIMITS} from "./reconciliation"
 import type {ReconciliationOperation} from "./reconciliation"
 
@@ -87,7 +88,7 @@ interface SafeApi {
   }): Promise<void>
 }
 
-interface SafeProtocol {
+export interface SafeProtocol {
   createTransaction(parameters: Parameters<Safe["createTransaction"]>[0]): ReturnType<Safe["createTransaction"]>
   getTransactionHash(transaction: Parameters<Safe["getTransactionHash"]>[0]): Promise<string>
   signHash(hash: string): ReturnType<Safe["signHash"]>
@@ -224,6 +225,39 @@ export function writeSafeJournal(path: string, journal: SafeProposalJournal): vo
   renameSync(temporaryPath, path)
 }
 
+export async function assertSafeJournalMatchesBatch(
+  protocol: SafeProtocol,
+  journal: SafeProposalJournal,
+  expected: {deploymentId: string; planHash: string; safeAddress: string; batch: SafeBatch}
+): Promise<void> {
+  const {deploymentId, planHash, safeAddress, batch} = expected
+  if (
+    journal.deploymentId !== deploymentId ||
+    journal.planHash !== planHash ||
+    getAddress(journal.safeAddress) !== getAddress(safeAddress) ||
+    journal.batchIndex !== batch.index ||
+    !isDeepStrictEqual(journal.operationIds, batch.operationIds) ||
+    !isDeepStrictEqual(journal.transactions, batch.transactions)
+  ) {
+    throw new Error(`Safe proposal journal does not match reviewed batch ${batch.index + 1}`)
+  }
+  await assertSafeJournalSelfConsistent(protocol, journal)
+}
+
+export async function assertSafeJournalSelfConsistent(
+  protocol: SafeProtocol,
+  journal: SafeProposalJournal
+): Promise<void> {
+  const safeTransaction = await protocol.createTransaction({
+    transactions: journal.transactions,
+    options: {nonce: journal.nonce},
+  })
+  const safeTxHash = await protocol.getTransactionHash(safeTransaction)
+  if (safeTxHash !== journal.safeTxHash || !isDeepStrictEqual(safeTransaction.data, journal.safeTransactionData)) {
+    throw new Error(`Safe proposal journal hash does not match its recorded transactions`)
+  }
+}
+
 export async function createSafeClients(
   chainId: number,
   rpcUrl: string,
@@ -336,6 +370,9 @@ export async function refreshSafeJournal(
       throw new Error(`Executed Safe transaction ${journal.safeTxHash} cannot be verified without an RPC receipt`)
     const receipt = await provider.getTransactionReceipt(transaction.transactionHash)
     if (!receipt) throw new Error(`Execution receipt not found for ${transaction.transactionHash}`)
+    if (transaction.isSuccessful && receipt.status !== 1) {
+      throw new Error(`Successful Safe transaction ${journal.safeTxHash} has a reverted RPC receipt`)
+    }
     journal.executionReceipt = {
       blockNumber: receipt.blockNumber,
       blockHash: receipt.blockHash,
@@ -348,4 +385,14 @@ export async function refreshSafeJournal(
 
 export function isSafeTransactionNotFound(error: unknown): boolean {
   return error instanceof Error && /(?:not found|\b404\b)/i.test(error.message)
+}
+
+export function allSafeOperationsExecuted(
+  journals: readonly Pick<SafeProposalJournal, "operationIds" | "status">[],
+  operationIds: ReadonlySet<string>
+): boolean {
+  const pending = new Set(journals.filter(({status}) => status === "pending").flatMap(({operationIds: ids}) => ids))
+  if ([...operationIds].some((id) => pending.has(id))) return false
+  const executed = new Set(journals.filter(({status}) => status === "executed").flatMap(({operationIds: ids}) => ids))
+  return [...operationIds].every((id) => executed.has(id))
 }

@@ -1,7 +1,7 @@
 import {ChildProcess, spawn} from "child_process"
 import {createServer} from "net"
-import {Interface, JsonRpcProvider, getAddress, toBeHex} from "ethers"
-import {loadFoundryPreparedCreationCode} from "./deploymentArtifacts"
+import {Interface, JsonRpcProvider, getAddress, isError, toBeHex} from "ethers"
+import {prepareCandidateArtifacts} from "./deploymentArtifacts"
 import type {DeploymentPlan} from "./deploymentInventory"
 import type {DeploymentRegistry} from "./deploymentRegistry"
 import {EIP1967_IMPLEMENTATION_SLOT, PLAYERS_IMPLEMENTATIONS, addressFromStorage} from "./deploymentSlots"
@@ -17,6 +17,7 @@ const readInterface = new Interface([
 const SONIC_CHAIN_ID = 146
 const SONIC_CODE_SIZE_LIMIT = 48 * 1024
 const SIMULATION_BALANCE = 10n ** 30n
+const SIMULATION_TRANSACTION_TIMEOUT_MS = 60_000
 
 export interface DeploymentSimulationResult {
   status: "passed" | "no-op"
@@ -51,11 +52,18 @@ async function waitForAnvil(provider: JsonRpcProvider, child: ChildProcess): Pro
   throw new Error("Timed out waiting for the pinned Anvil fork")
 }
 
-async function waitForAnvilTransaction(provider: JsonRpcProvider, transactionHash: string) {
-  while (true) {
-    const receipt = await provider.getTransactionReceipt(transactionHash)
-    if (receipt) return receipt
-    await new Promise((resolve) => setTimeout(resolve, 50))
+export async function waitForAnvilTransaction(
+  provider: Pick<JsonRpcProvider, "waitForTransaction">,
+  transactionHash: string,
+  timeout = SIMULATION_TRANSACTION_TIMEOUT_MS
+) {
+  try {
+    const receipt = await provider.waitForTransaction(transactionHash, 1, timeout)
+    if (!receipt) throw new Error(`Timed out waiting for simulated transaction ${transactionHash}`)
+    return receipt
+  } catch (error) {
+    if (isError(error, "TIMEOUT")) throw new Error(`Timed out waiting for simulated transaction ${transactionHash}`)
+    throw error
   }
 }
 
@@ -117,41 +125,43 @@ export async function simulateDeploymentPlan(
       throw new Error(`Anvil fork block hash does not match reviewed observation block ${plan.observationBlock.hash}`)
     }
 
-    const desiredDeployment = withCandidateLibraries(deployment, plan.upgrades.candidates)
     const candidateDeployments: DeploymentSimulationResult["candidateDeployments"] = []
-    for (const [index, candidate] of plan.upgrades.candidates.entries()) {
-      onProgress?.(`Simulating candidate ${candidate.contractName} (${index + 1}/${plan.upgrades.candidates.length})`)
-      const existingCode = await provider.getCode(candidate.candidateAddress)
-      if (existingCode !== "0x") {
+    if (plan.upgrades.candidates.length !== 0) {
+      const desiredDeployment = withCandidateLibraries(deployment, plan.upgrades.candidates)
+      const artifacts = prepareCandidateArtifacts(
+        plan.upgrades.candidates.map(({contractName}) => contractName),
+        desiredDeployment,
+        onProgress
+      )
+      for (const [index, candidate] of plan.upgrades.candidates.entries()) {
+        onProgress?.(`Simulating candidate ${candidate.contractName} (${index + 1}/${plan.upgrades.candidates.length})`)
+        const existingCode = await provider.getCode(candidate.candidateAddress)
+        if (existingCode !== "0x") {
+          candidateDeployments.push({
+            contractName: candidate.contractName,
+            address: candidate.candidateAddress,
+            transactionHash: null,
+          })
+          continue
+        }
+        await provider.send("anvil_impersonateAccount", [candidate.deployer])
+        await provider.send("anvil_setBalance", [candidate.deployer, toBeHex(SIMULATION_BALANCE)])
+        const creation = artifacts.loadCreationCode(candidate.contractName, candidate.constructorData ?? "0x")
+        if (creation.codeHash !== candidate.creationCodeHash)
+          throw new Error(`Creation code changed for ${candidate.contractName}`)
+        const transactionHash = (await provider.send("eth_sendTransaction", [
+          {from: candidate.deployer, data: creation.code, nonce: toBeHex(candidate.nonce)},
+        ])) as string
+        const receipt = await waitForAnvilTransaction(provider, transactionHash)
+        if (!receipt || receipt.status !== 1 || getAddress(receipt.contractAddress!) !== candidate.candidateAddress) {
+          throw new Error(`Candidate simulation failed for ${candidate.contractName}`)
+        }
         candidateDeployments.push({
           contractName: candidate.contractName,
           address: candidate.candidateAddress,
-          transactionHash: null,
+          transactionHash,
         })
-        continue
       }
-      await provider.send("anvil_impersonateAccount", [candidate.deployer])
-      await provider.send("anvil_setBalance", [candidate.deployer, toBeHex(SIMULATION_BALANCE)])
-      const creation = loadFoundryPreparedCreationCode(
-        candidate.contractName,
-        desiredDeployment,
-        candidate.constructorData ?? "0x",
-        onProgress
-      )
-      if (creation.codeHash !== candidate.creationCodeHash)
-        throw new Error(`Creation code changed for ${candidate.contractName}`)
-      const transactionHash = (await provider.send("eth_sendTransaction", [
-        {from: candidate.deployer, data: creation.code, nonce: toBeHex(candidate.nonce)},
-      ])) as string
-      const receipt = await waitForAnvilTransaction(provider, transactionHash)
-      if (!receipt || receipt.status !== 1 || getAddress(receipt.contractAddress!) !== candidate.candidateAddress) {
-        throw new Error(`Candidate simulation failed for ${candidate.contractName}`)
-      }
-      candidateDeployments.push({
-        contractName: candidate.contractName,
-        address: candidate.candidateAddress,
-        transactionHash,
-      })
     }
 
     const calls: DeploymentSimulationResult["calls"] = []

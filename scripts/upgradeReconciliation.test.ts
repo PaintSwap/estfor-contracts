@@ -1,9 +1,12 @@
 import assert from "node:assert/strict"
+import {mkdtempSync, readFileSync, rmSync, writeFileSync} from "fs"
+import {tmpdir} from "os"
+import {join} from "path"
 import {describe, it} from "node:test"
-import {AbiCoder, Interface, JsonRpcProvider, getAddress, getCreateAddress} from "ethers"
-import {loadImplementationCreationCode} from "./deploymentArtifacts"
+import {AbiCoder, Interface, JsonRpcProvider, Wallet, getAddress, getCreateAddress} from "ethers"
+import {loadArtifactFingerprint, loadImplementationCreationCode, prepareCandidateArtifacts} from "./deploymentArtifacts"
 import {loadDeploymentRegistry} from "./deploymentRegistry"
-import {buildUpgradePlan} from "./upgradeReconciliation"
+import {buildUpgradePlan, deployUpgradeCandidates, readCandidateJournal} from "./upgradeReconciliation"
 
 describe("implementation upgrade reconciliation", function () {
   const deployment = loadDeploymentRegistry("sonic-live")
@@ -66,8 +69,7 @@ describe("implementation upgrade reconciliation", function () {
     assert.ok(!creation.code.includes("__$"))
   })
 
-  it("plans changed libraries before implementations that link them", async function () {
-    const desiredLibrary = getAddress(getCreateAddress({from: deployer, nonce: 7}))
+  it("allocates contiguous nonces across libraries, Players implementations, and proxy upgrades", async function () {
     const plan = await buildUpgradePlan(
       provider,
       deployment,
@@ -87,6 +89,7 @@ describe("implementation upgrade reconciliation", function () {
           implementationAddress: deployment.contracts.playersImplRewards.address,
           classification: "library-drift",
         },
+        shop,
       ],
       {deployerAddress: deployer, validate: validation}
     )
@@ -97,6 +100,7 @@ describe("implementation upgrade reconciliation", function () {
       [
         ["playersLibrary", 7],
         ["playersImplRewards", 8],
+        ["shop", 9],
       ]
     )
     assert.equal(plan.candidates[0].validation.status, "not-applicable")
@@ -229,5 +233,151 @@ describe("implementation upgrade reconciliation", function () {
       getAddress(AbiCoder.defaultAbiCoder().decode(["address"], plan.candidates[0].constructorData)[0]),
       getAddress(endpoint)
     )
+  })
+
+  it("recovers and verifies an interrupted candidate deployment before confirming it", async function () {
+    const directory = mkdtempSync(join(tmpdir(), "candidate-recovery-"))
+    const wallet = new Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")
+    const nonce = 7
+    const libraryDrift = {
+      name: "itemNFTLibrary" as const,
+      kind: "library" as const,
+      address: deployment.contracts.itemNFTLibrary.address,
+      implementationAddress: deployment.contracts.itemNFTLibrary.address,
+      classification: "executable-drift" as const,
+    }
+    const originalPlan = await buildUpgradePlan(
+      {getTransactionCount: async () => nonce, getCode: async () => "0x"} as unknown as JsonRpcProvider,
+      deployment,
+      99,
+      [libraryDrift],
+      {deployerAddress: wallet.address}
+    )
+    assert.deepEqual(originalPlan.blockedReasons, [])
+    const candidate = originalPlan.candidates[0]
+    const candidateAddress = candidate.candidateAddress
+    const candidateDeployment = structuredClone(deployment)
+    candidateDeployment.contracts.itemNFTLibrary.nextAddress = candidateAddress
+    const artifacts = prepareCandidateArtifacts(["itemNFTLibrary"], candidateDeployment)
+    const creation = artifacts.loadCreationCode("itemNFTLibrary")
+    assert.equal(creation.codeHash, candidate.creationCodeHash)
+    const transactionHash = `0x${"ab".repeat(32)}`
+    const transaction = {hash: transactionHash, from: wallet.address, nonce, data: creation.code}
+    const receipt = {
+      blockNumber: 100,
+      blockHash: `0x${"cd".repeat(32)}`,
+      status: 1,
+      gasUsed: 123n,
+      contractAddress: candidateAddress,
+    }
+    let returnedTransaction: typeof transaction | null = transaction
+    let returnedReceipt: typeof receipt | null = receipt
+    let historicalNonceReads = 0
+    const journalPath = join(directory, "candidate-itemNFTLibrary.json")
+    const interruptedJournal = {
+      schemaVersion: 2,
+      deploymentId: deployment.deploymentId,
+      planHash: "0xplan",
+      contractName: candidate.contractName,
+      deployer: wallet.address,
+      nonce,
+      candidateAddress,
+      creationCodeHash: creation.codeHash,
+      status: "prepared",
+      broadcastStartBlock: 99,
+      transactionHash: null,
+      receipt: null,
+    }
+    const candidateArtifact = loadArtifactFingerprint("itemNFTLibrary")
+    let candidateRuntime = candidateArtifact.runtime
+    for (const {start, length} of candidateArtifact.selfAddressReferences) {
+      assert.equal(length, 20)
+      const offset = 2 + start * 2
+      candidateRuntime = `${candidateRuntime.slice(0, offset)}${candidateAddress.slice(2)}${candidateRuntime.slice(
+        offset + length * 2
+      )}`
+    }
+    const recoveryProvider = {
+      async getCode() {
+        return candidateRuntime
+      },
+      async getBlockNumber() {
+        return 10_000
+      },
+      async getTransactionCount(_address: string, blockTag: number | string) {
+        if (typeof blockTag !== "number") throw new Error(`Unexpected nonce block tag ${blockTag}`)
+        historicalNonceReads++
+        return blockTag >= 100 ? nonce + 1 : nonce
+      },
+      async getBlock(blockNumber: number) {
+        return {prefetchedTransactions: blockNumber === 100 ? [transaction] : []}
+      },
+      async getTransaction() {
+        return returnedTransaction
+      },
+      async getTransactionReceipt() {
+        return returnedReceipt
+      },
+    } as unknown as JsonRpcProvider
+
+    try {
+      const remainderPlan = await buildUpgradePlan(recoveryProvider, deployment, 100, [libraryDrift], {
+        deployerAddress: wallet.address,
+        reusableCandidates: {
+          itemNFTLibrary: {candidateAddress: candidate.candidateAddress, nonce: candidate.nonce},
+        },
+      })
+      assert.deepEqual(remainderPlan.blockedReasons, [])
+      assert.equal(remainderPlan.candidates[0].status, "reused")
+      assert.equal(remainderPlan.candidates[0].nonce, nonce)
+
+      writeFileSync(journalPath, JSON.stringify(interruptedJournal))
+      await deployUpgradeCandidates(
+        recoveryProvider,
+        "unused",
+        wallet,
+        deployment,
+        "0xremainder",
+        remainderPlan.candidates,
+        directory
+      )
+      const recovered = readCandidateJournal(journalPath)
+      assert.equal(recovered.status, "confirmed")
+      assert.equal(recovered.transactionHash, transactionHash)
+      assert.equal(recovered.receipt?.blockNumber, 100)
+      assert.ok(historicalNonceReads < 20)
+
+      returnedTransaction = {...transaction, data: "0x00"}
+      await assert.rejects(
+        deployUpgradeCandidates(recoveryProvider, "unused", wallet, deployment, "0xplan", [candidate], directory),
+        /does not match the reviewed creation intent/
+      )
+      returnedTransaction = transaction
+      returnedReceipt = null
+      await assert.rejects(
+        deployUpgradeCandidates(recoveryProvider, "unused", wallet, deployment, "0xplan", [candidate], directory),
+        /receipt is unavailable/
+      )
+      returnedReceipt = receipt
+
+      returnedReceipt = {...receipt, status: 0}
+      await assert.rejects(
+        deployUpgradeCandidates(recoveryProvider, "unused", wallet, deployment, "0xplan", [candidate], directory),
+        /deployment failed/
+      )
+      returnedReceipt = receipt
+
+      writeFileSync(
+        journalPath,
+        JSON.stringify({...interruptedJournal, schemaVersion: 1, status: "confirmed", broadcastStartBlock: undefined})
+      )
+      await assert.rejects(
+        deployUpgradeCandidates(recoveryProvider, "unused", wallet, deployment, "0xplan", [candidate], directory),
+        /deployment transaction cannot be recovered/
+      )
+      assert.equal(JSON.parse(readFileSync(journalPath, "utf8")).transactionHash, null)
+    } finally {
+      rmSync(directory, {recursive: true})
+    }
   })
 })

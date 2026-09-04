@@ -1,7 +1,8 @@
 import "dotenv/config"
 import {spawnSync} from "child_process"
-import {existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from "fs"
-import {dirname, resolve} from "path"
+import {existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync} from "fs"
+import {basename, dirname, resolve} from "path"
+import Safe from "@safe-global/protocol-kit"
 import {JsonRpcProvider, Wallet, getAddress} from "ethers"
 import {loadDeploymentRegistry, observeDeploymentRegistry, refreshDeploymentRegistry} from "./deploymentRegistry"
 import {
@@ -15,6 +16,9 @@ import {DEFAULT_SHOP_LIMITS} from "./shopReconciliation"
 import {simulateDeploymentPlan} from "./deploymentSimulation"
 import {
   DEFAULT_SAFE_BATCH_LIMITS,
+  allSafeOperationsExecuted,
+  assertSafeJournalMatchesBatch,
+  assertSafeJournalSelfConsistent,
   assertSafeProposalSender,
   buildSafeBatches,
   buildTransactionBuilderFile,
@@ -30,6 +34,10 @@ import type {DeploymentPlan, DeploymentPlanOptions} from "./deploymentInventory"
 import {deployUpgradeCandidates} from "./upgradeReconciliation"
 
 const syncStartedAt = Date.now()
+const repositoryRoot = resolve(__dirname, "..")
+const reviewPlanFilePattern = /^(plan|remainder-plan(?:-[0-9a-f]{8})?)\.json$/
+
+type ReviewPlanName = "plan" | "remainder-plan" | `remainder-plan-${string}`
 
 function logProgress(message: string): void {
   const elapsedSeconds = ((Date.now() - syncStartedAt) / 1000).toFixed(1)
@@ -112,6 +120,122 @@ async function simulate(
   logProgress(`Plan simulation finished with status ${plan.simulation.status}`)
 }
 
+function readDeploymentPlan(path: string, deploymentId: string, chainId: number): DeploymentPlan {
+  const value = JSON.parse(readFileSync(path, "utf8")) as Partial<DeploymentPlan>
+  if (value.schemaVersion !== 4 || !value.execution?.safeBatchLimits || !value.upgrades || !value.shop?.limits) {
+    throw new Error(`Unsupported or invalid deployment plan schema: ${path}`)
+  }
+  const plan = value as DeploymentPlan
+  const {planHash, ...withoutHash} = plan
+  if (hashPlan(withoutHash) !== planHash) throw new Error(`Deployment plan has an invalid plan hash: ${path}`)
+  if (plan.deploymentId !== deploymentId || plan.chainId !== chainId) {
+    throw new Error(`Deployment plan identity does not match ${deploymentId}: ${path}`)
+  }
+  return plan
+}
+
+function reviewPlanName(fileName: string): ReviewPlanName | null {
+  return (reviewPlanFilePattern.exec(fileName)?.[1] as ReviewPlanName | undefined) ?? null
+}
+
+function reviewedPlanName(path: string): ReviewPlanName {
+  const name = reviewPlanName(basename(path))
+  if (!name) throw new Error(`Unsupported reviewed plan filename: ${path}`)
+  return name
+}
+
+function remainderPlanName(plan: DeploymentPlan): ReviewPlanName {
+  return `remainder-plan-${plan.planHash.slice(2, 10)}`
+}
+
+function safeBuilderPrefix(name: ReviewPlanName): string {
+  return name === "plan" ? "safe-transaction-builder" : `${name}-safe-transaction-builder`
+}
+
+function safeBatchesForPlan(plan: DeploymentPlan): ReturnType<typeof buildSafeBatches> {
+  if (plan.operations.length === 0 || plan.simulation?.status === "blocked") return []
+  return buildSafeBatches(plan.operations, plan.authority.address, {
+    maxOperations: plan.execution.safeBatchLimits.maxOperations,
+    maxGas: BigInt(plan.execution.safeBatchLimits.maxGas),
+  })
+}
+
+function writeImmutableFile(path: string, content: string): void {
+  if (existsSync(path)) {
+    if (readFileSync(path, "utf8") !== content) throw new Error(`Refusing to overwrite reviewed artifact: ${path}`)
+    return
+  }
+  const temporaryPath = `${path}.tmp`
+  writeFileSync(temporaryPath, content)
+  renameSync(temporaryPath, path)
+}
+
+function derivedReviewFiles(
+  outputRoot: string,
+  name: ReviewPlanName,
+  plan: DeploymentPlan,
+  batches: ReturnType<typeof buildSafeBatches>
+): Array<{path: string; content: string}> {
+  const builderPrefix = safeBuilderPrefix(name)
+  return [
+    {path: resolve(outputRoot, `${name}.md`), content: renderPlanMarkdown(plan)},
+    ...batches.map((batch) => ({
+      path: resolve(outputRoot, `${builderPrefix}-${batch.index + 1}.json`),
+      content: `${JSON.stringify(
+        buildTransactionBuilderFile(plan.deploymentId, plan.planHash, plan.chainId, plan.authority.address, batch),
+        null,
+        2
+      )}\n`,
+    })),
+  ]
+}
+
+function writePlanFiles(
+  outputRoot: string,
+  name: ReviewPlanName,
+  plan: DeploymentPlan,
+  batches: ReturnType<typeof buildSafeBatches>
+) {
+  mkdirSync(outputRoot, {recursive: true})
+  const jsonPath = resolve(outputRoot, `${name}.json`)
+  writeImmutableFile(jsonPath, `${JSON.stringify(plan, null, 2)}\n`)
+  const reviewFiles = derivedReviewFiles(outputRoot, name, plan, batches)
+  for (const file of reviewFiles) writeImmutableFile(file.path, file.content)
+  return {jsonPath, markdownPath: reviewFiles[0].path}
+}
+
+function assertDerivedReviewFiles(
+  outputRoot: string,
+  name: ReviewPlanName,
+  plan: DeploymentPlan,
+  batches: ReturnType<typeof buildSafeBatches>
+): void {
+  const reviewFiles = derivedReviewFiles(outputRoot, name, plan, batches)
+  for (const file of reviewFiles) {
+    if (!existsSync(file.path) || readFileSync(file.path, "utf8") !== file.content) {
+      throw new Error(`Reviewed artifact does not match plan: ${file.path}`)
+    }
+  }
+  const builderPrefix = safeBuilderPrefix(name)
+  const expectedBuilders = new Set(reviewFiles.slice(1).map(({path}) => basename(path)))
+  const extraBuilder = readdirSync(outputRoot).find(
+    (fileName) =>
+      fileName.startsWith(`${builderPrefix}-`) &&
+      /^\d+\.json$/.test(fileName.slice(builderPrefix.length + 1)) &&
+      !expectedBuilders.has(fileName)
+  )
+  if (extraBuilder) throw new Error(`Unexpected reviewed artifact for plan: ${resolve(outputRoot, extraBuilder)}`)
+}
+
+function readRunPlans(outputRoot: string, deploymentId: string, chainId: number): Map<string, DeploymentPlan> {
+  const plans = new Map<string, DeploymentPlan>()
+  for (const fileName of readdirSync(outputRoot).filter((entry) => reviewPlanName(entry) !== null)) {
+    const plan = readDeploymentPlan(resolve(outputRoot, fileName), deploymentId, chainId)
+    plans.set(plan.planHash, plan)
+  }
+  return plans
+}
+
 async function main() {
   const apply = process.argv.includes("--apply")
   const resumeRunId = option("--resume")
@@ -121,7 +245,7 @@ async function main() {
   const reviewedPlanPath = apply
     ? option("--plan")
     : resumeRunId
-    ? resolve(`runs/${deploymentId}/${resumeRunId}/plan.json`)
+    ? resolve(repositoryRoot, "runs", deploymentId, resumeRunId, "plan.json")
     : undefined
   if (apply && !reviewedPlanPath) throw new Error("--apply requires --plan <reviewed-plan.json>")
   if (!apply && process.argv.includes("--plan")) throw new Error("--plan is only valid with --apply")
@@ -134,25 +258,9 @@ async function main() {
   if (block !== undefined && reviewedPlanPath) throw new Error("--block cannot be combined with --apply or --resume")
 
   let deployment = loadDeploymentRegistry(deploymentId)
-  const reviewedPlanValue = reviewedPlanPath
-    ? (JSON.parse(readFileSync(reviewedPlanPath, "utf8")) as Partial<DeploymentPlan>)
+  const reviewedPlan = reviewedPlanPath
+    ? readDeploymentPlan(reviewedPlanPath, deploymentId, deployment.chainId)
     : undefined
-  if (
-    reviewedPlanValue &&
-    (reviewedPlanValue.schemaVersion !== 4 ||
-      !reviewedPlanValue.execution?.safeBatchLimits ||
-      !reviewedPlanValue.upgrades ||
-      !reviewedPlanValue.shop?.limits)
-  )
-    throw new Error(`Unsupported or invalid deployment plan schema: ${reviewedPlanPath}`)
-  const reviewedPlan = reviewedPlanValue as DeploymentPlan | undefined
-  if (reviewedPlan) {
-    const {planHash, ...withoutHash} = reviewedPlan
-    if (hashPlan(withoutHash) !== planHash)
-      throw new Error(`Reviewed plan file has an invalid plan hash: ${reviewedPlanPath}`)
-    if (reviewedPlan.deploymentId !== deploymentId || reviewedPlan.chainId !== deployment.chainId)
-      throw new Error("Reviewed plan deployment identity does not match --deployment")
-  }
   const proposerPrivateKey = process.env.PROPOSER_PRIVATE_KEY
   const proposerAddress = proposerPrivateKey ? getAddress(new Wallet(proposerPrivateKey).address) : undefined
   const reviewedDeployer = reviewedPlan?.upgrades.candidates[0]?.deployer
@@ -173,15 +281,11 @@ async function main() {
           maxAggregatePriceChange: BigInt(reviewedPlan.shop.limits.maxAggregatePriceChange),
           maxSafeOperations: reviewedPlan.execution.safeBatchLimits.maxOperations,
           maxSafeGas: BigInt(reviewedPlan.execution.safeBatchLimits.maxGas),
-          ...(reviewedPlan.pendingOperationIds?.length
-            ? {
-                reusableCandidates: Object.fromEntries(
-                  [...reviewedPlan.upgrades.candidates, ...(reviewedPlan.pendingCandidates ?? [])].map(
-                    ({contractName, candidateAddress}) => [contractName, candidateAddress]
-                  )
-                ),
-              }
-            : {}),
+          reusableCandidates: Object.fromEntries(
+            [...reviewedPlan.upgrades.candidates, ...(reviewedPlan.pendingCandidates ?? [])]
+              .filter(({status}) => status === "reused")
+              .map(({contractName, candidateAddress, nonce}) => [contractName, {candidateAddress, nonce}])
+          ),
         }
       : {
           allowRemovals: process.argv.includes("--allow-removals"),
@@ -222,7 +326,10 @@ async function main() {
     planBlock = requestedState.observationBlock.number
   }
   logProgress("Building contracts with Forge")
-  const build = spawnSync("forge", ["build", "--quiet"], {stdio: "inherit"})
+  const build = spawnSync("forge", ["build", "--quiet", "contracts"], {
+    cwd: repositoryRoot,
+    stdio: "inherit",
+  })
   if (build.error) throw build.error
   if (build.status !== 0) throw new Error(`forge build failed with status ${build.status}`)
   logProgress("Forge build completed")
@@ -236,46 +343,27 @@ async function main() {
   if (!simulation) throw new Error("Plan simulation did not produce a result")
   if (reviewedPlan && plan.planHash !== reviewedPlan.planHash)
     throw new Error(`Reviewed plan ${reviewedPlan.planHash} does not match current repository inputs ${plan.planHash}`)
-  const outputRoot = resolve(
-    reviewedPlanPath
-      ? dirname(reviewedPlanPath)
-      : option("--output") ??
-          `runs/${deploymentId}/${plan.observationBlock.number}-${plan.observationBlock.hash.slice(2, 10)}`
-  )
-  logProgress(`Writing plan artifacts to ${outputRoot}`)
-  mkdirSync(outputRoot, {recursive: true})
-  const jsonPath = resolve(outputRoot, "plan.json")
-  const markdownPath = resolve(outputRoot, "plan.md")
-  writeFileSync(jsonPath, `${JSON.stringify(plan, null, 2)}\n`)
-  writeFileSync(markdownPath, renderPlanMarkdown(plan))
-
-  const safeLimits = {
-    maxOperations: plan.execution.safeBatchLimits.maxOperations,
-    maxGas: BigInt(plan.execution.safeBatchLimits.maxGas),
-  }
-  const batches =
-    plan.operations.length === 0 || simulation.status === "blocked"
-      ? []
-      : buildSafeBatches(plan.operations, deployment.authority.address, safeLimits)
-  for (const batch of batches) {
-    writeFileSync(
-      resolve(outputRoot, `safe-transaction-builder-${batch.index + 1}.json`),
-      `${JSON.stringify(
-        buildTransactionBuilderFile(
-          deploymentId,
-          plan.planHash,
-          deployment.chainId,
-          deployment.authority.address,
-          batch
-        ),
-        null,
-        2
-      )}\n`
-    )
+  const requestedOutput = option("--output")
+  const outputRoot = reviewedPlanPath
+    ? resolve(dirname(reviewedPlanPath))
+    : requestedOutput
+    ? resolve(requestedOutput)
+    : resolve(
+        repositoryRoot,
+        "runs",
+        deploymentId,
+        `${plan.observationBlock.number}-${plan.observationBlock.hash.slice(2, 10)}`
+      )
+  const batches = safeBatchesForPlan(plan)
+  if (!reviewedPlan) {
+    logProgress(`Writing review artifacts to ${outputRoot}`)
+    const {jsonPath, markdownPath} = writePlanFiles(outputRoot, "plan", plan, batches)
+    console.log(`Wrote ${jsonPath}`)
+    console.log(`Wrote ${markdownPath}`)
+  } else {
+    assertDerivedReviewFiles(outputRoot, reviewedPlanName(reviewedPlanPath!), plan, batches)
   }
 
-  console.log(`Wrote ${jsonPath}`)
-  console.log(`Wrote ${markdownPath}`)
   console.log(
     `Plan ${plan.planHash}: ${plan.summary.errors} errors, ${plan.summary.warnings} warnings, ${plan.operations.length} operations, simulation ${simulation.status}`
   )
@@ -302,15 +390,44 @@ async function main() {
       return
     }
     const api = createSafeApi(deployment.chainId, process.env.SAFE_API_KEY!)
-    const relevantOperationIds = new Set([...plan.pendingOperationIds, ...plan.operations.map(({id}) => id)])
     const journals = readdirSync(outputRoot)
       .filter((name) => /^safe-proposal-.*\.json$/.test(name))
       .map((name) => ({path: resolve(outputRoot, name), journal: readSafeJournal(resolve(outputRoot, name))}))
-      .filter(({journal}) => journal.operationIds.some((id) => relevantOperationIds.has(id)))
+    const relevantOperationIds = new Set([
+      ...plan.pendingOperationIds,
+      ...plan.operations.map(({id}) => id),
+      ...journals.flatMap(({journal}) => journal.operationIds),
+    ])
+    const runPlans = readRunPlans(outputRoot, deploymentId, deployment.chainId)
+    const protocol = await Safe.init({provider: rpcUrl, safeAddress: getAddress(deployment.authority.address)})
     logProgress(`Refreshing ${journals.length} Safe proposal journal(s)`)
     const unjournaledOperationIds: string[] = []
     for (const entry of journals) {
       const {journal} = entry
+      const journalPlan = runPlans.get(journal.planHash)
+      if (journalPlan) {
+        const expectedBatch = safeBatchesForPlan(journalPlan).find(({index}) => index === journal.batchIndex)
+        if (!expectedBatch) throw new Error(`Reviewed Safe batch not found for proposal journal ${entry.path}`)
+        await assertSafeJournalMatchesBatch(protocol, journal, {
+          deploymentId,
+          planHash: journalPlan.planHash,
+          safeAddress: deployment.authority.address,
+          batch: expectedBatch,
+        })
+      } else {
+        const legacyName = /^safe-proposal-(?:([0-9a-f]{8})-)?(\d+)\.json$/.exec(basename(entry.path))
+        if (
+          !legacyName ||
+          (legacyName[1] !== undefined && legacyName[1] !== journal.planHash.slice(2, 10)) ||
+          Number(legacyName[2]) !== journal.batchIndex + 1 ||
+          journal.deploymentId !== deploymentId ||
+          getAddress(journal.safeAddress) !== getAddress(deployment.authority.address)
+        ) {
+          throw new Error(`Reviewed plan not found for Safe proposal journal ${entry.path}`)
+        }
+        await assertSafeJournalSelfConsistent(protocol, journal)
+        console.log(`Safe batch ${journal.batchIndex + 1}: using legacy self-contained journal evidence`)
+      }
       logProgress(`Refreshing Safe batch ${journal.batchIndex + 1}`)
       try {
         await refreshSafeJournal(api, journal, provider)
@@ -322,9 +439,11 @@ async function main() {
       writeSafeJournal(entry.path, journal)
       console.log(`Safe batch ${journal.batchIndex + 1}: ${journal.status} (${journal.safeTxHash})`)
     }
+    const journaledOperationIds = new Set(journals.flatMap(({journal}) => journal.operationIds))
     for (const batch of batches) {
-      if (!journals.some(({journal}) => JSON.stringify(journal.operationIds) === JSON.stringify(batch.operationIds))) {
-        unjournaledOperationIds.push(...batch.operationIds)
+      const missingOperationIds = batch.operationIds.filter((id) => !journaledOperationIds.has(id))
+      if (missingOperationIds.length !== 0) {
+        unjournaledOperationIds.push(...missingOperationIds)
         console.log(`Safe batch ${batch.index + 1}: unproposed (no journal)`)
       }
     }
@@ -332,9 +451,9 @@ async function main() {
       journals.filter(({journal}) => journal.status === "pending").flatMap(({journal}) => journal.operationIds)
     )
     const reusableCandidates = Object.fromEntries(
-      [...plan.upgrades.candidates, ...plan.pendingCandidates].map(({contractName, candidateAddress}) => [
+      [...plan.upgrades.candidates, ...plan.pendingCandidates].map(({contractName, candidateAddress, nonce}) => [
         contractName,
-        candidateAddress,
+        {candidateAddress, nonce},
       ])
     )
     logProgress("Rebuilding the plan from current chain state")
@@ -345,23 +464,27 @@ async function main() {
     })
     const remainderPlan = buildRemainderPlan(currentStatePlan, pendingOperationIds)
     await simulate(remainderPlan, rpcUrl, deployment)
-    writeFileSync(resolve(outputRoot, "remainder-plan.json"), `${JSON.stringify(remainderPlan, null, 2)}\n`)
-    writeFileSync(resolve(outputRoot, "remainder-plan.md"), renderPlanMarkdown(remainderPlan))
+    const remainderName = remainderPlanName(remainderPlan)
+    const remainderBatches = safeBatchesForPlan(remainderPlan)
+    const remainderPaths = writePlanFiles(outputRoot, remainderName, remainderPlan, remainderBatches)
+    console.log(`Wrote ${remainderPaths.jsonPath}`)
+    console.log(`Wrote ${remainderPaths.markdownPath}`)
     const remainingOperationIds = remainderPlan.operations.map(({id}) => id)
     const unproposedOperationIds = new Set([...unjournaledOperationIds, ...remainingOperationIds])
     console.log(
       `Resume result: ${pendingOperationIds.size} pending operations, ${unproposedOperationIds.size} unproposed remaining operations`
     )
-    const executedOperationIds = new Set(
-      journals.filter(({journal}) => journal.status === "executed").flatMap(({journal}) => journal.operationIds)
+    const allReviewedOperationsExecuted = allSafeOperationsExecuted(
+      journals.map(({journal}) => journal),
+      relevantOperationIds
     )
-    const allReviewedOperationsExecuted = [...relevantOperationIds].every((id) => executedOperationIds.has(id))
     if (allReviewedOperationsExecuted) {
-      writeFileSync(resolve(outputRoot, "final-plan.json"), `${JSON.stringify(remainderPlan, null, 2)}\n`)
       if (
+        remainderPlan.pendingOperationIds.length !== 0 ||
         remainderPlan.summary.errors !== 0 ||
         remainderPlan.operations.length !== 0 ||
-        remainderPlan.upgrades.candidates.length !== 0
+        remainderPlan.upgrades.candidates.length !== 0 ||
+        remainderPlan.pendingCandidates.length !== 0
       )
         throw new Error("Safe proposals executed, but final deployment verification is not aligned")
       console.log("Final verification passed; the managed deployment plan is empty")
@@ -399,13 +522,19 @@ async function main() {
   const reusableCandidates = Object.fromEntries(
     (
       await Promise.all(
-        plan.upgrades.candidates.map(async ({contractName, candidateAddress}) =>
-          (await provider.getCode(candidateAddress)) === "0x" ? null : ([contractName, candidateAddress] as const)
+        plan.upgrades.candidates.map(async ({contractName, candidateAddress, nonce}) =>
+          (await provider.getCode(candidateAddress)) === "0x"
+            ? null
+            : ([contractName, {candidateAddress, nonce}] as const)
         )
       )
     ).filter(
-      (candidate): candidate is readonly [(typeof plan.upgrades.candidates)[number]["contractName"], string] =>
-        candidate !== null
+      (
+        candidate
+      ): candidate is readonly [
+        (typeof plan.upgrades.candidates)[number]["contractName"],
+        {candidateAddress: string; nonce: number}
+      ] => candidate !== null
     )
   )
   logProgress("Rebuilding the plan to check for chain-state changes since review")
@@ -469,24 +598,14 @@ async function main() {
     let nonce = nextNonce
     if (existsSync(journalPath)) {
       const existing = readSafeJournal(journalPath)
-      if (
-        existing.planHash !== plan.planHash ||
-        existing.safeAddress !== plan.authority.address ||
-        JSON.stringify(existing.transactions) !== JSON.stringify(batch.transactions)
-      )
-        throw new Error(`Existing proposal journal does not match batch ${batch.index + 1}`)
       nonce = existing.nonce
       nextNonce = Math.max(nextNonce, nonce + 1)
-      const expectedSafeTransaction = await clients.protocol.createTransaction({
-        transactions: batch.transactions,
-        options: {nonce},
+      await assertSafeJournalMatchesBatch(clients.protocol, existing, {
+        deploymentId,
+        planHash: plan.planHash,
+        safeAddress: plan.authority.address,
+        batch,
       })
-      const expectedSafeTxHash = await clients.protocol.getTransactionHash(expectedSafeTransaction)
-      if (
-        expectedSafeTxHash !== existing.safeTxHash ||
-        JSON.stringify(expectedSafeTransaction.data) !== JSON.stringify(existing.safeTransactionData)
-      )
-        throw new Error(`Existing proposal journal hash does not match batch ${batch.index + 1}`)
       try {
         const refreshed = await refreshSafeJournal(clients.api, existing, provider)
         writeSafeJournal(journalPath, refreshed)

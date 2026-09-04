@@ -29,8 +29,7 @@ if [[ ${#build_ids[@]} -ne 1 ]]; then
   exit 1
 fi
 
-mkdir -p .deployments
-validation_dir=$(mktemp -d .deployments/upgrade-validation.XXXXXX)
+validation_dir=$(mktemp -d "${TMPDIR:-/tmp}/estfor-upgrade-validation.XXXXXX")
 trap 'rm -rf "$validation_dir"' EXIT
 
 build_info="$out_dir/build-info/${build_ids[0]}.json"
@@ -38,7 +37,7 @@ if [[ ! -f "$build_info" ]]; then
   echo "Current build info does not exist: $build_info" >&2
   exit 1
 fi
-ln "$build_info" "$validation_dir/"
+cp "$build_info" "$validation_dir/"
 
 reference=$(sed -n 's/.*@custom:oz-upgrades-from[[:space:]]\+\([^[:space:]]\+\).*/\1/p' "$source_path")
 reference_name=${reference##*:}
@@ -64,7 +63,7 @@ if [[ $reference_count -eq 0 ]]; then
     echo "Reference build info duplicates current contract $fully_qualified_name." >&2
     exit 1
   fi
-  ln "$reference_build_info" "$validation_dir/"
+  cp "$reference_build_info" "$validation_dir/"
 fi
 
 unsafe_allow=external-library-linking

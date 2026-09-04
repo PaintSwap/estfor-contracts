@@ -1,15 +1,15 @@
 import {createHash} from "crypto"
 import {spawnSync} from "child_process"
-import {existsSync, readFileSync, renameSync, writeFileSync} from "fs"
-import {resolve} from "path"
+import {appendFileSync, existsSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync} from "fs"
+import {tmpdir} from "os"
+import {join, resolve} from "path"
 import {AbiCoder, Interface, JsonRpcProvider, Wallet, getAddress, getCreateAddress, keccak256} from "ethers"
 import {
   BytecodeClassification,
   compareRuntimeBytecode,
-  foundryLibraryArguments,
-  loadFoundryPreparedCreationCode,
   loadArtifactFingerprint,
   loadImplementationCreationCode,
+  prepareCandidateArtifacts,
 } from "./deploymentArtifacts"
 import type {ContractKind, ContractName, DeploymentRegistry} from "./deploymentRegistry"
 import {PLAYERS_IMPLEMENTATIONS} from "./deploymentSlots"
@@ -63,13 +63,13 @@ export interface UpgradePlan {
 export interface UpgradePlanOptions {
   deployerAddress?: string
   deployerNonce?: number
-  reusableCandidates?: Partial<Record<ContractName, string>>
+  reusableCandidates?: Partial<Record<ContractName, Pick<UpgradeCandidate, "candidateAddress" | "nonce">>>
   validate?: (fullyQualifiedName: string) => {status: "passed"; outputHash: string; output: string}
   onProgress?: (message: string) => void
 }
 
 export interface CandidateDeploymentJournal {
-  schemaVersion: 1
+  schemaVersion: 2
   deploymentId: string
   planHash: string
   contractName: ContractName
@@ -78,6 +78,7 @@ export interface CandidateDeploymentJournal {
   candidateAddress: string
   creationCodeHash: string
   status: "prepared" | "submitted" | "confirmed"
+  broadcastStartBlock: number | null
   transactionHash: string | null
   receipt: {blockNumber: number; blockHash: string; status: number; gasUsed: string} | null
 }
@@ -213,10 +214,7 @@ export async function buildUpgradePlan(
   const libraryCreations = new Map<ContractName, ReturnType<typeof loadImplementationCreationCode>>()
   for (const library of libraries) {
     try {
-      libraryCreations.set(
-        library.name,
-        loadFoundryPreparedCreationCode(library.name, deployment, "0x", options.onProgress)
-      )
+      libraryCreations.set(library.name, loadImplementationCreationCode(library.name, deployment))
     } catch (error) {
       blockedReasons.push(`${library.name}: ${error instanceof Error ? error.message : String(error)}`)
     }
@@ -245,19 +243,37 @@ export async function buildUpgradePlan(
 
   const desiredDeployment = structuredClone(deployment)
   let nextNonce = baseNonce
+  const allocateCandidate = (contractName: ContractName) => {
+    const reusable = options.reusableCandidates?.[contractName]
+    const nonce = reusable?.nonce ?? nextNonce++
+    return {
+      reusable,
+      nonce,
+      candidateAddress: getAddress(reusable?.candidateAddress ?? getCreateAddress({from: deployer, nonce})),
+    }
+  }
   const plannedLibraries = orderedLibraries.flatMap((contract) => {
     if (!libraryCreations.has(contract.name)) return []
-    const reusable = options.reusableCandidates?.[contract.name]
-    const nonce = nextNonce
-    const candidateAddress = getAddress(reusable ?? getCreateAddress({from: deployer, nonce}))
+    const allocation = allocateCandidate(contract.name)
+    const {candidateAddress} = allocation
     desiredDeployment.contracts[contract.name].nextAddress = candidateAddress
-    if (!reusable) nextNonce++
-    return [{contract, reusable, nonce, candidateAddress}]
+    return [{contract, ...allocation}]
   })
+  let artifacts: ReturnType<typeof prepareCandidateArtifacts>
+  try {
+    artifacts = prepareCandidateArtifacts(
+      drift.map(({name}) => name),
+      desiredDeployment,
+      options.onProgress
+    )
+  } catch (error) {
+    blockedReasons.push(error instanceof Error ? error.message : String(error))
+    return {candidates, operations, blockedReasons, validationFailures}
+  }
   for (const {contract, reusable, nonce, candidateAddress} of plannedLibraries) {
     options.onProgress?.(`Preparing library candidate ${contract.name}`)
     try {
-      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment, "0x", options.onProgress)
+      const creation = artifacts.loadCreationCode(contract.name)
       let status: UpgradeCandidate["status"] = "planned"
       if (reusable) {
         const code = await provider.getCode(candidateAddress, blockTag)
@@ -312,11 +328,9 @@ export async function buildUpgradePlan(
       if (!PLAYERS_IMPLEMENTATIONS.some(({name}) => name === contract.name)) {
         throw new Error("standalone implementation has no declared reconciliation call")
       }
-      const creation = loadFoundryPreparedCreationCode(contract.name, desiredDeployment, "0x", options.onProgress)
+      const creation = artifacts.loadCreationCode(contract.name)
       assertAlignedLibraries(creation)
-      const reusable = options.reusableCandidates?.[contract.name]
-      const nonce = nextNonce
-      const candidateAddress = getAddress(reusable ?? getCreateAddress({from: deployer, nonce}))
+      const {reusable, nonce, candidateAddress} = allocateCandidate(contract.name)
       let status: UpgradeCandidate["status"] = "planned"
       if (reusable) {
         const code = await provider.getCode(candidateAddress, blockTag)
@@ -331,8 +345,6 @@ export async function buildUpgradePlan(
           throw new Error(`reusable candidate ${candidateAddress} does not match the desired artifact`)
         }
         status = "reused"
-      } else {
-        nextNonce++
       }
       candidates.push({
         contractName: contract.name,
@@ -370,17 +382,10 @@ export async function buildUpgradePlan(
         const endpoint = getAddress(upgradeInterface.decodeFunctionResult("endpoint", result)[0])
         constructorData = AbiCoder.defaultAbiCoder().encode(["address"], [endpoint])
       }
-      const creation = loadFoundryPreparedCreationCode(
-        contract.name,
-        desiredDeployment,
-        constructorData,
-        options.onProgress
-      )
+      const creation = artifacts.loadCreationCode(contract.name, constructorData)
       assertAlignedLibraries(creation)
       const validation = (options.validate ?? validateUpgrade)(creation.fullyQualifiedName)
-      const reusable = options.reusableCandidates?.[contract.name]
-      const nonce = nextNonce
-      const candidateAddress = getAddress(reusable ?? getCreateAddress({from: deployer, nonce}))
+      const {reusable, nonce, candidateAddress} = allocateCandidate(contract.name)
       let status: UpgradeCandidate["status"] = "planned"
       if (reusable) {
         if (
@@ -396,8 +401,6 @@ export async function buildUpgradePlan(
           throw new Error(`reusable candidate ${candidateAddress} does not match the desired artifact`)
         }
         status = "reused"
-      } else {
-        nextNonce++
       }
       const operationId = `deployment-infrastructure:${contract.name}:upgrade`
       const candidate: UpgradeCandidate = {
@@ -480,11 +483,102 @@ function writeCandidateJournal(path: string, journal: CandidateDeploymentJournal
 }
 
 export function readCandidateJournal(path: string): CandidateDeploymentJournal {
-  const journal = JSON.parse(readFileSync(path, "utf8")) as CandidateDeploymentJournal
-  if (journal.schemaVersion !== 1 || !journal.candidateAddress || !journal.creationCodeHash) {
+  const journal = JSON.parse(readFileSync(path, "utf8")) as Partial<
+    Omit<CandidateDeploymentJournal, "schemaVersion">
+  > & {
+    schemaVersion?: 1 | 2
+  }
+  if (
+    (journal.schemaVersion !== 1 && journal.schemaVersion !== 2) ||
+    !journal.candidateAddress ||
+    !journal.creationCodeHash
+  ) {
     throw new Error(`Unsupported or invalid candidate deployment journal: ${path}`)
   }
-  return journal
+  return {
+    ...journal,
+    schemaVersion: 2,
+    broadcastStartBlock: journal.broadcastStartBlock ?? null,
+  } as CandidateDeploymentJournal
+}
+
+async function confirmAndWriteCandidate(
+  provider: JsonRpcProvider,
+  journalPath: string,
+  journal: CandidateDeploymentJournal
+): Promise<void> {
+  if (!journal.transactionHash) throw new Error(`Candidate transaction hash is unavailable for ${journal.contractName}`)
+  const [transaction, receipt] = await Promise.all([
+    provider.getTransaction(journal.transactionHash),
+    provider.getTransactionReceipt(journal.transactionHash),
+  ])
+  if (!receipt) throw new Error(`Candidate receipt is unavailable for ${journal.contractName}`)
+  if (!transaction) throw new Error(`Candidate transaction not found for ${journal.contractName}`)
+  if (
+    getAddress(transaction.from) !== journal.deployer ||
+    transaction.nonce !== journal.nonce ||
+    keccak256(transaction.data) !== journal.creationCodeHash
+  ) {
+    throw new Error(`Candidate transaction does not match the reviewed creation intent for ${journal.contractName}`)
+  }
+  if (
+    receipt.status !== 1 ||
+    !receipt.contractAddress ||
+    getAddress(receipt.contractAddress) !== journal.candidateAddress
+  ) {
+    throw new Error(`Candidate deployment failed for ${journal.contractName}`)
+  }
+  journal.status = "confirmed"
+  journal.receipt = {
+    blockNumber: receipt.blockNumber,
+    blockHash: receipt.blockHash,
+    status: receipt.status,
+    gasUsed: receipt.gasUsed.toString(),
+  }
+  writeCandidateJournal(journalPath, journal)
+}
+
+async function findCandidateTransaction(
+  provider: JsonRpcProvider,
+  journal: CandidateDeploymentJournal
+): Promise<string | null> {
+  if (journal.broadcastStartBlock === null) return null
+  const latestBlock = await provider.getBlockNumber()
+  let firstBlock = journal.broadcastStartBlock + 1
+  if (firstBlock > latestBlock) return null
+  if ((await provider.getTransactionCount(journal.deployer, latestBlock)) <= journal.nonce) return null
+  let lastBlock = latestBlock
+  while (firstBlock < lastBlock) {
+    const middleBlock = Math.floor((firstBlock + lastBlock) / 2)
+    if ((await provider.getTransactionCount(journal.deployer, middleBlock)) > journal.nonce) {
+      lastBlock = middleBlock
+    } else {
+      firstBlock = middleBlock + 1
+    }
+  }
+  const block = await provider.getBlock(firstBlock, true)
+  const transaction = block?.prefetchedTransactions.find(
+    ({from, nonce}) => getAddress(from) === journal.deployer && nonce === journal.nonce
+  )
+  if (!transaction) return null
+  if (keccak256(transaction.data) !== journal.creationCodeHash) {
+    throw new Error(`Deployer nonce ${journal.nonce} was used by unreviewed code for ${journal.contractName}`)
+  }
+  return transaction.hash
+}
+
+function runForgeCandidateDeployment(arguments_: string[]) {
+  const broadcastRoot = mkdtempSync(join(tmpdir(), "estfor-reconciliation-broadcast."))
+  try {
+    return spawnSync("forge", arguments_, {
+      cwd: resolve(__dirname, ".."),
+      env: {...process.env, FOUNDRY_BROADCAST: broadcastRoot},
+      encoding: "utf8",
+      maxBuffer: 50 * 1024 * 1024,
+    })
+  } finally {
+    rmSync(broadcastRoot, {recursive: true, force: true})
+  }
 }
 
 export async function deployUpgradeCandidates(
@@ -499,49 +593,38 @@ export async function deployUpgradeCandidates(
 ): Promise<void> {
   const deployer = getAddress(await wallet.getAddress())
   const desiredDeployment = withCandidateLibraries(deployment, candidates)
+  const artifacts = prepareCandidateArtifacts(
+    candidates.map(({contractName}) => contractName),
+    desiredDeployment,
+    onProgress
+  )
   for (const [index, candidate] of candidates.entries()) {
     onProgress?.(`Checking candidate ${candidate.contractName} (${index + 1}/${candidates.length})`)
     if (candidate.deployer !== deployer) throw new Error(`Candidate ${candidate.contractName} uses another deployer`)
     const constructorData = candidate.constructorData ?? "0x"
-    const creation = loadFoundryPreparedCreationCode(
-      candidate.contractName,
-      desiredDeployment,
-      constructorData,
-      onProgress
-    )
+    const creation = artifacts.loadCreationCode(candidate.contractName, constructorData)
     if (creation.codeHash !== candidate.creationCodeHash) {
       throw new Error(`Creation code changed for ${candidate.contractName}`)
     }
+    let code = await provider.getCode(candidate.candidateAddress)
     const journalPath = resolve(outputRoot, `candidate-${candidate.contractName}.json`)
-    let journal: CandidateDeploymentJournal
-    if (existsSync(journalPath)) {
-      journal = readCandidateJournal(journalPath)
+    let journal = existsSync(journalPath) ? readCandidateJournal(journalPath) : null
+    if (journal) {
       if (
-        journal.planHash !== planHash ||
+        journal.deploymentId !== deployment.deploymentId ||
+        (candidate.status === "planned" && journal.planHash !== planHash) ||
+        journal.contractName !== candidate.contractName ||
+        journal.deployer !== deployer ||
+        journal.nonce !== candidate.nonce ||
         journal.candidateAddress !== candidate.candidateAddress ||
         journal.creationCodeHash !== candidate.creationCodeHash
       ) {
         throw new Error(`Candidate journal does not match ${candidate.contractName}`)
       }
-      if (journal.transactionHash) {
-        const receipt = await provider.getTransactionReceipt(journal.transactionHash)
-        if (receipt) {
-          if (receipt.status !== 1 || getAddress(receipt.contractAddress!) !== candidate.candidateAddress) {
-            throw new Error(`Candidate deployment failed for ${candidate.contractName}`)
-          }
-          journal.status = "confirmed"
-          journal.receipt = {
-            blockNumber: receipt.blockNumber,
-            blockHash: receipt.blockHash,
-            status: receipt.status,
-            gasUsed: receipt.gasUsed.toString(),
-          }
-          writeCandidateJournal(journalPath, journal)
-        }
-      }
-    } else {
+      if (journal.transactionHash) await confirmAndWriteCandidate(provider, journalPath, journal)
+    } else if (candidate.status === "planned") {
       journal = {
-        schemaVersion: 1,
+        schemaVersion: 2,
         deploymentId: deployment.deploymentId,
         planHash,
         contractName: candidate.contractName,
@@ -550,18 +633,31 @@ export async function deployUpgradeCandidates(
         candidateAddress: candidate.candidateAddress,
         creationCodeHash: candidate.creationCodeHash,
         status: "prepared",
+        broadcastStartBlock: null,
         transactionHash: null,
         receipt: null,
       }
       writeCandidateJournal(journalPath, journal)
     }
 
-    let code = await provider.getCode(candidate.candidateAddress)
-    if (code !== "0x" && journal.status !== "confirmed") {
-      journal.status = "confirmed"
-      writeCandidateJournal(journalPath, journal)
+    if (journal && !journal.transactionHash && journal.broadcastStartBlock !== null) {
+      journal.transactionHash = await findCandidateTransaction(provider, journal)
+      if (journal.transactionHash) {
+        journal.status = "submitted"
+        writeCandidateJournal(journalPath, journal)
+        await confirmAndWriteCandidate(provider, journalPath, journal)
+      }
     }
-    if (code === "0x") {
+    if (code !== "0x" && (!journal || journal.status !== "confirmed" || !journal.transactionHash || !journal.receipt)) {
+      throw new Error(
+        `Candidate code exists for ${candidate.contractName}, but its reviewed deployment transaction cannot be recovered`
+      )
+    }
+    if (candidate.status === "reused" && code === "0x") {
+      throw new Error(`Reusable candidate ${candidate.contractName} has no code at ${candidate.candidateAddress}`)
+    }
+    if (candidate.status === "planned" && code === "0x") {
+      if (!journal) throw new Error(`Candidate journal is unavailable for ${candidate.contractName}`)
       const latestNonce = await provider.getTransactionCount(deployer, "latest")
       const pendingNonce = await provider.getTransactionCount(deployer, "pending")
       if (latestNonce !== candidate.nonce || pendingNonce !== candidate.nonce) {
@@ -569,80 +665,41 @@ export async function deployUpgradeCandidates(
           `Deployer nonces are latest=${latestNonce}, pending=${pendingNonce}, expected=${candidate.nonce}; candidate outcome is unknown and was not retried`
         )
       }
-      const startBlock = await provider.getBlockNumber()
-      const preparationRoot = resolve(
-        ".deployments",
-        "upgrade-preparation",
-        planHash.slice(2, 18),
-        candidate.contractName
-      )
-      const foundryMethod =
-        candidate.kind === "library" || candidate.kind === "implementation" ? "deployCode" : "prepareUpgrade"
-      onProgress?.(`Running Forge ${foundryMethod} for ${candidate.contractName}`)
-      const result = spawnSync(
-        "forge",
-        [
-          "script",
-          "scripts/ReconciliationCodeDeployment.s.sol:ReconciliationCodeDeployment",
-          "--sig",
-          `${foundryMethod}(string,address,bytes)`,
-          candidate.fullyQualifiedName,
-          candidate.candidateAddress,
-          constructorData,
-          "--rpc-url",
-          rpcUrl,
-          "--broadcast",
-          "--slow",
-          "--non-interactive",
-          "--out",
-          resolve(preparationRoot, "out"),
-          "--cache-path",
-          resolve(preparationRoot, "cache"),
-          ...foundryLibraryArguments(desiredDeployment).flatMap((library) => ["--libraries", library]),
-        ],
-        {
-          cwd: resolve(__dirname, ".."),
-          env: {...process.env, FOUNDRY_BROADCAST: resolve(outputRoot, "foundry-broadcast")},
-          encoding: "utf8",
-          maxBuffer: 50 * 1024 * 1024,
-        }
-      )
-      writeFileSync(
+      journal.broadcastStartBlock = await provider.getBlockNumber()
+      writeCandidateJournal(journalPath, journal)
+      onProgress?.(`Deploying ${candidate.contractName} with Forge`)
+      const result = runForgeCandidateDeployment([
+        "script",
+        "scripts/ReconciliationCodeDeployment.s.sol:ReconciliationCodeDeployment",
+        "--sig",
+        "deployCode(string,address,bytes)",
+        candidate.fullyQualifiedName,
+        candidate.candidateAddress,
+        constructorData,
+        "--rpc-url",
+        rpcUrl,
+        "--broadcast",
+        "--slow",
+        "--non-interactive",
+        ...artifacts.forgeBuildOptions,
+      ])
+      appendFileSync(
         resolve(outputRoot, `candidate-${candidate.contractName}-foundry.log`),
-        result.stdout + result.stderr,
+        `=== Foundry attempt from block ${journal.broadcastStartBlock} ===\n${result.stdout}${result.stderr}\n`,
         {mode: 0o600}
       )
       code = await provider.getCode(candidate.candidateAddress)
       if (result.error || result.status !== 0 || code === "0x") {
-        throw new Error(`Foundry ${foundryMethod} failed for ${candidate.contractName}`)
+        throw new Error(`Foundry deployment failed for ${candidate.contractName}`)
       }
-      onProgress?.(`Forge ${foundryMethod} completed for ${candidate.contractName}`)
-      const latestBlock = await provider.getBlockNumber()
-      for (let blockNumber = startBlock + 1; blockNumber <= latestBlock; blockNumber++) {
-        const block = await provider.getBlock(blockNumber, true)
-        for (const transaction of block?.prefetchedTransactions ?? []) {
-          const receipt = await provider.getTransactionReceipt(transaction.hash)
-          if (
-            receipt?.status === 1 &&
-            receipt.contractAddress &&
-            getAddress(receipt.contractAddress) === candidate.candidateAddress
-          ) {
-            if (keccak256(transaction.data) !== candidate.creationCodeHash) {
-              throw new Error(`Foundry deployed unreviewed creation code for ${candidate.contractName}`)
-            }
-            journal.transactionHash = transaction.hash
-            journal.receipt = {
-              blockNumber: receipt.blockNumber,
-              blockHash: receipt.blockHash,
-              status: receipt.status,
-              gasUsed: receipt.gasUsed.toString(),
-            }
-          }
-        }
+      onProgress?.(`Forge deployment completed for ${candidate.contractName}`)
+      journal.transactionHash = await findCandidateTransaction(provider, journal)
+      if (!journal.transactionHash) {
+        throw new Error(`Could not recover Foundry deployment transaction for ${candidate.contractName}`)
       }
-      if (!journal.receipt) throw new Error(`Could not record Foundry deployment receipt for ${candidate.contractName}`)
-      journal.status = "confirmed"
+      journal.status = "submitted"
       writeCandidateJournal(journalPath, journal)
+      await confirmAndWriteCandidate(provider, journalPath, journal)
       code = await provider.getCode(candidate.candidateAddress)
     }
     if (

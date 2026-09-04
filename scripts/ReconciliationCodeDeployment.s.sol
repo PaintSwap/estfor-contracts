@@ -2,26 +2,8 @@
 pragma solidity ^0.8.28;
 
 import {Script} from "forge-std/Script.sol";
-import {Options} from "openzeppelin-foundry-upgrades/Options.sol";
-import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 
 contract ReconciliationCodeDeployment is Script {
-  function prepareUpgrade(
-    string calldata fullyQualifiedName,
-    address expectedAddress,
-    bytes calldata constructorData
-  ) external returns (address implementation) {
-    Options memory options;
-    options.unsafeAllow = "external-library-linking";
-    options.constructorData = constructorData;
-
-    vm.startBroadcast(vm.envUint("PROPOSER_PRIVATE_KEY"));
-    implementation = Upgrades.prepareUpgrade(fullyQualifiedName, options);
-    vm.stopBroadcast();
-
-    require(implementation == expectedAddress, "Unexpected implementation address");
-  }
-
   function deployCode(
     string calldata fullyQualifiedName,
     address expectedAddress,
@@ -35,6 +17,6 @@ contract ReconciliationCodeDeployment is Script {
     }
     vm.stopBroadcast();
 
-    require(deployed == expectedAddress, "Unexpected library address");
+    require(deployed == expectedAddress, "Unexpected deployment address");
   }
 }

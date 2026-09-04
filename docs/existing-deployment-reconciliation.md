@@ -269,7 +269,7 @@ The build fingerprint in the plan should include the compiler version, optimizer
 
 Bytecode identity answers “is different code active?” It does not answer “is this upgrade storage safe?”
 
-Use OpenZeppelin Foundry Upgrades for the latter. Its API supplies implementation and beacon discovery, `validateUpgrade`, `prepareUpgrade`, and `upgradeProxy` ([OpenZeppelin Foundry Upgrades API](https://docs.openzeppelin.com/upgrades-plugins/foundry/api/upgrades)). Use `prepareUpgrade` to validate and deploy an implementation from the deployer EOA, then place `upgradeToAndCall` in the mandatory Safe proposal. The deployer must never call the proxy upgrade function directly.
+Use OpenZeppelin's upgrade validator for the latter ([OpenZeppelin Foundry Upgrades API](https://docs.openzeppelin.com/upgrades-plugins/foundry/api/upgrades)). Planning validates the implementation and records the linked creation-code hash. Apply rebuilds and checks that exact payload before a generic Foundry script deploys it from the deployer EOA. The mandatory Safe proposal contains `upgradeToAndCall`; the deployer must never call the proxy upgrade function directly.
 
 Before adding any upgrade to the reconciler, follow this repository's upgrade policy:
 
@@ -564,8 +564,8 @@ hash is absent.
 
 `--resume <run-id>` refreshes each journal from the Safe service, reports pending, executed, failed, and unproposed
 remaining work, and writes a new remainder plan from current state. Once every proposal executed, it requires an empty
-managed plan and stores the final verification report. Partial execution is resumed by reviewing and applying the newly
-generated current-state plan; old calls are never broadcast directly.
+managed plan; that empty remainder plan is the final verification report. Partial execution is resumed by reviewing and
+applying the newly generated current-state plan; old calls are never broadcast directly.
 
 ### Phase 5: implementation upgrades
 
@@ -574,7 +574,7 @@ Status: implemented on 2026-09-02.
 1. Establish archived reference contracts and Foundry validation tests according to `AGENTS.md`.
 2. Implement segmented bytecode comparison, including linked library and immutable checks.
 3. Build the library dependency graph so linked implementations are upgraded only after their desired libraries are known.
-4. Use `validateUpgrade` in planning and `prepareUpgrade` in apply.
+4. Validate upgrades in planning and deploy the exact validated creation payload in apply.
 5. Encode UUPS `upgradeToAndCall` and beacon upgrades only for the tracked Safe.
 6. Record candidate implementation addresses and reuse successful partial deployments.
 7. Simulate upgrades and reinitializers together and rerun all ownership, wiring, and managed-data checks.
@@ -607,12 +607,13 @@ upgrades remain diagnosable.
 Apply requires `PROPOSER_PRIVATE_KEY` to match the reviewed address. It reruns the latest-state guard before any creation
 transaction. Candidate creation intents are journaled before broadcast, receipts and deployed runtime are verified, and
 successful candidates are reused after partial runs. All candidate creation goes through the generic Foundry broadcast;
-libraries use their reviewed linked creation payload. Upgradeable
-implementations use the generic Foundry `Upgrades.prepareUpgrade` script, which validates again and deploys without calling
-the proxy. UUPS `upgradeToAndCall` includes optional registry-declared reinitializer calldata only when the refreshed
+libraries and implementations use their reviewed linked creation payload. Storage validation runs while the reviewed plan
+is rebuilt immediately before apply, so the broadcast script only deploys that hash-checked payload and never calls a proxy.
+UUPS `upgradeToAndCall` includes optional registry-declared reinitializer calldata only when the refreshed
 `onchainVersion` is below `targetVersion`; beacon `upgradeTo` and UUPS upgrades always name the tracked Safe as caller. The pinned Anvil simulation deploys or reuses candidates, executes the exact Safe
 operations, and then reruns implementation, ownership, shared wiring, and complete Shop postconditions. Apply writes
-Foundry logs and broadcast JSON under the reviewed run directory.
+append-only Foundry diagnostics and transaction journals under the reviewed run directory. Foundry's duplicate broadcast
+JSON is transient.
 
 Shop remains the first archived and validated upgrade reference. The reconciler checks the current implementation bytecode
 for the Phase 3 getter selector before reading Shop state. Only a proven missing selector with a planned Shop upgrade defers

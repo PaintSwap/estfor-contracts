@@ -1,7 +1,7 @@
 import {createHash} from "crypto"
 import {spawnSync} from "child_process"
 import {readFileSync, readdirSync, statSync} from "fs"
-import {basename, join, relative, resolve} from "path"
+import {basename, join, relative, resolve, sep} from "path"
 import {getAddress, keccak256} from "ethers"
 import {ContractName, DeploymentRegistry} from "./deploymentRegistry"
 
@@ -182,15 +182,19 @@ function artifactMatch(contractName: ContractName, outRoot: string) {
     if (!source.startsWith("contracts/") || source.startsWith("contracts/old/")) return []
     return [{path, raw, artifact, source, expectedName}]
   })
-  if (matches.length === 0)
+  const primaryMatches = matches.filter(
+    ({path, source}) => path === join(outRoot, basename(source), `${expectedName}.json`)
+  )
+  const selected = primaryMatches.length === 1 ? primaryMatches : matches
+  if (selected.length === 0)
     throw new Error(`Foundry artifact not found for ${contractName} (${expectedName}); run forge build`)
-  if (matches.length > 1)
+  if (selected.length > 1)
     throw new Error(
       `Multiple Foundry artifacts found for ${contractName}: ${matches
         .map(({path}) => relative(outRoot, path))
         .join(", ")}`
     )
-  return matches[0]
+  return selected[0]
 }
 
 const jsonFileCache = new Map<string, string[]>()
@@ -318,51 +322,64 @@ export function loadImplementationCreationCode(
   }
 }
 
-export function foundryLibraryArguments(deployment: DeploymentRegistry): string[] {
+function foundryLibraryArguments(deployment: DeploymentRegistry): string[] {
   return (Object.keys(deployment.contracts) as ContractName[])
     .filter((name) => deployment.contracts[name].kind === "library")
     .map((name) => `${loadArtifactFingerprint(name).fullyQualifiedName}:${desiredContractAddress(deployment, name)}`)
 }
 
-const preparedArtifacts = new Map<string, string>()
+export interface PreparedCandidateArtifacts {
+  forgeBuildOptions: string[]
+  loadCreationCode(contractName: ContractName, constructorData?: string): ImplementationCreationCode
+}
 
-export function loadFoundryPreparedCreationCode(
-  contractName: ContractName,
+export function prepareCandidateArtifacts(
+  contractNames: readonly ContractName[],
   deployment: DeploymentRegistry,
-  constructorData = "0x",
   onProgress?: (message: string) => void
-): ImplementationCreationCode {
+): PreparedCandidateArtifacts {
+  const names = [...new Set(contractNames)].sort()
+  if (names.length === 0) throw new Error("At least one candidate artifact is required")
+  const canonicalOutRoot = resolve(__dirname, "../out")
   const libraries = foundryLibraryArguments(deployment)
-  const key = sha256(JSON.stringify(libraries)).slice(2, 18)
-  let outRoot = preparedArtifacts.get(key)
-  if (!outRoot) {
-    const buildRoot = resolve(".deployments", "reconciliation-artifacts", key)
-    outRoot = resolve(buildRoot, "out")
-    onProgress?.(`Building linked Foundry artifacts (${key})`)
-    const result = spawnSync(
-      "forge",
-      [
-        "build",
-        "--out",
-        outRoot,
-        "--cache-path",
-        resolve(buildRoot, "cache"),
-        ...libraries.flatMap((library) => ["--libraries", library]),
-      ],
-      {cwd: resolve(__dirname, ".."), encoding: "utf8", maxBuffer: 50 * 1024 * 1024}
-    )
-    if (result.error || result.status !== 0) throw new Error("Foundry linked-artifact build failed")
-    onProgress?.(`Linked Foundry artifact build completed (${key})`)
-    preparedArtifacts.set(key, outRoot)
+  const sources = [
+    ...new Set([
+      ...names.map((name) => artifactMatch(name, canonicalOutRoot).source),
+      "scripts/ReconciliationCodeDeployment.s.sol",
+    ]),
+  ].sort()
+  const buildRoot = resolve(__dirname, "../cache-foundry/reconciliation")
+  const outRoot = resolve(buildRoot, "out")
+  const forgeBuildOptions = [
+    "--out",
+    outRoot,
+    "--cache-path",
+    resolve(buildRoot, "cache"),
+    ...libraries.flatMap((library) => ["--libraries", library]),
+  ]
+  onProgress?.("Building linked candidate artifacts")
+  const result = spawnSync("forge", ["build", ...sources, ...forgeBuildOptions], {
+    cwd: resolve(__dirname, ".."),
+    encoding: "utf8",
+    maxBuffer: 50 * 1024 * 1024,
+  })
+  if (result.error || result.status !== 0) {
+    const output = `${result.stdout ?? ""}${result.stderr ?? ""}`.trim()
+    throw new Error(`Foundry candidate artifact build failed${output ? `:\n${output}` : ""}`)
   }
-  const canonical = loadImplementationCreationCode(
-    contractName,
-    deployment,
-    resolve(__dirname, "../out"),
-    constructorData
-  )
-  const prepared = loadImplementationCreationCode(contractName, deployment, outRoot, constructorData)
-  return {...prepared, libraryDependencies: canonical.libraryDependencies}
+  onProgress?.("Candidate artifact build completed")
+  for (const cachedRoot of jsonFileCache.keys()) {
+    if (cachedRoot === outRoot || cachedRoot.startsWith(`${outRoot}${sep}`)) jsonFileCache.delete(cachedRoot)
+  }
+  buildInfoHashCache.delete(join(outRoot, "build-info"))
+  return {
+    forgeBuildOptions,
+    loadCreationCode(contractName: ContractName, constructorData = "0x") {
+      const canonical = loadImplementationCreationCode(contractName, deployment, canonicalOutRoot, constructorData)
+      const prepared = loadImplementationCreationCode(contractName, deployment, outRoot, constructorData)
+      return {...prepared, libraryDependencies: canonical.libraryDependencies}
+    },
+  }
 }
 
 function sliceBytes(value: string, start: number, length: number): string {

@@ -78,13 +78,41 @@ The `deploy-foundry.sh` and `DeployGame.s.sol` files create a new deployment. Th
 
 ## Outputs
 
-Each run writes files under `runs/<deployment-id>/<run-id>/`:
+Plan mode writes review files under `runs/<deployment-id>/<run-id>/`:
 
 - `plan.json` is the hashed machine-readable plan.
 - `plan.md` is the review summary.
 - `safe-transaction-builder-*.json` contains Safe calls.
-- proposal and deployment journals record submitted work.
-- `remainder-plan.*` contains only work that is not already pending.
+
+Apply validates `plan.json` and checks that its derived Markdown and Transaction Builder files are unchanged. It does not
+rewrite the review files. Apply adds only durable execution evidence to the same run directory:
+
+- candidate and Safe proposal journals bind each submitted transaction to the reviewed plan before submission;
+- candidate Forge logs retain command diagnostics.
+
+Foundry still creates its own broadcast record while it sends a candidate, but reconciliation places that duplicate data in
+a temporary system directory and removes it after the command. The journal is the durable transaction record; the append-only
+Forge log is retained for diagnostics.
+
+Resume updates the journals and writes immutable `remainder-plan-<hash>.json`, `remainder-plan-<hash>.md`, and derived Safe
+Transaction Builder files from current chain state. The hash suffix preserves each reviewed remainder when the run needs
+more than one apply/resume cycle. When all reviewed proposals have executed, the empty remainder plan is also the final
+verification record; no duplicate final plan is written.
+
+Candidate journals record the block before each Foundry broadcast. If apply is interrupted after broadcast, the next run
+uses historical deployer nonces to locate the transaction's block, then verifies its nonce, creation-code hash, receipt, and
+deployed address. This logarithmic lookup also identifies failed deployment transactions. Existing code alone is not
+accepted as evidence of a reviewed deployment.
+
+Current Safe journals are bound to their immutable plan and derived batch. For runs created by older versions that overwrote
+those plan files, resume accepts the old `safe-proposal-<batch>.json` and `safe-proposal-<plan-hash>-<batch>.json` names. It
+checks the filename against the journal and re-derives the Safe transaction hash from the recorded calls and nonce before it
+reads execution status.
+
+Normal Foundry output stays in `out/` and `cache-foundry/`. Reconciliation keeps its one address-linked candidate build
+under `cache-foundry/reconciliation/`; it does not use `.deployments/`, which belongs to fresh deployment workflows.
+Old `reconciliation-artifacts/` and `upgrade-preparation/` trees under `.deployments/` are disposable compiler output from
+earlier versions of this command. They can be removed when no older reconciliation process is running.
 
 The command can also update `onchainVersion` values in `deployments/<chain-id>/<deployment-id>.json` before writing a plan.
 

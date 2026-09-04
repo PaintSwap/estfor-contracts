@@ -5,6 +5,8 @@ import {join} from "path"
 import {describe, it} from "node:test"
 import {OperationType} from "@safe-global/types-kit"
 import {
+  allSafeOperationsExecuted,
+  assertSafeJournalMatchesBatch,
   assertSafeProposalSender,
   buildSafeBatches,
   buildTransactionBuilderFile,
@@ -73,6 +75,21 @@ describe("Safe reconciliation", function () {
     assert.equal(isSafeTransactionNotFound(new Error("service unavailable")), false)
   })
 
+  it("does not treat an older execution as final while a repeated operation is pending", function () {
+    const operationIds = new Set(["upgrade:shop"])
+    assert.equal(allSafeOperationsExecuted([{operationIds: [...operationIds], status: "executed"}], operationIds), true)
+    assert.equal(
+      allSafeOperationsExecuted(
+        [
+          {operationIds: [...operationIds], status: "executed"},
+          {operationIds: [...operationIds], status: "pending"},
+        ],
+        operationIds
+      ),
+      false
+    )
+  })
+
   it("exports the exact simulated calls in Safe Transaction Builder format", function () {
     const batch = buildSafeBatches([operation("a", "1")], SAFE)[0]
     const builder = buildTransactionBuilderFile("sonic-live", "0xabcdef", 146, SAFE, batch)
@@ -86,6 +103,83 @@ describe("Safe reconciliation", function () {
       contractInputsValues: null,
     })
     assert.deepEqual(batch.transactions[0], {to: TARGET, value: "0", data: "0x61", operation: OperationType.Call})
+  })
+
+  it("binds proposal journals to the exact reviewed batch", async function () {
+    const batch = buildSafeBatches([operation("a", "1")], SAFE)[0]
+    const safeTransactionData = {
+      to: TARGET,
+      value: "0",
+      data: "0x1234",
+      operation: OperationType.DelegateCall,
+      safeTxGas: "0",
+      baseGas: "0",
+      gasPrice: "0",
+      gasToken: "0x0000000000000000000000000000000000000000",
+      refundReceiver: "0x0000000000000000000000000000000000000000",
+      nonce: 7,
+    }
+    const journal = {
+      schemaVersion: 2 as const,
+      deploymentId: "sonic-live",
+      planHash: "0xplan",
+      safeAddress: SAFE,
+      batchIndex: 0,
+      operationIds: ["a"],
+      nonce: 7,
+      safeTxHash: `0x${"ab".repeat(32)}`,
+      status: "pending" as const,
+      transactionHash: null,
+      transactions: batch.transactions,
+      safeTransactionData,
+      executionReceipt: null,
+    }
+    const protocol = {
+      async createTransaction() {
+        return {data: safeTransactionData}
+      },
+      async getTransactionHash() {
+        return journal.safeTxHash
+      },
+      async signHash() {
+        return {data: "0x"}
+      },
+    }
+
+    await assert.doesNotReject(
+      assertSafeJournalMatchesBatch(protocol as never, journal, {
+        deploymentId: "sonic-live",
+        planHash: "0xplan",
+        safeAddress: SAFE,
+        batch,
+      })
+    )
+    await assert.rejects(
+      assertSafeJournalMatchesBatch(
+        protocol as never,
+        {...journal, planHash: "0xother"},
+        {
+          deploymentId: "sonic-live",
+          planHash: "0xplan",
+          safeAddress: SAFE,
+          batch,
+        }
+      ),
+      /does not match reviewed batch/
+    )
+    await assert.rejects(
+      assertSafeJournalMatchesBatch(
+        protocol as never,
+        {...journal, safeTxHash: `0x${"cd".repeat(32)}`},
+        {
+          deploymentId: "sonic-live",
+          planHash: "0xplan",
+          safeAddress: SAFE,
+          batch,
+        }
+      ),
+      /hash does not match its recorded transactions/
+    )
   })
 
   it("uses the operation value in RPC simulation transactions", function () {
@@ -223,6 +317,30 @@ describe("Safe reconciliation", function () {
       )
       assert.equal(executed.status, "executed")
       assert.equal(executed.executionReceipt?.gasUsed, "123")
+      await assert.rejects(
+        refreshSafeJournal(
+          {
+            async getTransaction() {
+              return {
+                ...journal.safeTransactionData,
+                safe: SAFE,
+                safeTxHash: journal.safeTxHash,
+                nonce: "7",
+                isExecuted: true,
+                isSuccessful: true,
+                transactionHash: `0x${"cd".repeat(32)}`,
+              } as never
+            },
+          } as never,
+          journal,
+          {
+            async getTransactionReceipt() {
+              return {blockNumber: 10, blockHash: `0x${"ef".repeat(32)}`, status: 0, gasUsed: 123n}
+            },
+          } as never
+        ),
+        /has a reverted RPC receipt/
+      )
       await assert.rejects(
         refreshSafeJournal(
           {
