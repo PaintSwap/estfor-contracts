@@ -18,7 +18,7 @@ import {IOrderBook} from "./interfaces/IOrderBook.sol";
 /// @notice This efficient ERC1155 order book is an upgradeable UUPS proxy contract. It has functions for bulk placing
 ///         limit orders, cancelling limit orders, and claiming NFTs and tokens from filled or partially filled orders.
 ///         It suppports ERC2981 royalties, and optional dev & burn fees on successful trades.
-/// @custom:oz-upgrades-from OrderBookV1
+/// @custom:oz-upgrades-from OrderBookV2
 contract OrderBook is
   UUPSUpgradeable,
   OwnableUpgradeable,
@@ -65,6 +65,12 @@ contract OrderBook is
   mapping(uint256 tokenId => mapping(uint256 price => bytes32[] segments)) private _bidsAtPrice;
   ClaimableTokenInfo[MAX_ORDER_ID] private _tokenClaimables;
 
+  // Append-only discovery includes removed IDs. Old proxies cannot prove historical completeness.
+  uint256[] private _knownTokenIds;
+  mapping(uint256 tokenId => bool) private _knownTokenId;
+  mapping(uint256 tokenId => uint128) private _immutableTicks;
+  bool private _tokenIdDiscoveryComplete;
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -100,6 +106,7 @@ contract OrderBook is
     // The max orders spans segments, so num segments = maxOrdersPrice / NUM_ORDERS_PER_SEGMENT
     setMaxOrdersPerPrice(maxOrdersPerPrice);
     _nextOrderId = 1;
+    _tokenIdDiscoveryComplete = true;
   }
 
   /// @notice Place market order
@@ -243,6 +250,26 @@ contract OrderBook is
   /// @param tokenId The token ID to get the info for
   function getTokenIdInfo(uint256 tokenId) external view override returns (TokenIdInfo memory) {
     return _tokenIdInfos[tokenId];
+  }
+
+  /// @notice Returns known IDs, including removed entries, in exclusive [start, end) index order.
+  function getKnownTokenIds(uint256 start, uint256 end) external view override returns (uint256[] memory tokenIds) {
+    require(start <= end && end <= _knownTokenIds.length && end - start <= 1024, InvalidTokenIdRange());
+    tokenIds = new uint256[](end - start);
+    for (uint256 i = start; i < end; ++i) {
+      tokenIds[i - start] = _knownTokenIds[i];
+    }
+  }
+
+  /// @notice Completeness is true only for proxies initialized with discovery enabled.
+  function getTokenIdDiscoveryState() external view override returns (uint256 count, bool complete) {
+    return (_knownTokenIds.length, _tokenIdDiscoveryComplete);
+  }
+
+  /// @notice The first nonzero tick observed since this implementation, or the current legacy tick.
+  function getImmutableTick(uint256 tokenId) public view override returns (uint128) {
+    uint128 tick = _immutableTicks[tokenId];
+    return tick == 0 ? _tokenIdInfos[tokenId].tick : tick;
   }
 
   function getClaimableTokenInfo(uint40 orderId) external view override returns (ClaimableTokenInfo memory) {
@@ -1083,15 +1110,57 @@ contract OrderBook is
     require(tokenIds.length == tokenIdInfos.length, LengthMismatch());
 
     for (uint256 i = 0; i < tokenIds.length; ++i) {
-      // Cannot change tick once set
-      uint256 existingTick = _tokenIdInfos[tokenIds[i]].tick;
+      _registerTokenId(tokenIds[i]);
+      uint256 existingTick = _immutableTicks[tokenIds[i]];
       uint256 newTick = tokenIdInfos[i].tick;
 
       require(!(existingTick != 0 && newTick != 0 && existingTick != newTick), TickCannotBeChanged());
+      // A zero tick makes cancellation divide by zero. Never clear it with live orders,
+      // or guess a replacement for a legacy book whose tick was already cleared.
+      if (newTick == 0 || _tokenIdInfos[tokenIds[i]].tick == 0) {
+        _requireEmptyBook(tokenIds[i]);
+      }
+      if (newTick != 0) {
+        _immutableTicks[tokenIds[i]] = uint128(newTick);
+      }
       _tokenIdInfos[tokenIds[i]] = tokenIdInfos[i];
     }
 
     emit SetTokenIdInfos(tokenIds, tokenIdInfos);
+  }
+
+  /// @notice Register historical keys without changing constraints or certifying completeness.
+  /// @dev The owner supplies keys from historical SetTokenIdInfos logs, including zero-valued entries.
+  function registerTokenIds(uint256[] calldata tokenIds) external override onlyOwner {
+    for (uint256 i; i < tokenIds.length; ++i) {
+      _registerTokenId(tokenIds[i]);
+    }
+  }
+
+  /// @notice Remove constraints only when both sides are empty. Claims and balances remain intact.
+  /// @dev The immutable tick and discovery entry survive removal. Re-addition must use the same tick.
+  function removeTokenIdInfos(uint256[] calldata tokenIds) external override onlyOwner {
+    for (uint256 i; i < tokenIds.length; ++i) {
+      _requireEmptyBook(tokenIds[i]);
+      _registerTokenId(tokenIds[i]);
+      delete _tokenIdInfos[tokenIds[i]];
+    }
+    emit RemovedTokenIdInfos(tokenIds);
+  }
+
+  function _registerTokenId(uint256 tokenId) private {
+    if (!_knownTokenId[tokenId]) {
+      _knownTokenId[tokenId] = true;
+      _knownTokenIds.push(tokenId);
+      emit RegisteredTokenId(tokenId);
+    }
+    if (_immutableTicks[tokenId] == 0) {
+      _immutableTicks[tokenId] = _tokenIdInfos[tokenId].tick;
+    }
+  }
+
+  function _requireEmptyBook(uint256 tokenId) private view {
+    require(_asks[tokenId].root == 0 && _bids[tokenId].root == 0, TokenHasOpenOrders(tokenId));
   }
 
   /// @notice Set the fees for the contract

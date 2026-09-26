@@ -3,14 +3,18 @@ pragma solidity ^0.8.28;
 
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {IRewardTierDiscovery, DiscoveryStatus} from "./interfaces/IReconciliationDiscovery.sol";
 
 import {IOracleCB} from "./interfaces/IOracleCB.sol";
 
 import {Equipment} from "./globals/misc.sol";
 import {NONE} from "./globals/items.sol";
 
-/// @custom:oz-upgrades-from DailyRewardsSchedulerV1
-contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
+/// @custom:oz-upgrades-from DailyRewardsSchedulerV2
+contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB, IRewardTierDiscovery {
+  using EnumerableSet for EnumerableSet.UintSet;
+
   error CanOnlyRequestAfter1DayHasPassed();
   error InvalidReward();
   error TooManyRewardsInPool();
@@ -22,6 +26,10 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
 
   mapping(uint256 tier => Equipment[]) private _dailyRewardPool; // TODO: Could be a packed uint48 array but it doesn't help any readers
   mapping(uint256 tier => Equipment[]) private _weeklyRewardPool;
+
+  EnumerableSet.UintSet private _dailyRewardTiers;
+  EnumerableSet.UintSet private _weeklyRewardTiers;
+  DiscoveryStatus public discoveryStatus;
 
   modifier onlyWorld() {
     require(_randomnessBeacon == _msgSender(), OnlyRandomnessBeacon());
@@ -39,6 +47,7 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
 
     _randomnessBeacon = randomnessBeacon;
     _weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
+    discoveryStatus = DiscoveryStatus.Complete;
   }
 
   function newOracleRandomWords(uint256 randomWord) external override onlyWorld {
@@ -73,6 +82,57 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
 
   function getWeeklyRewardPool(uint256 tier) external view returns (Equipment[] memory) {
     return _weeklyRewardPool[tier];
+  }
+
+  function getDailyRewardTierCount() external view returns (uint256) {
+    return _dailyRewardTiers.length();
+  }
+
+  function getWeeklyRewardTierCount() external view returns (uint256) {
+    return _weeklyRewardTiers.length();
+  }
+
+  function getDailyRewardTiers(uint256 start, uint256 end) external view returns (uint256[] memory) {
+    return _getRewardTiers(_dailyRewardTiers, start, end);
+  }
+
+  function getWeeklyRewardTiers(uint256 start, uint256 end) external view returns (uint256[] memory) {
+    return _getRewardTiers(_weeklyRewardTiers, start, end);
+  }
+
+  function _getRewardTiers(
+    EnumerableSet.UintSet storage tiers,
+    uint256 start,
+    uint256 end
+  ) private view returns (uint256[] memory ids) {
+    require(start <= end && end <= tiers.length() && end - start <= 1024, InvalidDiscoveryRange());
+    ids = new uint256[](end - start);
+    for (uint256 i; i < ids.length; ++i) {
+      ids[i] = tiers.at(start + i);
+    }
+  }
+
+  function registerLegacyRewardTiers(uint256[] calldata dailyTiers, uint256[] calldata weeklyTiers) external onlyOwner {
+    for (uint256 i; i < dailyTiers.length; ++i) {
+      _syncRewardTier(_dailyRewardTiers, dailyTiers[i], _dailyRewardPool[dailyTiers[i]].length);
+    }
+    for (uint256 i; i < weeklyTiers.length; ++i) {
+      _syncRewardTier(_weeklyRewardTiers, weeklyTiers[i], _weeklyRewardPool[weeklyTiers[i]].length);
+    }
+  }
+
+  function attestLegacyDiscovery(bytes32 evidenceHash) external onlyOwner {
+    require(discoveryStatus == DiscoveryStatus.Incomplete && evidenceHash != bytes32(0), InvalidDiscoveryAttestation());
+    discoveryStatus = DiscoveryStatus.LegacyAttested;
+    emit LegacyDiscoveryAttested(evidenceHash);
+  }
+
+  function _syncRewardTier(EnumerableSet.UintSet storage tiers, uint256 tier, uint256 length) private {
+    if (length != 0) {
+      tiers.add(tier);
+    } else {
+      tiers.remove(tier);
+    }
   }
 
   function getSpecificDailyReward(
@@ -123,6 +183,7 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
       );
       _dailyRewardPool[tier].push(dailyRewards[i]);
     }
+    _syncRewardTier(_dailyRewardTiers, tier, dailyRewards.length);
   }
 
   function setWeeklyRewardPool(uint256 tier, Equipment[] calldata weeklyRewards) external onlyOwner {
@@ -134,6 +195,7 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
       require(weeklyRewards[i].itemTokenId != NONE && weeklyRewards[i].amount != 0, InvalidReward());
       _weeklyRewardPool[tier].push(weeklyRewards[i]);
     }
+    _syncRewardTier(_weeklyRewardTiers, tier, weeklyRewards.length);
   }
 
   // solhint-disable-next-line no-empty-blocks

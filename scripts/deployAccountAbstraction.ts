@@ -1,4 +1,4 @@
-import {ethers, upgrades} from "hardhat"
+import {ethers, upgrades, artifacts} from "hardhat"
 import {initialiseSafe, sendTransactionSetToSafe, getSafeUpgradeTransaction, verifyContracts} from "./utils"
 import {OperationType, MetaTransactionData} from "@safe-global/types-kit"
 import {
@@ -20,10 +20,16 @@ import {
   SUBSIDY_SIGNERS,
   TERRITORIES_ADDRESS,
 } from "./contractAddresses"
-import {groups} from "./data/groupSubsidyLimits"
+import {subsidyGroups} from "./data/groupSubsidyLimits"
+import {loadSelectedDeployment} from "./deploymentRegistry"
+import {ARTIFACT_CONTRACT_NAMES} from "./deploymentArtifacts"
 import {parseEther} from "ethers"
 
 async function main() {
+  const groups = subsidyGroups(
+    loadSelectedDeployment(),
+    (name) => new ethers.Interface(artifacts.readArtifactSync(ARTIFACT_CONTRACT_NAMES[name]).abi)
+  )
   const [owner, , proposer] = await ethers.getSigners() // 0 is old deployer, 2 is proposer for Safe (new deployer)
   const network = await ethers.provider.getNetwork()
   const {useSafe, apiKit, protocolKit} = await initialiseSafe(network)

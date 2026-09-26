@@ -7,6 +7,7 @@ import type {DeploymentRegistry} from "./deploymentRegistry"
 import {EIP1967_IMPLEMENTATION_SLOT, PLAYERS_IMPLEMENTATIONS, addressFromStorage} from "./deploymentSlots"
 import {toRpcTransaction} from "./reconciliation"
 import {verifyShopPostconditions} from "./shopReconciliation"
+import {verifyGameDataPostconditions} from "./gameDataReconciliation"
 import {withCandidateLibraries} from "./upgradeReconciliation"
 import {verifyDeploymentWiring} from "./deploymentWiring"
 
@@ -217,6 +218,8 @@ export async function simulateDeploymentPlan(
     } else {
       onProgress?.("Shop postconditions remain deferred until the getter upgrade executes")
     }
+    onProgress?.("Verifying game-data postconditions at one block")
+    postconditionsVerified += await verifyGameDataPostconditions(provider, deployment, plan.gameData)
     onProgress?.(`Simulation verified ${postconditionsVerified} postconditions`)
     return {
       status: "passed",

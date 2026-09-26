@@ -1,12 +1,18 @@
-import {ethers} from "hardhat"
+import {ethers, artifacts} from "hardhat"
 import {GAME_SUBSIDISATION_REGISTRY_ADDRESS, GLOBAL_EVENT_ADDRESS} from "./contractAddresses"
 import {EstforConstants} from "@paintswap/estfor-definitions"
 import {getSafeUpgradeTransaction, initialiseSafe, isBeta, sendTransactionSetToSafe} from "./utils"
 import {OperationType, MetaTransactionData} from "@safe-global/types-kit"
 import {GameSubsidisationRegistry__factory} from "../typechain-types"
-import {groups} from "./data/groupSubsidyLimits"
+import {subsidyGroups} from "./data/groupSubsidyLimits"
+import {loadSelectedDeployment} from "./deploymentRegistry"
+import {ARTIFACT_CONTRACT_NAMES} from "./deploymentArtifacts"
 
 async function main() {
+  const groups = subsidyGroups(
+    loadSelectedDeployment(),
+    (name) => new ethers.Interface(artifacts.readArtifactSync(ARTIFACT_CONTRACT_NAMES[name]).abi)
+  )
   const [owner, , proposer] = await ethers.getSigners() // 0 is old deployer, 2 is proposer for Safe (new deployer)
   const network = await ethers.provider.getNetwork()
   const {useSafe, apiKit, protocolKit} = await initialiseSafe(network)

@@ -16,6 +16,7 @@ import {WishingWell} from "../WishingWell.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
+import {IPlayersConfiguration} from "../interfaces/IPlayersConfiguration.sol";
 import {IPlayersDelegate, IPlayersMiscDelegate, IPlayersMisc1Delegate, IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
 import {IWorldActions} from "../interfaces/IWorldActions.sol";
 
@@ -26,7 +27,7 @@ import {IActivityPointsCaller, IActivityPoints} from "../ActivityPoints/interfac
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-/// @custom:oz-upgrades-from PlayersV1
+/// @custom:oz-upgrades-from PlayersV2
 /// @custom:oz-upgrades-unsafe-allow-reachable delegatecall
 contract Players is
   UUPSUpgradeable,
@@ -34,6 +35,7 @@ contract Players is
   ReentrancyGuardTransientUpgradeable,
   PlayersBase,
   IPlayers,
+  IPlayersConfiguration,
   IActivityPointsCaller
 {
   modifier isOwnerOfPlayerAndActiveMod(uint256 playerId) {
@@ -563,6 +565,16 @@ contract Players is
     );
   }
 
+  /// @inheritdoc IPlayersConfiguration
+  function removeXPThresholdRewards(uint32[] calldata xpThresholds) external override onlyOwner {
+    for (uint256 i; i < xpThresholds.length; ++i) {
+      uint32 xpThreshold = xpThresholds[i];
+      require(_xpRewardThresholds[xpThreshold].length != 0, XPThresholdDoesNotExist());
+      delete _xpRewardThresholds[xpThreshold];
+      emit RemoveXPThresholdReward(xpThreshold);
+    }
+  }
+
   function getXPThresholdRewards() external view returns (XPThresholdReward[] memory xpThresholdRewards) {
     uint256 numThresholds = XP_THRESHOLD_REWARDS.length / 4;
     xpThresholdRewards = new XPThresholdReward[](numThresholds);
@@ -605,6 +617,15 @@ contract Players is
 
   function getFullAttireBonus(Skill skill) external view returns (FullAttireBonus memory) {
     return _fullAttireBonus[skill];
+  }
+
+  /// @inheritdoc IPlayersConfiguration
+  function clearFullAttireBonuses(Skill[] calldata skills) external override onlyOwner {
+    for (uint256 i; i < skills.length; ++i) {
+      require(skills[i] != Skill.NONE, InvalidSkill());
+      delete _fullAttireBonus[skills[i]];
+      emit ClearFullAttireBonus(skills[i]);
+    }
   }
 
   function setXPModifiers(address[] calldata accounts, bool isModifier) external override onlyOwner {

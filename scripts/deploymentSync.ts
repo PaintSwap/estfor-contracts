@@ -105,7 +105,7 @@ async function simulate(
   rpcUrl: string,
   deployment: ReturnType<typeof loadDeploymentRegistry>
 ): Promise<void> {
-  const reasons = [...plan.upgrades.blockedReasons, ...plan.shop.blockedReasons]
+  const reasons = [...plan.upgrades.blockedReasons, ...plan.shop.blockedReasons, ...plan.gameData.blockedReasons]
   if (reasons.length === 0) {
     logProgress(
       `Starting Anvil simulation (${plan.upgrades.candidates.length} candidates, ${plan.operations.length} operations)`
@@ -122,7 +122,13 @@ async function simulate(
 
 function readDeploymentPlan(path: string, deploymentId: string, chainId: number): DeploymentPlan {
   const value = JSON.parse(readFileSync(path, "utf8")) as Partial<DeploymentPlan>
-  if (value.schemaVersion !== 4 || !value.execution?.safeBatchLimits || !value.upgrades || !value.shop?.limits) {
+  if (
+    value.schemaVersion !== 5 ||
+    !value.execution?.safeBatchLimits ||
+    !value.upgrades ||
+    !value.shop?.limits ||
+    !value.gameData?.limits
+  ) {
     throw new Error(`Unsupported or invalid deployment plan schema: ${path}`)
   }
   const plan = value as DeploymentPlan
@@ -279,6 +285,8 @@ async function main() {
           maxChangedItems: reviewedPlan.shop.limits.maxChangedItems,
           maxRemovals: reviewedPlan.shop.limits.maxRemovals,
           maxAggregatePriceChange: BigInt(reviewedPlan.shop.limits.maxAggregatePriceChange),
+          maxGameDataChanges: reviewedPlan.gameData.limits.maxChangedItems,
+          maxGameDataRemovals: reviewedPlan.gameData.limits.maxRemovals,
           maxSafeOperations: reviewedPlan.execution.safeBatchLimits.maxOperations,
           maxSafeGas: BigInt(reviewedPlan.execution.safeBatchLimits.maxGas),
           reusableCandidates: Object.fromEntries(
@@ -292,6 +300,8 @@ async function main() {
           maxChangedItems: integerOption("--max-shop-changes", DEFAULT_SHOP_LIMITS.maxChangedItems),
           maxRemovals: integerOption("--max-shop-removals", DEFAULT_SHOP_LIMITS.maxRemovals),
           maxAggregatePriceChange: bigintOption("--max-shop-value-change", DEFAULT_SHOP_LIMITS.maxAggregatePriceChange),
+          maxGameDataChanges: integerOption("--max-game-data-changes", 100),
+          maxGameDataRemovals: integerOption("--max-game-data-removals", 10),
           maxSafeOperations: integerOption("--max-safe-operations", DEFAULT_SAFE_BATCH_LIMITS.maxOperations),
           maxSafeGas: bigintOption("--max-safe-gas", DEFAULT_SAFE_BATCH_LIMITS.maxGas),
         }),

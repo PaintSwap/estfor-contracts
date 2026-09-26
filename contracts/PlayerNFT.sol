@@ -5,6 +5,8 @@ import {SamWitchERC1155UpgradeableSinglePerToken} from "./SamWitchERC1155Upgrade
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {IAvatarDiscovery, DiscoveryStatus} from "./interfaces/IReconciliationDiscovery.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
@@ -20,15 +22,17 @@ import {BloomFilter} from "./libraries/BloomFilter.sol";
 import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-/// @custom:oz-upgrades-from PlayerNFTV1
+/// @custom:oz-upgrades-from PlayerNFTV2
 contract PlayerNFT is
   UUPSUpgradeable,
   OwnableUpgradeable,
   SamWitchERC1155UpgradeableSinglePerToken,
   IMarketplaceNFT,
-  IPlayerNFT
+  IPlayerNFT,
+  IAvatarDiscovery
 {
   using BloomFilter for BloomFilter.Filter;
+  using EnumerableSet for EnumerableSet.UintSet;
 
   uint256 private constant EVOLVED_OFFSET = 10000;
   uint256 public constant NUM_BASE_AVATARS = 8;
@@ -58,6 +62,9 @@ contract PlayerNFT is
   address private _bridge; // TODO: Bridge Can remove later
   address private _marketplaceAddress;
   address private _cosmeticsAddress;
+
+  EnumerableSet.UintSet private _avatarIds;
+  DiscoveryStatus public discoveryStatus;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
@@ -112,6 +119,7 @@ contract PlayerNFT is
     _royaltyReceiver = royaltyReceiver;
     _isBeta = isBeta;
     _bridge = bridge;
+    discoveryStatus = DiscoveryStatus.Complete;
   }
 
   function mint(
@@ -410,6 +418,45 @@ contract PlayerNFT is
     return _avatars[avatarId];
   }
 
+  function getAvatarCount() external view returns (uint256) {
+    return _avatarIds.length();
+  }
+
+  function getAvatarIds(uint256 start, uint256 end) external view returns (uint256[] memory ids) {
+    require(start <= end && end <= _avatarIds.length() && end - start <= 1024, InvalidDiscoveryRange());
+    ids = new uint256[](end - start);
+    for (uint256 i; i < ids.length; ++i) {
+      ids[i] = _avatarIds.at(start + i);
+    }
+  }
+
+  function registerLegacyAvatarIds(uint256[] calldata avatarIds) external onlyOwner {
+    for (uint256 i; i < avatarIds.length; ++i) {
+      _syncAvatarId(avatarIds[i]);
+    }
+  }
+
+  function attestLegacyDiscovery(bytes32 evidenceHash) external onlyOwner {
+    require(discoveryStatus == DiscoveryStatus.Incomplete && evidenceHash != bytes32(0), InvalidDiscoveryAttestation());
+    discoveryStatus = DiscoveryStatus.LegacyAttested;
+    emit LegacyDiscoveryAttested(evidenceHash);
+  }
+
+  function _syncAvatarId(uint256 avatarId) private {
+    AvatarInfo storage avatar = _avatars[avatarId];
+    if (
+      bytes(avatar.name).length != 0 ||
+      bytes(avatar.description).length != 0 ||
+      bytes(avatar.imageURI).length != 0 ||
+      avatar.startSkills[0] != Skill.NONE ||
+      avatar.startSkills[1] != Skill.NONE
+    ) {
+      _avatarIds.add(avatarId);
+    } else {
+      _avatarIds.remove(avatarId);
+    }
+  }
+
   function hasLowercaseName(string calldata lowercaseName) external view returns (bool lowercaseNameExists) {
     return _lowercaseNames[lowercaseName];
   }
@@ -422,6 +469,7 @@ contract PlayerNFT is
     require(avatarIds.length == avatarInfos.length, LengthMismatch());
     for (uint256 i; i < avatarIds.length; ++i) {
       _avatars[avatarIds[i]] = avatarInfos[i];
+      _syncAvatarId(avatarIds[i]);
     }
     emit SetAvatars(avatarIds, avatarInfos);
   }

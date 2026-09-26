@@ -29,7 +29,7 @@ import {BankRelay} from "./BankRelay.sol";
 
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
-/// @custom:oz-upgrades-from LockedBankVaultsV1
+/// @custom:oz-upgrades-from LockedBankVaultsV2
 contract LockedBankVaults is
   UUPSUpgradeable,
   OwnableUpgradeable,
@@ -573,6 +573,18 @@ contract LockedBankVaults is
 
   function getComparableSkills() external view returns (Skill[] memory) {
     return _comparableSkills;
+  }
+
+  /// @notice Replaces, rather than appends to, the battle skill pool.
+  function replaceComparableSkills(Skill[] calldata skills) external onlyOwner {
+    require(skills.length != 0, LengthMismatch());
+    for (uint256 i; i < skills.length; ++i) {
+      for (uint256 j; j < i; ++j) {
+        require(skills[i] != skills[j], InvalidSkill(skills[i]));
+      }
+    }
+    delete _comparableSkills;
+    setComparableSkills(skills);
   }
 
   function setComparableSkills(Skill[] calldata skills) public override onlyOwner {

@@ -56,6 +56,8 @@ interface IOrderBook is IERC1155Receiver {
   event ClaimedTokens(address user, uint256[] orderIds, uint256 amount);
   event ClaimedNFTs(address user, uint256[] orderIds, uint256[] tokenIds, uint256[] amounts);
   event SetTokenIdInfos(uint256[] tokenIds, TokenIdInfo[] tokenInfos);
+  event RegisteredTokenId(uint256 tokenId);
+  event RemovedTokenIdInfos(uint256[] tokenIds);
   event SetMaxOrdersPerPriceLevel(uint256 maxOrdesrsPerPrice);
   event SetFees(address devAddr, uint256 devFee, uint256 burntFee);
 
@@ -75,6 +77,8 @@ interface IOrderBook is IERC1155Receiver {
   error TooManyOrdersHit();
   error MaxOrdersNotMultipleOfOrdersInSegment();
   error TickCannotBeChanged();
+  error InvalidTokenIdRange();
+  error TokenHasOpenOrders(uint256 tokenId);
   error ClaimingTooManyOrders();
   error ClaimableAmountTooHigh();
   error FailedToTakeFromBook(address taker, OrderSide side, uint256 tokenId, uint256 quantityRemaining);
@@ -124,6 +128,16 @@ interface IOrderBook is IERC1155Receiver {
   function nodeExists(OrderSide side, uint256 tokenId, uint256 price) external view returns (bool);
 
   function getTokenIdInfo(uint256 tokenId) external view returns (TokenIdInfo memory);
+
+  function getKnownTokenIds(uint256 start, uint256 end) external view returns (uint256[] memory tokenIds);
+
+  function getTokenIdDiscoveryState() external view returns (uint256 count, bool complete);
+
+  function getImmutableTick(uint256 tokenId) external view returns (uint128);
+
+  function registerTokenIds(uint256[] calldata tokenIds) external;
+
+  function removeTokenIdInfos(uint256[] calldata tokenIds) external;
 
   function getClaimableTokenInfo(uint40 _orderId) external view returns (ClaimableTokenInfo memory);
 

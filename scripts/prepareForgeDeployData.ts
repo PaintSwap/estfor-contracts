@@ -43,7 +43,7 @@ import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos"
 import {allPassiveActions} from "./data/passiveActions"
 import {allBasePets} from "./data/pets"
 import {allQuests, allQuestsMinRequirements} from "./data/quests"
-import {allBaseRaidIds, allBaseRaids} from "./data/raids"
+import {allBaseRaidIds, allBaseRaids, raidCombatActionIds} from "./data/raids"
 import {getShopData} from "./data/shop"
 import {allBattleSkills, allMinimumMMRs, allTerritories} from "./data/territories"
 import {allXPThresholdRewards} from "./data/xpThresholdRewards"
@@ -314,36 +314,6 @@ function prepareInitializers(): void {
     IS_BETA,
   ])
 
-  const raidCombatActionIds = [
-    EstforConstants.ACTION_COMBAT_NATUOW,
-    EstforConstants.ACTION_COMBAT_GROG_TOAD,
-    EstforConstants.ACTION_COMBAT_UFFINCH,
-    EstforConstants.ACTION_COMBAT_NATURARACNID,
-    EstforConstants.ACTION_COMBAT_DRAGON_FROG,
-    EstforConstants.ACTION_COMBAT_ELDER_BURGOF,
-    EstforConstants.ACTION_COMBAT_GRAND_TREE_IMP,
-    EstforConstants.ACTION_COMBAT_BANOXNID,
-    EstforConstants.ACTION_COMBAT_ARCANE_DRAGON,
-    EstforConstants.ACTION_COMBAT_SNAPPER_BUG,
-    EstforConstants.ACTION_COMBAT_SNUFFLEQUARG,
-    EstforConstants.ACTION_COMBAT_OBGORA,
-    EstforConstants.ACTION_COMBAT_LOSSUTH,
-    EstforConstants.ACTION_COMBAT_SQUIGGLE_EGG,
-    EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE,
-    EstforConstants.ACTION_COMBAT_DWELLER_BAT,
-    EstforConstants.ACTION_COMBAT_ANCIENT_ENT,
-    EstforConstants.ACTION_COMBAT_ROCKHAWK,
-    EstforConstants.ACTION_COMBAT_QRAKUR,
-    EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON,
-    EstforConstants.ACTION_COMBAT_ERKAD,
-    EstforConstants.ACTION_COMBAT_EMBER_WHELP,
-    EstforConstants.ACTION_COMBAT_JUVENILE_CAVE_FAIRY,
-    EstforConstants.ACTION_COMBAT_CAVE_FAIRY,
-    EstforConstants.ACTION_COMBAT_ICE_TROLL,
-    EstforConstants.ACTION_COMBAT_BLAZING_MONTANITE,
-    EstforConstants.ACTION_COMBAT_MONTANITE_ICE_TITAN,
-    EstforConstants.ACTION_COMBAT_MONTANITE_FIRE_TITAN,
-  ]
   writeInitializer("raids", "Raids", [
     placeholder(1),
     placeholder(2),

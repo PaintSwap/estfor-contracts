@@ -19,6 +19,8 @@ import {
 } from "./deploymentRegistry"
 import {buildShopPlan, deferShopPlanForUpgrade, hasShopStateGetter} from "./shopReconciliation"
 import type {ShopPlan, ShopPlanOptions} from "./shopReconciliation"
+import {buildGameDataPlan} from "./gameDataReconciliation"
+import type {GameDataPlan} from "./gameDataReconciliation"
 import type {DeploymentSimulationResult} from "./deploymentSimulation"
 import {
   EIP1967_IMPLEMENTATION_SLOT,
@@ -74,7 +76,7 @@ export interface ContractInventory extends CodeInventory {
 }
 
 export interface DeploymentPlan {
-  schemaVersion: 4
+  schemaVersion: 5
   mode: "read-only"
   deploymentId: string
   chainId: number
@@ -94,6 +96,7 @@ export interface DeploymentPlan {
   domains: Array<{name: string; policy: "managed" | "observed" | "unmanaged"; reason: string}>
   upgrades: UpgradePlan
   shop: ShopPlan
+  gameData: GameDataPlan
   operations: ReconciliationOperation[]
   pendingOperationIds: string[]
   pendingCandidates: UpgradeCandidate[]
@@ -113,6 +116,8 @@ export interface DeploymentPlan {
 export interface DeploymentPlanOptions extends ShopPlanOptions, UpgradePlanOptions {
   maxSafeOperations?: number
   maxSafeGas?: bigint
+  maxGameDataChanges?: number
+  maxGameDataRemovals?: number
 }
 
 interface LegacyManifest {
@@ -237,13 +242,13 @@ const DOMAINS: DeploymentPlan["domains"] = [
     name: "global-events",
     policy: "unmanaged",
     reason:
-      "Desired event IDs are readable and editable, but arbitrary uint256 IDs have no complete discovery or removal",
+      "Configuration reads and reversible disabling exist, but historical scripts do not define one canonical release schedule",
   },
   {
     name: "black-market-collections",
     policy: "unmanaged",
     reason:
-      "Known collections enumerate items, but event IDs are not discoverable, edits reset runtime stock, and no adapter exists",
+      "Configuration-only edits exist, but managed collection IDs and release intent must be separated from initial stock/activity",
   },
   {
     name: "session-subsidy-limits",
@@ -253,7 +258,7 @@ const DOMAINS: DeploymentPlan["domains"] = [
   {
     name: "shop-supporter-packs",
     policy: "unmanaged",
-    reason: "Pack configuration, key discovery, and configuration-only remaining-quantity semantics are unavailable",
+    reason: "Inventory-preserving configuration APIs exist, but canonical pack IDs and fixed schedules must be defined",
   },
 ]
 
@@ -599,9 +604,31 @@ export async function buildDeploymentPlan(
   for (const reason of shop.blockedReasons) {
     findings.push({severity: "error", code: "SHOP_CHANGE_BLOCKED", subject: "shop", message: reason})
   }
+  const gameData = await buildGameDataPlan(provider, deployment, block.number, upgrades.operations, {
+    allowRemovals: options.allowRemovals,
+    maxChangedItems: options.maxGameDataChanges,
+    maxRemovals: options.maxGameDataRemovals,
+    onProgress: options.onProgress,
+  })
+  for (const reason of gameData.blockedReasons) {
+    findings.push({severity: "error", code: "GAME_DATA_CHANGE_BLOCKED", subject: "game-data", message: reason})
+  }
+  const implemented = new Set(gameData.domains.map(({domain}) => domain))
+  const domains: DeploymentPlan["domains"] = [
+    ...DOMAINS.filter(
+      ({name}) => !implemented.has(name) && !["daily-and-weekly-rewards", "orderbook-token-constraints"].includes(name)
+    ),
+    ...gameData.domains.map((domain) => ({
+      name: domain.domain,
+      policy: domain.readStatus === "available" ? ("managed" as const) : ("unmanaged" as const),
+      reason: `${domain.readStatus}; ${domain.policy}; discovery ${domain.completeness}. ${(domain.notes ?? []).join(
+        " "
+      )}`,
+    })),
+  ]
   options.onProgress?.(
     `Deployment plan built with ${upgrades.candidates.length} candidates and ${
-      upgrades.operations.length + shop.operations.length
+      upgrades.operations.length + shop.operations.length + gameData.operations.length
     } operations`
   )
 
@@ -612,7 +639,7 @@ export async function buildDeploymentPlan(
     classifications[classification] = (classifications[classification] ?? 0) + 1
   }
   const withoutHash: Omit<DeploymentPlan, "planHash"> = {
-    schemaVersion: 4,
+    schemaVersion: 5,
     mode: "read-only",
     deploymentId: deployment.deploymentId,
     chainId: deployment.chainId,
@@ -622,7 +649,9 @@ export async function buildDeploymentPlan(
     observationBlock: {number: block.number, hash: block.hash},
     inputs: {
       registryIntentHash: hashDeploymentRegistryIntent(deployment),
-      sourceDataHash: sha256(canonical(shop.desired)),
+      sourceDataHash: sha256(
+        canonical({shop: shop.desired, gameData: gameData.domains.map(({domain, desired}) => ({domain, desired}))})
+      ),
       gitRevision: execFileSync("git", ["rev-parse", "HEAD"], {encoding: "utf8"}).trim(),
       openZeppelinManifestHash: sha256(manifestRaw),
     },
@@ -634,10 +663,11 @@ export async function buildDeploymentPlan(
     },
     contracts,
     externals,
-    domains: DOMAINS,
+    domains,
     upgrades,
     shop,
-    operations: [...upgrades.operations, ...shop.operations],
+    gameData,
+    operations: [...upgrades.operations, ...shop.operations, ...gameData.operations],
     pendingOperationIds: [],
     pendingCandidates: [],
     simulation: null,
@@ -651,9 +681,9 @@ export async function buildDeploymentPlan(
         Object.entries(classifications).sort(([a], [b]) => a.localeCompare(b))
       ),
       domainPolicies: {
-        managed: DOMAINS.filter(({policy}) => policy === "managed").length,
-        observed: DOMAINS.filter(({policy}) => policy === "observed").length,
-        unmanaged: DOMAINS.filter(({policy}) => policy === "unmanaged").length,
+        managed: domains.filter(({policy}) => policy === "managed").length,
+        observed: domains.filter(({policy}) => policy === "observed").length,
+        unmanaged: domains.filter(({policy}) => policy === "unmanaged").length,
       },
     },
   }
@@ -699,6 +729,20 @@ export function buildRemainderPlan(plan: DeploymentPlan, pendingOperationIds: Re
       candidates: activeCandidates,
     },
     shop: {...plan.shop, operations: plan.shop.operations.filter(keepOperation)},
+    gameData: {
+      ...plan.gameData,
+      operations: plan.gameData.operations.filter(keepOperation),
+      domains: plan.gameData.domains.map((domain) => ({
+        ...domain,
+        operations: domain.operations.filter(keepOperation),
+        pendingKeys: [
+          ...new Set([
+            ...(domain.pendingKeys ?? []),
+            ...domain.operations.filter((op) => !keepOperation(op)).map((op) => op.resource),
+          ]),
+        ],
+      })),
+    },
     operations: plan.operations.filter(keepOperation),
     pendingOperationIds: allPendingOperationIds,
     pendingCandidates,
@@ -766,6 +810,24 @@ export function renderPlanMarkdown(plan: DeploymentPlan): string {
           ...plan.shop.changes.buyableItems.remove.map(({tokenId, price}) => `- Buyable item ${tokenId} at ${price}`),
           ...plan.shop.changes.unsellableItems.remove.map((tokenId) => `- Unsellable flag ${tokenId}`),
         ]),
+    "",
+    "## Game data reconciliation",
+    "",
+    "| Domain | Read status | Policy / discovery | Add | Update | Remove |",
+    "| --- | --- | --- | ---: | ---: | ---: |",
+    ...plan.gameData.domains.map(
+      (d) =>
+        `| ${d.domain} | ${d.readStatus} | ${d.policy} / ${d.completeness} | ${d.changes.add.length} | ${d.changes.update.length} | ${d.changes.remove.length} |`
+    ),
+    "",
+    ...plan.gameData.domains.flatMap((d) => [
+      ...(d.notes ?? []).map((note) => `- **${d.domain}:** ${note}`),
+      ...(d.pendingKeys?.length
+        ? [
+            `- **${d.domain}:** ${d.pendingKeys.length} keys await pending Safe calls; their final postconditions are not verified by this remainder plan.`,
+          ]
+        : []),
+    ]),
     "",
     "## Implementation upgrades",
     "",

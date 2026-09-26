@@ -23,7 +23,7 @@ import {ClanRank} from "../globals/clans.sol";
 
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
-/// @custom:oz-upgrades-from ClansV1
+/// @custom:oz-upgrades-from ClansV2
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCaller {
   using BloomFilter for BloomFilter.Filter;
 
@@ -67,6 +67,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
   address private _bridge; // TODO: Bridge Can remove later if no longer need the bridge
   IActivityPoints private _activityPoints;
   ICombatantsHelper private _combatantsHelper;
+
+  mapping(uint256 tierId => bool inactive) private _inactiveTiers;
+
+  event SetTierActive(uint256 indexed tierId, bool active);
+  error TierInactive();
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(_playerNFT.balanceOf(_msgSender(), playerId) != 0, NotOwnerOfPlayer());
@@ -159,6 +164,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
 
     Tier storage tier = _tiers[tierId];
     _checkTierExists(tierId);
+    require(!_inactiveTiers[tierId], TierInactive());
     _checkClanImage(imageId, tier.maxImageId);
 
     uint256 clanId = _nextClanId++;
@@ -670,6 +676,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     // require(_playerInfo[playerId].clanId == clanId, NotMemberOfClan());
 
     _checkTierExists(newTierId);
+    require(!_inactiveTiers[newTierId], TierInactive());
 
     Tier storage newTier = _tiers[newTierId];
     uint256 priceDifference = newTier.price - oldTier.price;
@@ -808,6 +815,18 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
 
   function getTier(uint256 tierId) external view override returns (Tier memory) {
     return _tiers[tierId];
+  }
+
+  /// @notice Inactive tiers retain existing clan capacities and upgrade price baselines.
+  /// @dev Bridge imports preserve historical membership and are not new tier purchases.
+  function setTierActive(uint8 tierId, bool active) external onlyOwner {
+    _checkTierExists(tierId);
+    _inactiveTiers[tierId] = !active;
+    emit SetTierActive(tierId, active);
+  }
+
+  function isTierActive(uint256 tierId) external view returns (bool) {
+    return _tiers[tierId].id != 0 && !_inactiveTiers[tierId];
   }
 
   function getTierIds() external view returns (uint8[] memory tierIds) {

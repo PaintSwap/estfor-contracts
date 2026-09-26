@@ -8,7 +8,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 
 import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
 
-/// @custom:oz-upgrades-from BlackMarketTraderV1
+/// @custom:oz-upgrades-from BlackMarketTraderV2
 contract BlackMarketTrader is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable {
   error ItemDoesNotExist();
   error ShopItemAlreadyExists();
@@ -23,6 +23,17 @@ contract BlackMarketTrader is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFC
   error NoItemsInShop();
   error AlreadyInitialisedToday();
   error QuantityCannotBeZero();
+  error InvalidStateReadRange();
+  error ShopConfigurationLocked();
+
+  struct ShopItemConfig {
+    uint128 price;
+    uint16 tokenId;
+    uint16 amountPerPurchase;
+    uint16 stock;
+  }
+
+  event SetShopCollectionConfig(uint256 indexed globalEventId, uint16 acceptedItemId, ShopItemConfig[] items);
 
   event AcceptedItemIdSet(uint256 indexed globalEventId, uint16 itemId);
   event AddShopItems(ShopItem[] shopItems, uint256 indexed globalEventId);
@@ -212,6 +223,43 @@ contract BlackMarketTrader is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFC
 
     collection.itemTokenIds.push(shopItem.tokenId);
     collection.shopItems[shopItem.tokenId] = shopItem;
+  }
+
+  /// @notice Scan at most 1024 keys. Unknown historical uint256 keys remain undiscoverable without an external inventory.
+  function getShopCollectionIds(uint256 start, uint256 count) external view returns (uint256[] memory ids) {
+    require(count <= 1024 && (count == 0 || start <= type(uint256).max - (count - 1)), InvalidStateReadRange());
+    ids = new uint256[](count);
+    uint256 length;
+    for (uint256 i; i < count; ++i) {
+      ShopCollection storage collection = _shopCollections[start + i];
+      if (collection.acceptedItemId != 0 || collection.itemTokenIds.length != 0) ids[length++] = start + i;
+    }
+    assembly ("memory-safe") {
+      mstore(ids, length)
+    }
+  }
+
+  /// @notice Edit existing items while closed, without changing stock, activity, order, or request state.
+  /// @dev Configured stock takes effect at the next availability fulfillment. No item is added or removed.
+  function setShopCollectionConfig(
+    uint256 globalEventId,
+    uint16 acceptedItemId,
+    ShopItemConfig[] calldata items
+  ) external onlyOwner {
+    require(!_isShopOpen(), ShopConfigurationLocked());
+    require(_itemNFT.exists(acceptedItemId), ItemDoesNotExist());
+    ShopCollection storage collection = _shopCollections[globalEventId];
+    collection.acceptedItemId = acceptedItemId;
+    for (uint256 i; i < items.length; ++i) {
+      ShopItem storage item = collection.shopItems[items[i].tokenId];
+      require(item.price != 0, ShopItemDoesNotExist());
+      require(items[i].price != 0, PriceCannotBeZero());
+      require(items[i].amountPerPurchase != 0, QuantityCannotBeZero());
+      item.price = items[i].price;
+      item.amountPerPurchase = items[i].amountPerPurchase;
+      item.stock = items[i].stock;
+    }
+    emit SetShopCollectionConfig(globalEventId, acceptedItemId, items);
   }
 
   function setAcceptedItemId(uint256 globalEventId, uint16 itemId) external onlyOwner {

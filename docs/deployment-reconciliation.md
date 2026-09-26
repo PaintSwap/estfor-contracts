@@ -18,6 +18,24 @@ The command loads `.env` before it reads configuration.
 
 Use `--allow-removals` to permit planned removals. Limit options reject plans that contain too many changes or too much value change.
 
+## Game data
+
+Plans use schema version 5. Create a new plan instead of applying or resuming a schema-4 plan.
+Game-data changes are included in the source-data hash, Safe calls and fork postcondition checks.
+The report lists each domain's read status, discovery completeness, policy and changes.
+See [game-data readiness](./game-data-readiness.md#current-implementation-2026-09-26) for coverage and remaining limits.
+
+- `--max-game-data-changes <count>` defaults to 100 grouped resources.
+- `--max-game-data-removals <count>` defaults to 10 removals or destructive replacement calls.
+- `--allow-removals` also gates deactivation and destructive replacement.
+- Incomplete discovery permits desired-key additions/updates, but blocks known stale-key removals.
+- An owner-attested legacy index is disclosed as an assertion, not a proof. Sync never creates an attestation.
+- When reads need a planned upgrade, the domain is deferred. Execute the upgrade, then replan for data changes.
+- A remainder plan does not verify keys whose calls are still pending in the Safe.
+
+An empty additive plan does not prove that unknown historical keys match the source data.
+Edits to settlement-time configuration can affect pending gameplay. Review these changes before proposing them.
+
 ## Environment
 
 | Variable                 | Use                                                                                                                                           |

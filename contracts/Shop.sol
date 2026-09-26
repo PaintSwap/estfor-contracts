@@ -13,7 +13,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
 
 // The contract allows items to be bought/sold
-/// @custom:oz-upgrades-from ShopV1
+/// @custom:oz-upgrades-from ShopV2
 contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   using SafeERC20 for IERC20;
 
@@ -91,6 +91,17 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     uint256 price;
     bool unsellable;
   }
+
+  struct SupporterPackConfig {
+    uint80 price;
+    uint16[] itemTokenIds;
+    uint16[] itemQuantities;
+    uint32 startTimestamp;
+    uint96 brushToGive;
+  }
+
+  event SetSupporterPackConfig(uint24 packId, SupporterPackConfig config);
+  event RemoveSupporterPack(uint24 packId);
 
   mapping(uint256 tokenId => TokenInfo tokenInfo) private _tokenInfos;
 
@@ -477,6 +488,50 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
 
   function setSupporterPackToken(address supporterPackToken) external onlyOwner {
     _supporterPackToken = supporterPackToken;
+  }
+
+  function getSupporterPackConfig(uint24 packId) external view returns (SupporterPackConfig memory config) {
+    SupporterPack storage pack = _packPrices[packId];
+    if (pack.price == 0) return config;
+    return
+      SupporterPackConfig(pack.price, pack.itemTokenIds, pack.itemQuantities, pack.startTimestamp, pack.brushToGive);
+  }
+
+  /// @notice Scan [start, end), at most 1024 IDs. Sold-out packs remain configured.
+  function getSupporterPackIds(uint256 start, uint256 end) external view returns (uint24[] memory ids) {
+    require(
+      start <= end && end <= uint256(type(uint24).max) + 1 && end - start <= MAX_STATE_READ_LENGTH,
+      InvalidStateReadRange()
+    );
+    ids = new uint24[](end - start);
+    uint256 count;
+    for (uint256 id = start; id < end; ++id) {
+      if (_packPrices[uint24(id)].price != 0) ids[count++] = uint24(id);
+    }
+    assembly ("memory-safe") {
+      mstore(ids, count)
+    }
+  }
+
+  /// @notice Update configuration without replenishing inventory, including after removal.
+  /// @dev A new ID has zero inventory. Use the explicit inventory-bearing legacy setter to provision it.
+  function setSupporterPackConfig(uint24 packId, SupporterPackConfig calldata config) external onlyOwner {
+    require(config.price != 0, PriceCannotBeZero());
+    require(config.itemTokenIds.length == config.itemQuantities.length, LengthMismatch());
+    SupporterPack storage pack = _packPrices[packId];
+    pack.price = config.price;
+    pack.itemTokenIds = config.itemTokenIds;
+    pack.itemQuantities = config.itemQuantities;
+    pack.startTimestamp = config.startTimestamp;
+    pack.brushToGive = config.brushToGive;
+    emit SetSupporterPackConfig(packId, config);
+  }
+
+  function removeSupporterPack(uint24 packId) external onlyOwner {
+    require(_packPrices[packId].price != 0, ShopItemDoesNotExist());
+    // Price is the purchase gate. Keep inventory so reconfiguration cannot replenish it.
+    _packPrices[packId].price = 0;
+    emit RemoveSupporterPack(packId);
   }
 
   function setSupporterPacks(uint24[] calldata packIds, SupporterPack[] calldata packs) external onlyOwner {

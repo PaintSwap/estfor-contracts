@@ -28,7 +28,7 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
-/// @custom:oz-upgrades-from TerritoriesV1
+/// @custom:oz-upgrades-from TerritoriesV2
 contract Territories is
   UUPSUpgradeable,
   OwnableUpgradeable,
@@ -342,6 +342,7 @@ contract Territories is
   }
 
   function addUnclaimedEmissions(uint256 amount) external override {
+    require(_totalEmissionPercentage != 0, InvalidEmissionPercentage());
     require(amount >= _totalEmissionPercentage, AmountTooLow());
 
     for (uint256 i = 1; i < _nextTerritoryId; ++i) {
@@ -509,7 +510,7 @@ contract Territories is
       totalEmissionPercentage += territoryInput.percentageEmissions;
     }
 
-    _nextTerritoryId = uint16(nextTerritoryId + territories.length);
+    _nextTerritoryId = (nextTerritoryId + territories.length).toUint16();
 
     require(totalEmissionPercentage <= 100 * PERCENTAGE_EMISSION_MUL, InvalidEmissionPercentage());
 
@@ -521,14 +522,33 @@ contract Territories is
     uint256 totalEmissionPercentage = _totalEmissionPercentage;
     for (uint256 i; i < territories.length; ++i) {
       _checkTerritory(territories[i]);
+      require(_territories[territories[i].territoryId].territoryId != 0, InvalidTerritoryId());
       totalEmissionPercentage -= _territories[territories[i].territoryId].percentageEmissions;
       totalEmissionPercentage += territories[i].percentageEmissions;
       _territories[territories[i].territoryId].percentageEmissions = territories[i].percentageEmissions;
     }
 
     require(totalEmissionPercentage <= 100 * PERCENTAGE_EMISSION_MUL, InvalidEmissionPercentage());
-    _totalEmissionPercentage = uint8(totalEmissionPercentage);
+    _totalEmissionPercentage = uint16(totalEmissionPercentage);
     emit EditTerritories(territories);
+  }
+
+  /// @notice Restores configuration for an allocated, removed ID without resetting runtime fields.
+  /// @dev Runtime data erased by older implementations cannot be recovered here.
+  function restoreTerritories(TerritoryInput[] calldata territories) external onlyOwner {
+    uint256 totalEmissionPercentage = _totalEmissionPercentage;
+    for (uint256 i; i < territories.length; ++i) {
+      TerritoryInput calldata input = territories[i];
+      _checkTerritory(input);
+      Territory storage territory = _territories[input.territoryId];
+      require(input.territoryId < _nextTerritoryId && territory.territoryId == 0, InvalidTerritoryId());
+      territory.territoryId = input.territoryId;
+      territory.percentageEmissions = input.percentageEmissions;
+      totalEmissionPercentage += input.percentageEmissions;
+    }
+    require(totalEmissionPercentage <= 100 * PERCENTAGE_EMISSION_MUL, InvalidEmissionPercentage());
+    _totalEmissionPercentage = uint16(totalEmissionPercentage);
+    emit AddTerritories(territories);
   }
 
   function removeTerritories(uint256[] calldata territoryIds) external override onlyOwner {
@@ -537,7 +557,9 @@ contract Territories is
       require(_territories[territoryIds[i]].territoryId != 0, InvalidTerritoryId());
 
       totalEmissionPercentage -= _territories[territoryIds[i]].percentageEmissions;
-      delete _territories[territoryIds[i]];
+      // Keep occupancy, accrued emissions, MMR and timestamps, including references from pending attacks.
+      _territories[territoryIds[i]].territoryId = 0;
+      _territories[territoryIds[i]].percentageEmissions = 0;
     }
 
     _totalEmissionPercentage = uint16(totalEmissionPercentage);
@@ -548,9 +570,22 @@ contract Territories is
     require(territoryIds.length == minimumMMRs.length, LengthMismatch());
 
     for (uint256 i; i < territoryIds.length; ++i) {
+      require(_territories[territoryIds[i]].territoryId != 0, InvalidTerritoryId());
       _territories[territoryIds[i]].minimumMMR = minimumMMRs[i];
     }
     emit SetMinimumMMRs(territoryIds, minimumMMRs); // TODO: Currently not used elsewhere
+  }
+
+  /// @notice Replaces, rather than appends to, the battle skill pool.
+  function replaceComparableSkills(Skill[] calldata skills) external onlyOwner {
+    require(skills.length != 0, LengthMismatch());
+    for (uint256 i; i < skills.length; ++i) {
+      for (uint256 j; j < i; ++j) {
+        require(skills[i] != skills[j], InvalidSkill(skills[i]));
+      }
+    }
+    delete _comparableSkills;
+    setComparableSkills(skills);
   }
 
   function setComparableSkills(Skill[] calldata skills) public override onlyOwner {

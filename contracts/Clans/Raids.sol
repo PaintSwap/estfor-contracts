@@ -28,7 +28,7 @@ import "../globals/all.sol";
 // Colonel can decide to fight in raids
 // Spawning needs calling manually (every 8 hours or w.e it is set to)
 // 1-3 Random spawn with different stats, you can pick one to kill. Loot is given based on total rolls of the monster?
-/// @custom:oz-upgrades-from RaidsV1
+/// @custom:oz-upgrades-from RaidsV2
 contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, IRaids {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
@@ -83,6 +83,20 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
   mapping(uint256 raidId => RaidInfo) private _raidInfos;
   mapping(uint256 requestId => PendingRaidAttack pendingRaidAttack) private _requestIdToPendingRaidAttack;
 
+  mapping(uint256 baseRaidId => bool inactive) private _inactiveBaseRaids;
+  uint16[] private _baseRaidSpawnIds;
+  mapping(uint256 baseRaidId => bool included) private _inBaseRaidSpawnPool;
+  bool private _baseRaidSpawnPoolConfigured;
+  bool private _baseRaidDiscoveryComplete;
+  uint256[] private _trackedBaseRaidIds;
+  mapping(uint256 baseRaidId => bool tracked) private _baseRaidTracked;
+
+  event SetBaseRaidActive(uint256 indexed baseRaidId, bool active);
+  event SetBaseRaidSpawnIds(uint16[] baseRaidIds);
+  event TrackBaseRaid(uint256 indexed baseRaidId);
+  error InvalidBaseRaidSpawnPool();
+  error BaseRaidStillInSpawnPool();
+
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
@@ -133,6 +147,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     _worldActions = worldActions;
     _randomnessBeacon = randomnessBeacon;
     _nextRaidId = 1;
+    _baseRaidDiscoveryComplete = true;
     setMaxClanCombatants(maxClanCombatants);
     setSpawnRaidCooldown(spawnRaidCooldown);
     setExpectedGasLimitFulfill(2_000_000);
@@ -144,6 +159,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
   }
 
   function requestSpawnRaid(uint64 playerId) external payable override isOwnerOfPlayerAndActive(playerId) {
+    require(!_baseRaidSpawnPoolConfigured || _baseRaidSpawnIds.length != 0, InvalidBaseRaidSpawnPool());
     // Spawn a random monster
     // Must be after the last raid is finished
     require(_raidSpawnRequestId == 0, PreviousRaidNotSpawnedYet());
@@ -204,7 +220,9 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     for (uint256 i; i < NUM_WORDS; ++i) {
       // Spawn a raid monster (first 2 bytes for the base raid id)
       uint256 randomWord = randomWords[i];
-      uint16 baseRaidId = uint16(randomWord % maxBaseRaidId) + 1;
+      uint16 baseRaidId = _baseRaidSpawnPoolConfigured
+        ? _baseRaidSpawnIds[randomWord % _baseRaidSpawnIds.length]
+        : uint16(randomWord % maxBaseRaidId) + 1;
       BaseRaid storage baseRaid = _baseRaids[baseRaidId];
 
       uint256 combatActionIdsLength = _combatActionIds.length;
@@ -589,6 +607,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     require(baseRaid.minMagicDefence <= baseRaid.maxMagicDefence, NotInRange());
     require(baseRaid.minRangedDefence <= baseRaid.maxRangedDefence, NotInRange());
     _baseRaids[baseId] = baseRaid;
+    _trackBaseRaid(baseId);
   }
 
   function _checkBaseRaid(BaseRaid calldata baseRaid, uint256 id) private pure {}
@@ -639,6 +658,77 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
 
   function getCombatActionIds() external view returns (uint16[] memory) {
     return _combatActionIds;
+  }
+
+  /// @notice Retains loot definitions used by already spawned raids and pending fights.
+  function setBaseRaidActive(uint256 baseRaidId, bool active) external onlyOwner {
+    require(_baseRaidExists(baseRaidId), RaidDoesNotExist());
+    if (!active) {
+      require(_baseRaidSpawnPoolConfigured, InvalidBaseRaidSpawnPool());
+      require(!_inBaseRaidSpawnPool[baseRaidId], BaseRaidStillInSpawnPool());
+    }
+    _inactiveBaseRaids[baseRaidId] = !active;
+    _trackBaseRaid(baseRaidId);
+    emit SetBaseRaidActive(baseRaidId, active);
+  }
+
+  function isBaseRaidActive(uint256 baseRaidId) public view returns (bool) {
+    return _baseRaidExists(baseRaidId) && !_inactiveBaseRaids[baseRaidId];
+  }
+
+  /// @notice Replaces the gameplay pool. An empty pool disables new spawn requests.
+  /// @dev Configure this before deactivation. Pending spawn requests must first finish.
+  function setBaseRaidSpawnIds(uint16[] calldata baseRaidIds) external onlyOwner {
+    require(_raidSpawnRequestId == 0, PreviousRaidNotSpawnedYet());
+    for (uint256 i; i < _baseRaidSpawnIds.length; ++i) {
+      delete _inBaseRaidSpawnPool[_baseRaidSpawnIds[i]];
+    }
+    delete _baseRaidSpawnIds;
+    for (uint256 i; i < baseRaidIds.length; ++i) {
+      uint16 id = baseRaidIds[i];
+      require(id != 0 && isBaseRaidActive(id) && !_inBaseRaidSpawnPool[id], InvalidBaseRaidSpawnPool());
+      _inBaseRaidSpawnPool[id] = true;
+      _baseRaidSpawnIds.push(id);
+      _trackBaseRaid(id);
+    }
+    _baseRaidSpawnPoolConfigured = true;
+    emit SetBaseRaidSpawnIds(baseRaidIds);
+  }
+
+  /// @return ids The explicit gameplay pool.
+  /// @return configured False means the legacy dense 1..max selection is still in use.
+  function getBaseRaidSpawnIds() external view returns (uint16[] memory ids, bool configured) {
+    return (_baseRaidSpawnIds, _baseRaidSpawnPoolConfigured);
+  }
+
+  /// @notice Registers known historical keys without changing their definitions or activity.
+  function registerBaseRaidIds(uint256[] calldata baseRaidIds) external onlyOwner {
+    for (uint256 i; i < baseRaidIds.length; ++i) {
+      require(_baseRaidExists(baseRaidIds[i]), RaidDoesNotExist());
+      _trackBaseRaid(baseRaidIds[i]);
+    }
+  }
+
+  function _trackBaseRaid(uint256 baseRaidId) private {
+    if (!_baseRaidTracked[baseRaidId]) {
+      _baseRaidTracked[baseRaidId] = true;
+      _trackedBaseRaidIds.push(baseRaidId);
+      emit TrackBaseRaid(baseRaidId);
+    }
+  }
+
+  /// @notice Complete only for fresh proxies. Registration cannot prove legacy completeness.
+  function getBaseRaidDiscoveryState() external view returns (uint256 count, bool complete) {
+    return (_trackedBaseRaidIds.length, _baseRaidDiscoveryComplete);
+  }
+
+  /// @notice Pages tracked uint256 keys, including inactive and non-gameplay IDs.
+  function getTrackedBaseRaidIds(uint256 start, uint256 end) external view returns (uint256[] memory ids) {
+    if (start > end || end > _trackedBaseRaidIds.length || end - start > MAX_STATE_READ_LENGTH) {
+      revert InvalidStateReadRange();
+    }
+    ids = new uint256[](end - start);
+    for (uint256 i; i < ids.length; ++i) ids[i] = _trackedBaseRaidIds[start + i];
   }
 
   function getAttackCost() public view override returns (uint256) {

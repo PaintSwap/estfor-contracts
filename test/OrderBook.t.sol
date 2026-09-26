@@ -281,6 +281,7 @@ contract OrderBookTest is EstforTest {
     orderBook.setTokenIdInfos(_uints(tokenId), new IOrderBook.TokenIdInfo[](0));
     vm.expectRevert(IOrderBook.TickCannotBeChanged.selector);
     orderBook.setTokenIdInfos(_uints(tokenId), _tokenInfo(11, 20));
+    vm.expectRevert(abi.encodeWithSelector(IOrderBook.TokenHasOpenOrders.selector, tokenId));
     orderBook.setTokenIdInfos(_uints(tokenId), _tokenInfo(0, 20));
     orderBook.setTokenIdInfos(_uints(tokenId), _tokenInfo(10, 20));
   }

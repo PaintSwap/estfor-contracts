@@ -4,13 +4,25 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IGameSubsidisationRegistry} from "../interfaces/IGameSubsidisationRegistry.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {ISubsidyFunctionDiscovery, DiscoveryStatus} from "../interfaces/IReconciliationDiscovery.sol";
 
-/// @custom:oz-upgrades-from GameSubsidisationRegistryV1
-contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGameSubsidisationRegistry {
+/// @custom:oz-upgrades-from GameSubsidisationRegistryV2
+contract GameSubsidisationRegistry is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  IGameSubsidisationRegistry,
+  ISubsidyFunctionDiscovery
+{
+  using EnumerableSet for EnumerableSet.UintSet;
+
   // Group 0 = Disabled, Group 1 = Basic, Group 2 = Combat, etc.
   mapping(address => mapping(bytes4 => uint256)) private _functionToLimitGroup;
   mapping(uint256 => uint256) private _groupDailyLimits;
   uint256 private constant FEEM_PROJECT_ID = 15;
+
+  EnumerableSet.UintSet private _subsidisedFunctions;
+  DiscoveryStatus public discoveryStatus;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -19,6 +31,47 @@ contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGame
 
   function initialize(address owner) public initializer {
     __Ownable_init(owner);
+    discoveryStatus = DiscoveryStatus.Complete;
+  }
+
+  function getSubsidisedFunctionCount() external view returns (uint256) {
+    return _subsidisedFunctions.length();
+  }
+
+  function getSubsidisedFunctions(
+    uint256 start,
+    uint256 end
+  ) external view returns (address[] memory contracts_, bytes4[] memory selectors) {
+    require(start <= end && end <= _subsidisedFunctions.length() && end - start <= 1024, InvalidDiscoveryRange());
+    contracts_ = new address[](end - start);
+    selectors = new bytes4[](end - start);
+    for (uint256 i; i < contracts_.length; ++i) {
+      uint256 key = _subsidisedFunctions.at(start + i);
+      contracts_[i] = address(uint160(key >> 32));
+      selectors[i] = bytes4(uint32(key));
+    }
+  }
+
+  function registerLegacyFunctions(address[] calldata contracts_, bytes4[] calldata selectors) external onlyOwner {
+    require(contracts_.length == selectors.length, LengthMismatch());
+    for (uint256 i; i < contracts_.length; ++i) {
+      _syncFunction(contracts_[i], selectors[i], _functionToLimitGroup[contracts_[i]][selectors[i]]);
+    }
+  }
+
+  function attestLegacyDiscovery(bytes32 evidenceHash) external onlyOwner {
+    require(discoveryStatus == DiscoveryStatus.Incomplete && evidenceHash != bytes32(0), InvalidDiscoveryAttestation());
+    discoveryStatus = DiscoveryStatus.LegacyAttested;
+    emit LegacyDiscoveryAttested(evidenceHash);
+  }
+
+  function _syncFunction(address contract_, bytes4 selector, uint256 groupId) private {
+    uint256 key = (uint256(uint160(contract_)) << 32) | uint32(selector);
+    if (groupId != 0) {
+      _subsidisedFunctions.add(key);
+    } else {
+      _subsidisedFunctions.remove(key);
+    }
   }
 
   function functionToLimitGroup(address _contract, bytes4 _selector) external view override returns (uint256) {
@@ -39,6 +92,7 @@ contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGame
 
   function setFunctionGroup(address _contract, bytes4 _selector, uint256 _groupId) external override onlyOwner {
     _functionToLimitGroup[_contract][_selector] = _groupId;
+    _syncFunction(_contract, _selector, _groupId);
   }
 
   function setFunctionGroups(
@@ -49,6 +103,7 @@ contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGame
     require(_contracts.length == _selectors.length && _selectors.length == _groupIds.length, LengthMismatch());
     for (uint256 i = 0; i < _contracts.length; ++i) {
       _functionToLimitGroup[_contracts[i]][_selectors[i]] = _groupIds[i];
+      _syncFunction(_contracts[i], _selectors[i], _groupIds[i]);
     }
   }
 

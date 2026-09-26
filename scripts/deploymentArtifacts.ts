@@ -2,7 +2,7 @@ import {createHash} from "crypto"
 import {spawnSync} from "child_process"
 import {readFileSync, readdirSync, statSync} from "fs"
 import {basename, join, relative, resolve, sep} from "path"
-import {getAddress, keccak256} from "ethers"
+import {getAddress, Interface, InterfaceAbi, keccak256} from "ethers"
 import {ContractName, DeploymentRegistry} from "./deploymentRegistry"
 
 export type BytecodeClassification =
@@ -79,7 +79,7 @@ export interface BytecodeComparison {
   reason: string
 }
 
-const ARTIFACT_CONTRACT_NAMES: Record<ContractName, string> = {
+export const ARTIFACT_CONTRACT_NAMES: Record<ContractName, string> = {
   bridge: "Bridge",
   worldActions: "WorldActions",
   randomnessBeacon: "RandomnessBeacon",
@@ -254,6 +254,10 @@ function findBuildInfoHash(outRoot: string, fullyQualifiedName: string): string 
   }
   buildInfoHashCache.set(buildInfoRoot, hashes)
   return hashes.get(fullyQualifiedName) ?? null
+}
+
+export function loadContractInterface(contractName: ContractName): Interface {
+  return new Interface(artifactMatch(contractName, resolve(__dirname, "../out")).artifact.abi as InterfaceAbi)
 }
 
 export function loadArtifactFingerprint(

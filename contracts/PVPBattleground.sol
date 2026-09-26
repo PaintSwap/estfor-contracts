@@ -24,7 +24,7 @@ import {EstforLibrary} from "./EstforLibrary.sol";
 import {PlayersLibrary} from "./Players/PlayersLibrary.sol";
 
 // For battling a single player vs player
-/// @custom:oz-upgrades-from PVPBattlegroundV1
+/// @custom:oz-upgrades-from PVPBattlegroundV2
 contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, IPVPBattleground {
   using SafeCast for uint256;
 
@@ -308,6 +308,18 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
 
   function getNumSkillsToCompare() external view returns (uint8) {
     return _numSkillsToCompare;
+  }
+
+  /// @notice Replaces the pool. Each comparison consumes 16 bits of a random word.
+  function replaceComparableSkills(Skill[] calldata skills, uint8 numSkillsToCompare) external onlyOwner {
+    require(numSkillsToCompare != 0 && numSkillsToCompare <= 16, TooManySkillsToCompare());
+    for (uint256 i; i < skills.length; ++i) {
+      for (uint256 j; j < i; ++j) {
+        require(skills[i] != skills[j], InvalidSkill(skills[i]));
+      }
+    }
+    delete _comparableSkills;
+    setComparableSkills(skills, numSkillsToCompare);
   }
 
   function setComparableSkills(Skill[] calldata skills, uint8 numSkillsToCompare) public override onlyOwner {

@@ -157,13 +157,28 @@ describe("deployment inventory", function () {
         ],
       },
       shop: {operations: [{id: "shop:update"}]},
+      gameData: {
+        operations: [
+          {id: "data:pending", resource: "7"},
+          {id: "data:remaining", resource: "8"},
+        ],
+        domains: [
+          {
+            domain: "avatars",
+            operations: [
+              {id: "data:pending", resource: "7"},
+              {id: "data:remaining", resource: "8"},
+            ],
+          },
+        ],
+      },
       pendingOperationIds: [],
       pendingCandidates: [],
       simulation: {status: "passed"},
       planHash: "0xold",
     } as unknown as DeploymentPlan
 
-    const remainder = buildRemainderPlan(plan, new Set(["upgrade:shop", "shop:update"]))
+    const remainder = buildRemainderPlan(plan, new Set(["upgrade:shop", "shop:update", "data:pending"]))
 
     assert.deepEqual(
       remainder.operations.map(({id}) => id),
@@ -174,7 +189,12 @@ describe("deployment inventory", function () {
       ["players", "playersLibrary"]
     )
     assert.deepEqual(remainder.shop.operations, [])
-    assert.deepEqual(remainder.pendingOperationIds, ["shop:update", "upgrade:shop"])
+    assert.deepEqual(remainder.pendingOperationIds, ["data:pending", "shop:update", "upgrade:shop"])
+    assert.deepEqual(remainder.gameData.domains[0].pendingKeys, ["7"])
+    assert.deepEqual(
+      remainder.gameData.operations.map((op) => op.id),
+      ["data:remaining"]
+    )
     assert.deepEqual(
       remainder.pendingCandidates.map(({contractName}) => contractName),
       ["shop", "estforLibrary"]
@@ -183,7 +203,13 @@ describe("deployment inventory", function () {
 
     const nextRemainder = buildRemainderPlan(remainder, new Set(["upgrade:players"]))
     assert.deepEqual(nextRemainder.operations, [])
-    assert.deepEqual(nextRemainder.pendingOperationIds, ["shop:update", "upgrade:players", "upgrade:shop"])
+    assert.deepEqual(nextRemainder.pendingOperationIds, [
+      "data:pending",
+      "shop:update",
+      "upgrade:players",
+      "upgrade:shop",
+    ])
+    assert.deepEqual(nextRemainder.gameData.domains[0].pendingKeys, ["7"])
     assert.deepEqual(
       nextRemainder.pendingCandidates.map(({contractName}) => contractName),
       ["shop", "estforLibrary", "players", "playersLibrary"]

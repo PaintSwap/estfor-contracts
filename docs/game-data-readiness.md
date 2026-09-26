@@ -1,6 +1,57 @@
 # Game data reconciliation readiness
 
-Date: 2026-09-03
+## Current implementation (2026-09-26)
+
+The contract APIs below are implemented in source. Existing proxies need upgrades before the new APIs can be used.
+The current `deployment:sync` plan schema is version 5. Its game-data adapters read at the observation block, normalize
+persisted configuration, produce Safe calldata, and verify postconditions in the simulation fork.
+
+| Contract                               | Added capability                                                                        | Sync policy or remaining constraint                                                                                                                                                                                   |
+| -------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shop                                   | Supporter-pack configuration getter, bounded ID scan, inventory-preserving edit/removal | Item prices/unsellable flags remain managed. Packs still need profile-aware desired data; configuration writes never provision inventory.                                                                             |
+| Players                                | `removeXPThresholdRewards`, `clearFullAttireBonuses`                                    | Managed. Changes affect unprocessed rewards, like existing edits.                                                                                                                                                     |
+| PlayerNFT                              | Avatar index, legacy registration, discovery status/attestation                         | Managed add/update; exact removal requires complete or explicitly owner-attested discovery.                                                                                                                           |
+| DailyRewardsScheduler                  | Separate daily/weekly tier indexes, legacy registration, status/attestation             | Same discovery policy as avatars; reward randomness is excluded.                                                                                                                                                      |
+| GameSubsidisationRegistry              | Contract/selector index, registration, status/attestation                               | Selector adapter uses registry addresses. Canonical group limits use 10× on beta and 1× on live. Independent historical group-limit keys remain outside discovery.                                                    |
+| Clans                                  | `setTierActive`, `isTierActive`                                                         | Managed. Deactivation retains existing clan capacity and pricing definitions.                                                                                                                                         |
+| Raids                                  | Base-raid activity, tracked IDs, explicit replaceable spawn pool                        | Managed add/update; legacy discovery remains incomplete. Spawn-pool replacement precedes deactivation and waits for pending spawns. Combat-action replacement uses shared deployment data and affects pending spawns. |
+| Territories                            | Non-destructive removal, `restoreTerritories`, `replaceComparableSkills`                | Managed. Occupancy, accrued emissions and timestamps are preserved. Pre-upgrade deleted data cannot be recovered.                                                                                                     |
+| PVPBattleground / LockedBankVaults     | `replaceComparableSkills`                                                               | Managed. Replacement affects pending battles; there is no snapshot migration.                                                                                                                                         |
+| OrderBook                              | Known-ID index, immutable-tick read, registration, guarded removal                      | Both tracked order books have adapters. Legacy discovery remains incomplete. Live orders block removal; nonzero tick changes remain forbidden.                                                                        |
+| GlobalEvents                           | Bounded ID scan and reversible disabling                                                | API ready. Canonical profile-aware release data is still required. A bounded uint256 scan does not prove historical completeness.                                                                                     |
+| BlackMarketTrader                      | Bounded collection scan and configuration-only edits                                    | API ready. Canonical release data is still required. Edits require a closed shop and only alter existing items, preserving current stock/activity.                                                                    |
+| WorldActions / PassiveActions / PetNFT | No unsafe removal function added                                                        | Add/update adapters exist. Stale definitions block the plan because live gameplay still references them. Pet enhancement-skill changes also block it.                                                                 |
+
+Items, quests, cosmetics, instant actions, instant VRF actions and both strategy decoders also have adapters using
+the existing read APIs. World-action choices cover desired and active parent IDs plus shared parent `0`; unknown
+absent parent IDs remain outside that scan, so that adapter does not claim exact alignment.
+
+Fresh indexed deployments report complete discovery. Upgraded avatar/reward/subsidy contracts start incomplete.
+Owner registration alone never establishes completeness. `LegacyAttested` records an operator assertion backed by an
+external inventory; it is not an on-chain proof. The script never registers or attests legacy history automatically.
+Legacy OrderBook and Raids indexes never change their completeness flag to true.
+
+New getters that revert before a planned upgrade produce a deferred domain with no data operations. Apply the upgrade,
+then replan. Deferred and pending Safe operations do not count as verified game-data alignment. Removal requires
+`--allow-removals`; game-data limits are `--max-game-data-changes` (100 by default) and
+`--max-game-data-removals` (10 by default). Territory/raid tables and skill pools are grouped resources in these counts.
+
+Full pet discovery still needs 16,384 pages. Sparse scans use at most eight concurrent RPC calls, all at the same block.
+Deployment setup time and RPC cost are separate from Solidity compilation time.
+
+Release-only data (supporter packs, global events, black-market collections, promotions and activity calculations) is
+not inferred from whichever one-off script was last edited. Those domains remain unmanaged until their desired data
+is centralized. Scalar configuration also remains outside these adapters.
+
+For supporter packs and events, define the active IDs, fixed schedules and beta/live values before enabling their adapters.
+The historical event scripts disagree on schedules, and the supporter-pack release uses a generated start time.
+For black-market collections, define the managed collection IDs and configuration separately from initial stock and activity.
+The contract changes do not authorize replaying any release script or replenishing inventory.
+
+## Historical inventory before adapter integration (2026-09-03)
+
+The remainder of this document records the earlier read-API inventory and implementation plan. The current table above
+supersedes its command-policy and remaining-work columns.
 
 This document inventories canonical game data that must eventually be checked by `pnpm deployment:sync`. It separates
 contract read capability from command support. A contract can be read-ready while its deployment domain remains
