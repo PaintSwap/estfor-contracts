@@ -161,7 +161,7 @@ contract BankTest is FullGameStack {
     items[0].isAvailable = true;
     itemNFT.addItems(items);
     itemNFT.mint(ALICE, SKILL_BOOST, 1);
-    vm.expectRevert(abi.encodeWithSelector(ItemNFT.ItemNotTransferable.selector, SKILL_BOOST));
+    vm.expectRevert(ItemNFT.ItemNotTransferable.selector);
     vm.prank(ALICE);
     itemNFT.safeTransferFrom(ALICE, BOB, SKILL_BOOST, 1, "");
     _createClan();
